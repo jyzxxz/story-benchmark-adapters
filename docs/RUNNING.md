@@ -2,7 +2,7 @@
 
 本包提供第一期接入工具：把同一个 `shared_task.txt` 交给三个原生系统，保存实际请求、原始产物和首批正文。`systems/` 是冻结的原始源码，适配行为全部位于 `benchmark/`；不要把运行环境、密钥或旧产物写入 `systems/`。
 
-当前交付的验证使用本地固定响应供应商，**没有执行付费模型实验**。示例配置故意保留 `live=false`，模型、供应商和预算为 `null`。安装依赖、编译题目和运行离线测试不需要模型密钥；真实生成要在实验条件确定后另外配置。
+初始版本 `9bdecf7` 的接入验证使用本地固定响应供应商。后续真实模型验证与失败记录单独保存在 [真实输出验证](LIVE_VALIDATION.md)。示例配置仍保留 `live=false`，模型、供应商和预算为 `null`。安装依赖、编译题目和运行离线测试不需要模型密钥；真实生成要在实验条件确定后另外配置。
 
 ## 1. 建立独立依赖环境
 
@@ -90,6 +90,7 @@ cp -n "$BENCH_ROOT/benchmark/configs/experiment.example.json" \
 | `max_output_tokens` | 正整数，每次模型请求的输出上限；原生已有更低上限时保留较低值。 |
 | `max_input_chars` | 正整数，应用输出上限后的完整紧凑 HTTP JSON 请求的 Unicode 码点上限。 |
 | `allow_pilot` | 仅开发 profile 的 pilot 接入允许为 true；不能替代正式案例审核。 |
+| `model_parameters` | 可选的共同模型控制，默认 `{}` 保留原生参数。当前允许 `thinking` 和 `reasoning_effort`，不接受 prompt、schema、模型或预算覆盖。 |
 
 这些限制不是等金额预算。规划、正文、审核、原生重试和原生媒体翻译所用的文字调用都计入所属系统的根运行，不能重启或读档后重新获得预算。不同方法的原生结构、采样设置和较低输出上限仍可能不同，实际参数会留在请求记录中。
 
@@ -101,7 +102,9 @@ cp -n "$BENCH_ROOT/benchmark/configs/experiment.example.json" \
 | `ai4visualnovel` | `python_executable` 为 AI4VisualNovel 环境解释器绝对路径；当前仪表化路径为 `text_provider="openai"`，`api_key_env` 默认 `OPENAI_API_KEY`。 |
 | `infiplot` | `base_url` 是适配器自己的本地 Next.js 地址，默认 `http://127.0.0.1:3217`，**不是供应商地址**；`cookie_env` 默认 `INFIPLOT_COOKIE`；保持 `shared_opening=true`。 |
 
-IF Line 模板的 `chapter_count=1` 是第一期接入范围，不表示已经完成短篇全作；AI4VisualNovel 仍可能先生成原生故事图和多节点剧本；InfiPlot 只请求第一幕。详见 [公平性边界](FAIRNESS.md)。
+IF Line 的 `chapter_count` 表示整部作品的规划章数，模板采用冻结版本原生界面的默认值 `13`；适配器仍只生成其中第一章。设置为 `1` 会触发原生单章完结规则，不能把它当作“只生成首章”的开关。AI4VisualNovel 仍先生成原生故事图和多节点剧本；InfiPlot 只请求第一幕。详见 [公平性边界](FAIRNESS.md)。
+
+例如使用支持相应字段的 DeepSeek 模型时，可在唯一的 `common` 块设置 `"model_parameters": {"thinking": {"type": "disabled"}}`。三个适配器会在实际 HTTP JSON 上应用同一参数，再检查完整请求预算；审计核对每次 HTTP 请求是否匹配。`{}` 不重写原生参数；三个系统使用同一模式。具体支持情况以供应商文档为准。[DeepSeek 模式说明](https://api-docs.deepseek.com/guides/thinking_mode/)
 
 ## 4. 配置凭证与 IF Line 基础设施
 
@@ -165,7 +168,7 @@ cd "$BENCH_ROOT/benchmark"
   --bundle "$BENCH_ROOT/work/compiled/CAMPUS-01"
 ```
 
-只有预检通过后才运行生成；下面三条命令会使用配置中的真实供应商，可能产生费用。本次交付没有执行它们进行付费实验。三个命令按顺序单独运行，任何一次失败先保留并检查证据：
+只有预检通过后才运行生成；下面三条命令会使用配置中的真实供应商，可能产生费用。真实验证记录见上述报告。三个命令按顺序单独运行，任何一次失败先保留并检查证据：
 
 ```bash
 "$RUNNER_PYTHON" -m story_benchmark run-first \
@@ -203,7 +206,9 @@ cd "$BENCH_ROOT/benchmark"
 
 InfiPlot 的收件证据边界是 `native_sdk_task_block`：公共文本从实际 SDK 消息中提取，包含 relay 适配前后的原始请求与哈希。它不是直接抓取原生路由内部的 `worldSetting` 字段，因此保留 `direct_native_route_receiver_observed=false`。未看到原生兜底日志不等于没有兜底，相关状态保持未知。
 
-| 系统 | 本次已验证的工程范围 | 仍未验证或不在一期范围 |
+以下表格保留初始版本的本地固定响应验证范围；后续真实模型结果见 [真实输出验证](LIVE_VALIDATION.md)。
+
+| 系统 | 初始版本已验证的工程范围 | 当时未验证或不在一期范围 |
 | --- | --- | --- |
 | AI4VisualNovel | 原生 design/script CLI、本地固定响应供应商、Designer/Producer/Actor/Writer 链、实际需求读取和 HTTP 证据、原始及运行副本哈希、首个选择或控制流边界导出。 | 付费模型结果；render/play；Google provider 和流式覆盖；完整条件/跳转/多分支回放。 |
 | InfiPlot | 发布的无 `.git` 原始源码快照、真实 Next.js `/api/start`、未改鉴权代码下的本地 auth/provider fixture、JSON/SSE、接收块和精确替换、预算、首选择导出、源码不变及服务清理。 | 真实供应商故事质量和真实账号的完整部署验收；续场/读档/分支回放；缺少全面内部钩子时无法证明无兜底。 |
