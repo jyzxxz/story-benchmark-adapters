@@ -1,0 +1,36 @@
+{
+  "name": "BranchCandidate",
+  "schema": {
+    "properties": {
+      "candidate_set_revision_id": {
+        "title": "Candidate Set Revision Id",
+        "type": "string"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "option_key": {
+        "title": "Option Key",
+        "type": "string"
+      },
+      "preview_text": {
+        "title": "Preview Text",
+        "type": "string"
+      },
+      "state_delta": {
+        "title": "State Delta",
+        "type": "object"
+      }
+    },
+    "required": [
+      "id",
+      "candidate_set_revision_id",
+      "option_key",
+      "preview_text",
+      "state_delta"
+    ],
+    "title": "BranchCandidate",
+    "type": "object"
+  }
+}

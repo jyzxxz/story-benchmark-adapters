@@ -1,0 +1,58 @@
+{
+  "method": "get",
+  "path": "/api/public/releases/{release_id}/manifest",
+  "operation": {
+    "summary": "读取公开发布清单",
+    "deprecated": false,
+    "description": "读取公开发布清单。",
+    "operationId": "public_manifest_api_public_releases__release_id__manifest_get",
+    "tags": [
+      "公开阅读"
+    ],
+    "parameters": [
+      {
+        "name": "release_id",
+        "in": "path",
+        "description": "",
+        "required": true,
+        "example": "",
+        "schema": {
+          "title": "Release Id",
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ReleaseManifest"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "公开阅读",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923834-run"
+  }
+}

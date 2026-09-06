@@ -1,0 +1,75 @@
+{
+  "name": "ProjectCommentResponse",
+  "schema": {
+    "properties": {
+      "avatar_url": {
+        "title": "头像地址",
+        "type": "string",
+        "description": "头像地址，由服务端返回给客户端访问。",
+        "nullable": true
+      },
+      "body": {
+        "title": "正文",
+        "type": "string",
+        "description": "正文。"
+      },
+      "created_at": {
+        "format": "date-time",
+        "title": "创建时间",
+        "type": "string",
+        "description": "创建时间。"
+      },
+      "display_name": {
+        "title": "显示名称",
+        "type": "string",
+        "description": "显示名称。"
+      },
+      "id": {
+        "title": "编号",
+        "type": "integer",
+        "description": "编号，用于关联对应数据。"
+      },
+      "project_id": {
+        "title": "项目编号",
+        "type": "integer",
+        "description": "项目编号，用于关联对应数据。"
+      },
+      "updated_at": {
+        "format": "date-time",
+        "title": "更新时间",
+        "type": "string",
+        "description": "更新时间。"
+      },
+      "user_id": {
+        "title": "用户编号",
+        "type": "integer",
+        "description": "用户编号，用于关联对应数据。"
+      }
+    },
+    "required": [
+      "id",
+      "project_id",
+      "user_id",
+      "display_name",
+      "avatar_url",
+      "body",
+      "created_at",
+      "updated_at"
+    ],
+    "title": "项目评论响应",
+    "type": "object",
+    "x-apifox-orders": [
+      "avatar_url",
+      "body",
+      "created_at",
+      "display_name",
+      "id",
+      "project_id",
+      "updated_at",
+      "user_id"
+    ],
+    "description": "项目评论响应数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

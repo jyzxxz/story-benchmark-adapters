@@ -1,0 +1,34 @@
+{
+  "method": "get",
+  "path": "/api/llm/byok-defaults",
+  "operation": {
+    "summary": "读取模型默认配置",
+    "deprecated": false,
+    "description": "读取模型默认配置。",
+    "operationId": "byok_defaults_api_llm_byok_defaults_get",
+    "tags": [
+      "基础接口/模型配置",
+      "模型配置"
+    ],
+    "parameters": [],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "title": "Response Byok Defaults Api Llm Byok Defaults Get"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "基础接口/模型配置",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923772-run"
+  }
+}

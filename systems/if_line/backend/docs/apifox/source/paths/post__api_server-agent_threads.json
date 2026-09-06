@@ -1,0 +1,55 @@
+{
+  "method": "post",
+  "path": "/api/server-agent/threads",
+  "operation": {
+    "summary": "创建服务端 Agent 会话",
+    "deprecated": false,
+    "description": "创建一个服务端 Agent thread。返回 thread_id，前端保存后用它订阅事件、提交输入、恢复页面。当前接口需要登录态 cookie。",
+    "operationId": "create_server_agent_threads_post",
+    "tags": [
+      "服务端 Agent"
+    ],
+    "parameters": [],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ServerAgentSnapshotResponse"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "服务端 Agent",
+    "x-apifox-status": "released",
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ServerAgentCreateRequest"
+          }
+        }
+      },
+      "required": true
+    }
+  }
+}

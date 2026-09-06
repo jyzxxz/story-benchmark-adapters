@@ -1,0 +1,145 @@
+{
+  "method": "get",
+  "path": "/api/projects/{project_id}/assets",
+  "operation": {
+    "summary": "读取项目素材列表",
+    "deprecated": false,
+    "description": "读取项目素材列表。\n\nasset_type      素材类型，可选：portrait / background / keyframe / audio\nstatus          素材状态，可选，比如 pending / completed / archived\nlogical_key     精确查某一个逻辑素材，一般不用\nchapter_index   只看某一章相关素材\nlimit           分页条数，默认 50，最大 100\noffset          分页偏移，默认 0",
+    "operationId": "read_assets_api_projects__project_id__assets_get",
+    "tags": [
+      "素材管理与生成",
+      "素材管理"
+    ],
+    "parameters": [
+      {
+        "name": "sid",
+        "in": "cookie",
+        "description": "",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Sid",
+          "type": "string",
+          "nullable": true
+        }
+      },
+      {
+        "name": "project_id",
+        "in": "path",
+        "description": "",
+        "required": true,
+        "example": 1,
+        "schema": {
+          "title": "Project Id",
+          "type": "integer"
+        }
+      },
+      {
+        "name": "asset_type",
+        "in": "query",
+        "description": "可选：portrait / background / keyframe / audio",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Asset Type",
+          "type": "string",
+          "nullable": true
+        }
+      },
+      {
+        "name": "status",
+        "in": "query",
+        "description": "可选，比如 pending / completed / archived",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Status",
+          "type": "string",
+          "nullable": true
+        }
+      },
+      {
+        "name": "logical_key",
+        "in": "query",
+        "description": "",
+        "required": false,
+        "schema": {
+          "title": "Logical Key",
+          "type": "string",
+          "nullable": true
+        }
+      },
+      {
+        "name": "chapter_index",
+        "in": "query",
+        "description": "",
+        "required": false,
+        "schema": {
+          "title": "Chapter Index",
+          "minimum": 1,
+          "type": "integer",
+          "nullable": true
+        }
+      },
+      {
+        "name": "limit",
+        "in": "query",
+        "description": "",
+        "required": false,
+        "example": 100,
+        "schema": {
+          "default": 50,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Limit",
+          "type": "integer"
+        }
+      },
+      {
+        "name": "offset",
+        "in": "query",
+        "description": "",
+        "required": false,
+        "example": 0,
+        "schema": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Offset",
+          "type": "integer"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AssetPage"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "素材管理与生成",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923791-run"
+  }
+}

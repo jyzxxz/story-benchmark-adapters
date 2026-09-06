@@ -1,0 +1,19 @@
+{
+  "id": "synthetic-response",
+  "model": "fixture-model",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "CAMPUS_01_NATIVE_MOCK摘要，仅用于工程测试。"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 10,
+    "completion_tokens": 20,
+    "total_tokens": 30
+  }
+}

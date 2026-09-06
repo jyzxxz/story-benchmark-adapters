@@ -1,0 +1,19 @@
+{
+  "id": "synthetic-response",
+  "model": "fixture-model",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "[{\"id\": 1, \"summary\": \"CAMPUS_01_NATIVE_MOCK片段\", \"characters\": [\"林\"], \"location\": \"教室\"}, {\"id\": 2, \"summary\": \"CAMPUS_01_NATIVE_MOCK片段\", \"characters\": [\"林\"], \"location\": \"教室\"}, {\"id\": 3, \"summary\": \"CAMPUS_01_NATIVE_MOCK片段\", \"characters\": [\"林\"], \"location\": \"教室\"}]"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 10,
+    "completion_tokens": 20,
+    "total_tokens": 30
+  }
+}

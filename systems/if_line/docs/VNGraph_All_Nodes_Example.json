@@ -1,0 +1,401 @@
+{
+  "Version": 1,
+  "StartNodeIndex": 1,
+  "Nodes": [
+    {
+      "Index": 1,
+      "DisplayName": "开始",
+      "Comment": "StartNode",
+      "NodeType": 1,
+      "SubType": 6,
+      "X": 80,
+      "Y": 120,
+      "Data": {},
+      "Outputs": { "Next": [2] }
+    },
+    {
+      "Index": 2,
+      "DisplayName": "开场对白",
+      "Comment": "DialogueNode",
+      "NodeType": 1,
+      "SubType": 1,
+      "X": 430,
+      "Y": 120,
+      "Data": {
+        "SpeakerIdData": { "Kind": "String", "StringValue": "白非立" },
+        "TextData": { "Kind": "String", "StringValue": "我知道这条路会很难。" },
+        "VoiceIdData": { "Kind": "String", "StringValue": "res://Resources/Generated/CV/bai_feili_001.wav" }
+      },
+      "Outputs": { "Actions": [7], "Next": [3] }
+    },
+    {
+      "Index": 3,
+      "DisplayName": "连续段落",
+      "Comment": "ParagraphNode",
+      "NodeType": 1,
+      "SubType": 2,
+      "X": 780,
+      "Y": 120,
+      "Data": {
+        "Lines": {
+          "Kind": "List",
+          "Items": [
+            {
+              "Kind": "Object",
+              "ObjectValue": {
+                "SpeakerId": { "Kind": "String", "StringValue": "旁白" },
+                "Text": { "Kind": "String", "StringValue": "雨声从宿舍窗外落下来。" },
+                "VoiceId": { "Kind": "String", "StringValue": "" }
+              }
+            },
+            {
+              "Kind": "Object",
+              "ObjectValue": {
+                "SpeakerId": { "Kind": "String", "StringValue": "李刚" },
+                "Text": { "Kind": "String", "StringValue": "先把今天撑过去。" },
+                "VoiceId": { "Kind": "String", "StringValue": "" }
+              }
+            }
+          ]
+        }
+      },
+      "Outputs": { "Actions": [8], "Next": [4] }
+    },
+    {
+      "Index": 4,
+      "DisplayName": "选择方向",
+      "Comment": "ChoiceNode",
+      "NodeType": 1,
+      "SubType": 5,
+      "X": 1130,
+      "Y": 120,
+      "Data": {
+        "Options": {
+          "Kind": "List",
+          "Items": [
+            {
+              "Kind": "Object",
+              "ObjectValue": {
+                "Text": { "Kind": "String", "StringValue": "继续复盘失败" }
+              }
+            },
+            {
+              "Kind": "Object",
+              "ObjectValue": {
+                "Text": { "Kind": "String", "StringValue": "先离开宿舍" }
+              }
+            }
+          ]
+        }
+      },
+      "Outputs": { "Options[0].Next": [5], "Options[1].Next": [6] }
+    },
+    {
+      "Index": 5,
+      "DisplayName": "黑场转出",
+      "Comment": "TransitionNode",
+      "NodeType": 1,
+      "SubType": 4,
+      "X": 1480,
+      "Y": 40,
+      "Data": {
+        "TransitionType": { "Kind": "Enum", "StringValue": "FadeOut" },
+        "BackgroundImage": { "Kind": "String", "StringValue": "res://Resources/Generated/Backgrounds/dorm_night.png" },
+        "Color": { "Kind": "Color", "X": 0, "Y": 0, "Z": 0, "W": 1 },
+        "Duration": { "Kind": "Float", "NumberValue": 0.55 }
+      },
+      "Outputs": { "Next": [] }
+    },
+    {
+      "Index": 6,
+      "DisplayName": "淡入走廊",
+      "Comment": "TransitionNode",
+      "NodeType": 1,
+      "SubType": 4,
+      "X": 1480,
+      "Y": 220,
+      "Data": {
+        "TransitionType": { "Kind": "Enum", "StringValue": "FadeIn" },
+        "BackgroundImage": { "Kind": "String", "StringValue": "res://Resources/Generated/Backgrounds/corridor_rain.png" },
+        "Color": { "Kind": "Color", "X": 0, "Y": 0, "Z": 0, "W": 1 },
+        "Duration": { "Kind": "Float", "NumberValue": 0.45 }
+      },
+      "Outputs": { "Next": [] }
+    },
+    {
+      "Index": 7,
+      "DisplayName": "开场顺序演出",
+      "Comment": "ActionSequenceNode",
+      "NodeType": 2,
+      "SubType": 7,
+      "X": 430,
+      "Y": 430,
+      "Data": {},
+      "Outputs": { "Actions": [9, 10, 11, 12, 13, 14] }
+    },
+    {
+      "Index": 8,
+      "DisplayName": "段落并行演出",
+      "Comment": "ActionParallelNode",
+      "NodeType": 2,
+      "SubType": 8,
+      "X": 780,
+      "Y": 430,
+      "Data": {},
+      "Outputs": { "Actions": [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25] }
+    },
+    {
+      "Index": 9,
+      "DisplayName": "等待节拍",
+      "Comment": "ActionDelayNode",
+      "NodeType": 2,
+      "SubType": 9,
+      "X": 430,
+      "Y": 610,
+      "Data": { "Duration": { "Kind": "Float", "NumberValue": 0.35 } },
+      "Outputs": {}
+    },
+    {
+      "Index": 10,
+      "DisplayName": "切换背景",
+      "Comment": "BackGroundNode",
+      "NodeType": 2,
+      "SubType": 3,
+      "X": 620,
+      "Y": 610,
+      "Data": {
+        "BackgroundImage": { "Kind": "String", "StringValue": "res://Resources/Generated/Backgrounds/dorm_night.png" },
+        "ChangeType": { "Kind": "Enum", "StringValue": "FadeIn" },
+        "Duration": { "Kind": "Float", "NumberValue": 0.5 }
+      },
+      "Outputs": {}
+    },
+    {
+      "Index": 11,
+      "DisplayName": "显示插画",
+      "Comment": "IllustrationNode",
+      "NodeType": 2,
+      "SubType": 6,
+      "X": 810,
+      "Y": 610,
+      "Data": {
+        "IllustrationImage": { "Kind": "String", "StringValue": "res://Resources/Generated/Arts/exam_memory.png" },
+        "ChangeType": { "Kind": "Enum", "StringValue": "FadeIn" },
+        "Duration": { "Kind": "Float", "NumberValue": 0.5 }
+      },
+      "Outputs": {}
+    },
+    {
+      "Index": 12,
+      "DisplayName": "白非立登场",
+      "Comment": "TachiNode",
+      "NodeType": 2,
+      "SubType": 1,
+      "X": 1000,
+      "Y": 610,
+      "Data": {
+        "TachiID": { "Kind": "String", "StringValue": "bai_feili" },
+        "TachiIamge": { "Kind": "String", "StringValue": "res://Resources/Generated/Tachi/bai_feili.png" },
+        "TargetPosition": { "Kind": "Vector2", "X": 520, "Y": 120 },
+        "EnterType": { "Kind": "Enum", "StringValue": "SlideInLeft" },
+        "Duration": { "Kind": "Float", "NumberValue": 0.45 }
+      },
+      "Outputs": {}
+    },
+    {
+      "Index": 13,
+      "DisplayName": "播放背景音乐",
+      "Comment": "BackgroundMusicNode",
+      "NodeType": 2,
+      "SubType": 21,
+      "X": 1190,
+      "Y": 610,
+      "Data": {
+        "AudioPath": { "Kind": "String", "StringValue": "res://Resources/Generated/BGM/rain_room.mp3" },
+        "Volume": { "Kind": "Float", "NumberValue": 0.75 },
+        "FadeTime": { "Kind": "Float", "NumberValue": 1.2 },
+        "Loop": { "Kind": "Bool", "BoolValue": true }
+      },
+      "Outputs": {}
+    },
+    {
+      "Index": 14,
+      "DisplayName": "播放配音",
+      "Comment": "VoiceNode",
+      "NodeType": 2,
+      "SubType": 4,
+      "X": 1380,
+      "Y": 610,
+      "Data": {
+        "AudioPath": { "Kind": "String", "StringValue": "res://Resources/Generated/CV/bai_feili_001.wav" },
+        "Volume": { "Kind": "Float", "NumberValue": 1.0 },
+        "PitchScale": { "Kind": "Float", "NumberValue": 1.0 }
+      },
+      "Outputs": {}
+    },
+    {
+      "Index": 15,
+      "DisplayName": "播放音效",
+      "Comment": "SoundEffectNode",
+      "NodeType": 2,
+      "SubType": 5,
+      "X": 780,
+      "Y": 610,
+      "Data": {
+        "AudioPath": { "Kind": "String", "StringValue": "res://Resources/Generated/SFX/rain_window.wav" },
+        "Volume": { "Kind": "Float", "NumberValue": 0.65 },
+        "PitchScale": { "Kind": "Float", "NumberValue": 1.0 }
+      },
+      "Outputs": {}
+    },
+    {
+      "Index": 16,
+      "DisplayName": "立绘移动",
+      "Comment": "TachiMoveNode",
+      "NodeType": 2,
+      "SubType": 11,
+      "X": 970,
+      "Y": 610,
+      "Data": {
+        "TachiID": { "Kind": "String", "StringValue": "bai_feili" },
+        "TargetPosition": { "Kind": "Vector2", "X": 570, "Y": 120 },
+        "Duration": { "Kind": "Float", "NumberValue": 0.3 }
+      },
+      "Outputs": {}
+    },
+    {
+      "Index": 17,
+      "DisplayName": "水平移动",
+      "Comment": "TachiMoveXNode",
+      "NodeType": 2,
+      "SubType": 14,
+      "X": 1160,
+      "Y": 610,
+      "Data": {
+        "TachiID": { "Kind": "String", "StringValue": "bai_feili" },
+        "TargetX": { "Kind": "Float", "NumberValue": 620 },
+        "Duration": { "Kind": "Float", "NumberValue": 0.3 }
+      },
+      "Outputs": {}
+    },
+    {
+      "Index": 18,
+      "DisplayName": "移动到旁边",
+      "Comment": "TachiMoveBesideNode",
+      "NodeType": 2,
+      "SubType": 15,
+      "X": 1350,
+      "Y": 610,
+      "Data": {
+        "TachiID": { "Kind": "String", "StringValue": "bai_feili" },
+        "ReferenceTachiID": { "Kind": "String", "StringValue": "li_gang" },
+        "Side": { "Kind": "Enum", "StringValue": "Left" },
+        "Distance": { "Kind": "Float", "NumberValue": 50 },
+        "Duration": { "Kind": "Float", "NumberValue": 0.3 }
+      },
+      "Outputs": {}
+    },
+    {
+      "Index": 19,
+      "DisplayName": "立绘缩放",
+      "Comment": "TachiScaleNode",
+      "NodeType": 2,
+      "SubType": 12,
+      "X": 1540,
+      "Y": 610,
+      "Data": {
+        "TachiID": { "Kind": "String", "StringValue": "bai_feili" },
+        "TargetScale": { "Kind": "Float", "NumberValue": 1.08 },
+        "Duration": { "Kind": "Float", "NumberValue": 0.3 }
+      },
+      "Outputs": {}
+    },
+    {
+      "Index": 20,
+      "DisplayName": "立绘退场",
+      "Comment": "TachiExitNode",
+      "NodeType": 2,
+      "SubType": 13,
+      "X": 1730,
+      "Y": 610,
+      "Data": {
+        "TachiID": { "Kind": "String", "StringValue": "bai_feili" },
+        "ExitType": { "Kind": "Enum", "StringValue": "FadeOut" },
+        "Duration": { "Kind": "Float", "NumberValue": 0.3 }
+      },
+      "Outputs": {}
+    },
+    {
+      "Index": 21,
+      "DisplayName": "立绘效果",
+      "Comment": "TachiEffectNode",
+      "NodeType": 2,
+      "SubType": 16,
+      "X": 1920,
+      "Y": 610,
+      "Data": {
+        "TachiID": { "Kind": "String", "StringValue": "bai_feili" },
+        "Effect": { "Kind": "Enum", "StringValue": "ColorGrade" }
+      },
+      "Outputs": {}
+    },
+    {
+      "Index": 22,
+      "DisplayName": "回忆泛黄",
+      "Comment": "MemoryEffectNode",
+      "NodeType": 2,
+      "SubType": 17,
+      "X": 2110,
+      "Y": 610,
+      "Data": {
+        "Intensity": { "Kind": "Float", "NumberValue": 0.75 },
+        "TintColor": { "Kind": "Color", "X": 1, "Y": 0.78, "Z": 0.42, "W": 1 },
+        "Duration": { "Kind": "Float", "NumberValue": 0.5 }
+      },
+      "Outputs": {}
+    },
+    {
+      "Index": 23,
+      "DisplayName": "眨眼",
+      "Comment": "BlinkEffectNode",
+      "NodeType": 2,
+      "SubType": 18,
+      "X": 2300,
+      "Y": 610,
+      "Data": {
+        "Intensity": { "Kind": "Float", "NumberValue": 1.0 },
+        "Duration": { "Kind": "Float", "NumberValue": 1.2 },
+        "BlinkCount": { "Kind": "Int", "NumberValue": 3 },
+        "OpeningBlur": { "Kind": "Float", "NumberValue": 0.8 }
+      },
+      "Outputs": {}
+    },
+    {
+      "Index": 24,
+      "DisplayName": "屏幕模糊",
+      "Comment": "BlurEffectNode",
+      "NodeType": 2,
+      "SubType": 19,
+      "X": 2490,
+      "Y": 610,
+      "Data": {
+        "Intensity": { "Kind": "Float", "NumberValue": 0.65 },
+        "Duration": { "Kind": "Float", "NumberValue": 0.35 }
+      },
+      "Outputs": {}
+    },
+    {
+      "Index": 25,
+      "DisplayName": "清除屏幕特效",
+      "Comment": "ClearScreenEffectNode",
+      "NodeType": 2,
+      "SubType": 20,
+      "X": 2680,
+      "Y": 610,
+      "Data": {
+        "Duration": { "Kind": "Float", "NumberValue": 0.35 }
+      },
+      "Outputs": {}
+    }
+  ]
+}

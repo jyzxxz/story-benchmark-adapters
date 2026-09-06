@@ -1,0 +1,124 @@
+{
+  "method": "get",
+  "path": "/api/library-assets/facets",
+  "operation": {
+    "summary": "读取公共素材库分面",
+    "deprecated": false,
+    "description": "读取公共素材库分面筛选项。\n\n用途：\n- 前端进入公共素材库筛选面板时调用。\n- 先传 `asset_type` 获取该素材类型下所有可用分面。\n- 用户勾选标签后，把标签编号用英文逗号拼成 `tag_ids` 再次请求，后端返回联动后的 count 和 selected 状态。\n\n注意：\n- 这里不调用 LLM，只查数据库里的素材标签索引。\n- `tag_ids` 填的是返回项里的 `id`，不是 display_name。\n- 常见 category 包括 style、identity_group、genre、location、time、weather、atmosphere、camera、age、gender、outfit、expression、pose。",
+    "operationId": "list_library_facets_api_library_assets_facets_get",
+    "tags": [
+      "素材管理与生成/视觉素材",
+      "视觉素材工作台"
+    ],
+    "parameters": [
+      {
+        "name": "sid",
+        "in": "cookie",
+        "description": "登录会话 cookie。",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Sid",
+          "type": "string",
+          "nullable": true
+        }
+      },
+      {
+        "name": "asset_type",
+        "in": "query",
+        "description": "必填。要查询分面的素材类型：portrait=立绘，background=背景，keyframe=关键帧/插画。",
+        "required": true,
+        "example": "background",
+        "schema": {
+          "enum": [
+            "portrait",
+            "background",
+            "keyframe"
+          ],
+          "title": "Asset Type",
+          "type": "string"
+        }
+      },
+      {
+        "name": "tag_ids",
+        "in": "query",
+        "description": "可选。已选分面标签编号，多个 id 用英文逗号拼接，例如 tag_1,tag_2。首次打开筛选面板可不传。",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Tag Ids",
+          "maxLength": 2000,
+          "type": "string",
+          "nullable": true
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/LibraryFacetResponse"
+            },
+            "example": {
+              "catalog_version": "default-v1",
+              "asset_type": "background",
+              "selected_tag_ids": [],
+              "total": 12,
+              "facets": [
+                {
+                  "category": "style",
+                  "options": [
+                    {
+                      "id": "tag_style_anime",
+                      "value": "anime",
+                      "display_name": "Anime",
+                      "count": 8,
+                      "selected": false
+                    }
+                  ]
+                },
+                {
+                  "category": "location",
+                  "options": [
+                    {
+                      "id": "tag_location_classroom",
+                      "value": "classroom",
+                      "display_name": "教室",
+                      "count": 3,
+                      "selected": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-status": "released",
+    "x-apifox-folder": "素材管理与生成/视觉素材"
+  }
+}

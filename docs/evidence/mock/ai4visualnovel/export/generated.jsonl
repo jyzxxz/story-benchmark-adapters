@@ -1,0 +1,2 @@
+{"segment_id": "p001", "kind": "narration", "speaker": null, "text": "CAMPUS_01_NATIVE_MOCK生成正文。", "native_source": "native/ai4vn/source/data/story.txt", "native_pointer": {"node_id": "root", "parsed_line_index": 1, "line": 4}}
+{"segment_id": "p002", "kind": "dialogue", "speaker": "林", "text": "请作选择。", "native_source": "native/ai4vn/source/data/story.txt", "native_pointer": {"node_id": "root", "parsed_line_index": 2, "line": 5}}

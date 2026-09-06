@@ -1,0 +1,12 @@
+{
+  "root_run_id": "if-line-native-e2e",
+  "calls": 5,
+  "reserved_output_tokens": 112768,
+  "request_attempts": {
+    "e4395785051da35eab9808fe3c774bca23cf92576ce2d7e76b92f78790efd4b7": 1,
+    "9a05cf49690a171703b7be4289a649fac33740c17f230aba5abb31322f754275": 1,
+    "47d2454591be5f953814da8d83af183ecfdacce83f1e3599161eaeaf06b14128": 1,
+    "909910459b56fefc979d11b9b4aee75e674a5a39908c4eab4dd786b5b3ac5f6f": 1,
+    "791b9b724443720da0f11e2c1a4a259cc5be23b98bf8ec6457fb28d88fc1475e": 1
+  }
+}

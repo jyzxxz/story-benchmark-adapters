@@ -1,0 +1,113 @@
+{
+  "name": "NotificationResponse",
+  "schema": {
+    "properties": {
+      "actor_avatar_url": {
+        "title": "触发用户头像地址",
+        "type": "string",
+        "description": "触发用户头像地址，由服务端返回给客户端访问。",
+        "nullable": true
+      },
+      "actor_display_name": {
+        "title": "触发用户显示名",
+        "type": "string",
+        "description": "触发用户显示名，可为空。",
+        "nullable": true
+      },
+      "actor_user_id": {
+        "title": "触发用户编号",
+        "type": "integer",
+        "description": "触发用户编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "body": {
+        "title": "正文",
+        "type": "string",
+        "description": "正文，可为空。",
+        "nullable": true
+      },
+      "comment_id": {
+        "title": "评论编号",
+        "type": "integer",
+        "description": "评论编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "created_at": {
+        "format": "date-time",
+        "title": "创建时间",
+        "type": "string",
+        "description": "创建时间。"
+      },
+      "id": {
+        "title": "编号",
+        "type": "integer",
+        "description": "编号，用于关联对应数据。"
+      },
+      "notification_type": {
+        "title": "通知类型",
+        "type": "string",
+        "description": "通知类型。"
+      },
+      "payload": {
+        "title": "载荷数据",
+        "type": "object",
+        "x-apifox-orders": [],
+        "description": "载荷数据对象。",
+        "properties": {},
+        "x-apifox-ignore-properties": [],
+        "nullable": true
+      },
+      "project_id": {
+        "title": "项目编号",
+        "type": "integer",
+        "description": "项目编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "read_at": {
+        "title": "阅读时间",
+        "format": "date-time",
+        "type": "string",
+        "description": "阅读时间。",
+        "nullable": true
+      },
+      "title": {
+        "title": "标题",
+        "type": "string",
+        "description": "标题。"
+      }
+    },
+    "required": [
+      "id",
+      "actor_user_id",
+      "actor_display_name",
+      "actor_avatar_url",
+      "project_id",
+      "comment_id",
+      "notification_type",
+      "title",
+      "body",
+      "payload",
+      "read_at",
+      "created_at"
+    ],
+    "title": "通知响应",
+    "type": "object",
+    "x-apifox-orders": [
+      "actor_avatar_url",
+      "actor_display_name",
+      "actor_user_id",
+      "body",
+      "comment_id",
+      "created_at",
+      "id",
+      "notification_type",
+      "payload",
+      "project_id",
+      "read_at",
+      "title"
+    ],
+    "description": "通知响应数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

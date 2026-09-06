@@ -1,0 +1,943 @@
+{
+  "description": "Apifox 接口目录大纲。用于人工查看分类和快速跳转；真实接口定义在 operations[].file 指向的小文件里。",
+  "categories": [
+    {
+      "name": "基础接口/认证与用户",
+      "operations": [
+        {
+          "method": "POST",
+          "path": "/api/auth/guest",
+          "summary": "创建游客会话",
+          "file": "paths/post__api_auth_guest.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/auth/login",
+          "summary": "登录账号",
+          "file": "paths/post__api_auth_login.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/auth/logout",
+          "summary": "退出登录",
+          "file": "paths/post__api_auth_logout.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/auth/me",
+          "summary": "读取当前用户",
+          "file": "paths/get__api_auth_me.json"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/auth/me",
+          "summary": "更新当前用户",
+          "file": "paths/patch__api_auth_me.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/auth/register",
+          "summary": "注册账号",
+          "file": "paths/post__api_auth_register.json"
+        }
+      ]
+    },
+    {
+      "name": "基础接口/配额与用量",
+      "operations": [
+        {
+          "method": "GET",
+          "path": "/api/users/me/quota",
+          "summary": "读取我的配额",
+          "file": "paths/get__api_users_me_quota.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/users/me/usage",
+          "summary": "读取我的用量记录",
+          "file": "paths/get__api_users_me_usage.json"
+        }
+      ]
+    },
+    {
+      "name": "基础接口/社交互动",
+      "operations": [
+        {
+          "method": "GET",
+          "path": "/api/notifications",
+          "summary": "读取通知列表",
+          "file": "paths/get__api_notifications.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/notifications/read-all",
+          "summary": "全部通知已读",
+          "file": "paths/post__api_notifications_read-all.json"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/notifications/{notification_id}/read",
+          "summary": "标记通知已读",
+          "file": "paths/patch__api_notifications_{notification_id}_read.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/projects/{project_id}/comments",
+          "summary": "读取项目评论列表",
+          "file": "paths/get__api_projects_{project_id}_comments.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/projects/{project_id}/comments",
+          "summary": "创建项目评论",
+          "file": "paths/post__api_projects_{project_id}_comments.json"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/projects/{project_id}/likes",
+          "summary": "取消点赞项目",
+          "file": "paths/delete__api_projects_{project_id}_likes.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/projects/{project_id}/likes",
+          "summary": "点赞项目",
+          "file": "paths/post__api_projects_{project_id}_likes.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/projects/{project_id}/social",
+          "summary": "读取项目社交汇总",
+          "file": "paths/get__api_projects_{project_id}_social.json"
+        }
+      ]
+    },
+    {
+      "name": "基础接口/系统基础",
+      "operations": [
+        {
+          "method": "GET",
+          "path": "/",
+          "summary": "读取服务根信息",
+          "file": "paths/get__root.json"
+        }
+      ]
+    },
+    {
+      "name": "基础接口/模型配置",
+      "operations": [
+        {
+          "method": "GET",
+          "path": "/api/llm/byok-defaults",
+          "summary": "读取模型默认配置",
+          "file": "paths/get__api_llm_byok-defaults.json"
+        }
+      ]
+    },
+    {
+      "name": "项目管理",
+      "operations": [
+        {
+          "method": "GET",
+          "path": "/api/projects",
+          "summary": "读取我的项目列表",
+          "file": "paths/get__api_projects.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/projects",
+          "summary": "创建项目",
+          "file": "paths/post__api_projects.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/projects/{project_id}",
+          "summary": "读取我的项目详情",
+          "file": "paths/get__api_projects_{project_id}.json"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/projects/{project_id}",
+          "summary": "删除项目",
+          "file": "paths/delete__api_projects_{project_id}.json"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/projects/{project_id}",
+          "summary": "更新项目基础设定",
+          "file": "paths/patch__api_projects_{project_id}.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/projects/{project_id}/metrics",
+          "summary": "读取项目生成统计",
+          "file": "paths/get__api_projects_{project_id}_metrics.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/projects/{project_id}/metrics/artifacts",
+          "summary": "读取项目产物耗时分解",
+          "file": "paths/get__api_projects_{project_id}_metrics_artifacts.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/projects/{project_id}/publication-readiness",
+          "summary": "检查项目是否可以发布",
+          "file": "paths/get__api_projects_{project_id}_publication-readiness.json"
+        }
+      ]
+    },
+    {
+      "name": "项目管理/发布管理",
+      "operations": [
+        {
+          "method": "POST",
+          "path": "/api/projects/{project_id}/publish",
+          "summary": "发布项目",
+          "file": "paths/post__api_projects_{project_id}_publish.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/projects/{project_id}/releases",
+          "summary": "读取项目发布版本列表",
+          "file": "paths/get__api_projects_{project_id}_releases.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/projects/{project_id}/unpublish",
+          "summary": "撤回项目发布",
+          "file": "paths/post__api_projects_{project_id}_unpublish.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/releases/{release_id}",
+          "summary": "读取发布版本详情",
+          "file": "paths/get__api_releases_{release_id}.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/projects/{project_id}/finalize-publish",
+          "summary": "固化发布（草稿锚点原子激活 + 发布成书）",
+          "file": "paths/post__api_projects_{project_id}_finalize-publish.json"
+        }
+      ]
+    },
+    {
+      "name": "后台任务",
+      "operations": [
+        {
+          "method": "GET",
+          "path": "/api/tasks",
+          "summary": "读取任务列表",
+          "file": "paths/get__api_tasks.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/tasks/{task_id}",
+          "summary": "读取任务详情",
+          "file": "paths/get__api_tasks_{task_id}.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/tasks/{task_id}/cancel",
+          "summary": "取消任务",
+          "file": "paths/post__api_tasks_{task_id}_cancel.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/tasks/{task_id}/event-log",
+          "summary": "读取任务事件日志",
+          "file": "paths/get__api_tasks_{task_id}_event-log.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/tasks/{task_id}/events",
+          "summary": "订阅任务事件流",
+          "file": "paths/get__api_tasks_{task_id}_events.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/tasks/{task_id}/retry",
+          "summary": "重试失败任务",
+          "file": "paths/post__api_tasks_{task_id}_retry.json"
+        }
+      ]
+    },
+    {
+      "name": "创作版本与生成/故事圣经StoryBible",
+      "operations": [
+        {
+          "method": "POST",
+          "path": "/api/projects/{project_id}/bible-generations",
+          "summary": "异步生成故事圣经",
+          "file": "paths/post__api_projects_{project_id}_bible-generations.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/projects/{project_id}/bible-head",
+          "summary": "读取当前故事圣经版本",
+          "file": "paths/get__api_projects_{project_id}_bible-head.json"
+        },
+        {
+          "method": "PUT",
+          "path": "/api/projects/{project_id}/bible-head",
+          "summary": "设置当前故事圣经版本",
+          "file": "paths/put__api_projects_{project_id}_bible-head.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/projects/{project_id}/bible-revisions",
+          "summary": "手动保存故事圣经版本",
+          "file": "paths/post__api_projects_{project_id}_bible-revisions.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/projects/{project_id}/bible-revisions",
+          "summary": "读取故事圣经版本列表",
+          "file": "paths/get__api_projects_{project_id}_bible-revisions.json"
+        }
+      ]
+    },
+    {
+      "name": "创作版本与生成/章节大纲",
+      "operations": [
+        {
+          "method": "POST",
+          "path": "/api/story-paths/{story_path_id}/outline-generations",
+          "summary": "异步生成章节大纲",
+          "file": "paths/post__api_story-paths_{story_path_id}_outline-generations.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/story-paths/{story_path_id}/outline-head",
+          "summary": "读取当前章节大纲版本",
+          "file": "paths/get__api_story-paths_{story_path_id}_outline-head.json"
+        },
+        {
+          "method": "PUT",
+          "path": "/api/story-paths/{story_path_id}/outline-head",
+          "summary": "设置当前章节大纲版本",
+          "file": "paths/put__api_story-paths_{story_path_id}_outline-head.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/story-paths/{story_path_id}/outline-revisions",
+          "summary": "手动保存章节大纲版本",
+          "file": "paths/post__api_story-paths_{story_path_id}_outline-revisions.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/story-paths/{story_path_id}/outline-revisions",
+          "summary": "读取章节大纲版本列表",
+          "file": "paths/get__api_story-paths_{story_path_id}_outline-revisions.json"
+        }
+      ]
+    },
+    {
+      "name": "创作版本与生成/章节生成",
+      "operations": [
+        {
+          "method": "POST",
+          "path": "/api/path-chapters/{path_chapter_id}/generations",
+          "summary": "异步生成单章正文",
+          "file": "paths/post__api_path-chapters_{path_chapter_id}_generations.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/path-chapters/{path_chapter_id}/head",
+          "summary": "读取当前章节正文版本",
+          "file": "paths/get__api_path-chapters_{path_chapter_id}_head.json"
+        },
+        {
+          "method": "PUT",
+          "path": "/api/path-chapters/{path_chapter_id}/head",
+          "summary": "设置当前章节正文版本",
+          "file": "paths/put__api_path-chapters_{path_chapter_id}_head.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/path-chapters/{path_chapter_id}/revisions",
+          "summary": "读取章节正文版本列表",
+          "file": "paths/get__api_path-chapters_{path_chapter_id}_revisions.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/path-chapters/{path_chapter_id}/revisions",
+          "summary": "手动保存章节正文版本",
+          "file": "paths/post__api_path-chapters_{path_chapter_id}_revisions.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/story-paths/{story_path_id}/chapter-generation-batches",
+          "summary": "异步批量生成章节正文",
+          "file": "paths/post__api_story-paths_{story_path_id}_chapter-generation-batches.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/story-paths/{story_path_id}/chapters",
+          "summary": "读取故事路径章节列表",
+          "file": "paths/get__api_story-paths_{story_path_id}_chapters.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/story-paths/{story_path_id}/chapters",
+          "summary": "新增空章节位置",
+          "file": "paths/post__api_story-paths_{story_path_id}_chapters.json"
+        }
+      ]
+    },
+    {
+      "name": "创作版本与生成/视觉小说图步骤一：章节脚本与资源槽",
+      "operations": [
+        {
+          "method": "GET",
+          "path": "/api/chapter-revisions/{chapter_revision_id}",
+          "summary": "读取章节正文版本详情",
+          "file": "paths/get__api_chapter-revisions_{chapter_revision_id}.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/chapter-revisions/{chapter_revision_id}/script-generations",
+          "summary": "异步生成章节脚本",
+          "file": "paths/post__api_chapter-revisions_{chapter_revision_id}_script-generations.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/chapter-revisions/{chapter_revision_id}/script-head",
+          "summary": "读取当前章节脚本版本",
+          "file": "paths/get__api_chapter-revisions_{chapter_revision_id}_script-head.json"
+        },
+        {
+          "method": "PUT",
+          "path": "/api/chapter-revisions/{chapter_revision_id}/script-head",
+          "summary": "设置当前章节脚本版本",
+          "file": "paths/put__api_chapter-revisions_{chapter_revision_id}_script-head.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/chapter-revisions/{chapter_revision_id}/script-revisions",
+          "summary": "读取章节脚本版本列表",
+          "file": "paths/get__api_chapter-revisions_{chapter_revision_id}_script-revisions.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/chapter-revisions/{chapter_revision_id}/script-revisions",
+          "summary": "手动创建章节脚本修订（草稿物化）",
+          "file": "paths/post__api_chapter-revisions_{chapter_revision_id}_script-revisions.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/chapter-script-revisions/{script_revision_id}/resource-renders",
+          "summary": "异步渲染脚本资源",
+          "file": "paths/post__api_chapter-script-revisions_{script_revision_id}_resource-renders.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/chapter-script-revisions/{script_revision_id}/resource-slots",
+          "summary": "读取章节脚本资源槽位",
+          "file": "paths/get__api_chapter-script-revisions_{script_revision_id}_resource-slots.json"
+        },
+        {
+          "method": "PUT",
+          "path": "/api/chapter-script-revisions/{script_revision_id}/resource-slots/{slot_id}",
+          "summary": "绑定脚本资源槽位",
+          "file": "paths/put__api_chapter-script-revisions_{script_revision_id}_resource-slots_{slot_id}.json"
+        }
+      ]
+    },
+    {
+      "name": "创作版本与生成/视觉小说图步骤二：最终产物生成",
+      "operations": [
+        {
+          "method": "POST",
+          "path": "/api/chapter-script-revisions/{script_revision_id}/vn-graph-compilations",
+          "summary": "异步编译 VNGraph",
+          "file": "paths/post__api_chapter-script-revisions_{script_revision_id}_vn-graph-compilations.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/chapter-script-revisions/{script_revision_id}/vn-graph-head",
+          "summary": "读取当前 VNGraph 版本",
+          "file": "paths/get__api_chapter-script-revisions_{script_revision_id}_vn-graph-head.json"
+        },
+        {
+          "method": "PUT",
+          "path": "/api/chapter-script-revisions/{script_revision_id}/vn-graph-head",
+          "summary": "设置当前 VNGraph 版本",
+          "file": "paths/put__api_chapter-script-revisions_{script_revision_id}_vn-graph-head.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/chapter-script-revisions/{script_revision_id}/vn-graph-revisions",
+          "summary": "读取 VNGraph 版本列表",
+          "file": "paths/get__api_chapter-script-revisions_{script_revision_id}_vn-graph-revisions.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/chapter-script-revisions/{script_revision_id}/vn-graph-revisions",
+          "summary": "手动创建 VNGraph 修订（草稿物化）",
+          "file": "paths/post__api_chapter-script-revisions_{script_revision_id}_vn-graph-revisions.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/vn-graph-revisions/{vn_graph_revision_id}",
+          "summary": "读取视觉小说图版本详情",
+          "file": "paths/get__api_vn-graph-revisions_{vn_graph_revision_id}.json"
+        }
+      ]
+    },
+    {
+      "name": "素材管理与生成",
+      "operations": [
+        {
+          "method": "GET",
+          "path": "/api/media/{storage_object_id}",
+          "summary": "读取媒体文件",
+          "file": "paths/get__api_media_{storage_object_id}.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/projects/{project_id}/asset-bindings",
+          "summary": "读取项目素材绑定",
+          "file": "paths/get__api_projects_{project_id}_asset-bindings.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/projects/{project_id}/asset-versions/{asset_version_id}",
+          "summary": "按版本编号读取素材版本",
+          "file": "paths/get__api_projects_{project_id}_asset-versions_{asset_version_id}.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/projects/{project_id}/assets",
+          "summary": "读取项目素材列表",
+          "file": "paths/get__api_projects_{project_id}_assets.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/projects/{project_id}/assets/{asset_id}",
+          "summary": "读取素材详情",
+          "file": "paths/get__api_projects_{project_id}_assets_{asset_id}.json"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/projects/{project_id}/assets/{asset_id}",
+          "summary": "归档素材",
+          "file": "paths/delete__api_projects_{project_id}_assets_{asset_id}.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/projects/{project_id}/assets/{asset_id}/versions",
+          "summary": "读取素材版本列表",
+          "file": "paths/get__api_projects_{project_id}_assets_{asset_id}_versions.json"
+        }
+      ]
+    },
+    {
+      "name": "素材管理与生成/语音",
+      "operations": [
+        {
+          "method": "GET",
+          "path": "/api/projects/{project_id}/chapter-revisions/{chapter_revision_id}/voice-lines",
+          "summary": "读取章节语音清单",
+          "file": "paths/get__api_projects_{project_id}_chapter-revisions_{chapter_revision_id}_voice-lines.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/projects/{project_id}/chapter-revisions/{chapter_revision_id}/voice-lines/generations",
+          "summary": "生成章节语音任务",
+          "file": "paths/post__api_projects_{project_id}_chapter-revisions_{chapter_revision_id}_voice-lines_generations.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/projects/{project_id}/chapter-revisions/{chapter_revision_id}/voice-lines/{line_id}",
+          "summary": "读取单条语音行",
+          "file": "paths/get__api_projects_{project_id}_chapter-revisions_{chapter_revision_id}_voice-lines_{line_id}.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/projects/{project_id}/chapter-revisions/{chapter_revision_id}/voice-lines/{line_id}/retry",
+          "summary": "重试单条语音",
+          "file": "paths/post__api_projects_{project_id}_chapter-revisions_{chapter_revision_id}_voice-lines_{line_id}_retry.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/tts/status",
+          "summary": "读取语音服务状态",
+          "file": "paths/get__api_tts_status.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/tts/synthesize",
+          "summary": "即时合成短文本语音",
+          "file": "paths/post__api_tts_synthesize.json"
+        }
+      ]
+    },
+    {
+      "name": "素材管理与生成/音色克隆：实验性接口",
+      "operations": [
+        {
+          "method": "GET",
+          "path": "/api/voice-clone/profiles",
+          "summary": "读取音色档案列表",
+          "file": "paths/get__api_voice-clone_profiles.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/voice-clone/profiles",
+          "summary": "创建音色档案",
+          "file": "paths/post__api_voice-clone_profiles.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/voice-clone/profiles/{voice_id}",
+          "summary": "读取音色档案",
+          "file": "paths/get__api_voice-clone_profiles_{voice_id}.json"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/voice-clone/profiles/{voice_id}",
+          "summary": "删除音色档案",
+          "file": "paths/delete__api_voice-clone_profiles_{voice_id}.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/voice-clone/profiles/{voice_id}/preview",
+          "summary": "试听音色档案",
+          "file": "paths/post__api_voice-clone_profiles_{voice_id}_preview.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/voice-clone/synthesize",
+          "summary": "使用克隆音色合成",
+          "file": "paths/post__api_voice-clone_synthesize.json"
+        }
+      ]
+    },
+    {
+      "name": "素材管理与生成/视觉素材",
+      "operations": [
+        {
+          "method": "GET",
+          "path": "/api/image-generation/status",
+          "summary": "读取视觉素材",
+          "file": "paths/get__api_image-generation_status.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/library-assets",
+          "summary": "读取公共素材库",
+          "file": "paths/get__api_library-assets.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/library-assets/facets",
+          "summary": "读取公共素材库分面",
+          "file": "paths/get__api_library-assets_facets.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/library-assets/{library_asset_id}",
+          "summary": "读取公共素材详情",
+          "file": "paths/get__api_library-assets_{library_asset_id}.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/projects/{project_id}/asset-actions",
+          "summary": "发起视觉素材动作",
+          "file": "paths/post__api_projects_{project_id}_asset-actions.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/projects/{project_id}/asset-actions/{action_id}",
+          "summary": "读取视觉素材动作",
+          "file": "paths/get__api_projects_{project_id}_asset-actions_{action_id}.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/projects/{project_id}/asset-actions/{action_id}/cancel",
+          "summary": "取消视觉素材动作",
+          "file": "paths/post__api_projects_{project_id}_asset-actions_{action_id}_cancel.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/projects/{project_id}/asset-actions/{action_id}/confirm",
+          "summary": "确认视觉素材动作",
+          "file": "paths/post__api_projects_{project_id}_asset-actions_{action_id}_confirm.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/projects/{project_id}/assets/uploads",
+          "summary": "上传新视觉素材",
+          "file": "paths/post__api_projects_{project_id}_assets_uploads.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/projects/{project_id}/assets/{asset_id}/versions/uploads",
+          "summary": "上传视觉素材新版本",
+          "file": "paths/post__api_projects_{project_id}_assets_{asset_id}_versions_uploads.json"
+        }
+      ]
+    },
+    {
+      "name": "公开阅读",
+      "operations": [
+        {
+          "method": "GET",
+          "path": "/api/public/projects",
+          "summary": "读取公开项目列表",
+          "file": "paths/get__api_public_projects.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/public/projects/{project_id}",
+          "summary": "读取公开项目详情",
+          "file": "paths/get__api_public_projects_{project_id}.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/public/releases/{release_id}/manifest",
+          "summary": "读取公开发布清单",
+          "file": "paths/get__api_public_releases_{release_id}_manifest.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/public/releases/{release_id}/path-chapters/{path_chapter_id}/manifest",
+          "summary": "读取公开章节清单",
+          "file": "paths/get__api_public_releases_{release_id}_path-chapters_{path_chapter_id}_manifest.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/public/releases/{release_id}/path-chapters/{path_chapter_id}/vn-graph",
+          "summary": "读取公开章节 VNGraph",
+          "file": "paths/get__api_public_releases_{release_id}_path-chapters_{path_chapter_id}_vn-graph.json"
+        }
+      ]
+    },
+    {
+      "name": "互动续写",
+      "operations": [
+        {
+          "method": "GET",
+          "path": "/api/public/projects/{project_id}/releases/{release_id}/continuations",
+          "summary": "读取公开续写树",
+          "file": "paths/get__api_public_projects_{project_id}_releases_{release_id}_continuations.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/reading-sessions/{session_id}/continuations/{continuation_id}",
+          "summary": "读取续写内容",
+          "file": "paths/get__api_reading-sessions_{session_id}_continuations_{continuation_id}.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/reading-sessions/{session_id}/continuations/{continuation_id}/confirm",
+          "summary": "确认续写内容",
+          "file": "paths/post__api_reading-sessions_{session_id}_continuations_{continuation_id}_confirm.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/reading-sessions/{session_id}/continuations/{continuation_id}/images",
+          "summary": "生成续写配图",
+          "file": "paths/post__api_reading-sessions_{session_id}_continuations_{continuation_id}_images.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/reading-sessions/{session_id}/continuations/{continuation_id}/select",
+          "summary": "选择续写内容",
+          "file": "paths/post__api_reading-sessions_{session_id}_continuations_{continuation_id}_select.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/reading-sessions/{session_id}/direction-suggestion",
+          "summary": "生成续写方向建议",
+          "file": "paths/post__api_reading-sessions_{session_id}_direction-suggestion.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/reading-sessions/{session_id}/directions",
+          "summary": "创建续写方向",
+          "file": "paths/post__api_reading-sessions_{session_id}_directions.json"
+        }
+      ]
+    },
+    {
+      "name": "阅读会话",
+      "operations": [
+        {
+          "method": "POST",
+          "path": "/api/reading-sessions",
+          "summary": "创建阅读会话",
+          "file": "paths/post__api_reading-sessions.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/reading-sessions/{session_id}",
+          "summary": "读取阅读会话",
+          "file": "paths/get__api_reading-sessions_{session_id}.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/reading-sessions/{session_id}/bookmarks",
+          "summary": "读取阅读书签",
+          "file": "paths/get__api_reading-sessions_{session_id}_bookmarks.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/reading-sessions/{session_id}/bookmarks",
+          "summary": "创建阅读书签",
+          "file": "paths/post__api_reading-sessions_{session_id}_bookmarks.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/reading-sessions/{session_id}/choices",
+          "summary": "提交阅读选择",
+          "file": "paths/post__api_reading-sessions_{session_id}_choices.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/reading-sessions/{session_id}/fork",
+          "summary": "分叉阅读会话",
+          "file": "paths/post__api_reading-sessions_{session_id}_fork.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/reading-sessions/{session_id}/timeline",
+          "summary": "读取阅读时间线",
+          "file": "paths/get__api_reading-sessions_{session_id}_timeline.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/reading-sessions/{session_id}/undo",
+          "summary": "撤销阅读选择",
+          "file": "paths/post__api_reading-sessions_{session_id}_undo.json"
+        }
+      ]
+    },
+    {
+      "name": "服务端 Agent",
+      "operations": [
+        {
+          "method": "POST",
+          "path": "/api/server-agent/threads",
+          "summary": "创建服务端 Agent 会话",
+          "file": "paths/post__api_server-agent_threads.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/server-agent/threads",
+          "summary": "读取我的 Agent 会话列表",
+          "file": "paths/get__api_server-agent_threads.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/server-agent/threads/{thread_id}",
+          "summary": "读取 Agent 会话快照",
+          "file": "paths/get__api_server-agent_threads_{thread_id}.json"
+        },
+        {
+          "method": "DELETE",
+          "path": "/api/server-agent/threads/{thread_id}",
+          "summary": "删除 Agent 会话",
+          "file": "paths/delete__api_server-agent_threads_{thread_id}.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/server-agent/threads/{thread_id}/events/page",
+          "summary": "分页读取 Agent 事件",
+          "file": "paths/get__api_server-agent_threads_{thread_id}_events_page.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/server-agent/threads/{thread_id}/events",
+          "summary": "订阅 Agent 事件流",
+          "file": "paths/get__api_server-agent_threads_{thread_id}_events.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/server-agent/threads/{thread_id}/turns/resume",
+          "summary": "提交 Agent 用户输入",
+          "file": "paths/post__api_server-agent_threads_{thread_id}_turns_resume.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/server-agent/threads/{thread_id}/tool-calls/{tool_call_id}/result",
+          "summary": "提交前端工具结果",
+          "file": "paths/post__api_server-agent_threads_{thread_id}_tool-calls_{tool_call_id}_result.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/server-agent/threads/{thread_id}/turns/{turn_id}/cancel",
+          "summary": "打断 Agent 当前轮",
+          "file": "paths/post__api_server-agent_threads_{thread_id}_turns_{turn_id}_cancel.json"
+        }
+      ]
+    },
+    {
+      "name": "创作版本与生成/故事路径",
+      "operations": [
+        {
+          "method": "GET",
+          "path": "/api/projects/{project_id}/story-paths",
+          "summary": "读取项目故事路径列表",
+          "file": "paths/get__api_projects_{project_id}_story-paths.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/projects/{project_id}/story-paths",
+          "summary": "从候选创建故事路径",
+          "file": "paths/post__api_projects_{project_id}_story-paths.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/story-paths/{story_path_id}",
+          "summary": "读取故事路径详情",
+          "file": "paths/get__api_story-paths_{story_path_id}.json"
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/story-paths/{story_path_id}",
+          "summary": "更新故事路径元数据",
+          "file": "paths/patch__api_story-paths_{story_path_id}.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/candidate-set-revisions/{candidate_set_revision_id}/candidates",
+          "summary": "读取分支候选列表",
+          "file": "paths/get__api_candidate-set-revisions_{candidate_set_revision_id}_candidates.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/story-paths/{story_path_id}/checkpoints/{node_id}/candidate-set-head",
+          "summary": "读取当前分支候选集合",
+          "file": "paths/get__api_story-paths_{story_path_id}_checkpoints_{node_id}_candidate-set-head.json"
+        },
+        {
+          "method": "PUT",
+          "path": "/api/story-paths/{story_path_id}/checkpoints/{node_id}/candidate-set-head",
+          "summary": "设置当前分支候选集合",
+          "file": "paths/put__api_story-paths_{story_path_id}_checkpoints_{node_id}_candidate-set-head.json"
+        },
+        {
+          "method": "GET",
+          "path": "/api/story-paths/{story_path_id}/checkpoints/{node_id}/candidate-set-revisions",
+          "summary": "读取分支候选集合版本列表",
+          "file": "paths/get__api_story-paths_{story_path_id}_checkpoints_{node_id}_candidate-set-revisions.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/branch-candidates/{candidate_id}/story-paths",
+          "summary": "从候选创建故事路径",
+          "file": "paths/post__api_branch-candidates_{candidate_id}_story-paths.json"
+        },
+        {
+          "method": "POST",
+          "path": "/api/story-paths/{story_path_id}/checkpoints/{node_id}/candidate-set-generations",
+          "summary": "异步生成分支候选",
+          "file": "paths/post__api_story-paths_{story_path_id}_checkpoints_{node_id}_candidate-set-generations.json"
+        }
+      ]
+    }
+  ]
+}

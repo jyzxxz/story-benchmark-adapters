@@ -1,0 +1,21 @@
+{
+  "id": "c240990c-d89a-499d-9657-768d9ee151b4",
+  "project_id": 1,
+  "parent_revision_id": null,
+  "revision_no": 1,
+  "source_hash": "d49f6588eb3fd934e4b2f7dd2225d37d9ec361cf2e63d252c6bd9c94f9f8c29c",
+  "content_hash": "da0b440db351a48d7e4d0b82c026010ea690655842adc61e1e41962d0d8b1be5",
+  "content_json": {
+    "worldview": "测试世界",
+    "characters": [],
+    "character_relations": "",
+    "main_conflict": "等待",
+    "emotional_line": "",
+    "style_rules": "简体中文",
+    "ending_constraints": "",
+    "forbidden_points": [],
+    "writing_notes": [],
+    "character_visual_schema_version": "character_visual_v1"
+  },
+  "created_at": "2026-09-06T14:40:38.594009Z"
+}

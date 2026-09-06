@@ -1,0 +1,193 @@
+{
+  "name": "ReadingContinuationRead",
+  "schema": {
+    "properties": {
+      "asset_action_id": {
+        "title": "素材操作编号",
+        "type": "string",
+        "description": "素材操作编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "base_session_lock_version": {
+        "title": "基础会话锁版本",
+        "type": "integer",
+        "description": "基础会话锁版本。"
+      },
+      "confirmed_at": {
+        "title": "确认时间",
+        "format": "date-time",
+        "type": "string",
+        "description": "确认时间。",
+        "nullable": true
+      },
+      "continuation_text": {
+        "title": "续写文本",
+        "type": "string",
+        "description": "续写文本。"
+      },
+      "created_at": {
+        "format": "date-time",
+        "title": "创建时间",
+        "type": "string",
+        "description": "创建时间。"
+      },
+      "direction": {
+        "title": "方向",
+        "type": "string",
+        "description": "方向。"
+      },
+      "error": {
+        "title": "错误信息",
+        "type": "object",
+        "x-apifox-orders": [],
+        "description": "错误信息对象。",
+        "properties": {},
+        "x-apifox-ignore-properties": [],
+        "nullable": true
+      },
+      "frozen_asset_version_ids": {
+        "items": {
+          "type": "string",
+          "title": "frozen素材版本idsitem",
+          "description": "frozen素材版本idsitem。"
+        },
+        "title": "冻结素材版本编号列表",
+        "type": "array",
+        "description": "冻结素材版本编号列表，用于批量关联对应数据。"
+      },
+      "id": {
+        "title": "编号",
+        "type": "string",
+        "description": "编号，用于关联对应数据。"
+      },
+      "parent_continuation_id": {
+        "title": "父续写编号",
+        "type": "string",
+        "description": "父续写编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "parent_node_id": {
+        "title": "父节点编号",
+        "type": "string",
+        "description": "父节点编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "scene_manifest": {
+        "title": "scene清单",
+        "type": "object",
+        "x-apifox-orders": [],
+        "description": "scene清单对象。",
+        "properties": {},
+        "x-apifox-ignore-properties": [],
+        "nullable": true
+      },
+      "session_id": {
+        "title": "会话编号",
+        "type": "string",
+        "description": "会话编号，用于关联对应数据。"
+      },
+      "state_delta": {
+        "title": "状态变更",
+        "type": "object",
+        "x-apifox-orders": [],
+        "description": "状态变更对象。",
+        "properties": {},
+        "x-apifox-ignore-properties": []
+      },
+      "status": {
+        "title": "状态",
+        "type": "string",
+        "description": "状态。"
+      },
+      "task_id": {
+        "title": "任务编号",
+        "type": "string",
+        "description": "任务编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "updated_at": {
+        "format": "date-time",
+        "title": "更新时间",
+        "type": "string",
+        "description": "更新时间。"
+      },
+      "uploaded_asset_version_ids": {
+        "items": {
+          "type": "string",
+          "title": "uploaded素材版本idsitem",
+          "description": "uploaded素材版本idsitem。"
+        },
+        "title": "已上传素材版本编号列表",
+        "type": "array",
+        "description": "已上传素材版本编号列表，用于批量关联对应数据。"
+      },
+      "visual_mode": {
+        "title": "视觉mode",
+        "type": "string",
+        "description": "视觉mode。"
+      },
+      "vngraph_patch": {
+        "items": {
+          "type": "object",
+          "x-apifox-orders": [],
+          "title": "vngraphpatchitem",
+          "description": "vngraphpatchitem对象。",
+          "properties": {},
+          "x-apifox-ignore-properties": []
+        },
+        "title": "视觉小说图补丁",
+        "type": "array",
+        "description": "视觉小说图补丁列表。"
+      }
+    },
+    "required": [
+      "id",
+      "session_id",
+      "parent_continuation_id",
+      "parent_node_id",
+      "direction",
+      "visual_mode",
+      "status",
+      "continuation_text",
+      "state_delta",
+      "scene_manifest",
+      "vngraph_patch",
+      "uploaded_asset_version_ids",
+      "frozen_asset_version_ids",
+      "task_id",
+      "asset_action_id",
+      "base_session_lock_version",
+      "error",
+      "confirmed_at",
+      "created_at",
+      "updated_at"
+    ],
+    "title": "阅读续写读取结果",
+    "type": "object",
+    "x-apifox-orders": [
+      "asset_action_id",
+      "base_session_lock_version",
+      "confirmed_at",
+      "continuation_text",
+      "created_at",
+      "direction",
+      "error",
+      "frozen_asset_version_ids",
+      "id",
+      "parent_continuation_id",
+      "parent_node_id",
+      "scene_manifest",
+      "session_id",
+      "state_delta",
+      "status",
+      "task_id",
+      "updated_at",
+      "uploaded_asset_version_ids",
+      "visual_mode",
+      "vngraph_patch"
+    ],
+    "description": "阅读续写读取结果数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

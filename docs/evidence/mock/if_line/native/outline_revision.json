@@ -1,0 +1,23 @@
+{
+  "bible_revision_id": "c240990c-d89a-499d-9657-768d9ee151b4",
+  "parent_revision_id": null,
+  "chapters": [
+    {
+      "story_path_chapter_id": "198b3e13-6e47-40ae-8295-1181e57dcf74",
+      "display_index": 1,
+      "title": "第1章",
+      "summary": "等待雨停。",
+      "conflict": null,
+      "characters": [],
+      "scene": "门廊",
+      "emotion": "等待雨停。",
+      "visual_keywords": []
+    }
+  ],
+  "id": "ca6cc31d-3f99-4c35-b848-141580503bda",
+  "story_path_id": "c459e651-1b71-4ee5-99d9-108c961c8625",
+  "revision_no": 1,
+  "source_hash": "cecea457a222affe47df7619a8738a269d6973833094ee6d299e2f65e5db2ee8",
+  "content_hash": "f1d29e1480fa79fdd9ec66e28118870c5f2810ae98bf6903a986469dd4d51a87",
+  "status": "ready"
+}

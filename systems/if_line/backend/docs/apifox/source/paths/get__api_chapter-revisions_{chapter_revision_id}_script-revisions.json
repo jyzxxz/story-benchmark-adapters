@@ -1,0 +1,66 @@
+{
+  "method": "get",
+  "path": "/api/chapter-revisions/{chapter_revision_id}/script-revisions",
+  "operation": {
+    "summary": "读取章节脚本版本列表",
+    "deprecated": false,
+    "description": "读取某个章节正文下已经生成或手动创建的脚本版本列表。",
+    "operationId": "chapter_script_revisions_api_projects__project_id__chapters__chapter_index__chapter_scripts_revisions_get",
+    "tags": [
+      "创作版本与生成/视觉小说图步骤一：章节脚本与资源槽",
+      "章节脚本与资源槽"
+    ],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "chapter_revision_id",
+        "required": true,
+        "schema": {
+          "title": "Chapter Revision Id",
+          "type": "string"
+        },
+        "description": "章节正文修订编号。"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "items": {
+                "$ref": "#/components/schemas/ScriptRevision"
+              },
+              "title": "Response Listscriptrevisions",
+              "type": "array"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-folder": "创作版本与生成/视觉小说图步骤一：章节脚本与资源槽",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923819-run"
+  }
+}

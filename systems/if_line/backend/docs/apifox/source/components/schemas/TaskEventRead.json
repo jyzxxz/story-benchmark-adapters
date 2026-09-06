@@ -1,0 +1,48 @@
+{
+  "name": "TaskEventRead",
+  "schema": {
+    "properties": {
+      "created_at": {
+        "format": "date-time",
+        "title": "创建时间",
+        "type": "string",
+        "description": "创建时间。"
+      },
+      "event_type": {
+        "title": "事件类型",
+        "type": "string",
+        "description": "事件类型。"
+      },
+      "payload": {
+        "title": "载荷数据",
+        "type": "object",
+        "x-apifox-orders": [],
+        "description": "载荷数据对象。",
+        "properties": {},
+        "x-apifox-ignore-properties": []
+      },
+      "seq": {
+        "title": "事件序号",
+        "type": "integer",
+        "description": "事件序号。"
+      }
+    },
+    "required": [
+      "seq",
+      "event_type",
+      "payload",
+      "created_at"
+    ],
+    "title": "任务事件读取结果",
+    "type": "object",
+    "x-apifox-orders": [
+      "created_at",
+      "event_type",
+      "payload",
+      "seq"
+    ],
+    "description": "任务事件读取结果数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "method": "post",
+  "path": "/api/projects/{project_id}/assets/uploads",
+  "operation": {
+    "summary": "上传新视觉素材",
+    "deprecated": false,
+    "description": "上传新视觉素材。\n\n接口语义：\n- 创建新的逻辑素材 `asset`\n- 同时创建第一个素材版本 `asset_version`\n\n适用场景：\n- 用户上传一张全新的背景\n- 用户上传一张全新的立绘\n- 用户上传一张全新的关键帧\n\n表单字段：\n- `file`：图片文件，最大 25 MB\n- `asset_type`：建议使用 `portrait`、`background`、`keyframe`\n- `target_name`：素材显示名\n- `description`：素材说明，可为空\n- `rights_attested`：必须为 true，表示确认有权使用该素材\n- `target_json`：可选结构化上下文，没有明确需求时不传",
+    "operationId": "upload_visual_api_projects__project_id__visual_assets_uploads_post",
+    "tags": [
+      "素材管理与生成/视觉素材",
+      "视觉素材工作台"
+    ],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "project_id",
+        "required": true,
+        "schema": {
+          "title": "Project Id",
+          "type": "integer"
+        },
+        "description": "项目编号。"
+      },
+      {
+        "in": "header",
+        "name": "Idempotency-Key",
+        "required": false,
+        "schema": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Idempotency-Key"
+        },
+        "description": "幂等键。上传重试时复用同一个 key，避免网络重试导致重复创建素材版本。"
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "multipart/form-data": {
+          "schema": {
+            "$ref": "#/components/schemas/Body_upload_visual_api_projects__project_id__assets_uploads_post"
+          }
+        }
+      },
+      "required": true,
+      "description": "multipart/form-data 表单。file、asset_type、target_name、rights_attested 必填。"
+    },
+    "responses": {
+      "201": {
+        "description": "创建成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/VisualAssetUploadRead"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-folder": "素材管理与生成/视觉素材",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923763-run"
+  }
+}

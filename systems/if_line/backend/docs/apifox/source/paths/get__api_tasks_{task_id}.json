@@ -1,0 +1,162 @@
+{
+  "method": "get",
+  "path": "/api/tasks/{task_id}",
+  "operation": {
+    "summary": "读取任务详情",
+    "deprecated": false,
+    "description": "读取任务详情。",
+    "operationId": "read_task_api_tasks__task_id__get",
+    "tags": [
+      "后台任务"
+    ],
+    "parameters": [
+      {
+        "name": "sid",
+        "in": "cookie",
+        "description": "",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Sid",
+          "type": "string",
+          "nullable": true
+        }
+      },
+      {
+        "name": "task_id",
+        "in": "path",
+        "description": "",
+        "required": true,
+        "example": "",
+        "schema": {
+          "title": "Task Id",
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TaskRead"
+            },
+            "example": {
+              "id": "062435a2-74d5-4687-bfc5-fe0018b1dfee",
+              "root_task_id": null,
+              "parent_task_id": null,
+              "project_id": 3,
+              "kind": "chapter_script.generate",
+              "status": "succeeded",
+              "stage": "completed",
+              "progress": 100.0,
+              "source_refs": {
+                "chapter_script_source": {
+                  "schema_version": "chapter-script-source-v1",
+                  "request_identity": {
+                    "chapter_revision_id": "e959dbf6-35dc-4be0-bff9-dbd1d52dc497",
+                    "generation_parameters": {
+                      "instructions": "接口文档验证用，按短章节生成脚本。"
+                    }
+                  },
+                  "project_id": 3,
+                  "chapter_revision_id": "e959dbf6-35dc-4be0-bff9-dbd1d52dc497",
+                  "path_chapter_id": "1252f436-69e3-4f6e-87c9-0cc007e8dc2e",
+                  "display_index": 1,
+                  "parent_revision_id": null,
+                  "chapter_content_hash": "27476d385609ae21f068977cb1301078f96392c4bb3e44f9bc4ed277aa2d8d0e",
+                  "chapter_context_hash": "c512a7544a12a2f50716ea100f1e01f60980b750158cb90e8b31a46629bd4490",
+                  "bible_revision_id": "76b5dc9f-cfc4-4bed-930d-98acd4adf221",
+                  "bible_content_hash": "e7a587c233084facbe6067743921d13ddaf0b0dceb09209189686dca8b77c8aa",
+                  "outline_revision_id": "8b3c6a78-c2f6-4f00-81d0-882151dcadf1",
+                  "outline_content_hash": "d33764de4d8f304f7c3e19da1da897658f17d3406592881cccbdecff3b54d2ca",
+                  "outline_chapter_id": "e94beffb-6ff3-44fb-a9d3-5eccb889e1c0",
+                  "outline_chapter_hash": "4b362522ae60768621b13d594d5b83b66c66a49bbb5114c49fa6cc72343acae4",
+                  "script_schema_version": "script-ir-v1",
+                  "generator_version": "semantic-annotations-v1",
+                  "provider_input": {
+                    "bible": {
+                      "worldview": "2027年，全球AI竞争白热化。",
+                      "main_conflict": "牢梁与西方AI开发团队的技术竞争。",
+                      "characters": [
+                        {
+                          "name": "牢梁",
+                          "role": "主角",
+                          "personality": "技术狂热、嘴硬心软"
+                        }
+                      ],
+                      "style_rules": "轻松幽默，技术梗口语化。"
+                    },
+                    "outline_chapter": {
+                      "story_path_chapter_id": "1252f436-69e3-4f6e-87c9-0cc007e8dc2e",
+                      "display_index": 1,
+                      "chapter_index": 1,
+                      "title": "拳打Codex",
+                      "summary": "牢梁在中关村AI擂台赛上挑战Codex。",
+                      "conflict": null,
+                      "characters": [
+                        "牢梁"
+                      ],
+                      "scene": "中关村创业咖啡馆",
+                      "emotion": "兴奋",
+                      "visual_keywords": [
+                        "霓虹灯",
+                        "代码擂台"
+                      ]
+                    }
+                  }
+                },
+                "chapter_script_source_hash": "a44b583a743c9bac6f79d36cdc83bb65653465a45b46f9bf43f68cb276f61057",
+                "source_schema_version": "chapter-script-source-v1",
+                "chapter_revision_id": "e959dbf6-35dc-4be0-bff9-dbd1d52dc497",
+                "source_hash": "a44b583a743c9bac6f79d36cdc83bb65653465a45b46f9bf43f68cb276f61057"
+              },
+              "result_refs": {
+                "chapter_script_revision_id": "3697c856-bcf5-4e14-9310-9bc7874f4fa8",
+                "script_hash": "bc97ae5d13aa151ad38e45e118cfc419af63b325559c0542d9bf9797a31c54c3",
+                "coverage_ratio": 1.0,
+                "resource_slot_ids": [
+                  "84e8fd79-65e5-4266-b961-5dc393dd4cc7",
+                  "b3612cf8-33b6-4f01-8c1c-0c70544d294f"
+                ]
+              },
+              "attempt": 1,
+              "max_attempts": 1,
+              "error_code": null,
+              "error_detail": null,
+              "estimated_cost": "3.000000",
+              "reserved_cost": "3.000000",
+              "actual_cost": "3.000000",
+              "queued_at": "2026-08-09T15:29:15.800412Z",
+              "started_at": "2026-08-09T15:29:16.889220Z",
+              "finished_at": "2026-08-09T15:29:20.958962Z",
+              "created_at": "2026-08-09T15:29:15.800414Z",
+              "updated_at": "2026-08-09T15:29:20.960662Z"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "后台任务",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923856-run"
+  }
+}

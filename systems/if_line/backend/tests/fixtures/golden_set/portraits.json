@@ -1,0 +1,102 @@
+[
+  {
+    "id": "p01",
+    "name": "李清照",
+    "appearance_zh": "身着素白丧服的年轻女子，眉目清丽，肤色白皙",
+    "emotion": "sad",
+    "outfit": "mourning",
+    "pose": "standing",
+    "genre": "historical",
+    "expected_keywords": ["woman", "white", "hanfu"]
+  },
+  {
+    "id": "p02",
+    "name": "霍去病",
+    "appearance_zh": "身着玄色铠甲的少年将军，身形挺拔，眉目凌厉",
+    "emotion": "angry",
+    "outfit": "armor",
+    "pose": "combat",
+    "genre": "historical",
+    "expected_keywords": ["general", "armor", "male"]
+  },
+  {
+    "id": "p03",
+    "name": "林黛玉",
+    "appearance_zh": "弱柳扶风的少女，眉间含愁，身着淡粉色襦裙",
+    "emotion": "sad",
+    "outfit": "default",
+    "pose": "standing",
+    "genre": "historical",
+    "expected_keywords": ["girl", "pink", "hanfu"]
+  },
+  {
+    "id": "p04",
+    "name": "诸葛亮",
+    "appearance_zh": "羽扇纶巾的中年文士，须髯飘飘，神情从容",
+    "emotion": "neutral",
+    "outfit": "formal",
+    "pose": "holding_item",
+    "genre": "historical",
+    "expected_keywords": ["man", "fan", "robe"]
+  },
+  {
+    "id": "p05",
+    "name": "现代都市女主",
+    "appearance_zh": "穿着米色风衣的都市白领女性，短发利落",
+    "emotion": "neutral",
+    "outfit": "default",
+    "pose": "standing",
+    "genre": "modern",
+    "expected_keywords": ["woman", "coat", "short hair"]
+  },
+  {
+    "id": "p06",
+    "name": "赛博朋克黑客",
+    "appearance_zh": "身穿黑色夹克的黑客，蓝色发光的眼镜",
+    "emotion": "neutral",
+    "outfit": "default",
+    "pose": "standing",
+    "genre": "sci-fi",
+    "expected_keywords": ["hacker", "jacket", "glasses"]
+  },
+  {
+    "id": "p07",
+    "name": "魔法师艾琳",
+    "appearance_zh": "身着紫色法袍的精灵女魔法师，长耳银发",
+    "emotion": "happy",
+    "outfit": "default",
+    "pose": "reaching",
+    "genre": "fantasy",
+    "expected_keywords": ["mage", "robe", "elf"]
+  },
+  {
+    "id": "p08",
+    "name": "学生剑士",
+    "appearance_zh": "穿着高中校服的少年剑士，手握木刀",
+    "emotion": "surprise",
+    "outfit": "default",
+    "pose": "combat",
+    "genre": "anime",
+    "expected_keywords": ["student", "sword", "uniform"]
+  },
+  {
+    "id": "p09",
+    "name": "哭泣的皇后",
+    "appearance_zh": "凤冠霞帔的皇后，泪眼婆娑",
+    "emotion": "cry",
+    "outfit": "formal",
+    "pose": "kneeling",
+    "genre": "historical",
+    "expected_keywords": ["queen", "tears", "crown"]
+  },
+  {
+    "id": "p10",
+    "name": "战士受创",
+    "appearance_zh": "披着破烂战甲的战士，浑身是血，右手捂着伤口",
+    "emotion": "fear",
+    "outfit": "injured",
+    "pose": "fallen",
+    "genre": "historical",
+    "expected_keywords": ["warrior", "wound", "blood"]
+  }
+]

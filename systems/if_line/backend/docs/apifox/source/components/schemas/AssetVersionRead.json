@@ -1,0 +1,248 @@
+{
+  "name": "AssetVersionRead",
+  "schema": {
+    "properties": {
+      "asset_id": {
+        "title": "素材编号",
+        "type": "integer",
+        "description": "素材编号，用于关联对应数据。"
+      },
+      "asset_spec": {
+        "title": "素材规格",
+        "type": "object",
+        "x-apifox-orders": [],
+        "description": "素材规格对象。",
+        "properties": {},
+        "x-apifox-ignore-properties": []
+      },
+      "binding_count": {
+        "default": 0,
+        "title": "绑定数量",
+        "type": "integer",
+        "description": "绑定数量。"
+      },
+      "cache_key": {
+        "title": "缓存键",
+        "type": "string",
+        "description": "缓存键。"
+      },
+      "created_at": {
+        "format": "date-time",
+        "title": "创建时间",
+        "type": "string",
+        "description": "创建时间。"
+      },
+      "generation_task_id": {
+        "title": "生成任务编号",
+        "type": "string",
+        "description": "生成任务编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "height": {
+        "title": "高度",
+        "type": "integer",
+        "description": "高度，可为空。",
+        "nullable": true
+      },
+      "id": {
+        "title": "编号",
+        "type": "string",
+        "description": "编号，用于关联对应数据。"
+      },
+      "is_in_use": {
+        "default": false,
+        "title": "是否使用中",
+        "type": "boolean",
+        "description": "是否使用中。"
+      },
+      "media_type": {
+        "title": "媒体类型",
+        "type": "string",
+        "description": "媒体类型，可为空。",
+        "nullable": true
+      },
+      "media_url": {
+        "title": "媒体地址",
+        "type": "string",
+        "description": "媒体地址，由服务端返回给客户端访问。",
+        "nullable": true
+      },
+      "model": {
+        "title": "模型",
+        "type": "string",
+        "description": "模型，可为空。",
+        "nullable": true
+      },
+      "negative_prompt_hash": {
+        "title": "负向提示词哈希",
+        "type": "string",
+        "description": "负向提示词哈希，可为空。",
+        "nullable": true
+      },
+      "postprocess_version": {
+        "title": "postprocess版本",
+        "type": "string",
+        "description": "postprocess版本，可为空。",
+        "nullable": true
+      },
+      "prompt_hash": {
+        "title": "提示词哈希",
+        "type": "string",
+        "description": "提示词哈希。"
+      },
+      "prompt_version": {
+        "title": "提示词版本",
+        "type": "string",
+        "description": "提示词版本。"
+      },
+      "provider": {
+        "title": "服务商",
+        "type": "string",
+        "description": "服务商，可为空。",
+        "nullable": true
+      },
+      "quality_score": {
+        "title": "质量分",
+        "type": "number",
+        "description": "质量分，可为空。",
+        "nullable": true
+      },
+      "render_spec": {
+        "title": "渲染规格",
+        "type": "object",
+        "x-apifox-orders": [],
+        "description": "渲染规格对象。",
+        "properties": {},
+        "x-apifox-ignore-properties": []
+      },
+      "render_spec_hash": {
+        "title": "渲染spechash",
+        "type": "string",
+        "description": "渲染spechash，可为空。",
+        "nullable": true
+      },
+      "rights_metadata": {
+        "title": "权利元数据",
+        "type": "object",
+        "x-apifox-orders": [],
+        "description": "权利元数据对象。",
+        "properties": {},
+        "x-apifox-ignore-properties": []
+      },
+      "safety_status": {
+        "title": "安全状态",
+        "type": "string",
+        "description": "安全状态。"
+      },
+      "seed": {
+        "title": "随机种子",
+        "type": "integer",
+        "description": "随机种子，可为空。",
+        "nullable": true
+      },
+      "source_hash": {
+        "title": "来源哈希",
+        "type": "string",
+        "description": "来源哈希，可为空。",
+        "nullable": true
+      },
+      "source_kind": {
+        "title": "来源类型",
+        "type": "string",
+        "description": "来源类型，可为空。",
+        "nullable": true
+      },
+      "source_revision_id": {
+        "title": "来源修订编号",
+        "type": "string",
+        "description": "来源修订编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "storage_status": {
+        "title": "存储状态",
+        "type": "string",
+        "description": "存储状态，可为空。",
+        "nullable": true
+      },
+      "validator_version": {
+        "title": "validator版本",
+        "type": "string",
+        "description": "validator版本，可为空。",
+        "nullable": true
+      },
+      "version_no": {
+        "title": "版本序号",
+        "type": "integer",
+        "description": "版本序号。"
+      },
+      "width": {
+        "title": "宽度",
+        "type": "integer",
+        "description": "宽度，可为空。",
+        "nullable": true
+      }
+    },
+    "required": [
+      "id",
+      "asset_id",
+      "source_kind",
+      "source_revision_id",
+      "source_hash",
+      "generation_task_id",
+      "version_no",
+      "cache_key",
+      "provider",
+      "model",
+      "prompt_hash",
+      "prompt_version",
+      "negative_prompt_hash",
+      "seed",
+      "width",
+      "height",
+      "postprocess_version",
+      "validator_version",
+      "quality_score",
+      "safety_status",
+      "rights_metadata",
+      "render_spec_hash",
+      "created_at"
+    ],
+    "title": "素材版本读取结果",
+    "type": "object",
+    "x-apifox-orders": [
+      "asset_id",
+      "asset_spec",
+      "binding_count",
+      "cache_key",
+      "created_at",
+      "generation_task_id",
+      "height",
+      "id",
+      "is_in_use",
+      "media_type",
+      "media_url",
+      "model",
+      "negative_prompt_hash",
+      "postprocess_version",
+      "prompt_hash",
+      "prompt_version",
+      "provider",
+      "quality_score",
+      "render_spec",
+      "render_spec_hash",
+      "rights_metadata",
+      "safety_status",
+      "seed",
+      "source_hash",
+      "source_kind",
+      "source_revision_id",
+      "storage_status",
+      "validator_version",
+      "version_no",
+      "width"
+    ],
+    "description": "素材版本读取结果数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

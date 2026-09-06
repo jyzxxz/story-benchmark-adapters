@@ -1,0 +1,44 @@
+{
+  "name": "VoiceTaskAccepted",
+  "schema": {
+    "properties": {
+      "created": {
+        "title": "是否已创建",
+        "type": "boolean",
+        "description": "是否已创建。"
+      },
+      "events_url": {
+        "title": "事件流地址",
+        "type": "string",
+        "description": "事件流地址，由服务端返回给客户端访问。"
+      },
+      "status": {
+        "title": "状态",
+        "type": "string",
+        "description": "状态。"
+      },
+      "task_id": {
+        "title": "任务编号",
+        "type": "string",
+        "description": "任务编号，用于关联对应数据。"
+      }
+    },
+    "required": [
+      "task_id",
+      "status",
+      "created",
+      "events_url"
+    ],
+    "title": "语音任务受理响应",
+    "type": "object",
+    "x-apifox-orders": [
+      "created",
+      "events_url",
+      "status",
+      "task_id"
+    ],
+    "description": "语音任务受理响应数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "method": "post",
+  "path": "/api/story-paths/{story_path_id}/outline-generations",
+  "operation": {
+    "summary": "异步生成章节大纲",
+    "deprecated": false,
+    "description": "异步生成接口。调用后只创建任务，不直接返回生成内容。\n\n前端处理方式：\n- 提交请求后读取返回的 `task_id`\n- 使用 `GET /api/tasks/{task_id}` 查询任务状态\n- 或使用 `/api/tasks/{task_id}/events` 监听 SSE 事件\n\n幂等要求：\n- 请求必须带 `Idempotency-Key`\n- 一次用户操作生成一个稳定 key\n- 用户重复点击或网络重试时复用同一个 key，避免重复扣费和重复创建任务\n\n生成内容：\n- 创建新的 Outline revision\n- 基于当前故事路径、当前故事圣经、已有大纲和章节拓扑生成\n\n前端填写：\n- `chapter_count`：本次大纲目标章节数，必填\n- `instructions`：用户对本次大纲的补充要求，自由文本\n\n后续步骤：\n- 任务完成后不会自动切换当前版本\n- 审核通过后调用 `PUT /api/story-paths/{story_path_id}/outline-head`",
+    "operationId": "generate_outline_api_projects__project_id__outline_generations_post",
+    "tags": [
+      "创作版本与生成/章节大纲",
+      "创作版本与生成"
+    ],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "story_path_id",
+        "required": true,
+        "schema": {
+          "title": "Story Path Id",
+          "type": "string"
+        },
+        "description": "故事路径编号。主线和分支线都会有自己的 story_path_id。"
+      },
+      {
+        "in": "header",
+        "name": "Idempotency-Key",
+        "required": true,
+        "schema": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Idempotency-Key",
+          "type": "string"
+        },
+        "description": "幂等键。一次用户操作生成一个稳定字符串；同一用户用同一个 key 重试同一请求会返回同一任务，换请求内容会返回冲突。"
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/OutlineGenerationRequest"
+          },
+          "example": {
+            "chapter_count": 1,
+            "instructions": "只生成1章，用于接口文档验证。"
+          }
+        }
+      },
+      "required": true,
+      "description": "大纲生成请求。chapter_count 必填；instructions 可填用户对本次大纲的额外要求。"
+    },
+    "responses": {
+      "202": {
+        "description": "任务已接受",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TaskAccepted"
+            },
+            "example": {
+              "task_id": "4f541ccf-0e38-4f2b-a249-d2a6a3a7b1d2",
+              "status": "queued",
+              "events_url": "/api/tasks/4f541ccf-0e38-4f2b-a249-d2a6a3a7b1d2/events",
+              "created": true
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-folder": "创作版本与生成/章节大纲",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923807-run"
+  }
+}

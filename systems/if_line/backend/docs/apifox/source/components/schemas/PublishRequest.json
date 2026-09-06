@@ -1,0 +1,37 @@
+{
+  "name": "PublishRequest",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "expected_authoring_fingerprint": {
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Expected Authoring Fingerprint",
+        "type": "string",
+        "description": "发布前检查返回的 authoring_fingerprint。用于防止“刚检查完又有人修改内容”导致发布错误版本。"
+      },
+      "release_notes": {
+        "anyOf": [
+          {
+            "maxLength": 2000,
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Release Notes",
+        "description": "发布说明，自由文本，可为空。"
+      }
+    },
+    "required": [
+      "expected_authoring_fingerprint"
+    ],
+    "title": "PublishRequest",
+    "type": "object",
+    "description": "发布项目请求。发布前必须先调用 publication-readiness 获取当前 authoring_fingerprint。",
+    "x-apifox-orders": [
+      "expected_authoring_fingerprint",
+      "release_notes"
+    ]
+  }
+}

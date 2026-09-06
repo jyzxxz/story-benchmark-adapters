@@ -1,0 +1,33 @@
+{
+  "name": "BookmarkCreate",
+  "schema": {
+    "properties": {
+      "label": {
+        "title": "标签",
+        "maxLength": 200,
+        "type": "string",
+        "description": "标签，可为空。",
+        "nullable": true
+      },
+      "node_id": {
+        "maxLength": 64,
+        "minLength": 1,
+        "title": "节点编号",
+        "type": "string",
+        "description": "节点编号，用于关联对应数据。"
+      }
+    },
+    "required": [
+      "node_id"
+    ],
+    "title": "书签创建请求",
+    "type": "object",
+    "x-apifox-orders": [
+      "label",
+      "node_id"
+    ],
+    "description": "书签创建请求数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

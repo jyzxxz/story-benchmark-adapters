@@ -1,0 +1,59 @@
+{
+  "name": "PublicProject",
+  "schema": {
+    "properties": {
+      "cover_url": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Cover Url"
+      },
+      "id": {
+        "title": "Id",
+        "type": "integer"
+      },
+      "manifest_hash": {
+        "title": "Manifest Hash",
+        "type": "string"
+      },
+      "published_at": {
+        "format": "date-time",
+        "title": "Published At",
+        "type": "string"
+      },
+      "release_id": {
+        "title": "Release Id",
+        "type": "string"
+      },
+      "release_version": {
+        "title": "Release Version",
+        "type": "integer"
+      },
+      "summary": {
+        "title": "Summary",
+        "type": "string"
+      },
+      "title": {
+        "title": "Title",
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "title",
+      "summary",
+      "cover_url",
+      "release_id",
+      "release_version",
+      "manifest_hash",
+      "published_at"
+    ],
+    "title": "PublicProject",
+    "type": "object"
+  }
+}

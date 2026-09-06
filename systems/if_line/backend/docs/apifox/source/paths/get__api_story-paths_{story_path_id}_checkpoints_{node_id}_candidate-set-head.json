@@ -1,0 +1,63 @@
+{
+  "method": "get",
+  "path": "/api/story-paths/{story_path_id}/checkpoints/{node_id}/candidate-set-head",
+  "operation": {
+    "operationId": "getCandidateSetHead",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "story_path_id",
+        "required": true,
+        "schema": {
+          "title": "Story Path Id",
+          "type": "string"
+        },
+        "description": "故事路径编号。主线和分支线都会有自己的 story_path_id。"
+      },
+      {
+        "in": "path",
+        "name": "node_id",
+        "required": true,
+        "schema": {
+          "title": "Node Id",
+          "type": "string"
+        },
+        "description": "VNGraph 中的检查点节点编号，用于从某个剧情节点生成分支候选。"
+      }
+    ],
+    "responses": {
+      "200": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/RevisionHead"
+            }
+          }
+        },
+        "description": "Successful Response"
+      },
+      "422": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "description": "Validation Error"
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "summary": "读取当前分支候选集合",
+    "tags": [
+      "分支生成"
+    ],
+    "x-apifox-folder": "创作版本与生成/故事路径",
+    "x-apifox-status": "released",
+    "description": "读取某个检查点当前采用的 CandidateSet revision_id 和 lock_version。"
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "method": "get",
+  "path": "/api/tasks/{task_id}/events",
+  "operation": {
+    "summary": "订阅任务事件流",
+    "deprecated": false,
+    "description": "SSE 事件流，媒体类型为 text/event-stream。事件 id 使用任务事件序号；event 为任务事件类型；data 为 JSON，包含 event_type、payload、created_at。支持 Last-Event-ID 断点续订。常见事件包括 queued、started、progress、retrying、succeeded、failed、cancelled。",
+    "operationId": "stream_task_events_api_tasks__task_id__events_get",
+    "tags": [
+      "后台任务"
+    ],
+    "parameters": [
+      {
+        "name": "sid",
+        "in": "cookie",
+        "description": "",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Sid",
+          "type": "string",
+          "nullable": true
+        }
+      },
+      {
+        "name": "task_id",
+        "in": "path",
+        "description": "",
+        "required": true,
+        "example": "",
+        "schema": {
+          "title": "Task Id",
+          "type": "string"
+        }
+      },
+      {
+        "name": "Last-Event-ID",
+        "in": "header",
+        "description": "",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Last-Event-Id",
+          "type": "string",
+          "nullable": true
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {},
+            "example": "id: 1\nevent: queued\ndata: {\"event_type\":\"queued\",\"payload\":{\"kind\":\"outline.generate\"},\"created_at\":\"2026-08-03T13:32:34.234785+00:00\"}\n\nid: 2\nevent: started\ndata: {\"event_type\":\"started\",\"payload\":{\"attempt\":1},\"created_at\":\"2026-08-03T13:32:34.467350+00:00\"}\n\n...\n\nid: 4\nevent: completed\ndata: {\"event_type\":\"completed\",\"payload\":{\"result_refs\":{\"outline_revision_id\":\"04ed84e6-7460-44b8-82be-2d4520cb1fc8\",\"activated\":true}},\"created_at\":\"2026-08-03T13:34:24.336742+00:00\"}\n\n"
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "后台任务",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923859-run"
+  }
+}

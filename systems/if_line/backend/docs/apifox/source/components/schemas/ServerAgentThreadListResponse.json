@@ -1,0 +1,54 @@
+{
+  "name": "ServerAgentThreadListResponse",
+  "schema": {
+    "type": "object",
+    "title": "服务端 Agent 会话列表响应",
+    "description": "当前用户的 Agent thread 分页列表。",
+    "required": [
+      "items",
+      "total",
+      "limit",
+      "offset",
+      "has_more"
+    ],
+    "properties": {
+      "items": {
+        "type": "array",
+        "title": "会话列表",
+        "description": "Agent thread 列表。",
+        "items": {
+          "$ref": "#/components/schemas/ServerAgentThreadSummaryResponse"
+        }
+      },
+      "total": {
+        "type": "integer",
+        "title": "总数",
+        "description": "符合条件的总数。"
+      },
+      "limit": {
+        "type": "integer",
+        "title": "每页数量",
+        "description": "本次查询 limit。"
+      },
+      "offset": {
+        "type": "integer",
+        "title": "偏移量",
+        "description": "本次查询 offset。"
+      },
+      "has_more": {
+        "type": "boolean",
+        "title": "是否还有更多",
+        "description": "是否还有下一页。"
+      }
+    },
+    "x-apifox-orders": [
+      "items",
+      "total",
+      "limit",
+      "offset",
+      "has_more"
+    ],
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

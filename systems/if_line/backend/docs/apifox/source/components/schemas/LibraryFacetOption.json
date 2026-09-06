@@ -1,0 +1,52 @@
+{
+  "name": "LibraryFacetOption",
+  "schema": {
+    "properties": {
+      "id": {
+        "title": "标签编号",
+        "type": "string",
+        "description": "分面标签编号。后续筛选时把该值放入 tag_ids。"
+      },
+      "value": {
+        "title": "标签值",
+        "type": "string",
+        "description": "标准化后的标签值，用于后端稳定匹配。"
+      },
+      "display_name": {
+        "title": "显示名称",
+        "type": "string",
+        "description": "前端展示给用户看的标签名称。"
+      },
+      "count": {
+        "minimum": 0,
+        "title": "命中数量",
+        "type": "integer",
+        "description": "在当前 asset_type 和已选标签条件下，选择该标签后可命中的素材数量。已选标签自身通常显示当前结果总数。"
+      },
+      "selected": {
+        "title": "是否已选",
+        "type": "boolean",
+        "description": "该标签是否已经包含在本次 tag_ids 筛选条件中。"
+      }
+    },
+    "required": [
+      "id",
+      "value",
+      "display_name",
+      "count",
+      "selected"
+    ],
+    "title": "素材库分面选项",
+    "type": "object",
+    "x-apifox-orders": [
+      "id",
+      "value",
+      "display_name",
+      "count",
+      "selected"
+    ],
+    "description": "公共素材库的一个可筛选标签选项。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

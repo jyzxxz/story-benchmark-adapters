@@ -1,0 +1,39 @@
+{
+  "evidence_kind": "engineering_fixed_response",
+  "api": "actual_native_http",
+  "auth": "native_guest_sid",
+  "worker": "native_celery_solo_process",
+  "broker_delivery": "actual_isolated_redis_with_celery_beat_outbox",
+  "storage": "actual_disposable_postgresql",
+  "migrations": "native_alembic_upgrade_head",
+  "paid_model_calls": 0,
+  "fixed_http_calls": 5,
+  "source_unchanged": true,
+  "source_sha256": "3a3197fcb37218e06260756e43a1a3a33fadc16422e7dc8d545db99b9d0f7025",
+  "result": {
+    "adapter_status": "completed",
+    "generation_status": "not_evaluated",
+    "native_project_id": 1,
+    "root_story_path_id": "c459e651-1b71-4ee5-99d9-108c961c8625",
+    "chapter_revision_id": "8c0d9dfc-a4ea-4a40-9447-7acd753fd139",
+    "script_revision_id": "f589a69f-7728-49a5-8690-89e3e7339221",
+    "simulated": false,
+    "execution_environment": "native_services"
+  },
+  "export": {
+    "segments": [
+      {
+        "segment_id": "paragraph-0001",
+        "kind": "narration",
+        "speaker": null,
+        "text": "雨继续下着。",
+        "native_source": "native/script_revision.json",
+        "native_pointer": "/script_json/paragraphs/0/text"
+      }
+    ],
+    "choices": [],
+    "generation_issue_codes": [],
+    "boundary": "first_chapter_script_ir",
+    "choice_support": "not_in_script_ir_v3"
+  }
+}

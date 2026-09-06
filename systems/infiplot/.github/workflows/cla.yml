@@ -1,0 +1,83 @@
+name: "CLA Assistant"
+
+# Signatures are stored on the UNPROTECTED `cla-signatures` branch of THIS
+# repository (no `remote-organization-name` / `remote-repository-name`
+# configured). In this mode the action uses the job's GITHUB_TOKEN to
+# read/create/update the signature file, so `contents: write` below is what
+# actually grants write access — no Personal Access Token is involved.
+#
+# This check is informational, NOT blocking: CLAAssistant is deliberately not
+# listed in the `main`/`staging` repository rulesets' required_status_checks.
+# A failed/missing CLA only posts a comment + a red check; it never blocks a
+# merge. To make it blocking, add `cla.yml:CLAAssistant` to a ruleset.
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_target:
+    types: [opened, closed, synchronize]
+
+# Minimal explicit permissions: this workflow runs on pull_request_target and
+# issues a token, so do not rely on repo defaults.
+#   contents: write — required because signatures live in THIS repo's
+#     cla-signatures branch and the action writes via GITHUB_TOKEN.
+#     `read` here was the root cause of the "Resource not accessible by
+#     integration" failure.
+#   actions: write — lets the action re-run the pull_request_target workflow
+#     after a contributor signs, so the check flips from red to green.
+#   statuses: write — how the (optional) required-check status is reported.
+permissions:
+  contents: write
+  actions: write
+  pull-requests: write
+  issues: write
+  statuses: write
+
+jobs:
+  CLAAssistant:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "CLA Assistant"
+        # Run on every pull_request_target event, and on a comment only when it
+        # is a CLA sign/recheck phrase. Keep the whole predicate inside a single
+        # ${{ }} so && / || are evaluated as a boolean expression.
+        if: ${{ (github.event_name == 'issue_comment' && (github.event.comment.body == 'recheckcla' || github.event.comment.body == 'I have read the CLA Document and I hereby sign the CLA')) || github.event_name == 'pull_request_target' }}
+        # Pinned to a full commit SHA (not a movable tag) because this step
+        # runs under pull_request_target. Canonical repo:
+        # contributor-assistant/github-action (the action's original home; note
+        # that `contributor-assistant/cla-assistant-action` does NOT exist and
+        # would 404). The repo is archived, but v2.6.1 still functions;
+        # re-evaluate only if it breaks against a future GitHub API change.
+        uses: contributor-assistant/github-action@ca4a40a7d1004f18d9960b404b97e5f30a505a08 # v2.6.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Signatures are stored on a dedicated UNPROTECTED orphan branch
+          # (cla-signatures), NOT on main/staging. The action cannot push to
+          # branch-protection-protected branches, so we route signature writes
+          # to cla-signatures instead (see contributor-assistant/github-action#150).
+          # version-N lets us roll the CLA text forward by bumping the path
+          # and re-collecting.
+          path-to-signatures: "cla-signatures/version-1.json"
+          branch: "cla-signatures"
+          # Link to the authoritative English CLA. Chinese reference:
+          # https://github.com/zonghaoyuan/infiplot/blob/staging/CLA.zh.md
+          path-to-document: "https://github.com/zonghaoyuan/infiplot/blob/staging/CLA.md"
+          allowlist: "github-actions[bot],dependabot[bot],zonghaoyuan,web-flow,noreply@anthropic.com"
+
+          create-file-commit-message: "docs(cla): create CLA signature store"
+          custom-notsigned-prcomment: >
+            感谢你的 PR！在合并之前，请先签署我们的《贡献者许可协议》（CLA）。阅读
+            [CLA.md](https://github.com/zonghaoyuan/infiplot/blob/staging/CLA.md)
+            （[中文参考译文](https://github.com/zonghaoyuan/infiplot/blob/staging/CLA.zh.md)）后，
+            在本 PR 中回复以下内容即视为签署：
+
+
+            ```
+            I have read the CLA Document and I hereby sign the CLA
+            ```
+
+
+            你只需签署一次，之后对 InfiPlot 的所有贡献都受同一协议约束。
+          custom-pr-sign-comment: "The pull request signer accepted the CLA."
+          custom-allsigned-prcomment: "🎉 All contributors have signed the CLA."

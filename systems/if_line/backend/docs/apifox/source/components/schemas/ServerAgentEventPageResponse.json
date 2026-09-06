@@ -1,0 +1,71 @@
+{
+  "name": "ServerAgentEventPageResponse",
+  "schema": {
+    "type": "object",
+    "title": "服务端 Agent 事件分页响应",
+    "description": "按 seq 游标读取的 Agent 事件页。",
+    "required": [
+      "thread_id",
+      "events",
+      "after_seq",
+      "next_after_seq",
+      "limit",
+      "has_more"
+    ],
+    "properties": {
+      "thread_id": {
+        "type": "string",
+        "title": "Thread 编号",
+        "description": "Agent thread 编号。"
+      },
+      "turn_id": {
+        "type": "string",
+        "nullable": true,
+        "title": "Turn 编号",
+        "description": "如果请求过滤了 turn_id，这里返回对应 turn_id。"
+      },
+      "events": {
+        "type": "array",
+        "title": "事件列表",
+        "description": "事件列表。",
+        "items": {
+          "type": "object",
+          "properties": {},
+          "x-apifox-orders": [],
+          "x-apifox-ignore-properties": []
+        }
+      },
+      "after_seq": {
+        "type": "integer",
+        "title": "请求游标",
+        "description": "本次请求传入的 after_seq。"
+      },
+      "next_after_seq": {
+        "type": "integer",
+        "title": "下一次游标",
+        "description": "下次继续读取时使用的 after_seq。"
+      },
+      "limit": {
+        "type": "integer",
+        "title": "每页数量",
+        "description": "每页数量。"
+      },
+      "has_more": {
+        "type": "boolean",
+        "title": "是否还有更多",
+        "description": "是否还有下一页。"
+      }
+    },
+    "x-apifox-orders": [
+      "thread_id",
+      "turn_id",
+      "events",
+      "after_seq",
+      "next_after_seq",
+      "limit",
+      "has_more"
+    ],
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "method": "post",
+  "path": "/api/projects/{project_id}/bible-generations",
+  "operation": {
+    "summary": "异步生成故事圣经",
+    "deprecated": false,
+    "description": "异步生成接口。调用后只创建任务，不直接返回生成内容。\n\n前端处理方式：\n- 提交请求后读取返回的 `task_id`\n- 使用 `GET /api/tasks/{task_id}` 查询任务状态\n- 或使用 `/api/tasks/{task_id}/events` 监听 SSE 事件\n\n幂等要求：\n- 请求必须带 `Idempotency-Key`\n- 一次用户操作生成一个稳定 key\n- 用户重复点击或网络重试时复用同一个 key，避免重复扣费和重复创建任务\n\n生成内容：\n- 创建新的 StoryBible revision\n- 基于项目基础设定生成：`title`、`characters`、`story_start`、`story_end`、`style`、`source_work`、`pace`、`extra_requirements`\n- 如果已有当前 Bible head，也会作为父版本上下文\n\n前端填写：\n- `instructions`：用户本次补充要求，自由文本\n- `parameters`：没有明确控件时传 `{}`\n\n后续步骤：\n- 任务完成后不会自动切换当前版本\n- 前端应让用户审核生成结果\n- 审核通过后调用 `PUT /api/projects/{project_id}/bible-head`",
+    "operationId": "generate_bible_api_projects__project_id__bible_generations_post",
+    "tags": [
+      "创作版本与生成/故事圣经StoryBible",
+      "创作版本与生成"
+    ],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "project_id",
+        "required": true,
+        "schema": {
+          "title": "Project Id",
+          "type": "integer"
+        },
+        "description": "项目编号。"
+      },
+      {
+        "in": "header",
+        "name": "Idempotency-Key",
+        "required": true,
+        "schema": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Idempotency-Key",
+          "type": "string"
+        },
+        "description": "幂等键。一次用户操作生成一个稳定字符串；同一用户用同一个 key 重试同一请求会返回同一任务，换请求内容会返回冲突。"
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GenerationRequest"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Body"
+          },
+          "example": {
+            "parameters": {},
+            "instructions": "按项目设定生成故事圣经。"
+          }
+        }
+      },
+      "required": true,
+      "description": "故事圣经生成请求。一般传 {\"parameters\": {}, \"instructions\": \"用户本次补充要求\"}；没有用户补充要求时可传 {} 或 null。"
+    },
+    "responses": {
+      "202": {
+        "description": "任务已接受",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TaskAccepted"
+            },
+            "example": {
+              "task_id": "b8d23aea-7522-461a-a2aa-dd9013c06c65",
+              "status": "queued",
+              "events_url": "/api/tasks/b8d23aea-7522-461a-a2aa-dd9013c06c65/events",
+              "created": true
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-folder": "创作版本与生成/故事圣经StoryBible",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923796-run"
+  }
+}

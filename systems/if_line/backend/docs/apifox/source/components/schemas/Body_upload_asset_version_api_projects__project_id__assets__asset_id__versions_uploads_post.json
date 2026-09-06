@@ -1,0 +1,36 @@
+{
+  "name": "Body_upload_asset_version_api_projects__project_id__assets__asset_id__versions_uploads_post",
+  "schema": {
+    "properties": {
+      "description": {
+        "default": "",
+        "title": "Description",
+        "type": "string",
+        "description": "本次版本说明，可为空，例如“用户替换为高清版”。"
+      },
+      "file": {
+        "format": "binary",
+        "title": "File",
+        "type": "string",
+        "description": "要上传的新版本图片文件。当前后端限制最大 25 MB。"
+      },
+      "rights_attested": {
+        "title": "Rights Attested",
+        "type": "boolean",
+        "description": "必须为 true，表示上传者确认有权使用该素材。"
+      }
+    },
+    "required": [
+      "file",
+      "rights_attested"
+    ],
+    "title": "Body_upload_asset_version_api_projects__project_id__assets__asset_id__versions_uploads_post",
+    "type": "object",
+    "description": "给已有逻辑素材上传新版本的表单。不会创建新 asset，只会给 path 中的 asset_id 增加一个 asset_version。",
+    "x-apifox-orders": [
+      "description",
+      "file",
+      "rights_attested"
+    ]
+  }
+}

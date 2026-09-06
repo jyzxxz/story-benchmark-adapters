@@ -1,0 +1,62 @@
+{
+  "method": "get",
+  "path": "/api/path-chapters/{path_chapter_id}/head",
+  "operation": {
+    "summary": "读取当前章节正文版本",
+    "deprecated": false,
+    "description": "读取当前采用的 ChapterRevision revision_id 和 lock_version。",
+    "operationId": "current_chapter_api_projects__project_id__chapters__chapter_index__current_get",
+    "tags": [
+      "创作版本与生成/章节生成",
+      "创作版本与生成"
+    ],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "path_chapter_id",
+        "required": true,
+        "schema": {
+          "title": "Path Chapter Id",
+          "type": "string"
+        },
+        "description": "路径章节编号。它表示某条 story path 里的一个章节位置，不等同于旧接口的 chapter_index。"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/RevisionHead"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-folder": "创作版本与生成/章节生成",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923801-run"
+  }
+}

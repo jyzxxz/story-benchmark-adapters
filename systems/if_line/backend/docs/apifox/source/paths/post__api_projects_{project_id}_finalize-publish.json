@@ -1,0 +1,87 @@
+{
+  "method": "post",
+  "path": "/api/projects/{project_id}/finalize-publish",
+  "operation": {
+    "summary": "固化发布（草稿锚点原子激活 + 发布成书）",
+    "description": "把物化后的草稿修订 id 集作为锚点，在单事务内按链路顺序激活（bible→outline→章节→脚本→VNGraph）并发布为同项目的新 Release 版本。任一环节失败整体回滚（激活不留痕迹）。就绪校验阻塞时返回 422，details.blocking_items 列出需重做的下游环节；Idempotency-Key 贯穿发布重放（同 key 同请求返回同一 Release）。",
+    "operationId": "finalizeAndPublish",
+    "tags": [
+      "项目管理/发布管理",
+      "发布管理"
+    ],
+    "x-apifox-folder": "项目管理/发布管理",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "project_id",
+        "required": true,
+        "schema": {
+          "title": "Project Id",
+          "type": "integer"
+        },
+        "description": "项目编号。"
+      },
+      {
+        "in": "header",
+        "name": "Idempotency-Key",
+        "required": true,
+        "schema": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Idempotency-Key",
+          "type": "string"
+        },
+        "description": "幂等键。一次用户操作生成一个稳定字符串；同一用户用同一个 key 重试同一请求会返回同一任务，换请求内容会返回冲突。"
+      }
+    ],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/FinalizePublishRequest"
+          }
+        }
+      }
+    },
+    "responses": {
+      "201": {
+        "description": "发布成功（新 Release 版本）",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Release"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "409": {
+        "description": "发布冲突/内容已发布过",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object"
+            }
+          }
+        },
+        "x-apifox-name": "校验失败",
+        "x-apifox-ordering": 1
+      },
+      "422": {
+        "description": "就绪校验阻塞，details.blocking_items 给出需重做的下游",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object"
+            }
+          }
+        },
+        "x-apifox-name": "校验失败",
+        "x-apifox-ordering": 1
+      }
+    }
+  }
+}

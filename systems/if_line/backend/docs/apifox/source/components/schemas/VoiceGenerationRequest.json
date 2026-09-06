@@ -1,0 +1,22 @@
+{
+  "name": "VoiceGenerationRequest",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "render_audio": {
+        "default": true,
+        "title": "是否渲染音频",
+        "type": "boolean",
+        "description": "是否渲染音频。"
+      }
+    },
+    "title": "章节语音生成请求",
+    "type": "object",
+    "x-apifox-orders": [
+      "render_audio"
+    ],
+    "description": "章节语音生成请求数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

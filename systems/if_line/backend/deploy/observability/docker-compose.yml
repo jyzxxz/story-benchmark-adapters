@@ -1,0 +1,89 @@
+services:
+  phoenix:
+    image: ${OBS_IMAGE_PREFIX:-docker.1ms.run/}arizephoenix/phoenix:latest
+    container_name: ifline-phoenix
+    ports:
+      - "${PHOENIX_UI_PORT:-6006}:6006"
+    environment:
+      PHOENIX_ENABLE_AUTH: ${PHOENIX_ENABLE_AUTH:-true}
+      PHOENIX_SECRET: ${PHOENIX_SECRET}
+      PHOENIX_ADMIN_SECRET: ${PHOENIX_ADMIN_SECRET}
+      PHOENIX_DEFAULT_ADMIN_INITIAL_PASSWORD: ${PHOENIX_DEFAULT_ADMIN_INITIAL_PASSWORD}
+      PHOENIX_DISABLE_AGENT_ASSISTANT: ${PHOENIX_DISABLE_AGENT_ASSISTANT:-true}
+      PHOENIX_AGENTS_DISABLE_BASH: ${PHOENIX_AGENTS_DISABLE_BASH:-true}
+      PHOENIX_AGENTS_DISABLE_WEB_ACCESS: ${PHOENIX_AGENTS_DISABLE_WEB_ACCESS:-true}
+      PHOENIX_ENABLE_MCP_SERVER: ${PHOENIX_ENABLE_MCP_SERVER:-false}
+      PHOENIX_ENABLE_MCP_CODE_MODE: ${PHOENIX_ENABLE_MCP_CODE_MODE:-false}
+      PHOENIX_ALLOWED_SANDBOX_PROVIDERS: ${PHOENIX_ALLOWED_SANDBOX_PROVIDERS:-NONE}
+      PHOENIX_ALLOWED_PROVIDERS: ${PHOENIX_ALLOWED_PROVIDERS:-NONE}
+      PHOENIX_ENABLE_OAUTH2_AUTHORIZATION_SERVER: ${PHOENIX_ENABLE_OAUTH2_AUTHORIZATION_SERVER:-false}
+      PHOENIX_WORKING_DIR: /mnt/data
+      PHOENIX_SQL_DATABASE_URL: sqlite:////mnt/data/phoenix.db
+    volumes:
+      - phoenix-data:/mnt/data
+    restart: unless-stopped
+
+  otel-collector:
+    image: ${OBS_IMAGE_PREFIX:-docker.1ms.run/}otel/opentelemetry-collector-contrib:0.108.0
+    container_name: ifline-otel-collector
+    command: ["--config=/etc/otelcol-contrib/config.yml"]
+    ports:
+      - "${OTEL_GRPC_PORT:-14317}:4317"
+      - "${OTEL_HTTP_PORT:-14318}:4318"
+    volumes:
+      - ./otel-collector.yml:/etc/otelcol-contrib/config.yml:ro
+    environment:
+      PHOENIX_ADMIN_SECRET: ${PHOENIX_ADMIN_SECRET}
+    depends_on:
+      - phoenix
+      - tempo
+      - victorialogs
+    restart: unless-stopped
+
+  tempo:
+    image: ${OBS_IMAGE_PREFIX:-docker.1ms.run/}grafana/tempo:2.6.1
+    container_name: ifline-tempo
+    command: ["-config.file=/etc/tempo.yml"]
+    ports:
+      - "${TEMPO_HTTP_PORT:-3200}:3200"
+    volumes:
+      - ./tempo.yml:/etc/tempo.yml:ro
+      - tempo-data:/var/tempo
+    restart: unless-stopped
+
+  victorialogs:
+    image: ${OBS_IMAGE_PREFIX:-docker.1ms.run/}victoriametrics/victoria-logs:v1.52.0
+    container_name: ifline-victorialogs
+    command:
+      - "-storageDataPath=/victoria-logs-data"
+      - "-retentionPeriod=${VICTORIALOGS_RETENTION_PERIOD:-7d}"
+    ports:
+      - "${VICTORIALOGS_HTTP_PORT:-9428}:9428"
+    volumes:
+      - victorialogs-data:/victoria-logs-data
+    restart: unless-stopped
+
+  grafana:
+    image: ${OBS_IMAGE_PREFIX:-docker.1ms.run/}grafana/grafana:12.2.0
+    container_name: ifline-grafana
+    ports:
+      - "${GRAFANA_HTTP_PORT:-3001}:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_DEFAULT_THEME: dark
+      GF_INSTALL_PLUGINS: ${GRAFANA_INSTALL_PLUGINS:-victoriametrics-logs-datasource}
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - tempo
+      - victorialogs
+    restart: unless-stopped
+
+volumes:
+  phoenix-data:
+  tempo-data:
+  victorialogs-data:
+  grafana-data:

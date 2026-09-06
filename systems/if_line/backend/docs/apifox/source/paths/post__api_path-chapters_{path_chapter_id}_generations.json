@@ -1,0 +1,90 @@
+{
+  "method": "post",
+  "path": "/api/path-chapters/{path_chapter_id}/generations",
+  "operation": {
+    "summary": "异步生成单章正文",
+    "deprecated": false,
+    "description": "异步生成接口。调用后只创建任务，不直接返回生成内容。\n\n前端处理方式：\n- 提交请求后读取返回的 `task_id`\n- 使用 `GET /api/tasks/{task_id}` 查询任务状态\n- 或使用 `/api/tasks/{task_id}/events` 监听 SSE 事件\n\n幂等要求：\n- 请求必须带 `Idempotency-Key`\n- 一次用户操作生成一个稳定 key\n- 用户重复点击或网络重试时复用同一个 key，避免重复扣费和重复创建任务\n\n生成内容：\n- 创建新的 ChapterRevision\n- 基于当前 Bible head、Outline head、目标 PathChapter 的大纲条目和已有上下文生成\n\n前端填写：\n- `instructions`：用户对本章的补充要求，自由文本\n- `parameters`：没有明确控件时传 `{}`\n\n注意：\n- `path_chapter_id` 是路径章节编号，不是旧接口的 `chapter_index`\n\n后续步骤：\n- 任务完成后不会自动切换当前版本\n- 审核通过后调用 `PUT /api/path-chapters/{path_chapter_id}/head`\n2026-08：body 支持可选物化草稿锚点（bible/outline 成对 + 前章 ancestor 覆盖）。",
+    "operationId": "generate_chapter_api_projects__project_id__chapters__chapter_index__generations_post",
+    "tags": [
+      "创作版本与生成/章节生成",
+      "创作版本与生成"
+    ],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "path_chapter_id",
+        "required": true,
+        "schema": {
+          "title": "Path Chapter Id",
+          "type": "string"
+        },
+        "description": "路径章节编号。它表示某条 story path 里的一个章节位置，不等同于旧接口的 chapter_index。"
+      },
+      {
+        "in": "header",
+        "name": "Idempotency-Key",
+        "required": true,
+        "schema": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Idempotency-Key",
+          "type": "string"
+        },
+        "description": "幂等键。一次用户操作生成一个稳定字符串；同一用户用同一个 key 重试同一请求会返回同一任务，换请求内容会返回冲突。"
+      }
+    ],
+    "requestBody": {
+      "required": false,
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ChapterGenerationRequest"
+          }
+        }
+      }
+    },
+    "responses": {
+      "202": {
+        "description": "任务已接受",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TaskAccepted"
+            },
+            "example": {
+              "task_id": "dea1115e-77a8-4db3-91ee-2ebe286842b5",
+              "status": "queued",
+              "events_url": "/api/tasks/dea1115e-77a8-4db3-91ee-2ebe286842b5/events",
+              "created": true
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-folder": "创作版本与生成/章节生成",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923802-run"
+  }
+}

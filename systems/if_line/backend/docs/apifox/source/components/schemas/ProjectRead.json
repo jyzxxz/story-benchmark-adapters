@@ -1,0 +1,99 @@
+{
+  "name": "ProjectRead",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "authoring": {
+        "$ref": "#/components/schemas/AuthoringProjection"
+      },
+      "characters": {
+        "items": {
+          "type": "object"
+        },
+        "title": "Characters",
+        "type": "array"
+      },
+      "extra_requirements": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Extra Requirements"
+      },
+      "id": {
+        "title": "Id",
+        "type": "integer"
+      },
+      "pace": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Pace"
+      },
+      "publication": {
+        "$ref": "#/components/schemas/PublicationProjection"
+      },
+      "root_story_path_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Root Story Path Id"
+      },
+      "source_work": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Source Work"
+      },
+      "story_end": {
+        "default": "",
+        "title": "Story End",
+        "type": "string"
+      },
+      "story_start": {
+        "default": "",
+        "title": "Story Start",
+        "type": "string"
+      },
+      "style": {
+        "default": "",
+        "title": "Style",
+        "type": "string"
+      },
+      "title": {
+        "maxLength": 200,
+        "minLength": 1,
+        "title": "Title",
+        "type": "string"
+      }
+    },
+    "required": [
+      "title",
+      "id",
+      "root_story_path_id",
+      "authoring",
+      "publication"
+    ],
+    "title": "ProjectRead",
+    "type": "object"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "name": "CandidateSetRevision",
+  "schema": {
+    "properties": {
+      "chapter_revision_id": {
+        "title": "Chapter Revision Id",
+        "type": "string"
+      },
+      "checkpoint_node_id": {
+        "title": "Checkpoint Node Id",
+        "type": "string"
+      },
+      "content_hash": {
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Content Hash",
+        "type": "string"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "revision_no": {
+        "minimum": 1.0,
+        "title": "Revision No",
+        "type": "integer"
+      },
+      "source_hash": {
+        "title": "Source Hash",
+        "type": "string"
+      },
+      "state_snapshot_id": {
+        "title": "State Snapshot Id",
+        "type": "string"
+      },
+      "story_path_id": {
+        "title": "Story Path Id",
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "story_path_id",
+      "checkpoint_node_id",
+      "chapter_revision_id",
+      "state_snapshot_id",
+      "revision_no",
+      "source_hash",
+      "content_hash"
+    ],
+    "title": "CandidateSetRevision",
+    "type": "object"
+  }
+}

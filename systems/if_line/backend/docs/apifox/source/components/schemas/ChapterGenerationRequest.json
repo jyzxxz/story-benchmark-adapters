@@ -1,0 +1,48 @@
+{
+  "name": "ChapterGenerationRequest",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "bible_revision_id": {
+        "title": "物化草稿锚点：故事圣经修订 id。与 outline_revision_id 必须成对出现；都不传=沿用当前 head（行为与旧版一致）。",
+        "type": "string",
+        "minLength": 36,
+        "maxLength": 36,
+        "description": "物化草稿锚点：故事圣经修订 id。与 outline_revision_id 必须成对出现；都不传=沿用当前 head（行为与旧版一致）。",
+        "nullable": true
+      },
+      "outline_revision_id": {
+        "title": "物化草稿锚点：大纲修订 id。与 bible_revision_id 成对出现。",
+        "type": "string",
+        "minLength": 36,
+        "maxLength": 36,
+        "description": "物化草稿锚点：大纲修订 id。与 bible_revision_id 成对出现。",
+        "nullable": true
+      },
+      "ancestor_revision_overrides": {
+        "title": "Ancestor Revision Overrides",
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        },
+        "nullable": true,
+        "description": "前章续写上下文覆盖：{path_chapter_id: chapter_revision_id}。前章草稿物化后把修订 id 传进来，续写会基于该版本。"
+      },
+      "instructions": {
+        "title": "Instructions",
+        "type": "string",
+        "maxLength": 12000,
+        "nullable": true,
+        "description": "本次正文生成的附加要求（自由文本）。"
+      },
+      "parameters": {
+        "title": "Parameters",
+        "type": "object",
+        "description": "生成参数（word_count 等，留空用默认）。"
+      }
+    },
+    "title": "ChapterGenerationRequest",
+    "type": "object",
+    "description": "章节正文生成请求。新增可选物化草稿锚点：bible_revision_id / outline_revision_id 必须成对出现（resolver 契约）；不传时沿用当前 head，行为与旧版完全一致。"
+  }
+}

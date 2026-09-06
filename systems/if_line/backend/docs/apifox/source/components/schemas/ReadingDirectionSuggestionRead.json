@@ -1,0 +1,30 @@
+{
+  "name": "ReadingDirectionSuggestionRead",
+  "schema": {
+    "properties": {
+      "direction": {
+        "title": "方向",
+        "type": "string",
+        "description": "方向。"
+      },
+      "prompt_version": {
+        "title": "提示词版本",
+        "type": "string",
+        "description": "提示词版本。"
+      }
+    },
+    "required": [
+      "direction",
+      "prompt_version"
+    ],
+    "title": "阅读方向建议读取结果",
+    "type": "object",
+    "x-apifox-orders": [
+      "direction",
+      "prompt_version"
+    ],
+    "description": "阅读方向建议读取结果数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

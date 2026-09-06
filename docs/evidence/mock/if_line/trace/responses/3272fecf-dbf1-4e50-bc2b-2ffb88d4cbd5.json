@@ -1,0 +1,21 @@
+{
+  "id": "fixed-4",
+  "model": "fixed-test-model",
+  "object": "chat.completion",
+  "created": 0,
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\"segments\": [{\"text\": \"雨继续下着。\", \"kind\": \"narration\", \"scene_key\": \"s1\"}], \"scenes\": [{\"scene_key\": \"s1\", \"title\": \"门廊\", \"location\": \"门廊\"}]}"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 20,
+    "completion_tokens": 10,
+    "total_tokens": 30
+  }
+}

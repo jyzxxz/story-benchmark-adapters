@@ -1,0 +1,30 @@
+{
+  "name": "ServerAgentCreateRequest",
+  "schema": {
+    "type": "object",
+    "title": "服务端 Agent 创建请求",
+    "description": "创建服务端 Agent thread 的请求。",
+    "properties": {
+      "agent_kind": {
+        "type": "string",
+        "title": "Agent 类型",
+        "description": "Agent 类型，必填。当前常用 server_agent；也可传 chat_agent 创建普通对话 Agent。"
+      },
+      "mode": {
+        "type": "string",
+        "nullable": true,
+        "title": "运行模式",
+        "description": "可选运行模式。server_agent 可传 restricted 或 solo；chat_agent 可传 default。不传则使用该 Agent 类型默认模式。"
+      }
+    },
+    "required": [
+      "agent_kind"
+    ],
+    "x-apifox-orders": [
+      "agent_kind",
+      "mode"
+    ],
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

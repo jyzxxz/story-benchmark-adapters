@@ -1,0 +1,49 @@
+{
+  "name": "AssetPage",
+  "schema": {
+    "properties": {
+      "items": {
+        "items": {
+          "$ref": "#/components/schemas/AssetRead",
+          "title": "itemsitem",
+          "description": "itemsitem。"
+        },
+        "title": "列表项",
+        "type": "array",
+        "description": "列表项列表。"
+      },
+      "limit": {
+        "title": "限制数量",
+        "type": "integer",
+        "description": "限制数量。"
+      },
+      "offset": {
+        "title": "偏移量",
+        "type": "integer",
+        "description": "偏移量。"
+      },
+      "total": {
+        "title": "总数",
+        "type": "integer",
+        "description": "总数。"
+      }
+    },
+    "required": [
+      "items",
+      "total",
+      "limit",
+      "offset"
+    ],
+    "title": "素材分页结果",
+    "type": "object",
+    "x-apifox-orders": [
+      "items",
+      "limit",
+      "offset",
+      "total"
+    ],
+    "description": "素材分页结果数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

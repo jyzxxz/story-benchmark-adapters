@@ -1,0 +1,25 @@
+{
+  "name": "HTTPValidationError",
+  "schema": {
+    "properties": {
+      "detail": {
+        "items": {
+          "$ref": "#/components/schemas/ValidationError",
+          "title": "detailitem",
+          "description": "detailitem。"
+        },
+        "title": "详情",
+        "type": "array",
+        "description": "详情列表。"
+      }
+    },
+    "title": "请求校验错误响应",
+    "type": "object",
+    "x-apifox-orders": [
+      "detail"
+    ],
+    "description": "请求校验错误响应数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

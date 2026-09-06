@@ -1,0 +1,21 @@
+{
+  "id": "fixed-2",
+  "model": "fixed-test-model",
+  "object": "chat.completion",
+  "created": 0,
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\"chapters\": [{\"chapter_index\": 1, \"title\": \"第1章\", \"summary\": \"等待雨停。\", \"scene\": \"门廊\"}]}"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 20,
+    "completion_tokens": 10,
+    "total_tokens": 30
+  }
+}

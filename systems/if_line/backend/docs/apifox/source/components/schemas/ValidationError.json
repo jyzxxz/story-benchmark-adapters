@@ -1,0 +1,53 @@
+{
+  "name": "ValidationError",
+  "schema": {
+    "properties": {
+      "loc": {
+        "items": {
+          "anyOf": [
+            {
+              "type": "string",
+              "title": "locitem",
+              "description": "locitem。"
+            },
+            {
+              "type": "integer",
+              "title": "locitem",
+              "description": "locitem。"
+            }
+          ],
+          "title": "locitem",
+          "description": "locitem。"
+        },
+        "title": "位置",
+        "type": "array",
+        "description": "位置列表。"
+      },
+      "msg": {
+        "title": "消息",
+        "type": "string",
+        "description": "消息。"
+      },
+      "type": {
+        "title": "类型",
+        "type": "string",
+        "description": "类型。"
+      }
+    },
+    "required": [
+      "loc",
+      "msg",
+      "type"
+    ],
+    "title": "字段校验错误",
+    "type": "object",
+    "x-apifox-orders": [
+      "loc",
+      "msg",
+      "type"
+    ],
+    "description": "字段校验错误数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "method": "get",
+  "path": "/api/story-paths/{story_path_id}/outline-revisions",
+  "operation": {
+    "summary": "读取章节大纲版本列表",
+    "deprecated": false,
+    "description": "读取某条故事路径下的大纲版本列表。",
+    "operationId": "list_outline_revisions_api_projects__project_id__outline_revisions_get",
+    "tags": [
+      "创作版本与生成/章节大纲",
+      "创作版本与生成"
+    ],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "story_path_id",
+        "required": true,
+        "schema": {
+          "title": "Story Path Id",
+          "type": "string"
+        },
+        "description": "故事路径编号。主线和分支线都会有自己的 story_path_id。"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "items": {
+                "$ref": "#/components/schemas/OutlineRevision"
+              },
+              "title": "Response Listoutlinerevisions",
+              "type": "array"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-folder": "创作版本与生成/章节大纲",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923808-run"
+  }
+}

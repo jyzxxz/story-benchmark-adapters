@@ -1,0 +1,58 @@
+{
+  "name": "ScriptRevisionCreated",
+  "schema": {
+    "properties": {
+      "id": {
+        "title": "Id",
+        "type": "string",
+        "description": "脚本修订 UUID。"
+      },
+      "chapter_revision_id": {
+        "title": "Chapter Revision Id",
+        "type": "string",
+        "description": "锚定的章节正文修订 UUID。"
+      },
+      "revision_no": {
+        "title": "Revision No",
+        "type": "integer",
+        "minimum": 1,
+        "description": "章节内脚本修订序号。"
+      },
+      "source_hash": {
+        "title": "Source Hash",
+        "type": "string",
+        "description": "来源指纹。"
+      },
+      "script_hash": {
+        "title": "Script Hash",
+        "type": "string",
+        "description": "脚本 IR 内容 hash（内容寻址键）。"
+      },
+      "script_json": {
+        "title": "Script Json",
+        "type": "object",
+        "description": "落库后的完整脚本 IR。"
+      },
+      "appended_character_names": {
+        "title": "Appended Character Names",
+        "nullable": true,
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "本次回写自动登记进 bible 的角色名列表（前端需按名合并进本地 bible 草稿，避免发布覆盖增量角色）。"
+      }
+    },
+    "required": [
+      "id",
+      "chapter_revision_id",
+      "revision_no",
+      "source_hash",
+      "script_hash",
+      "script_json"
+    ],
+    "title": "ScriptRevisionCreated",
+    "type": "object",
+    "description": "手动创建的章节脚本修订（created 状态；同内容重复提交返回既有修订，created 语义为幂等复用）。"
+  }
+}

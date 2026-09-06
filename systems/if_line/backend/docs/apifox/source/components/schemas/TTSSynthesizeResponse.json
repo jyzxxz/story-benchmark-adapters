@@ -1,0 +1,93 @@
+{
+  "name": "TTSSynthesizeResponse",
+  "schema": {
+    "description": "文本转语音合成响应数据模型。",
+    "properties": {
+      "audio_url": {
+        "title": "音频地址",
+        "type": "string",
+        "description": "音频地址。该地址是私有媒体地址，需要带同一个登录 cookie 访问。",
+        "nullable": true
+      },
+      "cached": {
+        "title": "是否命中缓存",
+        "type": "boolean",
+        "description": "是否命中缓存。",
+        "nullable": true
+      },
+      "emotion_prompt": {
+        "title": "情绪提示词",
+        "type": "string",
+        "description": "实际使用的情绪 prompt，可为空。",
+        "nullable": true
+      },
+      "engine": {
+        "title": "引擎",
+        "type": "string",
+        "description": "实际使用的 TTS 引擎，例如 minimax、aliyun、xunfei。",
+        "nullable": true
+      },
+      "error": {
+        "title": "错误信息",
+        "type": "string",
+        "description": "错误信息，可为空。",
+        "nullable": true
+      },
+      "fallback_used": {
+        "title": "是否使用兜底",
+        "type": "boolean",
+        "description": "是否使用了兜底引擎。",
+        "nullable": true
+      },
+      "model": {
+        "title": "模型",
+        "type": "string",
+        "description": "实际使用的模型，可为空。",
+        "nullable": true
+      },
+      "primary_engine": {
+        "title": "主引擎",
+        "type": "string",
+        "description": "主引擎。未发生兜底时通常等于 engine。",
+        "nullable": true
+      },
+      "primary_error": {
+        "title": "primary错误",
+        "type": "string",
+        "description": "主引擎错误。只有发生兜底时才有值。",
+        "nullable": true
+      },
+      "speaker": {
+        "title": "说话人",
+        "type": "string",
+        "description": "实际使用的音色 ID，可为空。",
+        "nullable": true
+      },
+      "success": {
+        "title": "是否成功",
+        "type": "boolean",
+        "description": "是否成功。"
+      }
+    },
+    "required": [
+      "success"
+    ],
+    "title": "文本转语音合成响应",
+    "type": "object",
+    "x-apifox-orders": [
+      "audio_url",
+      "cached",
+      "emotion_prompt",
+      "engine",
+      "error",
+      "fallback_used",
+      "model",
+      "primary_engine",
+      "primary_error",
+      "speaker",
+      "success"
+    ],
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

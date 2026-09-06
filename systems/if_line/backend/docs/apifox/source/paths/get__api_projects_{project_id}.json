@@ -1,0 +1,68 @@
+{
+  "method": "get",
+  "path": "/api/projects/{project_id}",
+  "operation": {
+    "summary": "读取我的项目详情",
+    "deprecated": false,
+    "description": "读取项目详情。",
+    "operationId": "get_project_api_projects__project_id__get",
+    "tags": [
+      "项目管理"
+    ],
+    "parameters": [
+      {
+        "name": "sid",
+        "in": "cookie",
+        "description": "",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Sid",
+          "type": "string",
+          "nullable": true
+        }
+      },
+      {
+        "name": "project_id",
+        "in": "path",
+        "description": "",
+        "required": true,
+        "example": "",
+        "schema": {
+          "title": "Project Id",
+          "type": "integer"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {}
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "项目管理",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923785-run"
+  }
+}

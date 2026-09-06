@@ -1,0 +1,392 @@
+{
+  "description": "LLM VNGraph 生成器示例输出",
+  "input": {
+    "chapter_content": "夜色压在燕宫的铜灯上。\n\n太子丹踱步于殿中，烛火在他脸上投下摇曳的光影。\n\n太子丹：荆卿，秦兵不会等我们。\n\n荆轲沉默片刻，缓缓开口。\n\n荆轲：臣明白。但此行凶险，需万全准备。\n\n太子丹停下脚步，目光灼灼地看向荆轲。\n\n太子丹：我已等了太久。燕国的存亡，全系于你此行。\n\n荆轲抬起头，眼中闪过一丝决绝。\n\n荆轲：臣，愿往。\n\n数日后，易水河畔。\n\n秋风萧瑟，枯叶纷飞。高渐离击筑而歌。\n\n高渐离：风萧萧兮易水寒，壮士一去兮不复还！\n\n荆轲转身，向燕宫方向深深一拜，随后头也不回地踏上征程。",
+    "chapter_outline": {
+      "chapter_index": 1,
+      "title": "易水寒",
+      "summary": "太子丹催促荆轲出发，荆轲在易水河畔踏上征程"
+    }
+  },
+  "llm_analysis_output": {
+    "scenes": [
+      {
+        "scene_id": 1,
+        "scene_type": "dialogue",
+        "location": "燕国宫殿",
+        "background": "夜晚的燕宫大殿，烛火摇曳，气氛压抑",
+        "characters_present": ["太子丹", "荆轲"],
+        "content": [
+          {
+            "type": "narration",
+            "text": "夜色压在燕宫的铜灯上。太子丹踱步于殿中，烛火在他脸上投下摇曳的光影。"
+          },
+          {
+            "type": "dialogue",
+            "speaker": "太子丹",
+            "text": "荆卿，秦兵不会等我们。",
+            "emotion": "焦虑",
+            "actions": ["踱步", "看向荆轲"]
+          },
+          {
+            "type": "narration",
+            "text": "荆轲沉默片刻，缓缓开口。"
+          },
+          {
+            "type": "dialogue",
+            "speaker": "荆轲",
+            "text": "臣明白。但此行凶险，需万全准备。",
+            "emotion": "冷静",
+            "actions": ["拱手"]
+          },
+          {
+            "type": "narration",
+            "text": "太子丹停下脚步，目光灼灼地看向荆轲。"
+          },
+          {
+            "type": "dialogue",
+            "speaker": "太子丹",
+            "text": "我已等了太久。燕国的存亡，全系于你此行。",
+            "emotion": "急切",
+            "actions": ["停下脚步", "目光灼灼"]
+          },
+          {
+            "type": "narration",
+            "text": "荆轲抬起头，眼中闪过一丝决绝。"
+          },
+          {
+            "type": "dialogue",
+            "speaker": "荆轲",
+            "text": "臣，愿往。",
+            "emotion": "决绝",
+            "actions": ["抬头", "眼神坚定"]
+          }
+        ],
+        "visual_effects": [],
+        "bgm_change": "压抑、紧张",
+        "emotion_tone": "压抑"
+      },
+      {
+        "scene_id": 2,
+        "scene_type": "transition",
+        "location": "易水河畔",
+        "background": "易水河畔，秋风萧瑟，枯叶纷飞",
+        "characters_present": ["高渐离", "荆轲"],
+        "content": [
+          {
+            "type": "narration",
+            "text": "数日后，易水河畔。秋风萧瑟，枯叶纷飞。高渐离击筑而歌。"
+          },
+          {
+            "type": "dialogue",
+            "speaker": "高渐离",
+            "text": "风萧萧兮易水寒，壮士一去兮不复还！",
+            "emotion": "悲壮",
+            "actions": ["击筑", "高歌"]
+          },
+          {
+            "type": "narration",
+            "text": "荆轲转身，向燕宫方向深深一拜，随后头也不回地踏上征程。"
+          }
+        ],
+        "visual_effects": ["回忆泛黄"],
+        "bgm_change": "悲壮、苍凉",
+        "emotion_tone": "悲壮"
+      }
+    ],
+    "choices": [],
+    "character_states": {
+      "太子丹": {
+        "initial_position": "right",
+        "enter_animation": "SlideInRight",
+        "exit_animation": "FadeOut",
+        "expressions": ["焦虑", "急切", "期待"]
+      },
+      "荆轲": {
+        "initial_position": "left",
+        "enter_animation": "SlideInLeft",
+        "exit_animation": "FadeOut",
+        "expressions": ["冷静", "决绝", "悲壮"]
+      },
+      "高渐离": {
+        "initial_position": "center",
+        "enter_animation": "FadeIn",
+        "exit_animation": "FadeOut",
+        "expressions": ["悲壮", "豪迈"]
+      }
+    },
+    "transitions": [
+      {
+        "from_scene": 1,
+        "to_scene": 2,
+        "transition_type": "FadeOut",
+        "duration": 0.8
+      }
+    ]
+  },
+  "vn_graph_output": {
+    "Version": 1,
+    "StartNodeIndex": 1,
+    "Nodes": [
+      {
+        "Index": 1,
+        "DisplayName": "开始",
+        "Comment": "",
+        "NodeType": 1,
+        "SubType": 6,
+        "X": 80,
+        "Y": 80,
+        "Data": {},
+        "Outputs": {"Next": [5]}
+      },
+      {
+        "Index": 2,
+        "DisplayName": "背景: 夜晚的燕宫大殿",
+        "Comment": "",
+        "NodeType": 2,
+        "SubType": 3,
+        "X": 80,
+        "Y": 430,
+        "Data": {
+          "BackgroundImage": {"Kind": "String", "StringValue": "res://Resources/Backgrounds/yan_palace_night.png"},
+          "ChangeType": {"Kind": "Enum", "StringValue": "FadeIn"},
+          "Duration": {"Kind": "Float", "NumberValue": 0.5}
+        },
+        "Outputs": {}
+      },
+      {
+        "Index": 3,
+        "DisplayName": "太子丹立绘",
+        "Comment": "",
+        "NodeType": 2,
+        "SubType": 1,
+        "X": 280,
+        "Y": 430,
+        "Data": {
+          "TachiID": {"Kind": "String", "StringValue": "prince_dan"},
+          "TachiIamge": {"Kind": "String", "StringValue": "res://Resources/Tachi/prince_dan.png"},
+          "TargetPosition": {"Kind": "Vector2", "X": 720, "Y": 120},
+          "EnterType": {"Kind": "Enum", "StringValue": "SlideInRight"},
+          "Duration": {"Kind": "Float", "NumberValue": 0.3}
+        },
+        "Outputs": {}
+      },
+      {
+        "Index": 4,
+        "DisplayName": "荆轲立绘",
+        "Comment": "",
+        "NodeType": 2,
+        "SubType": 1,
+        "X": 480,
+        "Y": 430,
+        "Data": {
+          "TachiID": {"Kind": "String", "StringValue": "jing_ke"},
+          "TachiIamge": {"Kind": "String", "StringValue": "res://Resources/Tachi/jing_ke.png"},
+          "TargetPosition": {"Kind": "Vector2", "X": 520, "Y": 120},
+          "EnterType": {"Kind": "Enum", "StringValue": "SlideInLeft"},
+          "Duration": {"Kind": "Float", "NumberValue": 0.3}
+        },
+        "Outputs": {}
+      },
+      {
+        "Index": 5,
+        "DisplayName": "段落",
+        "Comment": "",
+        "NodeType": 1,
+        "SubType": 2,
+        "X": 430,
+        "Y": 80,
+        "Data": {
+          "Lines": {
+            "Kind": "List",
+            "Items": [
+              {
+                "Kind": "Object",
+                "ObjectValue": {
+                  "SpeakerId": {"Kind": "String", "StringValue": "旁白"},
+                  "Text": {"Kind": "String", "StringValue": "夜色压在燕宫的铜灯上。太子丹踱步于殿中，烛火在他脸上投下摇曳的光影。"},
+                  "VoiceId": {"Kind": "String", "StringValue": ""}
+                }
+              },
+              {
+                "Kind": "Object",
+                "ObjectValue": {
+                  "SpeakerId": {"Kind": "String", "StringValue": "太子丹"},
+                  "Text": {"Kind": "String", "StringValue": "荆卿，秦兵不会等我们。"},
+                  "VoiceId": {"Kind": "String", "StringValue": ""}
+                }
+              },
+              {
+                "Kind": "Object",
+                "ObjectValue": {
+                  "SpeakerId": {"Kind": "String", "StringValue": "旁白"},
+                  "Text": {"Kind": "String", "StringValue": "荆轲沉默片刻，缓缓开口。"},
+                  "VoiceId": {"Kind": "String", "StringValue": ""}
+                }
+              },
+              {
+                "Kind": "Object",
+                "ObjectValue": {
+                  "SpeakerId": {"Kind": "String", "StringValue": "荆轲"},
+                  "Text": {"Kind": "String", "StringValue": "臣明白。但此行凶险，需万全准备。"},
+                  "VoiceId": {"Kind": "String", "StringValue": ""}
+                }
+              },
+              {
+                "Kind": "Object",
+                "ObjectValue": {
+                  "SpeakerId": {"Kind": "String", "StringValue": "旁白"},
+                  "Text": {"Kind": "String", "StringValue": "太子丹停下脚步，目光灼灼地看向荆轲。"},
+                  "VoiceId": {"Kind": "String", "StringValue": ""}
+                }
+              },
+              {
+                "Kind": "Object",
+                "ObjectValue": {
+                  "SpeakerId": {"Kind": "String", "StringValue": "太子丹"},
+                  "Text": {"Kind": "String", "StringValue": "我已等了太久。燕国的存亡，全系于你此行。"},
+                  "VoiceId": {"Kind": "String", "StringValue": ""}
+                }
+              },
+              {
+                "Kind": "Object",
+                "ObjectValue": {
+                  "SpeakerId": {"Kind": "String", "StringValue": "旁白"},
+                  "Text": {"Kind": "String", "StringValue": "荆轲抬起头，眼中闪过一丝决绝。"},
+                  "VoiceId": {"Kind": "String", "StringValue": ""}
+                }
+              },
+              {
+                "Kind": "Object",
+                "ObjectValue": {
+                  "SpeakerId": {"Kind": "String", "StringValue": "荆轲"},
+                  "Text": {"Kind": "String", "StringValue": "臣，愿往。"},
+                  "VoiceId": {"Kind": "String", "StringValue": ""}
+                }
+              }
+            ]
+          }
+        },
+        "Outputs": {
+          "Actions": [2, 3, 4],
+          "Next": [7]
+        }
+      },
+      {
+        "Index": 6,
+        "DisplayName": "特效: 回忆泛黄",
+        "Comment": "",
+        "NodeType": 2,
+        "SubType": 17,
+        "X": 780,
+        "Y": 80,
+        "Data": {
+          "Intensity": {"Kind": "Float", "NumberValue": 0.75},
+          "Duration": {"Kind": "Float", "NumberValue": 0.5}
+        },
+        "Outputs": {}
+      },
+      {
+        "Index": 7,
+        "DisplayName": "背景: 易水河畔",
+        "Comment": "",
+        "NodeType": 2,
+        "SubType": 3,
+        "X": 780,
+        "Y": 430,
+        "Data": {
+          "BackgroundImage": {"Kind": "String", "StringValue": "res://Resources/Backgrounds/yishui_river.png"},
+          "ChangeType": {"Kind": "Enum", "StringValue": "FadeIn"},
+          "Duration": {"Kind": "Float", "NumberValue": 0.8}
+        },
+        "Outputs": {}
+      },
+      {
+        "Index": 8,
+        "DisplayName": "高渐离立绘",
+        "Comment": "",
+        "NodeType": 2,
+        "SubType": 1,
+        "X": 980,
+        "Y": 430,
+        "Data": {
+          "TachiID": {"Kind": "String", "StringValue": "gao_jianli"},
+          "TachiIamge": {"Kind": "String", "StringValue": "res://Resources/Tachi/gao_jianli.png"},
+          "TargetPosition": {"Kind": "Vector2", "X": 620, "Y": 120},
+          "EnterType": {"Kind": "Enum", "StringValue": "FadeIn"},
+          "Duration": {"Kind": "Float", "NumberValue": 0.3}
+        },
+        "Outputs": {}
+      },
+      {
+        "Index": 9,
+        "DisplayName": "段落",
+        "Comment": "",
+        "NodeType": 1,
+        "SubType": 2,
+        "X": 780,
+        "Y": 80,
+        "Data": {
+          "Lines": {
+            "Kind": "List",
+            "Items": [
+              {
+                "Kind": "Object",
+                "ObjectValue": {
+                  "SpeakerId": {"Kind": "String", "StringValue": "旁白"},
+                  "Text": {"Kind": "String", "StringValue": "数日后，易水河畔。秋风萧瑟，枯叶纷飞。高渐离击筑而歌。"},
+                  "VoiceId": {"Kind": "String", "StringValue": ""}
+                }
+              },
+              {
+                "Kind": "Object",
+                "ObjectValue": {
+                  "SpeakerId": {"Kind": "String", "StringValue": "高渐离"},
+                  "Text": {"Kind": "String", "StringValue": "风萧萧兮易水寒，壮士一去兮不复还！"},
+                  "VoiceId": {"Kind": "String", "StringValue": ""}
+                }
+              },
+              {
+                "Kind": "Object",
+                "ObjectValue": {
+                  "SpeakerId": {"Kind": "String", "StringValue": "旁白"},
+                  "Text": {"Kind": "String", "StringValue": "荆轲转身，向燕宫方向深深一拜，随后头也不回地踏上征程。"},
+                  "VoiceId": {"Kind": "String", "StringValue": ""}
+                }
+              }
+            ]
+          }
+        },
+        "Outputs": {
+          "Actions": [6, 7, 8],
+          "Next": []
+        }
+      }
+    ]
+  },
+  "comparison": {
+    "hardcoded_method": {
+      "nodes_count": 5,
+      "scenes_detected": 1,
+      "background_changes": 1,
+      "character_entries": 2,
+      "effects": 0,
+      "choices": 0
+    },
+    "llm_method": {
+      "nodes_count": 9,
+      "scenes_detected": 2,
+      "background_changes": 2,
+      "character_entries": 3,
+      "effects": 1,
+      "choices": 0
+    },
+    "improvements": [
+      "识别了场景转换（燕宫 → 易水河畔）",
+      "识别了第三个角色（高渐离）",
+      "添加了回忆泛黄特效",
+      "根据场景动态调整角色位置和入场动画",
+      "合并了连续的旁白，减少节点数量"
+    ]
+  }
+}

@@ -1,0 +1,50 @@
+# PR-Agent configuration for InfiPlot.
+# Per-model banners and tool-specific extra_instructions live in
+# .github/workflows/pr-agent.yml. Project-level coding rules live in
+# best_practices.md (consumed by /improve). Keep this file structural only.
+
+[config]
+ai_timeout = 300
+temperature = 0.2
+reasoning_effort = "high"
+response_language = "zh-CN"
+
+[pr_reviewer]
+num_max_findings = 8
+require_security_review = true
+require_tests_review = false        # repo has no test framework
+require_can_be_split_review = true
+require_score_review = true
+require_todo_scan = true
+persistent_comment = true          # single job — edit the same comment on each sync instead of stacking new ones
+
+[pr_description]
+generate_ai_title = false
+publish_labels = true
+use_bullet_points = true
+enable_pr_diagram = true
+
+[pr_code_suggestions]
+num_code_suggestions_per_chunk = 6
+max_number_of_calls = 4
+parallel_calls = true
+focus_only_on_problems = false       # also surface readability/reuse cleanups, not only bugs
+suggestions_score_threshold = 0
+dual_publishing_score_threshold = 7  # high-scoring suggestions also appear as inline comments
+persistent_comment = true           # single job — edit the same comment on each sync instead of stacking new ones
+
+[best_practices]
+enable_global_best_practices = false
+max_lines_allowed = 2000
+
+[ignore]
+glob = [
+    "pnpm-lock.yaml",
+    "*.generated.*",
+    "public/**",
+    "docs/**",
+    # NOTE: do NOT add "*.md" here — it would hide best_practices.md and
+    # AGENTS.md from the /review diff view, even though /improve still reads
+    # best_practices.md directly. README-style noise is preferred over
+    # silently dropping changes to the project's authoritative rule files.
+]

@@ -1,0 +1,61 @@
+{
+  "case_id": "CAMPUS-01",
+  "case_version": "2.1-dev.1",
+  "review_status": "pilot",
+  "title": "雨夜信号",
+  "language": "zh-CN",
+  "player_name": "林澈",
+  "character_names": [
+    "林澈",
+    "周遥",
+    "沈教授"
+  ],
+  "visual_style": "暴雨、冷蓝校园灯光、红色雨伞作为唯一高饱和物件；收音机使用断续电流声，地下室使用低频嗡鸣。",
+  "profile": "TEXT_CONTINUATION_DEV",
+  "scope_map": {
+    "第一场与第二场": "第一场：\n固定开头所在的楼外相遇及紧随其后的同一连续事件。\n公共开头中的周遥台词已满足该事件要求。\n\n第二场之前：\n上述第一场尚未结束时。\n第二场以实质时空或事件目标转换为边界，\n不以换行、镜头变化或一次API请求结束为边界。\n\n沈教授在此边界之前不得知道失忆细节；\n边界之后也仍然需要通过实际事件获知，不能自动变成已知。"
+  },
+  "decisions": [
+    {
+      "id": "C1",
+      "options": [
+        {
+          "id": "ENTER_LAB",
+          "text": "进入实验楼"
+        },
+        {
+          "id": "PROTECT_AND_INSPECT",
+          "text": "先保护周遥并检查收音机"
+        }
+      ]
+    },
+    {
+      "id": "C2",
+      "options": [
+        {
+          "id": "TRUST_PROFESSOR",
+          "text": "相信沈教授的解释"
+        },
+        {
+          "id": "INVESTIGATE_ACCIDENT",
+          "text": "独立调查十年前的事故"
+        }
+      ]
+    }
+  ],
+  "provenance": {
+    "source_conversation": "6a9ce129-78f4-83ea-964f-329b9e56fe0d",
+    "brief_source": "original attached v1 file; verbatim code block",
+    "opening_source": "v2 answer public opening candidate; verbatim code block; not approved",
+    "scope_source": "v2 answer candidate time explanation; verbatim code block; not approved",
+    "compiler_origin": "v2 archive not yet available; newly implemented to v2.1 contract; not claimed as reuse of original 30 tested units",
+    "source_sha256": {
+      "brief": "810e10baf5259d9961498266a940b82783d660da4047002506f98dfa7f7bbf0a",
+      "opening": "196d04a58ba5bce543e93788e496ae42fdd547d1583d185cda42c3b969159c65",
+      "prefix": "6998316f87df98ea6359d6e6e064bb47eb32d247be237f042320907f15337f04"
+    }
+  },
+  "brief_file": "cases/CAMPUS-01.brief.txt",
+  "opening_file": "cases/CAMPUS-01.opening.txt",
+  "prefix_file": "profiles/text_continuation_dev.txt"
+}

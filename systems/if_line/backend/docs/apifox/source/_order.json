@@ -1,0 +1,690 @@
+{
+  "root_keys": [
+    "openapi",
+    "info",
+    "tags",
+    "paths",
+    "components",
+    "servers",
+    "security"
+  ],
+  "component_keys": [
+    "schemas",
+    "responses",
+    "securitySchemes"
+  ],
+  "paths": [
+    {
+      "method": "get",
+      "path": "/"
+    },
+    {
+      "method": "post",
+      "path": "/api/auth/guest"
+    },
+    {
+      "method": "post",
+      "path": "/api/auth/login"
+    },
+    {
+      "method": "post",
+      "path": "/api/auth/logout"
+    },
+    {
+      "method": "get",
+      "path": "/api/auth/me"
+    },
+    {
+      "method": "patch",
+      "path": "/api/auth/me"
+    },
+    {
+      "method": "post",
+      "path": "/api/auth/register"
+    },
+    {
+      "method": "get",
+      "path": "/api/projects/{project_id}/story-paths"
+    },
+    {
+      "method": "post",
+      "path": "/api/projects/{project_id}/story-paths"
+    },
+    {
+      "method": "get",
+      "path": "/api/story-paths/{story_path_id}"
+    },
+    {
+      "method": "patch",
+      "path": "/api/story-paths/{story_path_id}"
+    },
+    {
+      "method": "get",
+      "path": "/api/candidate-set-revisions/{candidate_set_revision_id}/candidates"
+    },
+    {
+      "method": "get",
+      "path": "/api/story-paths/{story_path_id}/checkpoints/{node_id}/candidate-set-head"
+    },
+    {
+      "method": "put",
+      "path": "/api/story-paths/{story_path_id}/checkpoints/{node_id}/candidate-set-head"
+    },
+    {
+      "method": "get",
+      "path": "/api/story-paths/{story_path_id}/checkpoints/{node_id}/candidate-set-revisions"
+    },
+    {
+      "method": "post",
+      "path": "/api/branch-candidates/{candidate_id}/story-paths"
+    },
+    {
+      "method": "post",
+      "path": "/api/story-paths/{story_path_id}/checkpoints/{node_id}/candidate-set-generations"
+    },
+    {
+      "method": "get",
+      "path": "/api/chapter-revisions/{chapter_revision_id}"
+    },
+    {
+      "method": "post",
+      "path": "/api/chapter-revisions/{chapter_revision_id}/script-generations"
+    },
+    {
+      "method": "get",
+      "path": "/api/chapter-revisions/{chapter_revision_id}/script-head"
+    },
+    {
+      "method": "put",
+      "path": "/api/chapter-revisions/{chapter_revision_id}/script-head"
+    },
+    {
+      "method": "get",
+      "path": "/api/chapter-revisions/{chapter_revision_id}/script-revisions"
+    },
+    {
+      "method": "post",
+      "path": "/api/chapter-revisions/{chapter_revision_id}/script-revisions"
+    },
+    {
+      "method": "post",
+      "path": "/api/chapter-script-revisions/{script_revision_id}/resource-renders"
+    },
+    {
+      "method": "get",
+      "path": "/api/chapter-script-revisions/{script_revision_id}/resource-slots"
+    },
+    {
+      "method": "put",
+      "path": "/api/chapter-script-revisions/{script_revision_id}/resource-slots/{slot_id}"
+    },
+    {
+      "method": "post",
+      "path": "/api/chapter-script-revisions/{script_revision_id}/vn-graph-compilations"
+    },
+    {
+      "method": "get",
+      "path": "/api/chapter-script-revisions/{script_revision_id}/vn-graph-head"
+    },
+    {
+      "method": "put",
+      "path": "/api/chapter-script-revisions/{script_revision_id}/vn-graph-head"
+    },
+    {
+      "method": "get",
+      "path": "/api/chapter-script-revisions/{script_revision_id}/vn-graph-revisions"
+    },
+    {
+      "method": "post",
+      "path": "/api/chapter-script-revisions/{script_revision_id}/vn-graph-revisions"
+    },
+    {
+      "method": "get",
+      "path": "/api/image-generation/status"
+    },
+    {
+      "method": "get",
+      "path": "/api/library-assets"
+    },
+    {
+      "method": "get",
+      "path": "/api/library-assets/facets"
+    },
+    {
+      "method": "get",
+      "path": "/api/library-assets/{library_asset_id}"
+    },
+    {
+      "method": "get",
+      "path": "/api/llm/byok-defaults"
+    },
+    {
+      "method": "get",
+      "path": "/api/media/{storage_object_id}"
+    },
+    {
+      "method": "get",
+      "path": "/api/notifications"
+    },
+    {
+      "method": "post",
+      "path": "/api/notifications/read-all"
+    },
+    {
+      "method": "patch",
+      "path": "/api/notifications/{notification_id}/read"
+    },
+    {
+      "method": "post",
+      "path": "/api/path-chapters/{path_chapter_id}/generations"
+    },
+    {
+      "method": "get",
+      "path": "/api/path-chapters/{path_chapter_id}/head"
+    },
+    {
+      "method": "put",
+      "path": "/api/path-chapters/{path_chapter_id}/head"
+    },
+    {
+      "method": "get",
+      "path": "/api/path-chapters/{path_chapter_id}/revisions"
+    },
+    {
+      "method": "post",
+      "path": "/api/path-chapters/{path_chapter_id}/revisions"
+    },
+    {
+      "method": "get",
+      "path": "/api/projects"
+    },
+    {
+      "method": "post",
+      "path": "/api/projects"
+    },
+    {
+      "method": "get",
+      "path": "/api/projects/{project_id}"
+    },
+    {
+      "method": "delete",
+      "path": "/api/projects/{project_id}"
+    },
+    {
+      "method": "patch",
+      "path": "/api/projects/{project_id}"
+    },
+    {
+      "method": "post",
+      "path": "/api/projects/{project_id}/asset-actions"
+    },
+    {
+      "method": "get",
+      "path": "/api/projects/{project_id}/asset-actions/{action_id}"
+    },
+    {
+      "method": "post",
+      "path": "/api/projects/{project_id}/asset-actions/{action_id}/cancel"
+    },
+    {
+      "method": "post",
+      "path": "/api/projects/{project_id}/asset-actions/{action_id}/confirm"
+    },
+    {
+      "method": "get",
+      "path": "/api/projects/{project_id}/asset-bindings"
+    },
+    {
+      "method": "get",
+      "path": "/api/projects/{project_id}/asset-versions/{asset_version_id}"
+    },
+    {
+      "method": "get",
+      "path": "/api/projects/{project_id}/assets"
+    },
+    {
+      "method": "post",
+      "path": "/api/projects/{project_id}/assets/uploads"
+    },
+    {
+      "method": "get",
+      "path": "/api/projects/{project_id}/assets/{asset_id}"
+    },
+    {
+      "method": "delete",
+      "path": "/api/projects/{project_id}/assets/{asset_id}"
+    },
+    {
+      "method": "get",
+      "path": "/api/projects/{project_id}/assets/{asset_id}/versions"
+    },
+    {
+      "method": "post",
+      "path": "/api/projects/{project_id}/assets/{asset_id}/versions/uploads"
+    },
+    {
+      "method": "post",
+      "path": "/api/projects/{project_id}/bible-generations"
+    },
+    {
+      "method": "get",
+      "path": "/api/projects/{project_id}/bible-head"
+    },
+    {
+      "method": "put",
+      "path": "/api/projects/{project_id}/bible-head"
+    },
+    {
+      "method": "post",
+      "path": "/api/projects/{project_id}/bible-revisions"
+    },
+    {
+      "method": "get",
+      "path": "/api/projects/{project_id}/bible-revisions"
+    },
+    {
+      "method": "get",
+      "path": "/api/projects/{project_id}/chapter-revisions/{chapter_revision_id}/voice-lines"
+    },
+    {
+      "method": "post",
+      "path": "/api/projects/{project_id}/chapter-revisions/{chapter_revision_id}/voice-lines/generations"
+    },
+    {
+      "method": "get",
+      "path": "/api/projects/{project_id}/chapter-revisions/{chapter_revision_id}/voice-lines/{line_id}"
+    },
+    {
+      "method": "post",
+      "path": "/api/projects/{project_id}/chapter-revisions/{chapter_revision_id}/voice-lines/{line_id}/retry"
+    },
+    {
+      "method": "get",
+      "path": "/api/projects/{project_id}/comments"
+    },
+    {
+      "method": "post",
+      "path": "/api/projects/{project_id}/comments"
+    },
+    {
+      "method": "delete",
+      "path": "/api/projects/{project_id}/likes"
+    },
+    {
+      "method": "post",
+      "path": "/api/projects/{project_id}/likes"
+    },
+    {
+      "method": "get",
+      "path": "/api/projects/{project_id}/metrics"
+    },
+    {
+      "method": "get",
+      "path": "/api/projects/{project_id}/metrics/artifacts"
+    },
+    {
+      "method": "get",
+      "path": "/api/projects/{project_id}/publication-readiness"
+    },
+    {
+      "method": "post",
+      "path": "/api/projects/{project_id}/publish"
+    },
+    {
+      "method": "get",
+      "path": "/api/projects/{project_id}/releases"
+    },
+    {
+      "method": "get",
+      "path": "/api/projects/{project_id}/social"
+    },
+    {
+      "method": "post",
+      "path": "/api/projects/{project_id}/unpublish"
+    },
+    {
+      "method": "get",
+      "path": "/api/public/projects"
+    },
+    {
+      "method": "get",
+      "path": "/api/public/projects/{project_id}"
+    },
+    {
+      "method": "get",
+      "path": "/api/public/projects/{project_id}/releases/{release_id}/continuations"
+    },
+    {
+      "method": "get",
+      "path": "/api/public/releases/{release_id}/manifest"
+    },
+    {
+      "method": "get",
+      "path": "/api/public/releases/{release_id}/path-chapters/{path_chapter_id}/manifest"
+    },
+    {
+      "method": "get",
+      "path": "/api/public/releases/{release_id}/path-chapters/{path_chapter_id}/vn-graph"
+    },
+    {
+      "method": "post",
+      "path": "/api/reading-sessions"
+    },
+    {
+      "method": "get",
+      "path": "/api/reading-sessions/{session_id}"
+    },
+    {
+      "method": "get",
+      "path": "/api/reading-sessions/{session_id}/bookmarks"
+    },
+    {
+      "method": "post",
+      "path": "/api/reading-sessions/{session_id}/bookmarks"
+    },
+    {
+      "method": "post",
+      "path": "/api/reading-sessions/{session_id}/choices"
+    },
+    {
+      "method": "get",
+      "path": "/api/reading-sessions/{session_id}/continuations/{continuation_id}"
+    },
+    {
+      "method": "post",
+      "path": "/api/reading-sessions/{session_id}/continuations/{continuation_id}/confirm"
+    },
+    {
+      "method": "post",
+      "path": "/api/reading-sessions/{session_id}/continuations/{continuation_id}/images"
+    },
+    {
+      "method": "post",
+      "path": "/api/reading-sessions/{session_id}/continuations/{continuation_id}/select"
+    },
+    {
+      "method": "post",
+      "path": "/api/reading-sessions/{session_id}/direction-suggestion"
+    },
+    {
+      "method": "post",
+      "path": "/api/reading-sessions/{session_id}/directions"
+    },
+    {
+      "method": "post",
+      "path": "/api/reading-sessions/{session_id}/fork"
+    },
+    {
+      "method": "get",
+      "path": "/api/reading-sessions/{session_id}/timeline"
+    },
+    {
+      "method": "post",
+      "path": "/api/reading-sessions/{session_id}/undo"
+    },
+    {
+      "method": "get",
+      "path": "/api/releases/{release_id}"
+    },
+    {
+      "method": "post",
+      "path": "/api/story-paths/{story_path_id}/chapter-generation-batches"
+    },
+    {
+      "method": "get",
+      "path": "/api/story-paths/{story_path_id}/chapters"
+    },
+    {
+      "method": "post",
+      "path": "/api/story-paths/{story_path_id}/chapters"
+    },
+    {
+      "method": "post",
+      "path": "/api/story-paths/{story_path_id}/outline-generations"
+    },
+    {
+      "method": "get",
+      "path": "/api/story-paths/{story_path_id}/outline-head"
+    },
+    {
+      "method": "put",
+      "path": "/api/story-paths/{story_path_id}/outline-head"
+    },
+    {
+      "method": "post",
+      "path": "/api/story-paths/{story_path_id}/outline-revisions"
+    },
+    {
+      "method": "get",
+      "path": "/api/story-paths/{story_path_id}/outline-revisions"
+    },
+    {
+      "method": "get",
+      "path": "/api/tasks"
+    },
+    {
+      "method": "get",
+      "path": "/api/tasks/{task_id}"
+    },
+    {
+      "method": "post",
+      "path": "/api/tasks/{task_id}/cancel"
+    },
+    {
+      "method": "get",
+      "path": "/api/tasks/{task_id}/event-log"
+    },
+    {
+      "method": "get",
+      "path": "/api/tasks/{task_id}/events"
+    },
+    {
+      "method": "post",
+      "path": "/api/tasks/{task_id}/retry"
+    },
+    {
+      "method": "get",
+      "path": "/api/tts/status"
+    },
+    {
+      "method": "post",
+      "path": "/api/tts/synthesize"
+    },
+    {
+      "method": "get",
+      "path": "/api/users/me/quota"
+    },
+    {
+      "method": "get",
+      "path": "/api/users/me/usage"
+    },
+    {
+      "method": "get",
+      "path": "/api/vn-graph-revisions/{vn_graph_revision_id}"
+    },
+    {
+      "method": "get",
+      "path": "/api/voice-clone/profiles"
+    },
+    {
+      "method": "post",
+      "path": "/api/voice-clone/profiles"
+    },
+    {
+      "method": "get",
+      "path": "/api/voice-clone/profiles/{voice_id}"
+    },
+    {
+      "method": "delete",
+      "path": "/api/voice-clone/profiles/{voice_id}"
+    },
+    {
+      "method": "post",
+      "path": "/api/voice-clone/profiles/{voice_id}/preview"
+    },
+    {
+      "method": "post",
+      "path": "/api/voice-clone/synthesize"
+    },
+    {
+      "method": "post",
+      "path": "/api/server-agent/threads"
+    },
+    {
+      "method": "get",
+      "path": "/api/server-agent/threads"
+    },
+    {
+      "method": "get",
+      "path": "/api/server-agent/threads/{thread_id}"
+    },
+    {
+      "method": "delete",
+      "path": "/api/server-agent/threads/{thread_id}"
+    },
+    {
+      "method": "get",
+      "path": "/api/server-agent/threads/{thread_id}/events/page"
+    },
+    {
+      "method": "get",
+      "path": "/api/server-agent/threads/{thread_id}/events"
+    },
+    {
+      "method": "post",
+      "path": "/api/server-agent/threads/{thread_id}/turns/resume"
+    },
+    {
+      "method": "post",
+      "path": "/api/server-agent/threads/{thread_id}/tool-calls/{tool_call_id}/result"
+    },
+    {
+      "method": "post",
+      "path": "/api/server-agent/threads/{thread_id}/turns/{turn_id}/cancel"
+    },
+    {
+      "method": "post",
+      "path": "/api/projects/{project_id}/finalize-publish"
+    }
+  ],
+  "schemas": [
+    "AssetActionAsset",
+    "AssetActionConfirm",
+    "AssetActionCreate",
+    "AssetActionRead",
+    "AssetActionTarget",
+    "AssetBindingRead",
+    "AssetPage",
+    "AssetRead",
+    "AssetVersionRead",
+    "AuthResponse",
+    "BibleRevisionCreate",
+    "Body_create_profile_api_voice_clone_profiles_post",
+    "BookmarkCreate",
+    "BookmarkRead",
+    "ChapterRevisionCreate",
+    "ChoiceCreate",
+    "ChoiceRead",
+    "ChoiceResult",
+    "ContinuationConfirmResult",
+    "CreateProfileResponse",
+    "DeleteProfileResponse",
+    "ForkCreate",
+    "GenerationRequest",
+    "GetProfileResponse",
+    "HTTPValidationError",
+    "LibraryAssetPage",
+    "LibraryAssetRead",
+    "LibraryFacetResponse",
+    "LibraryFacetGroup",
+    "LibraryFacetOption",
+    "ListProfilesResponse",
+    "NotificationListResponse",
+    "NotificationResponse",
+    "OutlineChapterInput",
+    "OutlineRevisionCreate",
+    "PreviewRequest",
+    "PreviewResponse",
+    "ProjectCommentCreate",
+    "ProjectCommentResponse",
+    "ProjectCreate",
+    "ProjectLikeResponse",
+    "ProjectSocialSummary",
+    "PublicContinuationNodeRead",
+    "PublicContinuationTreeRead",
+    "ReadingContinuationRead",
+    "ReadingDirectionCreate",
+    "ReadingDirectionSuggestionRead",
+    "ReadingImageCreate",
+    "ReadingSessionCreate",
+    "ReadingSessionRead",
+    "ReleaseManifest",
+    "ServerAgentCreateRequest",
+    "ServerAgentInputRequest",
+    "ServerAgentSnapshotResponse",
+    "SynthesizeRequest",
+    "SynthesizeResponse",
+    "TTSSynthesizeRequest",
+    "TTSSynthesizeResponse",
+    "TaskAccepted",
+    "TaskEventRead",
+    "TaskRead",
+    "UserLoginRequest",
+    "UserQuotaResponse",
+    "UserRegisterRequest",
+    "UserResponse",
+    "UserUpdateRequest",
+    "VNGraphCompileRequest",
+    "ValidationError",
+    "VisualAssetUploadRead",
+    "VoiceGenerationRequest",
+    "VoiceLineRead",
+    "VoiceManifest",
+    "VoiceTaskAccepted",
+    "AuthoringProjection",
+    "BibleRevision",
+    "BlockingItem",
+    "Body_upload_asset_version_api_projects__project_id__assets__asset_id__versions_uploads_post",
+    "Body_upload_visual_api_projects__project_id__assets_uploads_post",
+    "BranchCandidate",
+    "CandidateSetGenerationRequest",
+    "CandidateSetRevision",
+    "ChapterBatchRequest",
+    "ChapterRevision",
+    "HeadUpdate",
+    "OutlineGenerationRequest",
+    "OutlineRevision",
+    "PathChapter",
+    "PathChapterCreate",
+    "ProjectPatch",
+    "ProjectRead",
+    "PublicProject",
+    "PublicationProjection",
+    "PublicationReadiness",
+    "PublishRequest",
+    "Release",
+    "ResourceRenderRequest",
+    "ResourceSlot",
+    "ResourceSlotBind",
+    "RevisionHead",
+    "ScriptRevision",
+    "StoryPath",
+    "StoryPathCreate",
+    "StoryPathPatch",
+    "StoryPathPromotionRequest",
+    "UserUsageLedgerEntryResponse",
+    "VNGraphRevision",
+    "ServerAgentTurnAcceptedResponse",
+    "ServerAgentToolCallResultRequest",
+    "ServerAgentToolCallResultAcceptedResponse",
+    "ServerAgentTurnCancelResponse",
+    "ServerAgentThreadSummaryResponse",
+    "ServerAgentThreadListResponse",
+    "ServerAgentEventPageResponse",
+    "ScriptRevisionCreate",
+    "ScriptRevisionCreated",
+    "VNGraphRevisionCreate",
+    "ChapterGenerationRequest",
+    "FinalizePublishRequest"
+  ]
+}

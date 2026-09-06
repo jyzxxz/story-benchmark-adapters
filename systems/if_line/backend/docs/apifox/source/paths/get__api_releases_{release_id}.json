@@ -1,0 +1,54 @@
+{
+  "method": "get",
+  "path": "/api/releases/{release_id}",
+  "operation": {
+    "operationId": "getRelease",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "release_id",
+        "required": true,
+        "schema": {
+          "title": "Release Id",
+          "type": "string"
+        },
+        "description": "发布版本编号。"
+      }
+    ],
+    "responses": {
+      "200": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Release"
+            }
+          }
+        },
+        "description": "Successful Response"
+      },
+      "422": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "description": "Validation Error"
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "summary": "读取发布版本详情",
+    "tags": [
+      "项目管理/发布管理",
+      "发布管理"
+    ],
+    "x-apifox-folder": "项目管理/发布管理",
+    "x-apifox-status": "released",
+    "description": "读取作者侧发布版本详情。"
+  }
+}

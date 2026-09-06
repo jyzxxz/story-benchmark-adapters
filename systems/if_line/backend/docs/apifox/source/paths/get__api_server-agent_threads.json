@@ -1,0 +1,104 @@
+{
+  "method": "get",
+  "path": "/api/server-agent/threads",
+  "operation": {
+    "summary": "读取我的 Agent 会话列表",
+    "deprecated": false,
+    "description": "读取当前用户自己的 Agent thread 列表，用于会话恢复入口。支持按 status、agent_kind 过滤。",
+    "operationId": "list_server_agent_threads_get",
+    "tags": [
+      "服务端 Agent"
+    ],
+    "parameters": [
+      {
+        "name": "limit",
+        "in": "query",
+        "description": "每页数量，默认 50，最大 200。",
+        "required": false,
+        "schema": {
+          "title": "Limit",
+          "type": "integer",
+          "default": 50,
+          "minimum": 1,
+          "maximum": 200
+        }
+      },
+      {
+        "name": "offset",
+        "in": "query",
+        "description": "分页偏移量，默认 0。",
+        "required": false,
+        "schema": {
+          "title": "Offset",
+          "type": "integer",
+          "default": 0,
+          "minimum": 0
+        }
+      },
+      {
+        "name": "status",
+        "in": "query",
+        "description": "可选状态过滤，例如 waiting_user、running、deleted。",
+        "required": false,
+        "schema": {
+          "title": "Status",
+          "type": "string",
+          "nullable": true
+        }
+      },
+      {
+        "name": "agent_kind",
+        "in": "query",
+        "description": "可选 Agent 类型过滤，例如 server_agent、chat_agent。",
+        "required": false,
+        "schema": {
+          "title": "Agent Kind",
+          "type": "string",
+          "nullable": true
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ServerAgentThreadListResponse"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      },
+      "404": {
+        "description": "Agent 不存在。",
+        "content": {
+          "application/json": {
+            "schema": {}
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "不存在",
+        "x-apifox-ordering": 2
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "服务端 Agent",
+    "x-apifox-status": "released"
+  }
+}

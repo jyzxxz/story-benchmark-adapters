@@ -1,0 +1,83 @@
+{
+  "method": "post",
+  "path": "/api/branch-candidates/{candidate_id}/story-paths",
+  "operation": {
+    "operationId": "promoteBranchCandidate",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "candidate_id",
+        "required": true,
+        "schema": {
+          "title": "Candidate Id",
+          "type": "string"
+        },
+        "description": "分支候选编号。"
+      },
+      {
+        "in": "header",
+        "name": "Idempotency-Key",
+        "required": true,
+        "schema": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Idempotency-Key",
+          "type": "string"
+        },
+        "description": "幂等键。一次用户操作生成一个稳定字符串；同一用户用同一个 key 重试同一请求会返回同一任务，换请求内容会返回冲突。"
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StoryPathPromotionRequest"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Body"
+          }
+        }
+      },
+      "description": "候选提升请求。"
+    },
+    "responses": {
+      "201": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/StoryPath"
+            }
+          }
+        },
+        "description": "Successful Response"
+      },
+      "422": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "description": "Validation Error"
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "summary": "从候选创建故事路径",
+    "tags": [
+      "分支生成"
+    ],
+    "x-apifox-folder": "创作版本与生成/故事路径",
+    "x-apifox-status": "released",
+    "description": "兼容入口：把某个 BranchCandidate 提升为新的 story path。推荐优先使用 /api/projects/{project_id}/story-paths，以便前端路径上携带项目上下文。"
+  }
+}

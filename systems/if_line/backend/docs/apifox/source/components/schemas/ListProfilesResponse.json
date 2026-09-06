@@ -1,0 +1,38 @@
+{
+  "name": "ListProfilesResponse",
+  "schema": {
+    "properties": {
+      "profiles": {
+        "items": {
+          "type": "object",
+          "x-apifox-orders": [],
+          "title": "profilesitem",
+          "description": "profilesitem对象。",
+          "properties": {},
+          "x-apifox-ignore-properties": []
+        },
+        "title": "声音档案列表",
+        "type": "array",
+        "description": "声音档案列表。"
+      },
+      "success": {
+        "title": "是否成功",
+        "type": "boolean",
+        "description": "是否成功。"
+      }
+    },
+    "required": [
+      "success",
+      "profiles"
+    ],
+    "title": "声音档案列表响应",
+    "type": "object",
+    "x-apifox-orders": [
+      "profiles",
+      "success"
+    ],
+    "description": "声音档案列表响应数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "method": "put",
+  "path": "/api/chapter-script-revisions/{script_revision_id}/resource-slots/{slot_id}",
+  "operation": {
+    "summary": "绑定脚本资源槽位",
+    "deprecated": false,
+    "description": "绑定章节脚本资源槽位。\n\n接口语义：\n- 把一个素材版本绑定到脚本里的某个资源槽位\n- 绑定的是 `asset_version_id`，不是 `asset_id`\n\n字段说明：\n- `script_revision_id`：章节脚本修订编号\n- `slot_id`：资源槽位编号，由脚本生成后产生\n- `asset_version_id`：具体素材版本编号\n\n后续行为：\n- 如果所有必需槽位都已绑定，后端可能自动排队 VNGraph 编译任务",
+    "operationId": "bind_resource_slot_api_projects__project_id__chapters__chapter_index__chapter_scripts_revisions__script_revision_id__resource_slots__slot_id__put",
+    "tags": [
+      "创作版本与生成/视觉小说图步骤一：章节脚本与资源槽",
+      "章节脚本与资源槽"
+    ],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "script_revision_id",
+        "required": true,
+        "schema": {
+          "title": "Script Revision Id",
+          "type": "string"
+        },
+        "description": "章节脚本修订编号。"
+      },
+      {
+        "in": "path",
+        "name": "slot_id",
+        "required": true,
+        "schema": {
+          "title": "Slot Id",
+          "type": "string"
+        },
+        "description": "资源槽位编号。由章节脚本生成后产生，用于绑定背景、关键帧、立绘等素材版本。"
+      },
+      {
+        "in": "header",
+        "name": "If-Match",
+        "required": false,
+        "schema": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "If-Match"
+        },
+        "description": "乐观锁版本，填 GET head 或 GET 资源详情响应头里的 ETag，例如 \"2\"；不传时后端不做版本冲突保护。"
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ResourceSlotBind"
+          },
+          "example": {
+            "asset_version_id": "00000000-0000-0000-0000-000000000000"
+          }
+        }
+      },
+      "required": true,
+      "description": "资源槽位绑定请求。asset_version_id 必须是具体素材版本编号。"
+    },
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ResourceSlot"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-folder": "创作版本与生成/视觉小说图步骤一：章节脚本与资源槽",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923822-run"
+  }
+}

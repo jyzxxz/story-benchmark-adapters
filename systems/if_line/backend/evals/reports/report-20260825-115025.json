@@ -1,0 +1,84 @@
+{
+  "meta": {
+    "generated_at": "2026-08-25T11:50:25+00:00",
+    "mode": "live",
+    "model": "default",
+    "judge_enabled": true,
+    "mock_inner": false,
+    "task_filter": "(all)"
+  },
+  "summary": {
+    "total_tasks": 7,
+    "total_runs": 7,
+    "passed_runs": 7,
+    "checker_pass_rate": 1.0,
+    "judged_runs": 3,
+    "avg_judge_score": 95.0,
+    "overall_score": 97.9
+  },
+  "per_task": [
+    {
+      "task_id": "constraint.restricted_waits_confirmation",
+      "family": "constraint",
+      "runs": 1,
+      "passed_runs": 1,
+      "pass_rate": 1.0,
+      "avg_judge_score": null,
+      "failed_checks": []
+    },
+    {
+      "task_id": "generate.solo_chapter",
+      "family": "generate",
+      "runs": 1,
+      "passed_runs": 1,
+      "pass_rate": 1.0,
+      "avg_judge_score": 85.0,
+      "failed_checks": []
+    },
+    {
+      "task_id": "planning.plan_new_chapter",
+      "family": "planning",
+      "runs": 1,
+      "passed_runs": 1,
+      "pass_rate": 1.0,
+      "avg_judge_score": 100.0,
+      "failed_checks": []
+    },
+    {
+      "task_id": "query.chapter_outline",
+      "family": "query",
+      "runs": 1,
+      "passed_runs": 1,
+      "pass_rate": 1.0,
+      "avg_judge_score": null,
+      "failed_checks": []
+    },
+    {
+      "task_id": "query.no_fabrication",
+      "family": "query",
+      "runs": 1,
+      "passed_runs": 1,
+      "pass_rate": 1.0,
+      "avg_judge_score": 100.0,
+      "failed_checks": []
+    },
+    {
+      "task_id": "query.story_bible",
+      "family": "query",
+      "runs": 1,
+      "passed_runs": 1,
+      "pass_rate": 1.0,
+      "avg_judge_score": null,
+      "failed_checks": []
+    },
+    {
+      "task_id": "query.view_project",
+      "family": "query",
+      "runs": 1,
+      "passed_runs": 1,
+      "pass_rate": 1.0,
+      "avg_judge_score": null,
+      "failed_checks": []
+    }
+  ]
+}

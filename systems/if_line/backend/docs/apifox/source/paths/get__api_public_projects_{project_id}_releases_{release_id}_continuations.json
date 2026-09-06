@@ -1,0 +1,81 @@
+{
+  "method": "get",
+  "path": "/api/public/projects/{project_id}/releases/{release_id}/continuations",
+  "operation": {
+    "summary": "读取公开续写树",
+    "deprecated": false,
+    "description": "读取公开续写树。",
+    "operationId": "public_continuation_tree_api_public_projects__project_id__releases__release_id__continuations_get",
+    "tags": [
+      "互动续写"
+    ],
+    "parameters": [
+      {
+        "name": "project_id",
+        "in": "path",
+        "description": "",
+        "required": true,
+        "example": "",
+        "schema": {
+          "title": "Project Id",
+          "type": "integer"
+        }
+      },
+      {
+        "name": "release_id",
+        "in": "path",
+        "description": "",
+        "required": true,
+        "example": "",
+        "schema": {
+          "title": "Release Id",
+          "type": "string"
+        }
+      },
+      {
+        "name": "chapter_number",
+        "in": "query",
+        "description": "",
+        "required": true,
+        "schema": {
+          "maximum": 10000,
+          "minimum": 1,
+          "title": "Chapter Number",
+          "type": "integer"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PublicContinuationTreeRead"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "互动续写",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923835-run"
+  }
+}

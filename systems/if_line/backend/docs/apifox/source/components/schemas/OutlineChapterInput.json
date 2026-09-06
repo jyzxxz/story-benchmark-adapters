@@ -1,0 +1,89 @@
+{
+  "name": "OutlineChapterInput",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "story_path_chapter_id": {
+        "title": "故事线路章节编号",
+        "type": "string",
+        "description": "可选。修改已有故事线路章节时填写对应 PathChapter 的 id；新增章节位置时可不填。",
+        "nullable": true
+      },
+      "display_index": {
+        "minimum": 1,
+        "title": "显示顺序",
+        "type": "integer",
+        "description": "章节在当前故事线路中的显示顺序，从 1 开始。当前接口不再接收 chapter_index。"
+      },
+      "title": {
+        "title": "章节标题",
+        "type": "string",
+        "description": "章节标题。"
+      },
+      "summary": {
+        "title": "章节概要",
+        "type": "string",
+        "description": "章节概要。"
+      },
+      "conflict": {
+        "title": "冲突说明",
+        "type": "string",
+        "description": "本章主要冲突，可为空。",
+        "nullable": true
+      },
+      "characters": {
+        "items": {
+          "type": "string",
+          "title": "角色名",
+          "description": "本章出现的角色名。"
+        },
+        "title": "角色列表",
+        "type": "array",
+        "description": "本章出现的角色名列表。"
+      },
+      "scene": {
+        "title": "场景",
+        "type": "string",
+        "description": "本章主要场景，可为空。",
+        "nullable": true
+      },
+      "emotion": {
+        "title": "情绪",
+        "type": "string",
+        "description": "本章情绪基调，可为空。",
+        "nullable": true
+      },
+      "visual_keywords": {
+        "items": {
+          "type": "string",
+          "title": "视觉关键词",
+          "description": "用于后续脚本、素材和 VNGraph 生成参考的关键词。"
+        },
+        "title": "视觉关键词",
+        "type": "array",
+        "description": "本章视觉关键词列表，用于后续脚本、素材和 VNGraph 生成参考。"
+      }
+    },
+    "required": [
+      "display_index",
+      "title",
+      "summary"
+    ],
+    "title": "大纲章节输入",
+    "type": "object",
+    "x-apifox-orders": [
+      "story_path_chapter_id",
+      "display_index",
+      "title",
+      "summary",
+      "conflict",
+      "characters",
+      "scene",
+      "emotion",
+      "visual_keywords"
+    ],
+    "description": "单章大纲输入。用于手动创建/修改大纲版本；当前按故事线路内显示顺序 display_index 表达章节位置。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

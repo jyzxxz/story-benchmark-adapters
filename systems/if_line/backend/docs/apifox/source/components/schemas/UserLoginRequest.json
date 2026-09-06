@@ -1,0 +1,32 @@
+{
+  "name": "UserLoginRequest",
+  "schema": {
+    "properties": {
+      "email": {
+        "title": "邮箱",
+        "type": "string",
+        "description": "邮箱。"
+      },
+      "password": {
+        "maxLength": 128,
+        "minLength": 1,
+        "title": "密码",
+        "type": "string",
+        "description": "密码。"
+      }
+    },
+    "required": [
+      "email",
+      "password"
+    ],
+    "title": "用户登录请求",
+    "type": "object",
+    "x-apifox-orders": [
+      "email",
+      "password"
+    ],
+    "description": "用户登录请求数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "method": "get",
+  "path": "/api/projects/{project_id}/story-paths",
+  "operation": {
+    "operationId": "listStoryPaths",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "project_id",
+        "required": true,
+        "schema": {
+          "title": "Project Id",
+          "type": "integer"
+        },
+        "description": "项目编号。"
+      }
+    ],
+    "responses": {
+      "200": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "items": {
+                "$ref": "#/components/schemas/StoryPath"
+              },
+              "title": "Response Liststorypaths",
+              "type": "array"
+            }
+          }
+        },
+        "description": "Successful Response"
+      },
+      "422": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "description": "Validation Error"
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "summary": "读取项目故事路径列表",
+    "tags": [
+      "分支生成"
+    ],
+    "x-apifox-folder": "创作版本与生成/故事路径",
+    "x-apifox-status": "released",
+    "description": "读取项目下所有 story path。根路径和从分支候选创建出来的路径都会出现在这里。"
+  }
+}

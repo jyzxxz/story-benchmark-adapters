@@ -1,0 +1,82 @@
+{
+  "method": "post",
+  "path": "/api/reading-sessions/{session_id}/undo",
+  "operation": {
+    "summary": "撤销阅读选择",
+    "deprecated": false,
+    "description": "撤销阅读选择。",
+    "operationId": "undo_api_reading_sessions__session_id__undo_post",
+    "tags": [
+      "阅读会话"
+    ],
+    "parameters": [
+      {
+        "name": "sid",
+        "in": "cookie",
+        "description": "",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Sid",
+          "type": "string",
+          "nullable": true
+        }
+      },
+      {
+        "name": "session_id",
+        "in": "path",
+        "description": "",
+        "required": true,
+        "example": "",
+        "schema": {
+          "title": "Session Id",
+          "type": "string"
+        }
+      },
+      {
+        "name": "If-Match",
+        "in": "header",
+        "description": "",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "If-Match",
+          "type": "string",
+          "nullable": true
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ChoiceResult"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "阅读会话",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923849-run"
+  }
+}

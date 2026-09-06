@@ -1,0 +1,34 @@
+{
+  "name": "AssetActionConfirm",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "graph_json": {
+        "title": "图数据",
+        "type": "object",
+        "x-apifox-orders": [],
+        "description": "图数据对象。",
+        "properties": {},
+        "x-apifox-ignore-properties": [],
+        "nullable": true
+      },
+      "result_graph_hash": {
+        "title": "结果图哈希",
+        "maxLength": 64,
+        "minLength": 64,
+        "type": "string",
+        "description": "结果图哈希，可为空。",
+        "nullable": true
+      }
+    },
+    "title": "素材操作确认请求",
+    "type": "object",
+    "x-apifox-orders": [
+      "graph_json",
+      "result_graph_hash"
+    ],
+    "description": "素材操作确认请求数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

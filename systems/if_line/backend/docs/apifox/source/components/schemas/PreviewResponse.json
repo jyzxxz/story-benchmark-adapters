@@ -1,0 +1,37 @@
+{
+  "name": "PreviewResponse",
+  "schema": {
+    "properties": {
+      "sample_audio_url": {
+        "title": "试听音频地址",
+        "type": "string",
+        "description": "试听音频地址，由服务端返回给客户端访问。"
+      },
+      "sample_text": {
+        "title": "试听文本",
+        "type": "string",
+        "description": "试听文本。"
+      },
+      "success": {
+        "title": "是否成功",
+        "type": "boolean",
+        "description": "是否成功。"
+      }
+    },
+    "required": [
+      "success",
+      "sample_audio_url",
+      "sample_text"
+    ],
+    "title": "声音预览响应",
+    "type": "object",
+    "x-apifox-orders": [
+      "sample_audio_url",
+      "sample_text",
+      "success"
+    ],
+    "description": "声音预览响应数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

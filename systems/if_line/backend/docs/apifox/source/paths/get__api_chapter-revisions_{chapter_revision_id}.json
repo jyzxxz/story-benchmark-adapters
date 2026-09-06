@@ -1,0 +1,54 @@
+{
+  "method": "get",
+  "path": "/api/chapter-revisions/{chapter_revision_id}",
+  "operation": {
+    "operationId": "getChapterRevision",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "chapter_revision_id",
+        "required": true,
+        "schema": {
+          "title": "Chapter Revision Id",
+          "type": "string"
+        },
+        "description": "章节正文修订编号。"
+      }
+    ],
+    "responses": {
+      "200": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ChapterRevision"
+            }
+          }
+        },
+        "description": "Successful Response"
+      },
+      "422": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "description": "Validation Error"
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "summary": "读取章节正文版本详情",
+    "tags": [
+      "创作版本与生成/视觉小说图步骤一：章节脚本与资源槽",
+      "章节脚本与资源槽"
+    ],
+    "x-apifox-folder": "创作版本与生成/视觉小说图步骤一：章节脚本与资源槽",
+    "x-apifox-status": "released",
+    "description": "读取单个章节正文修订详情。后续生成章节脚本时使用 chapter_revision_id 作为输入。"
+  }
+}

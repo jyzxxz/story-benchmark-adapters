@@ -1,0 +1,75 @@
+{
+  "method": "post",
+  "path": "/api/chapter-revisions/{chapter_revision_id}/script-revisions",
+  "operation": {
+    "summary": "手动创建章节脚本修订（草稿物化）",
+    "description": "把客户端编辑的章节脚本草稿固化为不可变修订。内容寻址去重：同内容重复提交返回既有修订（幂等），不激活 head。spans 与锚定正文逐字校验，失败 422。",
+    "operationId": "createScriptRevision",
+    "tags": [
+      "创作版本与生成/视觉小说图步骤一：章节脚本与资源槽",
+      "章节脚本与资源槽"
+    ],
+    "x-apifox-folder": "创作版本与生成/视觉小说图步骤一：章节脚本与资源槽",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "chapter_revision_id",
+        "required": true,
+        "schema": {
+          "title": "Chapter Revision Id",
+          "type": "string"
+        },
+        "description": "锚定的章节正文修订 UUID（脚本的 spans 必须与该正文逐字一致）。"
+      },
+      {
+        "in": "header",
+        "name": "Idempotency-Key",
+        "required": true,
+        "schema": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Idempotency-Key",
+          "type": "string"
+        },
+        "description": "幂等键。一次用户操作生成一个稳定字符串；同一用户用同一个 key 重试同一请求会返回同一任务，换请求内容会返回冲突。"
+      }
+    ],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ScriptRevisionCreate"
+          }
+        }
+      }
+    },
+    "responses": {
+      "201": {
+        "description": "创建成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ScriptRevisionCreated"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求非法（校验失败，具体原因见 message）",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object"
+            }
+          }
+        },
+        "x-apifox-name": "校验失败",
+        "x-apifox-ordering": 1
+      }
+    }
+  }
+}

@@ -1,0 +1,82 @@
+[
+  {
+    "id": "b01",
+    "scene_zh": "朝堂",
+    "mood": "day",
+    "genre": "historical",
+    "needs_no_humans": true,
+    "expected_keywords": ["hall", "column", "marble"]
+  },
+  {
+    "id": "b02",
+    "scene_zh": "城墙",
+    "mood": "dusk",
+    "genre": "historical",
+    "needs_no_humans": true,
+    "expected_keywords": ["wall", "battlement", "sunset"]
+  },
+  {
+    "id": "b03",
+    "scene_zh": "军帐",
+    "mood": "night",
+    "genre": "historical",
+    "needs_no_humans": true,
+    "expected_keywords": ["tent", "military", "night"]
+  },
+  {
+    "id": "b04",
+    "scene_zh": "花园",
+    "mood": "spring",
+    "genre": "historical",
+    "needs_no_humans": true,
+    "expected_keywords": ["garden", "blossom", "pond"]
+  },
+  {
+    "id": "b05",
+    "scene_zh": "街道",
+    "mood": "rain",
+    "genre": "historical",
+    "needs_no_humans": true,
+    "expected_keywords": ["street", "rain", "lantern"]
+  },
+  {
+    "id": "b06",
+    "scene_zh": "战场",
+    "mood": "storm",
+    "genre": "historical",
+    "needs_no_humans": true,
+    "expected_keywords": ["battlefield", "sky", "broken"]
+  },
+  {
+    "id": "b07",
+    "scene_zh": "现代办公室",
+    "mood": "day",
+    "genre": "modern",
+    "needs_no_humans": true,
+    "expected_keywords": ["office", "glass", "desk"]
+  },
+  {
+    "id": "b08",
+    "scene_zh": "霓虹街道",
+    "mood": "night",
+    "genre": "modern",
+    "needs_no_humans": true,
+    "expected_keywords": ["street", "neon", "night"]
+  },
+  {
+    "id": "b09",
+    "scene_zh": "飞船舰桥",
+    "mood": "night",
+    "genre": "sci-fi",
+    "needs_no_humans": true,
+    "expected_keywords": ["spaceship", "display", "metal"]
+  },
+  {
+    "id": "b10",
+    "scene_zh": "魔法森林",
+    "mood": "fog",
+    "genre": "fantasy",
+    "needs_no_humans": true,
+    "expected_keywords": ["forest", "magic", "mist"]
+  }
+]

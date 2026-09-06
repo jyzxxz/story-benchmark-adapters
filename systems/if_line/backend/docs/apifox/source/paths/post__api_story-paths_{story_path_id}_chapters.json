@@ -1,0 +1,95 @@
+{
+  "method": "post",
+  "path": "/api/story-paths/{story_path_id}/chapters",
+  "operation": {
+    "operationId": "appendPathChapter",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "story_path_id",
+        "required": true,
+        "schema": {
+          "title": "Story Path Id",
+          "type": "string"
+        },
+        "description": "故事路径编号。主线和分支线都会有自己的 story_path_id。"
+      },
+      {
+        "in": "header",
+        "name": "If-Match",
+        "required": false,
+        "schema": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "If-Match"
+        },
+        "description": "乐观锁版本，填 GET head 或 GET 资源详情响应头里的 ETag，例如 \"2\"；不传时后端不做版本冲突保护。"
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/PathChapterCreate"
+          },
+          "example": {
+            "after_path_chapter_id": null
+          }
+        }
+      },
+      "required": true,
+      "description": "插入位置请求。after_path_chapter_id 为 null 时使用默认插入位置。"
+    },
+    "responses": {
+      "201": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PathChapter"
+            },
+            "example": {
+              "id": "25be6d5e-b60d-404c-9909-bf7dce14f66f",
+              "story_path_id": "a3dacdd2-c874-4291-b7b1-628a7bbd30f5",
+              "chapter_slot_id": "da68fc30-4407-4639-af18-ebd395319324",
+              "display_index": 2,
+              "predecessor_path_chapter_id": "1252f436-69e3-4f6e-87c9-0cc007e8dc2e",
+              "inherited_from_path_chapter_id": null,
+              "current_revision_id": null,
+              "lock_version": 1
+            }
+          }
+        },
+        "description": "Successful Response"
+      },
+      "422": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "description": "Validation Error"
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "summary": "新增空章节位置",
+    "tags": [
+      "创作版本与生成/章节生成",
+      "创作版本与生成"
+    ],
+    "x-apifox-folder": "创作版本与生成/章节生成",
+    "x-apifox-status": "released",
+    "description": "在 story path 中新增一个空章节位置。它只创建章节槽位，不生成正文。通常用于手动扩展章节结构。"
+  }
+}

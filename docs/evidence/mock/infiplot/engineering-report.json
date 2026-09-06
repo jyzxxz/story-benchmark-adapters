@@ -1,0 +1,19 @@
+{
+  "evidence_kind": "native_route_local_auth_and_provider_fixture",
+  "formal_experiment": false,
+  "source_snapshot": "<workspace>/outputs/story-benchmark-adapters/systems/infiplot",
+  "source_lock": "<workspace>/outputs/story-benchmark-adapters/baseline-lock.json",
+  "shared_task_sha256_from_native_sdk": "af81207f820c2e6e8ea56939e4b4ed313f1810bf089068bfa1853549c440302a",
+  "direct_native_route_receiver_observed": false,
+  "receipt_boundary": "native_sdk_task_block",
+  "native_calls_observed": 2,
+  "usage_values_are_provider_fixtures": true,
+  "source_attestation": {
+    "upstream_source_unchanged": true,
+    "runtime_source_unchanged_except_native_generated_files": true,
+    "runtime_generated_file_changes": [],
+    "runtime_unexpected_source_changes": [],
+    "source_files": 927
+  },
+  "fallback_observation": "unknown_without_exhaustive_native_hooks"
+}

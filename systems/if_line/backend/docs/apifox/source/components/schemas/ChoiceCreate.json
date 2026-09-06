@@ -1,0 +1,34 @@
+{
+  "name": "ChoiceCreate",
+  "schema": {
+    "properties": {
+      "checkpoint_node_id": {
+        "maxLength": 64,
+        "minLength": 1,
+        "title": "检查点节点编号",
+        "type": "string",
+        "description": "检查点节点编号，用于关联对应数据。"
+      },
+      "option_key": {
+        "maxLength": 128,
+        "minLength": 1,
+        "title": "选项键",
+        "type": "string",
+        "description": "选项键。"
+      }
+    },
+    "required": [
+      "checkpoint_node_id",
+      "option_key"
+    ],
+    "title": "阅读选择提交请求",
+    "type": "object",
+    "x-apifox-orders": [
+      "checkpoint_node_id",
+      "option_key"
+    ],
+    "description": "阅读选择提交请求数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

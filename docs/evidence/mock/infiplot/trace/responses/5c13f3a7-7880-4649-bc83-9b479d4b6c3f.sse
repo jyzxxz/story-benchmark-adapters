@@ -1,0 +1,6 @@
+data: {"id": "local-fixture", "model": "local-fixture-model", "choices": [{"index": 0, "delta": {"content": "<plan>{\"sceneSummary\": \"本地固定响应测试\", \"entryBeatId\": \"b1\", \"cast\": [], \"entryActiveCharacters\": [], \"sceneKey\": \"fixture-room\", \"storyBible\": {\"logline\": \"fixture\", \"genreTags\": [\"fixture\"], \"protagonist\": \"你\", \"castNotes\": []}}</plan><story>你仍站在门前，窗外的雨没有停。\n\n你把手从门把上移开，等待下一步行动。</story><choices>[{\"id\": \"c1\", \"label\": \"继续等待\", \"effect\": {\"kind\": \"change-scene\", \"nextSceneSeed\": \"等待\"}}, {\"id\": \"c2\", \"label\": \"离开\", \"effect\": {\"kind\": \"change-scene\", \"nextSceneSeed\": \"离开\"}}]</choices>"}, "finish_reason": null}]}
+
+data: {"id": "local-fixture", "model": "local-fixture-model", "choices": [{"index": 0, "delta": {}, "finish_reason": "stop"}], "usage": {"prompt_tokens": 10, "completion_tokens": 5, "total_tokens": 15}}
+
+data: [DONE]
+

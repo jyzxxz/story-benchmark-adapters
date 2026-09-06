@@ -1,0 +1,97 @@
+{
+  "method": "post",
+  "path": "/api/chapter-script-revisions/{script_revision_id}/vn-graph-compilations",
+  "operation": {
+    "summary": "异步编译 VNGraph",
+    "deprecated": false,
+    "description": "异步生成接口。调用后只创建任务，不直接返回生成内容。\n\n前端处理方式：\n- 提交请求后读取返回的 `task_id`\n- 使用 `GET /api/tasks/{task_id}` 查询任务状态\n- 或使用 `/api/tasks/{task_id}/events` 监听 SSE 事件\n\n幂等要求：\n- 请求必须带 `Idempotency-Key`\n- 一次用户操作生成一个稳定 key\n- 用户重复点击或网络重试时复用同一个 key，避免重复扣费和重复创建任务\n\n生成内容：\n- 基于章节脚本和已绑定资源槽位编译 VNGraph revision\n\n前置条件：\n- 必需资源槽位必须已经绑定素材版本\n- 否则会返回“必需资源槽位尚未绑定”一类错误\n\n前端填写：\n- 普通前端传 `{}` 或 `null`\n- `compiler_version`、`schema_version` 只用于兼容测试或指定运行时版本",
+    "operationId": "compile_vn_graph_api_projects__project_id__chapters__chapter_index__vn_graphs_compile_post",
+    "tags": [
+      "创作版本与生成/视觉小说图步骤二：最终产物生成",
+      "视觉小说图"
+    ],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "script_revision_id",
+        "required": true,
+        "schema": {
+          "title": "Script Revision Id",
+          "type": "string"
+        },
+        "description": "章节脚本修订编号。"
+      },
+      {
+        "in": "header",
+        "name": "Idempotency-Key",
+        "required": true,
+        "schema": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Idempotency-Key",
+          "type": "string"
+        },
+        "description": "幂等键。一次用户操作生成一个稳定字符串；同一用户用同一个 key 重试同一请求会返回同一任务，换请求内容会返回冲突。"
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VNGraphCompileRequest"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Body"
+          },
+          "example": {
+            "schema_version": null,
+            "compiler_version": null
+          }
+        }
+      },
+      "required": true,
+      "description": "VNGraph 编译请求。传 {} 或 null 使用后端默认版本。"
+    },
+    "responses": {
+      "202": {
+        "description": "任务已接受",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TaskAccepted"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-folder": "创作版本与生成/视觉小说图步骤二：最终产物生成",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923823-run"
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "method": "post",
+  "path": "/api/server-agent/threads/{thread_id}/tool-calls/{tool_call_id}/result",
+  "operation": {
+    "summary": "提交前端工具结果",
+    "deprecated": false,
+    "description": "当前端收到 `tool_call` item 且状态为 `waiting_input` 时，按 item.id 调用本接口回传工具执行结果。这个接口只用于前端工具结果，不用于普通用户输入。后端只把结果写入当前 Agent 的前端工具结果缓存；Agent 需要结果时应调用 `get_frontend_tool_result` 并传入对应 `tool_call_id`。如果前端尚未上报，`get_frontend_tool_result` 会返回 `status=pending`。",
+    "operationId": "submit_server_agent_tool_call_result_post",
+    "tags": [
+      "服务端 Agent"
+    ],
+    "parameters": [
+      {
+        "name": "thread_id",
+        "in": "path",
+        "description": "Agent thread 编号。",
+        "required": true,
+        "schema": {
+          "title": "Thread Id",
+          "type": "string"
+        }
+      },
+      {
+        "name": "tool_call_id",
+        "in": "path",
+        "description": "SSE 中 tool_call item 的 id。",
+        "required": true,
+        "schema": {
+          "title": "Tool Call Id",
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ServerAgentToolCallResultAcceptedResponse"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      },
+      "404": {
+        "description": "Agent 不存在。",
+        "content": {
+          "application/json": {
+            "schema": {}
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "不存在",
+        "x-apifox-ordering": 2
+      },
+      "409": {
+        "description": "前端工具调用不存在、已过期，或结果已经提交。",
+        "content": {
+          "application/json": {
+            "schema": {}
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "状态冲突",
+        "x-apifox-ordering": 2
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "服务端 Agent",
+    "x-apifox-status": "released",
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ServerAgentToolCallResultRequest"
+          },
+          "example": {
+            "result": {
+              "ok": true,
+              "selected": {
+                "asset_id": 123,
+                "asset_version_id": "asset_version_xxx"
+              }
+            }
+          }
+        }
+      },
+      "required": true
+    }
+  }
+}

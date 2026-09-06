@@ -1,0 +1,23 @@
+{
+  "name": "PreviewRequest",
+  "schema": {
+    "properties": {
+      "tts_text": {
+        "default": "今夜之后，京城不会再太平。",
+        "description": "语音合成文本。",
+        "maxLength": 600,
+        "minLength": 1,
+        "title": "语音合成文本",
+        "type": "string"
+      }
+    },
+    "title": "声音预览请求",
+    "type": "object",
+    "x-apifox-orders": [
+      "tts_text"
+    ],
+    "description": "声音预览请求数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

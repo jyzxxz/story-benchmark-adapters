@@ -1,0 +1,108 @@
+{
+  "name": "ChoiceRead",
+  "schema": {
+    "properties": {
+      "candidate_id": {
+        "title": "候选编号",
+        "type": "string",
+        "description": "候选编号，用于关联对应数据。"
+      },
+      "checkpoint_node_id": {
+        "title": "检查点节点编号",
+        "type": "string",
+        "description": "检查点节点编号，用于关联对应数据。"
+      },
+      "created_at": {
+        "format": "date-time",
+        "title": "创建时间",
+        "type": "string",
+        "description": "创建时间。"
+      },
+      "id": {
+        "title": "编号",
+        "type": "string",
+        "description": "编号，用于关联对应数据。"
+      },
+      "option_key": {
+        "title": "选项键",
+        "type": "string",
+        "description": "选项键。"
+      },
+      "previous_node_id": {
+        "title": "上一节点编号",
+        "type": "string",
+        "description": "上一节点编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "previous_snapshot_id": {
+        "title": "上一快照编号",
+        "type": "string",
+        "description": "上一快照编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "result_node_id": {
+        "title": "结果节点编号",
+        "type": "string",
+        "description": "结果节点编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "result_revision_id": {
+        "title": "结果修订编号",
+        "type": "string",
+        "description": "结果修订编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "result_snapshot_id": {
+        "title": "结果快照编号",
+        "type": "string",
+        "description": "结果快照编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "session_id": {
+        "title": "会话编号",
+        "type": "string",
+        "description": "会话编号，用于关联对应数据。"
+      },
+      "undone_at": {
+        "title": "撤销时间",
+        "format": "date-time",
+        "type": "string",
+        "description": "撤销时间。",
+        "nullable": true
+      }
+    },
+    "required": [
+      "id",
+      "session_id",
+      "checkpoint_node_id",
+      "option_key",
+      "candidate_id",
+      "previous_node_id",
+      "result_node_id",
+      "previous_snapshot_id",
+      "result_snapshot_id",
+      "result_revision_id",
+      "undone_at",
+      "created_at"
+    ],
+    "title": "阅读选择读取结果",
+    "type": "object",
+    "x-apifox-orders": [
+      "candidate_id",
+      "checkpoint_node_id",
+      "created_at",
+      "id",
+      "option_key",
+      "previous_node_id",
+      "previous_snapshot_id",
+      "result_node_id",
+      "result_revision_id",
+      "result_snapshot_id",
+      "session_id",
+      "undone_at"
+    ],
+    "description": "阅读选择读取结果数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

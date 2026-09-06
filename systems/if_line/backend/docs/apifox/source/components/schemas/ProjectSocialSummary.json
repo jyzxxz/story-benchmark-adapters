@@ -1,0 +1,44 @@
+{
+  "name": "ProjectSocialSummary",
+  "schema": {
+    "properties": {
+      "comment_count": {
+        "title": "评论数量",
+        "type": "integer",
+        "description": "评论数量。"
+      },
+      "like_count": {
+        "title": "点赞数量",
+        "type": "integer",
+        "description": "点赞数量。"
+      },
+      "liked_by_me": {
+        "title": "当前用户是否点赞",
+        "type": "boolean",
+        "description": "是否当前用户是否点赞。"
+      },
+      "project_id": {
+        "title": "项目编号",
+        "type": "integer",
+        "description": "项目编号，用于关联对应数据。"
+      }
+    },
+    "required": [
+      "project_id",
+      "like_count",
+      "comment_count",
+      "liked_by_me"
+    ],
+    "title": "项目社交摘要",
+    "type": "object",
+    "x-apifox-orders": [
+      "comment_count",
+      "like_count",
+      "liked_by_me",
+      "project_id"
+    ],
+    "description": "项目社交摘要数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

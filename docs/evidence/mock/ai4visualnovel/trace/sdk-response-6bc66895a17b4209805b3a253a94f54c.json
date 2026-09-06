@@ -1,0 +1,33 @@
+{
+  "id": "synthetic-response",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\"title\": \"CAMPUS_01_NATIVE_MOCK\", \"background\": \"Synthetic engineering fixture only.\", \"art_style\": \"fixture\", \"story_outline\": {\"groups\": [{\"group_id\": \"group1\", \"group_outline\": \"synthetic 12-node graph\"}]}, \"characters\": [{\"id\": \"林\", \"name\": \"林\", \"gender\": \"\", \"is_protagonist\": true, \"personality\": \"fixture\", \"appearance\": \"fixture\", \"background\": \"fixture\"}, {\"id\": \"周\", \"name\": \"周\", \"gender\": \"\", \"is_protagonist\": false, \"personality\": \"fixture\", \"appearance\": \"fixture\", \"background\": \"fixture\"}, {\"id\": \"顾\", \"name\": \"顾\", \"gender\": \"\", \"is_protagonist\": false, \"personality\": \"fixture\", \"appearance\": \"fixture\", \"background\": \"fixture\"}], \"scenes\": [{\"id\": \"classroom\", \"name\": \"教室\", \"description\": \"fixture\"}]}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      }
+    }
+  ],
+  "created": null,
+  "model": "fixture-model",
+  "object": null,
+  "metadata": null,
+  "moderation": null,
+  "service_tier": null,
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 20,
+    "prompt_tokens": 10,
+    "total_tokens": 30,
+    "completion_tokens_details": null,
+    "prompt_tokens_details": null
+  }
+}

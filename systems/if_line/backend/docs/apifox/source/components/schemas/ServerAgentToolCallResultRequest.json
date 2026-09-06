@@ -1,0 +1,26 @@
+{
+  "name": "ServerAgentToolCallResultRequest",
+  "schema": {
+    "type": "object",
+    "title": "服务端 Agent 前端工具结果请求",
+    "description": "前端执行完 Agent 请求的外部工具后，用这个结构把结果回传给后端。",
+    "required": [
+      "result"
+    ],
+    "properties": {
+      "result": {
+        "type": "object",
+        "title": "工具结果",
+        "description": "前端工具执行结果。后端会先缓存结果；Agent 后续调用 get_frontend_tool_result 时才能读取。",
+        "properties": {},
+        "x-apifox-orders": [],
+        "x-apifox-ignore-properties": []
+      }
+    },
+    "x-apifox-orders": [
+      "result"
+    ],
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

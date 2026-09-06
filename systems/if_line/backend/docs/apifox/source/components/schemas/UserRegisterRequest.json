@@ -1,0 +1,40 @@
+{
+  "name": "UserRegisterRequest",
+  "schema": {
+    "properties": {
+      "display_name": {
+        "title": "显示名称",
+        "maxLength": 100,
+        "type": "string",
+        "description": "显示名称，可为空。",
+        "nullable": true
+      },
+      "email": {
+        "title": "邮箱",
+        "type": "string",
+        "description": "邮箱。"
+      },
+      "password": {
+        "maxLength": 128,
+        "minLength": 8,
+        "title": "密码",
+        "type": "string",
+        "description": "密码。"
+      }
+    },
+    "required": [
+      "email",
+      "password"
+    ],
+    "title": "用户注册请求",
+    "type": "object",
+    "x-apifox-orders": [
+      "display_name",
+      "email",
+      "password"
+    ],
+    "description": "用户注册请求数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

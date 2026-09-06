@@ -1,0 +1,122 @@
+{
+  "name": "ProjectPatch",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "characters": {
+        "anyOf": [
+          {
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Characters",
+        "description": "新的角色列表，会整体替换项目当前 characters 字段。"
+      },
+      "extra_requirements": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Extra Requirements",
+        "description": "新的额外要求。"
+      },
+      "pace": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Pace",
+        "description": "新的节奏偏好。"
+      },
+      "source_work": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Source Work",
+        "description": "新的原作或参考作品说明。"
+      },
+      "story_end": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Story End",
+        "description": "新的故事终点，会影响后续生成上下文。"
+      },
+      "story_start": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Story Start",
+        "description": "新的故事起点，会影响后续生成上下文。"
+      },
+      "style": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Style",
+        "description": "新的整体风格。"
+      },
+      "title": {
+        "anyOf": [
+          {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Title",
+        "description": "新项目标题。"
+      }
+    },
+    "title": "ProjectPatch",
+    "type": "object",
+    "description": "更新项目基础信息请求。只传需要修改的字段，不能传空对象。",
+    "x-apifox-orders": [
+      "characters",
+      "extra_requirements",
+      "pace",
+      "source_work",
+      "story_end",
+      "story_start",
+      "style",
+      "title"
+    ]
+  }
+}

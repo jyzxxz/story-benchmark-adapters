@@ -1,0 +1,44 @@
+{
+  "name": "ReadingImageCreate",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "height": {
+        "default": 1024,
+        "maximum": 2048,
+        "minimum": 512,
+        "title": "高度",
+        "type": "integer",
+        "description": "高度。"
+      },
+      "prompt": {
+        "maxLength": 4000,
+        "minLength": 1,
+        "title": "提示词",
+        "type": "string",
+        "description": "提示词。"
+      },
+      "width": {
+        "default": 1024,
+        "maximum": 2048,
+        "minimum": 512,
+        "title": "宽度",
+        "type": "integer",
+        "description": "宽度。"
+      }
+    },
+    "required": [
+      "prompt"
+    ],
+    "title": "阅读配图创建请求",
+    "type": "object",
+    "x-apifox-orders": [
+      "height",
+      "prompt",
+      "width"
+    ],
+    "description": "阅读配图创建请求数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

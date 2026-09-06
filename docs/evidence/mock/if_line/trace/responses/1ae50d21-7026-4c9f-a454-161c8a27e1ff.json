@@ -1,0 +1,21 @@
+{
+  "id": "fixed-1",
+  "model": "fixed-test-model",
+  "object": "chat.completion",
+  "created": 0,
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\"worldview\": \"测试世界\", \"characters\": [], \"character_relations\": \"\", \"main_conflict\": \"等待\", \"emotional_line\": \"\", \"style_rules\": \"简体中文\", \"ending_constraints\": \"\", \"forbidden_points\": [], \"writing_notes\": []}"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 20,
+    "completion_tokens": 10,
+    "total_tokens": 30
+  }
+}

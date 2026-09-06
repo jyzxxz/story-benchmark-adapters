@@ -1,0 +1,42 @@
+{
+  "name": "ScriptRevision",
+  "schema": {
+    "properties": {
+      "chapter_revision_id": {
+        "title": "Chapter Revision Id",
+        "type": "string"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "revision_no": {
+        "minimum": 1.0,
+        "title": "Revision No",
+        "type": "integer"
+      },
+      "script_hash": {
+        "title": "Script Hash",
+        "type": "string"
+      },
+      "script_json": {
+        "title": "Script Json",
+        "type": "object"
+      },
+      "source_hash": {
+        "title": "Source Hash",
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "chapter_revision_id",
+      "revision_no",
+      "source_hash",
+      "script_hash",
+      "script_json"
+    ],
+    "title": "ScriptRevision",
+    "type": "object"
+  }
+}

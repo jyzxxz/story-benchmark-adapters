@@ -1,0 +1,47 @@
+{
+  "name": "ReleaseManifest",
+  "schema": {
+    "properties": {
+      "manifest": {
+        "title": "发布清单",
+        "type": "object",
+        "x-apifox-orders": [],
+        "description": "发布清单对象。",
+        "properties": {},
+        "x-apifox-ignore-properties": []
+      },
+      "manifest_hash": {
+        "title": "清单哈希",
+        "type": "string",
+        "description": "清单哈希。"
+      },
+      "release_id": {
+        "title": "发布编号",
+        "type": "string",
+        "description": "发布编号，用于关联对应数据。"
+      },
+      "version": {
+        "title": "版本号",
+        "type": "integer",
+        "description": "版本号。"
+      }
+    },
+    "required": [
+      "release_id",
+      "version",
+      "manifest_hash",
+      "manifest"
+    ],
+    "title": "发布清单",
+    "type": "object",
+    "x-apifox-orders": [
+      "manifest",
+      "manifest_hash",
+      "release_id",
+      "version"
+    ],
+    "description": "发布清单数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

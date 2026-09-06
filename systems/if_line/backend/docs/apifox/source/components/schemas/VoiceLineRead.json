@@ -1,0 +1,121 @@
+{
+  "name": "VoiceLineRead",
+  "schema": {
+    "properties": {
+      "audio_asset_version_id": {
+        "title": "音频素材版本编号",
+        "type": "string",
+        "description": "音频素材版本编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "chapter_revision_id": {
+        "title": "章节修订编号",
+        "type": "string",
+        "description": "章节修订编号，用于关联对应数据。"
+      },
+      "created_at": {
+        "format": "date-time",
+        "title": "创建时间",
+        "type": "string",
+        "description": "创建时间。"
+      },
+      "emotion": {
+        "title": "情绪",
+        "type": "string",
+        "description": "情绪，可为空。",
+        "nullable": true
+      },
+      "id": {
+        "title": "编号",
+        "type": "string",
+        "description": "编号，用于关联对应数据。"
+      },
+      "kind": {
+        "title": "类型",
+        "type": "string",
+        "description": "类型。"
+      },
+      "occurrence_id": {
+        "title": "occurrence编号",
+        "type": "string",
+        "description": "occurrence编号，用于关联对应数据。"
+      },
+      "order_index": {
+        "title": "排序序号",
+        "type": "integer",
+        "description": "排序序号。"
+      },
+      "speaker_character_id": {
+        "title": "说话角色编号",
+        "type": "string",
+        "description": "说话角色编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "speaker_name": {
+        "title": "说话人名称",
+        "type": "string",
+        "description": "说话人名称，可为空。",
+        "nullable": true
+      },
+      "status": {
+        "title": "状态",
+        "type": "string",
+        "description": "状态。"
+      },
+      "text": {
+        "title": "文本",
+        "type": "string",
+        "description": "文本。"
+      },
+      "voice_profile_id": {
+        "title": "声音档案编号",
+        "type": "string",
+        "description": "声音档案编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "voice_profile_version": {
+        "title": "声音档案版本",
+        "type": "integer",
+        "description": "声音档案版本，可为空。",
+        "nullable": true
+      }
+    },
+    "required": [
+      "id",
+      "chapter_revision_id",
+      "occurrence_id",
+      "order_index",
+      "kind",
+      "text",
+      "speaker_character_id",
+      "speaker_name",
+      "emotion",
+      "voice_profile_id",
+      "voice_profile_version",
+      "audio_asset_version_id",
+      "status",
+      "created_at"
+    ],
+    "title": "语音台词读取结果",
+    "type": "object",
+    "x-apifox-orders": [
+      "audio_asset_version_id",
+      "chapter_revision_id",
+      "created_at",
+      "emotion",
+      "id",
+      "kind",
+      "occurrence_id",
+      "order_index",
+      "speaker_character_id",
+      "speaker_name",
+      "status",
+      "text",
+      "voice_profile_id",
+      "voice_profile_version"
+    ],
+    "description": "语音台词读取结果数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

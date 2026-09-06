@@ -1,0 +1,49 @@
+{
+  "name": "PublicContinuationTreeRead",
+  "schema": {
+    "properties": {
+      "chapter_number": {
+        "title": "章节编号",
+        "type": "integer",
+        "description": "章节编号。"
+      },
+      "nodes": {
+        "items": {
+          "$ref": "#/components/schemas/PublicContinuationNodeRead",
+          "title": "nodesitem",
+          "description": "nodesitem。"
+        },
+        "title": "节点列表",
+        "type": "array",
+        "description": "节点列表列表。"
+      },
+      "project_id": {
+        "title": "项目编号",
+        "type": "integer",
+        "description": "项目编号，用于关联对应数据。"
+      },
+      "release_id": {
+        "title": "发布编号",
+        "type": "string",
+        "description": "发布编号，用于关联对应数据。"
+      }
+    },
+    "required": [
+      "project_id",
+      "release_id",
+      "chapter_number",
+      "nodes"
+    ],
+    "title": "公开续写树读取结果",
+    "type": "object",
+    "x-apifox-orders": [
+      "chapter_number",
+      "nodes",
+      "project_id",
+      "release_id"
+    ],
+    "description": "公开续写树读取结果数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

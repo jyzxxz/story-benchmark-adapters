@@ -1,0 +1,104 @@
+source.tar.gz
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+backend/test_*.db
+backend/novel_agent.db
+backend/*.db
+backend/.env
+# 机器本地环境变量（含密钥/端口，绝不入库）
+frontend/.env
+# 环境变量备份/快照（含密钥，绝不入库）
+backend/.env.*
+backend/.env.bak*
+backend/deploy/observability/.env
+# 通用兜底：任何目录下的 .env 变体
+**/.env.bak*
+backend/venv/
+backend/.cache/
+backend/agent_runs/
+backend/models/
+backend/storage/
+backend/.runtime/
+backend/backups/
+backend/logs/
+backend/static/
+backend/*.log
+*.local.log
+
+# 根目录运行时产物
+novel_agent.db
+*.db
+
+# 前端构建与依赖
+frontend/node_modules/
+frontend/dist/
+frontend/novel_agent.db
+frontend/test-results/
+frontend/playwright-report/
+
+# 自动化 / cron 运行时工作区（含完整仓库克隆，体积大）
+.cron/
+competition-runs/
+
+# TTS / 静态资源缓存
+static/tts_cache/
+
+# 素材生产管线产出不入库（新立绘 RP、新背景 BG、重渲染产物）；
+# 已跟踪的历史素材（02_portraits/03_backgrounds 早期批次等）保持跟踪，
+# gitignore 不影响已跟踪文件，整目录忽略只拦截新增。
+static/assets/universal_visual_novel_v2_working/02_portraits/
+static/assets/universal_visual_novel_v2_working/03_backgrounds/
+static/assets/universal_visual_novel_v2_working/05_contact_sheets/
+static/assets/universal_visual_novel_v2_working/06_manifests/prompts/BT0[0-9][0-9][0-9].txt
+static/assets/universal_visual_novel_v2_working/tmp/
+
+# 数据库备份快照（backend/*.db 不匹配 .bak.日期 后缀）
+backend/*.db.bak.*
+
+# git 危险操作前的仓库快照（dump 文件）
+/backups/
+
+# 本地部署脚本与临时产物
+backend/t/
+
+# 根目录运行时日志/PID（dev server）
+.runtime/
+*.pid
+# 三件套运行日志（dev.sh 写入：uvicorn/celery-worker/celery-beat 等）
+/logs/
+
+# macOS Finder 元数据
+._*
+**/._*
+
+# 资产 manifest 本地备份（重跑生成时留的快照）
+*.pre_bg046_bg051
+**/*.pre_bg046_bg051
+
+# 资产分片上传中间产物（tar / part 文件可达数百 MB，绝不入库）
+static/assets/.uploads/
+
+# 立绘标准化缓存（每次 normalize 调用按需生成，不入库）
+backend/static/assets/presentation_portraits/
+
+# 本地素材生产工作区（图片、临时分片、清单快照及生成日志）
+/codex_tasks/v2_asset_library_2368/
+
+# 运行时生成的背景和关键帧（文件名由内容哈希生成）
+/static/assets/backgrounds/
+/static/assets/keyframes/
+
+# ZCode 工具状态目录（会话工作区，不入库）
+.zcode/
+
+带土.txt
+
+# ===== 本机(Windows)开发适配文件，不入库（远程 Linux 服务器不使用）=====
+# 本地 PostgreSQL(40002) + Redis(6379) 容器定义
+/docker-compose.local.yml
+# Windows 一键启动脚本（服务器用 backend/dev.sh）
+/start_all.bat
+# 本机部署说明文档
+/本地运行指南.md
+

@@ -1,0 +1,101 @@
+{
+  "name": "StoryPath",
+  "schema": {
+    "properties": {
+      "base_state_snapshot_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Base State Snapshot Id"
+      },
+      "fork_candidate_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Fork Candidate Id"
+      },
+      "fork_checkpoint_node_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Fork Checkpoint Node Id"
+      },
+      "fork_path_chapter_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Fork Path Chapter Id"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "lock_version": {
+        "minimum": 1.0,
+        "title": "Lock Version",
+        "type": "integer"
+      },
+      "parent_path_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Parent Path Id"
+      },
+      "project_id": {
+        "title": "Project Id",
+        "type": "integer"
+      },
+      "status": {
+        "enum": [
+          "active",
+          "archived"
+        ],
+        "title": "Status",
+        "type": "string"
+      },
+      "title": {
+        "title": "Title",
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "project_id",
+      "parent_path_id",
+      "fork_path_chapter_id",
+      "fork_checkpoint_node_id",
+      "fork_candidate_id",
+      "base_state_snapshot_id",
+      "title",
+      "status",
+      "lock_version"
+    ],
+    "title": "StoryPath",
+    "type": "object"
+  }
+}

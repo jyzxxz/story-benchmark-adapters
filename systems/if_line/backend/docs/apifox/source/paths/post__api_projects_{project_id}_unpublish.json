@@ -1,0 +1,79 @@
+{
+  "method": "post",
+  "path": "/api/projects/{project_id}/unpublish",
+  "operation": {
+    "summary": "撤回项目发布",
+    "deprecated": false,
+    "description": "撤回当前项目的公开发布版本。建议带 If-Match，使用项目 publication.lock_version 防止并发撤回/发布冲突。",
+    "operationId": "withdraw_api_projects__project_id__releases__release_id__withdraw_post",
+    "tags": [
+      "项目管理/发布管理",
+      "发布管理"
+    ],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "project_id",
+        "required": true,
+        "schema": {
+          "title": "Project Id",
+          "type": "integer"
+        },
+        "description": "项目编号。"
+      },
+      {
+        "in": "header",
+        "name": "If-Match",
+        "required": false,
+        "schema": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "If-Match"
+        },
+        "description": "乐观锁版本，填 GET head 或 GET 资源详情响应头里的 ETag，例如 \"2\"；不传时后端不做版本冲突保护。"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Release"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-folder": "项目管理/发布管理",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923829-run"
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "method": "post",
+  "path": "/api/projects/{project_id}/publish",
+  "operation": {
+    "summary": "发布项目",
+    "deprecated": false,
+    "description": "发布项目。\n\n调用前置：\n- 先调用 `GET /api/projects/{project_id}/publication-readiness`\n- 确认 `ready=true`\n- 复制返回的 `authoring_fingerprint`\n\n请求字段：\n- `expected_authoring_fingerprint`：填写 readiness 返回的 `authoring_fingerprint`\n- `release_notes`：发布说明，自由文本，可为空\n\n为什么要传 fingerprint：\n- 防止“检查完成后内容又发生变化”\n- 避免发布到错误的创作版本",
+    "operationId": "add_release_api_projects__project_id__releases_post",
+    "tags": [
+      "项目管理/发布管理",
+      "发布管理"
+    ],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "project_id",
+        "required": true,
+        "schema": {
+          "title": "Project Id",
+          "type": "integer"
+        },
+        "description": "项目编号。"
+      },
+      {
+        "in": "header",
+        "name": "Idempotency-Key",
+        "required": true,
+        "schema": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Idempotency-Key",
+          "type": "string"
+        },
+        "description": "幂等键。一次用户操作生成一个稳定字符串；同一用户用同一个 key 重试同一请求会返回同一任务，换请求内容会返回冲突。"
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/PublishRequest"
+          },
+          "example": {
+            "expected_authoring_fingerprint": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+            "release_notes": "首次公开发布"
+          }
+        }
+      },
+      "required": true,
+      "description": "发布请求。expected_authoring_fingerprint 用于防止发布过程中创作内容发生变化。"
+    },
+    "responses": {
+      "201": {
+        "description": "创建成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Release"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-folder": "项目管理/发布管理",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923828-run"
+  }
+}

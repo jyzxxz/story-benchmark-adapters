@@ -1,0 +1,33 @@
+{
+  "name": "LibraryFacetGroup",
+  "schema": {
+    "properties": {
+      "category": {
+        "title": "分面类别",
+        "type": "string",
+        "description": "分面类别，例如 style、location、time、expression、pose、identity_group 等。"
+      },
+      "options": {
+        "items": {
+          "$ref": "#/components/schemas/LibraryFacetOption"
+        },
+        "title": "选项列表",
+        "type": "array",
+        "description": "该类别下可选的标签列表。"
+      }
+    },
+    "required": [
+      "category",
+      "options"
+    ],
+    "title": "素材库分面分组",
+    "type": "object",
+    "x-apifox-orders": [
+      "category",
+      "options"
+    ],
+    "description": "公共素材库按类别聚合的一组筛选项。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

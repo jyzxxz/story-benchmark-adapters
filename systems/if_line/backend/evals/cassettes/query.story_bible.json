@@ -1,0 +1,24 @@
+{
+  "task_id": "query.story_bible",
+  "instructions": "项目 1003 的世界观设定是什么？",
+  "model": "",
+  "assistant_messages": [
+    {
+      "content": null,
+      "tool_calls": [
+        {
+          "id": "call_00_YelB2j5fwWGYMpdhoDf99295",
+          "type": "function",
+          "function": {
+            "name": "get_story_bible",
+            "arguments": "{\"project_id\": 1003}"
+          }
+        }
+      ]
+    },
+    {
+      "content": "项目 1003 的世界观设定是：\n\n**城市上空有折叠海。**\n\n补充一下 StoryBible 中的其他关键信息：\n\n- **世界观（worldview）**：城市上空有折叠海。\n- **角色**：林夜。\n- **核心冲突（main_conflict）**：主角必须找回丢失的信号。\n\n该 StoryBible 当前 `committed` 状态为 `false`（尚未提交/确认）。",
+      "tool_calls": null
+    }
+  ]
+}

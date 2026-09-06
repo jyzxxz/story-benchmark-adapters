@@ -1,0 +1,60 @@
+{
+  "method": "post",
+  "path": "/api/auth/guest",
+  "operation": {
+    "summary": "创建游客会话",
+    "deprecated": false,
+    "description": "创建游客会话。",
+    "operationId": "guest_session_api_auth_guest_post",
+    "tags": [
+      "基础接口/认证与用户",
+      "认证与用户"
+    ],
+    "parameters": [
+      {
+        "name": "sid",
+        "in": "cookie",
+        "description": "",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Sid",
+          "type": "string",
+          "nullable": true
+        }
+      }
+    ],
+    "responses": {
+      "201": {
+        "description": "创建成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthResponse"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "基础接口/认证与用户",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923765-run"
+  }
+}

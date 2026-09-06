@@ -1,0 +1,104 @@
+{
+  "name": "AssetActionAsset",
+  "schema": {
+    "properties": {
+      "asset_id": {
+        "title": "素材编号",
+        "type": "integer",
+        "description": "素材编号，用于关联对应数据。"
+      },
+      "asset_type": {
+        "enum": [
+          "portrait",
+          "background",
+          "keyframe"
+        ],
+        "title": "素材类型",
+        "type": "string",
+        "description": "素材类型，可选值：portrait、background、keyframe。"
+      },
+      "asset_version_id": {
+        "title": "素材版本编号",
+        "type": "string",
+        "description": "素材版本编号，用于关联对应数据。"
+      },
+      "description_cn": {
+        "default": "",
+        "title": "中文描述",
+        "type": "string",
+        "description": "中文描述。"
+      },
+      "height": {
+        "title": "高度",
+        "type": "integer",
+        "description": "高度，可为空。",
+        "nullable": true
+      },
+      "media_url": {
+        "title": "媒体地址",
+        "type": "string",
+        "description": "媒体地址，由服务端返回给客户端访问。"
+      },
+      "sha256": {
+        "title": "文件哈希",
+        "type": "string",
+        "description": "文件哈希。"
+      },
+      "storage_object_id": {
+        "title": "存储对象编号",
+        "type": "string",
+        "description": "存储对象编号，用于关联对应数据。"
+      },
+      "tags": {
+        "items": {
+          "type": "string",
+          "title": "tagsitem",
+          "description": "tagsitem。"
+        },
+        "title": "标签列表",
+        "type": "array",
+        "description": "标签列表列表。"
+      },
+      "taxonomy": {
+        "title": "分类信息",
+        "type": "object",
+        "x-apifox-orders": [],
+        "description": "分类信息对象。",
+        "properties": {},
+        "x-apifox-ignore-properties": []
+      },
+      "width": {
+        "title": "宽度",
+        "type": "integer",
+        "description": "宽度，可为空。",
+        "nullable": true
+      }
+    },
+    "required": [
+      "asset_id",
+      "asset_version_id",
+      "storage_object_id",
+      "asset_type",
+      "media_url",
+      "sha256"
+    ],
+    "title": "素材操作关联素材",
+    "type": "object",
+    "x-apifox-orders": [
+      "asset_id",
+      "asset_type",
+      "asset_version_id",
+      "description_cn",
+      "height",
+      "media_url",
+      "sha256",
+      "storage_object_id",
+      "tags",
+      "taxonomy",
+      "width"
+    ],
+    "description": "素材操作关联素材数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

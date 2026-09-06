@@ -1,0 +1,34 @@
+{
+  "name": "BibleRevisionCreate",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "content_json": {
+        "title": "故事圣经内容",
+        "type": "object",
+        "description": "故事圣经结构化内容。字段结构由产品侧约定，后端按 JSON 整体保存并计算 hash。",
+        "properties": {},
+        "x-apifox-orders": [],
+        "x-apifox-ignore-properties": []
+      },
+      "parent_revision_id": {
+        "title": "父修订编号",
+        "type": "string",
+        "description": "父故事圣经修订编号。基于某一版修改时传该 revision_id；第一版或不关心父子关系时可不传或传 null。",
+        "nullable": true
+      }
+    },
+    "required": [
+      "content_json"
+    ],
+    "title": "故事圣经修订创建请求",
+    "type": "object",
+    "x-apifox-orders": [
+      "content_json",
+      "parent_revision_id"
+    ],
+    "description": "手动保存故事圣经修订版本。保存后不会自动成为当前版本，需要再 PUT /bible-head。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

@@ -1,0 +1,116 @@
+[
+  {
+    "id": "k01",
+    "event_zh": "李将军持剑怒视李清照",
+    "scene_zh": "朝堂",
+    "characters": [
+      {"name": "李将军", "role": "aggressor", "appearance_zh": "身着玄色铠甲的少年将军"},
+      {"name": "李清照", "role": "victim", "appearance_zh": "身着素白丧服的年轻女子"}
+    ],
+    "emotion": "intense",
+    "genre": "historical",
+    "expected_keywords": ["sword", "armor", "white"]
+  },
+  {
+    "id": "k02",
+    "event_zh": "黛玉葬花",
+    "scene_zh": "花园",
+    "characters": [
+      {"name": "林黛玉", "role": "subject", "appearance_zh": "弱柳扶风的少女"}
+    ],
+    "emotion": "sad",
+    "genre": "historical",
+    "expected_keywords": ["flowers", "girl", "garden"]
+  },
+  {
+    "id": "k03",
+    "event_zh": "诸葛亮借东风",
+    "scene_zh": "祭坛",
+    "characters": [
+      {"name": "诸葛亮", "role": "subject", "appearance_zh": "羽扇纶巾的中年文士"}
+    ],
+    "emotion": "intense",
+    "genre": "historical",
+    "expected_keywords": ["altar", "wind", "fan"]
+  },
+  {
+    "id": "k04",
+    "event_zh": "霍去病单骑追敌",
+    "scene_zh": "草原",
+    "characters": [
+      {"name": "霍去病", "role": "subject", "appearance_zh": "身着铠甲的少年将军"}
+    ],
+    "emotion": "intense",
+    "genre": "historical",
+    "expected_keywords": ["horse", "armor", "plain"]
+  },
+  {
+    "id": "k05",
+    "event_zh": "皇后跪求皇帝",
+    "scene_zh": "寝宫",
+    "characters": [
+      {"name": "皇后", "role": "subject", "appearance_zh": "凤冠霞帔的皇后"},
+      {"name": "皇帝", "role": "observer", "appearance_zh": "身着龙袍的中年帝王"}
+    ],
+    "emotion": "sad",
+    "genre": "historical",
+    "expected_keywords": ["queen", "emperor", "kneeling"]
+  },
+  {
+    "id": "k06",
+    "event_zh": "刺客夜袭",
+    "scene_zh": "城楼",
+    "characters": [
+      {"name": "刺客", "role": "aggressor", "appearance_zh": "蒙面黑衣刺客"},
+      {"name": "守卫", "role": "victim", "appearance_zh": "身着战甲的士兵"}
+    ],
+    "emotion": "intense",
+    "genre": "historical",
+    "expected_keywords": ["assassin", "guard", "night"]
+  },
+  {
+    "id": "k07",
+    "event_zh": "黑客入侵系统",
+    "scene_zh": "服务器机房",
+    "characters": [
+      {"name": "黑客", "role": "subject", "appearance_zh": "穿着黑色夹克的眼镜黑客"}
+    ],
+    "emotion": "intense",
+    "genre": "sci-fi",
+    "expected_keywords": ["server", "screen", "hacker"]
+  },
+  {
+    "id": "k08",
+    "event_zh": "魔法师召唤火焰",
+    "scene_zh": "魔法塔",
+    "characters": [
+      {"name": "艾琳", "role": "subject", "appearance_zh": "紫色法袍的精灵女魔法师"}
+    ],
+    "emotion": "intense",
+    "genre": "fantasy",
+    "expected_keywords": ["fire", "mage", "tower"]
+  },
+  {
+    "id": "k09",
+    "event_zh": "校园告白",
+    "scene_zh": "天台",
+    "characters": [
+      {"name": "少年", "role": "subject", "appearance_zh": "穿着校服的高中男生"},
+      {"name": "少女", "role": "observer", "appearance_zh": "穿着校服的长发女生"}
+    ],
+    "emotion": "happy",
+    "genre": "anime",
+    "expected_keywords": ["rooftop", "uniform", "sky"]
+  },
+  {
+    "id": "k10",
+    "event_zh": "战士倒地",
+    "scene_zh": "战场",
+    "characters": [
+      {"name": "战士", "role": "subject", "appearance_zh": "披着破烂战甲的战士"}
+    ],
+    "emotion": "sad",
+    "genre": "historical",
+    "expected_keywords": ["warrior", "ground", "wound"]
+  }
+]

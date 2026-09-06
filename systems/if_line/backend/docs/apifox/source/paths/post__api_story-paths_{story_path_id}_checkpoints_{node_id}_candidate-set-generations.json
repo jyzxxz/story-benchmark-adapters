@@ -1,0 +1,94 @@
+{
+  "method": "post",
+  "path": "/api/story-paths/{story_path_id}/checkpoints/{node_id}/candidate-set-generations",
+  "operation": {
+    "summary": "异步生成分支候选",
+    "deprecated": false,
+    "description": "异步生成接口。调用后只创建任务并返回 task_id，不直接返回生成内容。前端需要使用 GET /api/tasks/{task_id} 查询状态，或使用 /api/tasks/{task_id}/events 监听 SSE 事件。请求必须带 Idempotency-Key，用户重复点击时复用同一个 key 可以避免重复扣费和重复创建任务。 本接口从某个 VNGraph 检查点节点生成多个剧情分支候选。需要提供章节正文 revision 和状态快照，candidate_count 控制候选数量。",
+    "operationId": "generate_branch_candidates_api_projects__project_id__branch_candidate_generations_post",
+    "tags": [
+      "分支生成"
+    ],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "story_path_id",
+        "required": true,
+        "schema": {
+          "title": "Story Path Id",
+          "type": "string"
+        },
+        "description": "故事路径编号。主线和分支线都会有自己的 story_path_id。"
+      },
+      {
+        "in": "path",
+        "name": "node_id",
+        "required": true,
+        "schema": {
+          "title": "Node Id",
+          "type": "string"
+        },
+        "description": "VNGraph 中的检查点节点编号，用于从某个剧情节点生成分支候选。"
+      },
+      {
+        "in": "header",
+        "name": "Idempotency-Key",
+        "required": true,
+        "schema": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Idempotency-Key",
+          "type": "string"
+        },
+        "description": "幂等键。一次用户操作生成一个稳定字符串；同一用户用同一个 key 重试同一请求会返回同一任务，换请求内容会返回冲突。"
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/CandidateSetGenerationRequest"
+          }
+        }
+      },
+      "required": true,
+      "description": "分支候选生成请求。instructions 是用户对分支方向的补充要求。"
+    },
+    "responses": {
+      "202": {
+        "description": "任务已接受",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TaskAccepted"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-folder": "创作版本与生成/故事路径",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923811-run"
+  }
+}

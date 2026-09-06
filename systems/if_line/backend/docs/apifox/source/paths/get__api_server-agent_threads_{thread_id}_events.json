@@ -1,0 +1,88 @@
+{
+  "method": "get",
+  "path": "/api/server-agent/threads/{thread_id}/events",
+  "operation": {
+    "summary": "订阅 Agent 事件流",
+    "deprecated": false,
+    "description": "SSE 事件流，媒体类型为 text/event-stream。前端接入 Agent 时主要看这个接口的事件协议。\n\nSSE 帧格式：\n```text\nid: 3\nevent: item.started\ndata: {\"type\":\"item.started\",\"seq\":3,\"thread_id\":\"...\",\"turn_id\":\"...\",\"item\":{...}}\n```\n\n字段约定：\n- `id`：等于事件 `seq`，用于断线续传。\n- `event`：等于事件 `type`。\n- `data`：完整 JSON 事件对象。\n- `after_seq`：只补发 `seq > after_seq` 的事件。\n- `turn_id`：可选，只订阅某一轮 turn；普通前端建议不传，订阅整个 thread。\n- SSE 断开只表示取消订阅，不会自动打断 Agent。用户点击停止时调用 `POST /api/server-agent/threads/{thread_id}/turns/{turn_id}/cancel`。\n\n顶层事件类型：\n| type | 含义 | 前端处理建议 |\n| --- | --- | --- |\n| `thread.started` | Agent thread 创建完成 | 可忽略或用于初始化状态 |\n| `turn.started` | 一次用户输入开始执行 | 创建本轮运行状态，记录 `turn_id` |\n| `turn.completed` | turn 正常结束 | 标记本轮结束，不直接展示成聊天气泡 |\n| `turn.failed` | turn 异常结束或被打断 | `stop_reason=interrupted` 时标记为用户打断 |\n| `item.started` | 一个展示对象开始 | 根据 `item.id` 创建卡片 |\n| `item.updated` | 展示对象中间状态更新 | 按 `item.id` 更新卡片进度或等待状态 |\n| `item.completed` | 展示对象结束 | 按 `item.id` 标记完成或失败 |\n| `agent_message.delta` | Agent 回复文本增量 | 追加到 `item_id` 对应的 agent_message 文本 |\n| `error.occurred` | SSE 流上的不可恢复错误 | 展示错误并提示重连或刷新 |\n\nitem 类型：\n| item.type | 含义 |\n| --- | --- |\n| `agent_message` | Agent 给用户看的自然语言回复 |\n| `tool_call` | Agent 调用工具的展示卡片 |\n| `context_compaction` | 后端自动压缩上下文的系统提示 |\n| `error` | 后端执行错误 |\n\nAgent 回复流式示例：\n```json\n{\"type\":\"item.started\",\"item\":{\"id\":\"msg_xxx\",\"type\":\"agent_message\",\"text\":\"\",\"status\":\"in_progress\"}}\n{\"type\":\"agent_message.delta\",\"item_id\":\"msg_xxx\",\"delta\":\"这一章\"}\n{\"type\":\"agent_message.delta\",\"item_id\":\"msg_xxx\",\"delta\":\"已经存在。\"}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"msg_xxx\",\"type\":\"agent_message\",\"text\":\"这一章已经存在。\",\"status\":\"completed\"}}\n```\n\n工具调用示例：\n```json\n{\"type\":\"item.started\",\"item\":{\"id\":\"call_xxx\",\"type\":\"tool_call\",\"name\":\"get_chapter_content_status\",\"arguments\":{\"project_id\":1,\"chapter_index\":1},\"status\":\"in_progress\"}}\n{\"type\":\"item.updated\",\"item\":{\"id\":\"call_xxx\",\"type\":\"tool_call\",\"name\":\"apply_vngraph_patch\",\"input_request\":{\"thread_id\":\"thread_xxx\",\"turn_id\":\"turn_xxx\",\"tool_call_id\":\"call_xxx\"},\"status\":\"waiting_input\"}}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"call_xxx\",\"type\":\"tool_call\",\"name\":\"get_chapter_content_status\",\"result\":{\"exists\":true,\"content_length\":4861},\"status\":\"completed\"}}\n```\n\n前端看到 `tool_call.status=waiting_input` 后，按前端运行时协议完成本地处理并把结果交还 Agent。后续 Agent 会继续通过工具读取该结果。\n\n上下文压缩示例：\n```json\n{\"type\":\"item.started\",\"item\":{\"id\":\"cmp_xxx\",\"type\":\"context_compaction\",\"text\":\"正在压缩上下文\",\"status\":\"in_progress\",\"tokens_before\":118000,\"is_split_turn\":true}}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"cmp_xxx\",\"type\":\"context_compaction\",\"text\":\"上下文已压缩\",\"status\":\"completed\",\"summary_message_index\":38,\"first_kept_message_index\":12,\"tokens_after_estimate\":24000}}\n```\n\n打断示例：\n```json\n{\"type\":\"turn.failed\",\"thread_id\":\"thread_xxx\",\"turn_id\":\"turn_xxx\",\"stop_reason\":\"interrupted\",\"error\":\"用户已打断本轮 Agent 执行\"}\n```\n\n如果打断发生在工具调用阶段，后端会先补一条失败 tool result，避免恢复后出现孤立 assistant tool_call：\n```json\n{\"type\":\"item.completed\",\"item\":{\"id\":\"call_xxx\",\"type\":\"tool_call\",\"name\":\"get_chapter_content_status\",\"result\":{\"ok\":false,\"interrupted\":true,\"error\":\"用户已打断本轮 Agent 执行\"},\"status\":\"failed\"}}\n```\n\n页面恢复建议：\n1. 先调用 `GET /api/server-agent/threads` 找到用户自己的 thread。\n2. 进入页面后调用 `GET /api/server-agent/threads/{thread_id}/events/page` 补历史事件。\n3. 用最后处理的 `seq` 作为 `after_seq` 打开本 SSE 接口。\n4. 如果收到 `tool_call.status=waiting_input`，按前端运行时协议处理该工具请求。\n5. 所有 UI 展示按 `item.id` 聚合，不要依赖 resume 接口返回生成内容。",
+    "operationId": "stream_server_agent_events_get",
+    "tags": [
+      "服务端 Agent"
+    ],
+    "parameters": [
+      {
+        "name": "thread_id",
+        "in": "path",
+        "description": "Agent thread 编号。",
+        "required": true,
+        "schema": {
+          "title": "Thread Id",
+          "type": "string"
+        }
+      },
+      {
+        "name": "after_seq",
+        "in": "query",
+        "description": "只补发 seq 大于该值的事件。",
+        "required": false,
+        "schema": {
+          "title": "After Seq",
+          "type": "integer",
+          "default": 0,
+          "minimum": 0
+        }
+      },
+      {
+        "name": "turn_id",
+        "in": "query",
+        "description": "可选，只订阅某一轮 turn 的事件。普通前端建议不传，订阅整个 thread。",
+        "required": false,
+        "schema": {
+          "title": "Turn Id",
+          "type": "string",
+          "nullable": true
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {}
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      },
+      "404": {
+        "description": "Agent 不存在。",
+        "content": {
+          "application/json": {
+            "schema": {}
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "不存在",
+        "x-apifox-ordering": 2
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "服务端 Agent",
+    "x-apifox-status": "released"
+  }
+}

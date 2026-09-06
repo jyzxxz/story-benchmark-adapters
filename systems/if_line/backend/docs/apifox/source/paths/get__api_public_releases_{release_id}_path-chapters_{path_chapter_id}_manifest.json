@@ -1,0 +1,68 @@
+{
+  "method": "get",
+  "path": "/api/public/releases/{release_id}/path-chapters/{path_chapter_id}/manifest",
+  "operation": {
+    "summary": "读取公开章节清单",
+    "deprecated": false,
+    "description": "读者侧接口：读取某个公开 release 中某个章节的资源清单。",
+    "operationId": "public_chapter_manifest_api_public_releases__release_id__chapters__chapter_index__manifest_get",
+    "tags": [
+      "公开阅读"
+    ],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "release_id",
+        "required": true,
+        "schema": {
+          "title": "Release Id",
+          "type": "string"
+        },
+        "description": "发布版本编号。"
+      },
+      {
+        "in": "path",
+        "name": "path_chapter_id",
+        "required": true,
+        "schema": {
+          "title": "Path Chapter Id",
+          "type": "string"
+        },
+        "description": "路径章节编号。它表示某条 story path 里的一个章节位置，不等同于旧接口的 chapter_index。"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "title": "Response Getpublicpathchaptermanifest",
+              "type": "object"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "公开阅读",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923832-run"
+  }
+}

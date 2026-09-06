@@ -1,0 +1,91 @@
+{
+  "method": "post",
+  "path": "/api/story-paths/{story_path_id}/chapter-generation-batches",
+  "operation": {
+    "summary": "异步批量生成章节正文",
+    "deprecated": false,
+    "description": "异步生成接口。调用后只创建任务，不直接返回生成内容。\n\n前端处理方式：\n- 提交请求后读取返回的 `task_id`\n- 使用 `GET /api/tasks/{task_id}` 查询任务状态\n- 或使用 `/api/tasks/{task_id}/events` 监听 SSE 事件\n\n幂等要求：\n- 请求必须带 `Idempotency-Key`\n- 一次用户操作生成一个稳定 key\n- 用户重复点击或网络重试时复用同一个 key，避免重复扣费和重复创建任务\n\n生成内容：\n- 批量创建章节正文生成任务\n- 适合大纲确定后批量补齐缺失章节\n\n前端填写：\n- `path_chapter_ids`：要生成的路径章节编号列表，不能重复\n- `instructions`：本批次所有章节共用的附加要求，自由文本\n\n注意：\n- 这里传的是 PathChapter id\n- 不是旧接口的 chapter_index 数组",
+    "operationId": "generate_chapter_batch_api_projects__project_id__chapter_generation_batches_post",
+    "tags": [
+      "创作版本与生成/章节生成",
+      "创作版本与生成"
+    ],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "story_path_id",
+        "required": true,
+        "schema": {
+          "title": "Story Path Id",
+          "type": "string"
+        },
+        "description": "故事路径编号。主线和分支线都会有自己的 story_path_id。"
+      },
+      {
+        "in": "header",
+        "name": "Idempotency-Key",
+        "required": true,
+        "schema": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Idempotency-Key",
+          "type": "string"
+        },
+        "description": "幂等键。一次用户操作生成一个稳定字符串；同一用户用同一个 key 重试同一请求会返回同一任务，换请求内容会返回冲突。"
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ChapterBatchRequest"
+          },
+          "example": {
+            "path_chapter_ids": [
+              "1252f436-69e3-4f6e-87c9-0cc007e8dc2e"
+            ],
+            "instructions": "接口文档验证用，生成短章节。"
+          }
+        }
+      },
+      "required": true,
+      "description": "批量章节生成请求。path_chapter_ids 必须是当前 story path 下的 PathChapter id 列表。"
+    },
+    "responses": {
+      "202": {
+        "description": "任务已接受",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TaskAccepted"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-folder": "创作版本与生成/章节生成",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923800-run"
+  }
+}

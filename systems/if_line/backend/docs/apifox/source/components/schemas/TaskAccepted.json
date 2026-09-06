@@ -1,0 +1,44 @@
+{
+  "name": "TaskAccepted",
+  "schema": {
+    "properties": {
+      "created": {
+        "title": "是否新建任务",
+        "type": "boolean",
+        "description": "true 表示本次新建任务；false 表示命中 Idempotency-Key 返回已有任务。"
+      },
+      "events_url": {
+        "title": "事件流地址",
+        "type": "string",
+        "description": "任务 SSE 事件地址。"
+      },
+      "status": {
+        "title": "任务状态",
+        "type": "string",
+        "description": "任务当前状态。刚创建通常是 queued。"
+      },
+      "task_id": {
+        "title": "任务编号",
+        "type": "string",
+        "description": "任务编号。后续查询状态、事件流、重试都使用它。"
+      }
+    },
+    "required": [
+      "task_id",
+      "status",
+      "events_url",
+      "created"
+    ],
+    "title": "任务受理响应",
+    "type": "object",
+    "x-apifox-orders": [
+      "task_id",
+      "status",
+      "events_url",
+      "created"
+    ],
+    "description": "异步任务受理响应。这里只表示任务已入队，不表示生成已完成。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

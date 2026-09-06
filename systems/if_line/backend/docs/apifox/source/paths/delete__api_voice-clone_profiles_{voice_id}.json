@@ -1,0 +1,72 @@
+{
+  "method": "delete",
+  "path": "/api/voice-clone/profiles/{voice_id}",
+  "operation": {
+    "summary": "删除音色档案",
+    "deprecated": false,
+    "description": "删除音色档案。",
+    "operationId": "delete_profile_api_voice_clone_profiles__voice_id__delete",
+    "tags": [
+      "素材管理与生成/音色克隆：实验性接口",
+      "素材管理与生成/音色克隆",
+      "音色克隆"
+    ],
+    "parameters": [
+      {
+        "name": "sid",
+        "in": "cookie",
+        "description": "",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Sid",
+          "type": "string",
+          "nullable": true
+        }
+      },
+      {
+        "name": "voice_id",
+        "in": "path",
+        "description": "",
+        "required": true,
+        "example": "",
+        "schema": {
+          "title": "Voice Id",
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/DeleteProfileResponse"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "素材管理与生成/音色克隆：实验性接口",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923867-run"
+  }
+}

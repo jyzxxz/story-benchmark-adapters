@@ -1,0 +1,163 @@
+{
+  "name": "AssetActionRead",
+  "schema": {
+    "properties": {
+      "action_id": {
+        "title": "操作编号",
+        "type": "string",
+        "description": "操作编号，用于关联对应数据。"
+      },
+      "assets": {
+        "items": {
+          "$ref": "#/components/schemas/AssetActionAsset",
+          "title": "assetsitem",
+          "description": "assetsitem。"
+        },
+        "title": "素材列表",
+        "type": "array",
+        "description": "素材列表。"
+      },
+      "base_graph_hash": {
+        "title": "基础图哈希",
+        "type": "string",
+        "description": "基础图哈希，可为空。",
+        "nullable": true
+      },
+      "created_at": {
+        "format": "date-time",
+        "title": "创建时间",
+        "type": "string",
+        "description": "创建时间。"
+      },
+      "error": {
+        "title": "错误信息",
+        "type": "object",
+        "x-apifox-orders": [],
+        "description": "错误信息对象。",
+        "properties": {},
+        "x-apifox-ignore-properties": [],
+        "nullable": true
+      },
+      "origin": {
+        "title": "来源",
+        "type": "string",
+        "description": "来源，可为空。",
+        "nullable": true
+      },
+      "progress": {
+        "title": "进度",
+        "type": "number",
+        "description": "进度。"
+      },
+      "requires_confirmation": {
+        "title": "是否需要确认",
+        "type": "boolean",
+        "description": "是否需要确认。"
+      },
+      "result_graph_hash": {
+        "title": "结果图哈希",
+        "type": "string",
+        "description": "结果图哈希，可为空。",
+        "nullable": true
+      },
+      "scene_manifest": {
+        "title": "scene清单",
+        "type": "object",
+        "x-apifox-orders": [],
+        "description": "scene清单对象。",
+        "properties": {},
+        "x-apifox-ignore-properties": [],
+        "nullable": true
+      },
+      "selection_method": {
+        "title": "选择方式",
+        "type": "string",
+        "description": "选择方式。"
+      },
+      "stage": {
+        "title": "阶段",
+        "type": "string",
+        "description": "阶段。"
+      },
+      "status": {
+        "title": "状态",
+        "type": "string",
+        "description": "状态。"
+      },
+      "task_id": {
+        "title": "任务编号",
+        "type": "string",
+        "description": "任务编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "updated_at": {
+        "format": "date-time",
+        "title": "更新时间",
+        "type": "string",
+        "description": "更新时间。"
+      },
+      "vngraph_patch": {
+        "items": {
+          "type": "object",
+          "x-apifox-orders": [],
+          "title": "vngraphpatchitem",
+          "description": "vngraphpatchitem对象。",
+          "properties": {},
+          "x-apifox-ignore-properties": []
+        },
+        "title": "视觉小说图补丁",
+        "type": "array",
+        "description": "视觉小说图补丁列表。"
+      },
+      "events_url": {
+        "title": "事件流地址",
+        "type": "string",
+        "description": "素材操作对应的事件流地址。有 task_id 时通常为 /api/tasks/{task_id}/events，前端用它监听任务进度和错误。",
+        "nullable": true
+      }
+    },
+    "required": [
+      "action_id",
+      "status",
+      "stage",
+      "progress",
+      "selection_method",
+      "origin",
+      "task_id",
+      "assets",
+      "scene_manifest",
+      "vngraph_patch",
+      "base_graph_hash",
+      "result_graph_hash",
+      "requires_confirmation",
+      "error",
+      "created_at",
+      "updated_at",
+      "events_url"
+    ],
+    "title": "素材操作读取结果",
+    "type": "object",
+    "x-apifox-orders": [
+      "action_id",
+      "assets",
+      "base_graph_hash",
+      "created_at",
+      "error",
+      "origin",
+      "progress",
+      "requires_confirmation",
+      "result_graph_hash",
+      "scene_manifest",
+      "selection_method",
+      "stage",
+      "status",
+      "task_id",
+      "events_url",
+      "updated_at",
+      "vngraph_patch"
+    ],
+    "description": "素材操作读取结果数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

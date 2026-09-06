@@ -1,0 +1,88 @@
+{
+  "method": "post",
+  "path": "/api/server-agent/threads/{thread_id}/turns/resume",
+  "operation": {
+    "summary": "提交 Agent 用户输入",
+    "deprecated": false,
+    "description": "向指定 Agent thread 投递一次用户输入。接口只表示受理成功，不等待模型生成结果；前端必须通过 SSE 展示输出。前端工具结果不要走本接口，收到 `tool_call.status=waiting_input` 时按前端运行时协议处理。",
+    "operationId": "resume_server_agent_turn_post",
+    "tags": [
+      "服务端 Agent"
+    ],
+    "parameters": [
+      {
+        "name": "thread_id",
+        "in": "path",
+        "description": "Agent thread 编号。",
+        "required": true,
+        "schema": {
+          "title": "Thread Id",
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ServerAgentTurnAcceptedResponse"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      },
+      "404": {
+        "description": "Agent 不存在。",
+        "content": {
+          "application/json": {
+            "schema": {}
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "不存在",
+        "x-apifox-ordering": 2
+      },
+      "409": {
+        "description": "当前状态不允许执行该操作，例如已有 turn 正在运行。",
+        "content": {
+          "application/json": {
+            "schema": {}
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "状态冲突",
+        "x-apifox-ordering": 2
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "服务端 Agent",
+    "x-apifox-status": "released",
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ServerAgentInputRequest"
+          }
+        }
+      },
+      "required": true
+    }
+  }
+}

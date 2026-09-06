@@ -1,0 +1,82 @@
+{
+  "method": "get",
+  "path": "/api/chapter-script-revisions/{script_revision_id}/resource-slots",
+  "operation": {
+    "summary": "读取章节脚本资源槽位",
+    "deprecated": false,
+    "description": "读取脚本生成出的资源槽位列表。每个槽位表示脚本需要的一个视觉资源，例如背景或关键帧。asset_version_id 为空表示尚未绑定具体素材版本。",
+    "operationId": "resource_slots_api_projects__project_id__chapters__chapter_index__chapter_scripts_revisions__script_revision_id__resource_slots_get",
+    "tags": [
+      "创作版本与生成/视觉小说图步骤一：章节脚本与资源槽",
+      "章节脚本与资源槽"
+    ],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "script_revision_id",
+        "required": true,
+        "schema": {
+          "title": "Script Revision Id",
+          "type": "string"
+        },
+        "description": "章节脚本修订编号。"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "items": {
+                "$ref": "#/components/schemas/ResourceSlot"
+              },
+              "title": "Response Listscriptresourceslots",
+              "type": "array"
+            },
+            "example": [
+              {
+                "id": "84e8fd79-65e5-4266-b961-5dc393dd4cc7",
+                "script_revision_id": "3697c856-bcf5-4e14-9310-9bc7874f4fa8",
+                "role": "background",
+                "asset_version_id": null,
+                "lock_version": 1
+              },
+              {
+                "id": "b3612cf8-33b6-4f01-8c1c-0c70544d294f",
+                "script_revision_id": "3697c856-bcf5-4e14-9310-9bc7874f4fa8",
+                "role": "keyframe",
+                "asset_version_id": null,
+                "lock_version": 1
+              }
+            ]
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-folder": "创作版本与生成/视觉小说图步骤一：章节脚本与资源槽",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923821-run"
+  }
+}

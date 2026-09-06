@@ -1,0 +1,25 @@
+{
+  "name": "ProjectCommentCreate",
+  "schema": {
+    "properties": {
+      "body": {
+        "maxLength": 2000,
+        "minLength": 1,
+        "title": "正文",
+        "type": "string",
+        "description": "正文。"
+      }
+    },
+    "required": [
+      "body"
+    ],
+    "title": "项目评论创建请求",
+    "type": "object",
+    "x-apifox-orders": [
+      "body"
+    ],
+    "description": "项目评论创建请求数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

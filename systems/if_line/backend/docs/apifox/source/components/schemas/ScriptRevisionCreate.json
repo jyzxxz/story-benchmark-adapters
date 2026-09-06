@@ -1,0 +1,33 @@
+{
+  "name": "ScriptRevisionCreate",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "parent_revision_id": {
+        "title": "父脚本修订 id（回滚链溯源，通常传草稿复制的来源修订；可空）",
+        "type": "string",
+        "minLength": 36,
+        "maxLength": 36,
+        "description": "父脚本修订 id（回滚链溯源，通常传草稿复制的来源修订；可空）",
+        "nullable": true
+      },
+      "script_json": {
+        "title": "Script Json",
+        "type": "object",
+        "description": "完整章节脚本 IR（script-ir-v3）。spans 必须与锚定正文逐字一致，校验失败返回 422。"
+      },
+      "auto_register_characters": {
+        "title": "Auto Register Characters",
+        "type": "boolean",
+        "default": true,
+        "description": "是否把脚本中新出现、且能对齐 bible 的说话人自动登记为角色（行为与生成链路的回写一致）。"
+      }
+    },
+    "required": [
+      "script_json"
+    ],
+    "title": "ScriptRevisionCreate",
+    "type": "object",
+    "description": "手动创建章节脚本修订（草稿物化）：内容寻址去重幂等，不激活 head。"
+  }
+}

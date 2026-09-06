@@ -1,0 +1,84 @@
+{
+  "id": "4ca8a7f4-4995-4cd4-a308-8b93ada228ad",
+  "root_task_id": null,
+  "parent_task_id": null,
+  "project_id": 1,
+  "kind": "chapter_script.generate",
+  "status": "succeeded",
+  "stage": "completed",
+  "progress": 100.0,
+  "source_refs": {
+    "chapter_script_source": {
+      "schema_version": "chapter-script-source-v1",
+      "request_identity": {
+        "chapter_revision_id": "8c0d9dfc-a4ea-4a40-9447-7acd753fd139",
+        "generation_parameters": {}
+      },
+      "project_id": 1,
+      "chapter_revision_id": "8c0d9dfc-a4ea-4a40-9447-7acd753fd139",
+      "path_chapter_id": "198b3e13-6e47-40ae-8295-1181e57dcf74",
+      "display_index": 1,
+      "parent_revision_id": null,
+      "chapter_content_hash": "f9face924b6f4c16974b6d79bcc29480c17eb94483f67e62226abe61b02ae6bc",
+      "chapter_context_hash": "f3424755ae4df90752933b751f564b9321a298c7f0b795556627361e02bb1456",
+      "bible_revision_id": "c240990c-d89a-499d-9657-768d9ee151b4",
+      "bible_content_hash": "da0b440db351a48d7e4d0b82c026010ea690655842adc61e1e41962d0d8b1be5",
+      "outline_revision_id": "ca6cc31d-3f99-4c35-b848-141580503bda",
+      "outline_content_hash": "f1d29e1480fa79fdd9ec66e28118870c5f2810ae98bf6903a986469dd4d51a87",
+      "outline_chapter_id": "b0e34386-d0db-4d9c-a6ca-8ce5b8569a87",
+      "outline_chapter_hash": "e7aca361754c8afa270d59fdd439040e1747d182b8e7b139ac2750eb25e85abf",
+      "script_schema_version": "script-ir-v3",
+      "generator_version": "llm-segments-v1",
+      "provider_input": {
+        "bible": {
+          "worldview": "测试世界",
+          "characters": [],
+          "character_relations": "",
+          "main_conflict": "等待",
+          "emotional_line": "",
+          "style_rules": "简体中文",
+          "ending_constraints": "",
+          "forbidden_points": [],
+          "writing_notes": [],
+          "character_visual_schema_version": "character_visual_v1"
+        },
+        "outline_chapter": {
+          "story_path_chapter_id": "198b3e13-6e47-40ae-8295-1181e57dcf74",
+          "display_index": 1,
+          "chapter_index": 1,
+          "title": "第1章",
+          "summary": "等待雨停。",
+          "conflict": null,
+          "characters": [],
+          "scene": "门廊",
+          "emotion": "等待雨停。",
+          "visual_keywords": []
+        }
+      }
+    },
+    "chapter_script_source_hash": "8c040e3a06abf2fb2b1aab9a025a4cec847873faf305378cc492a0ed7348433c",
+    "source_schema_version": "chapter-script-source-v1",
+    "chapter_revision_id": "8c0d9dfc-a4ea-4a40-9447-7acd753fd139",
+    "source_hash": "8c040e3a06abf2fb2b1aab9a025a4cec847873faf305378cc492a0ed7348433c"
+  },
+  "result_refs": {
+    "chapter_script_revision_id": "f589a69f-7728-49a5-8690-89e3e7339221",
+    "script_hash": "f5f6838c34fc12e946b3bf3a1c03c7863e61e35f7da23fb56805b64e060b9b2a",
+    "coverage_ratio": 1.0,
+    "resource_slot_ids": [
+      "17af2f33-1f8a-484c-8d93-dfb51c84fd07"
+    ]
+  },
+  "attempt": 1,
+  "max_attempts": 1,
+  "error_code": null,
+  "error_detail": null,
+  "estimated_cost": "3.000000",
+  "reserved_cost": "3.000000",
+  "actual_cost": "3.000000",
+  "queued_at": "2026-09-06T14:40:41.764884Z",
+  "started_at": "2026-09-06T14:40:42.373479Z",
+  "finished_at": "2026-09-06T14:40:42.441838Z",
+  "created_at": "2026-09-06T14:40:41.764885Z",
+  "updated_at": "2026-09-06T14:40:42.442470Z"
+}

@@ -1,0 +1,64 @@
+{
+  "method": "patch",
+  "path": "/api/projects/{project_id}",
+  "operation": {
+    "operationId": "updateProject",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "project_id",
+        "required": true,
+        "schema": {
+          "title": "Project Id",
+          "type": "integer"
+        },
+        "description": "项目编号。"
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ProjectPatch"
+          }
+        }
+      },
+      "required": true,
+      "description": "项目基础设定局部更新。至少传一个字段。"
+    },
+    "responses": {
+      "200": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ProjectRead"
+            }
+          }
+        },
+        "description": "Successful Response"
+      },
+      "422": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "description": "Validation Error"
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "summary": "更新项目基础设定",
+    "tags": [
+      "项目管理"
+    ],
+    "x-apifox-folder": "项目管理",
+    "x-apifox-status": "released",
+    "description": "局部更新项目基础设定。只传需要修改的字段；这些字段会影响后续生成上下文，但不会自动重算已有 Bible/Outline/Chapter。"
+  }
+}

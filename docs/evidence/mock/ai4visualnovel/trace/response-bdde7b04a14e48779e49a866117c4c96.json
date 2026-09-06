@@ -1,0 +1,19 @@
+{
+  "id": "synthetic-response",
+  "model": "fixture-model",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\"title\": \"CAMPUS_01_NATIVE_MOCK\", \"background\": \"Synthetic engineering fixture only.\", \"art_style\": \"fixture\", \"story_outline\": {\"groups\": [{\"group_id\": \"group1\", \"group_outline\": \"synthetic 12-node graph\"}]}, \"characters\": [{\"id\": \"林\", \"name\": \"林\", \"gender\": \"\", \"is_protagonist\": true, \"personality\": \"fixture\", \"appearance\": \"fixture\", \"background\": \"fixture\"}, {\"id\": \"周\", \"name\": \"周\", \"gender\": \"\", \"is_protagonist\": false, \"personality\": \"fixture\", \"appearance\": \"fixture\", \"background\": \"fixture\"}, {\"id\": \"顾\", \"name\": \"顾\", \"gender\": \"\", \"is_protagonist\": false, \"personality\": \"fixture\", \"appearance\": \"fixture\", \"background\": \"fixture\"}], \"scenes\": [{\"id\": \"classroom\", \"name\": \"教室\", \"description\": \"fixture\"}]}"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 10,
+    "completion_tokens": 20,
+    "total_tokens": 30
+  }
+}

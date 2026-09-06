@@ -1,0 +1,24 @@
+{
+  "name": "ResourceSlotBind",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "asset_version_id": {
+        "maxLength": 36,
+        "minLength": 36,
+        "title": "Asset Version Id",
+        "type": "string",
+        "description": "素材版本编号，不是 asset_id。一个逻辑素材可以有多个版本，VNGraph 编译需要绑定到具体版本。"
+      }
+    },
+    "required": [
+      "asset_version_id"
+    ],
+    "title": "ResourceSlotBind",
+    "type": "object",
+    "description": "资源槽位绑定请求。用于把用户上传或生成得到的素材版本绑定到脚本槽位。",
+    "x-apifox-orders": [
+      "asset_version_id"
+    ]
+  }
+}

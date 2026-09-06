@@ -1,0 +1,93 @@
+{
+  "name": "ResourceSlot",
+  "schema": {
+    "properties": {
+      "asset_id": {
+        "anyOf": [
+          {
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Asset Id",
+        "description": "已绑定的素材编号；未绑定时为空。前端可凭它直接调用 GET /api/projects/{project_id}/assets/{asset_id}/versions 查询版本。"
+      },
+      "asset_version_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Asset Version Id",
+        "description": "已绑定的素材版本编号；未绑定时为空。"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string",
+        "description": "资源槽位编号。"
+      },
+      "lock_version": {
+        "minimum": 1.0,
+        "title": "Lock Version",
+        "type": "integer",
+        "description": "乐观锁版本号，绑定槽位时用于并发保护。"
+      },
+      "role": {
+        "title": "Role",
+        "type": "string",
+        "description": "槽位角色，例如 portrait、background、keyframe。"
+      },
+      "script_revision_id": {
+        "title": "Script Revision Id",
+        "type": "string",
+        "description": "章节脚本版本编号。"
+      },
+      "required": {
+        "title": "是否必需",
+        "type": "boolean",
+        "description": "该资源槽位是否为必需槽位。必需槽位缺失时，正式编译/发布链路应提示补齐；草稿编译可允许未绑定资源先通过。"
+      },
+      "status": {
+        "title": "槽位状态",
+        "type": "string",
+        "enum": [
+          "planned",
+          "generating",
+          "bound",
+          "failed"
+        ],
+        "description": "资源槽位状态：planned=已规划待处理，generating=生成中，bound=已绑定素材版本，failed=生成或绑定失败。"
+      }
+    },
+    "required": [
+      "id",
+      "script_revision_id",
+      "role",
+      "required",
+      "status",
+      "asset_id",
+      "asset_version_id",
+      "lock_version"
+    ],
+    "title": "资源槽位",
+    "type": "object",
+    "description": "章节脚本中的资源槽位。前端用它判断当前脚本需要哪些素材、哪些已经绑定、哪些还需要生成或手动选择。",
+    "x-apifox-orders": [
+      "id",
+      "script_revision_id",
+      "role",
+      "required",
+      "status",
+      "asset_id",
+      "asset_version_id",
+      "lock_version"
+    ],
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

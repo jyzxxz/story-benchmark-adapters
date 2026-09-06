@@ -1,0 +1,82 @@
+{
+  "method": "get",
+  "path": "/api/projects/{project_id}/chapter-revisions/{chapter_revision_id}/voice-lines",
+  "operation": {
+    "summary": "读取章节语音清单",
+    "deprecated": false,
+    "description": "读取章节语音清单。",
+    "operationId": "voice_manifest_api_projects__project_id__chapter_revisions__chapter_revision_id__voice_lines_get",
+    "tags": [
+      "素材管理与生成/语音",
+      "章节语音"
+    ],
+    "parameters": [
+      {
+        "name": "sid",
+        "in": "cookie",
+        "description": "",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Sid",
+          "type": "string",
+          "nullable": true
+        }
+      },
+      {
+        "name": "project_id",
+        "in": "path",
+        "description": "",
+        "required": true,
+        "example": "",
+        "schema": {
+          "title": "Project Id",
+          "type": "integer"
+        }
+      },
+      {
+        "name": "chapter_revision_id",
+        "in": "path",
+        "description": "",
+        "required": true,
+        "example": "",
+        "schema": {
+          "title": "Chapter Revision Id",
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/VoiceManifest"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "素材管理与生成/语音",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923813-run"
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "name": "AssetRead",
+  "schema": {
+    "properties": {
+      "archived_at": {
+        "title": "归档时间",
+        "format": "date-time",
+        "type": "string",
+        "description": "归档时间。",
+        "nullable": true
+      },
+      "asset_type": {
+        "enum": [
+          "portrait",
+          "background",
+          "keyframe",
+          "audio"
+        ],
+        "title": "素材类型",
+        "type": "string",
+        "description": "素材类型，可选值：portrait、background、keyframe、audio。"
+      },
+      "chapter_indices": {
+        "items": {
+          "type": "integer",
+          "title": "章节indicesitem",
+          "description": "章节indicesitem。"
+        },
+        "title": "章节索引列表",
+        "type": "array",
+        "description": "章节索引列表列表。"
+      },
+      "created_at": {
+        "title": "创建时间",
+        "format": "date-time",
+        "type": "string",
+        "description": "创建时间。",
+        "nullable": true
+      },
+      "id": {
+        "title": "编号",
+        "type": "integer",
+        "description": "编号，用于关联对应数据。"
+      },
+      "latest_version_id": {
+        "title": "最新版本编号",
+        "type": "string",
+        "description": "最新版本编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "logical_key": {
+        "title": "逻辑键",
+        "type": "string",
+        "description": "逻辑键。"
+      },
+      "project_id": {
+        "title": "项目编号",
+        "type": "integer",
+        "description": "项目编号，用于关联对应数据。"
+      },
+      "status": {
+        "title": "状态",
+        "type": "string",
+        "description": "状态。"
+      },
+      "target_name": {
+        "title": "目标名称",
+        "type": "string",
+        "description": "目标名称。"
+      },
+      "taxonomy": {
+        "title": "分类信息",
+        "type": "object",
+        "x-apifox-orders": [],
+        "description": "分类信息对象。",
+        "properties": {},
+        "x-apifox-ignore-properties": []
+      },
+      "updated_at": {
+        "title": "更新时间",
+        "format": "date-time",
+        "type": "string",
+        "description": "更新时间。",
+        "nullable": true
+      },
+      "version_count": {
+        "default": 0,
+        "title": "版本数量",
+        "type": "integer",
+        "description": "版本数量。"
+      },
+      "versions": {
+        "items": {
+          "$ref": "#/components/schemas/AssetVersionRead",
+          "title": "versionsitem",
+          "description": "versionsitem。"
+        },
+        "title": "版本列表",
+        "type": "array",
+        "description": "版本列表列表。"
+      }
+    },
+    "required": [
+      "id",
+      "project_id",
+      "asset_type",
+      "target_name",
+      "status",
+      "logical_key",
+      "taxonomy",
+      "created_at",
+      "updated_at"
+    ],
+    "title": "素材读取结果",
+    "type": "object",
+    "x-apifox-orders": [
+      "archived_at",
+      "asset_type",
+      "chapter_indices",
+      "created_at",
+      "id",
+      "latest_version_id",
+      "logical_key",
+      "project_id",
+      "status",
+      "target_name",
+      "taxonomy",
+      "updated_at",
+      "version_count",
+      "versions"
+    ],
+    "description": "素材读取结果数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

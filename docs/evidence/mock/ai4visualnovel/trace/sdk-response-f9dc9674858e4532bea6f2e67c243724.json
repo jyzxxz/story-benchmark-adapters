@@ -1,0 +1,33 @@
+{
+  "id": "synthetic-response",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "{\"nodes\": {\"root\": {\"id\": \"root\", \"summary\": \"CAMPUS_01_NATIVE_MOCKroot\", \"type\": \"normal\"}, \"node1\": {\"id\": \"node1\", \"summary\": \"CAMPUS_01_NATIVE_MOCKnode1\", \"type\": \"normal\"}, \"node2\": {\"id\": \"node2\", \"summary\": \"CAMPUS_01_NATIVE_MOCKnode2\", \"type\": \"normal\"}, \"node3\": {\"id\": \"node3\", \"summary\": \"CAMPUS_01_NATIVE_MOCKnode3\", \"type\": \"merge\"}, \"node4\": {\"id\": \"node4\", \"summary\": \"CAMPUS_01_NATIVE_MOCKnode4\", \"type\": \"normal\"}, \"node5\": {\"id\": \"node5\", \"summary\": \"CAMPUS_01_NATIVE_MOCKnode5\", \"type\": \"normal\"}, \"node6\": {\"id\": \"node6\", \"summary\": \"CAMPUS_01_NATIVE_MOCKnode6\", \"type\": \"normal\"}, \"node7\": {\"id\": \"node7\", \"summary\": \"CAMPUS_01_NATIVE_MOCKnode7\", \"type\": \"normal\"}, \"node8\": {\"id\": \"node8\", \"summary\": \"CAMPUS_01_NATIVE_MOCKnode8\", \"type\": \"normal\"}, \"node9\": {\"id\": \"node9\", \"summary\": \"CAMPUS_01_NATIVE_MOCKnode9\", \"type\": \"normal\"}, \"node10\": {\"id\": \"node10\", \"summary\": \"CAMPUS_01_NATIVE_MOCKnode10\", \"type\": \"normal\"}, \"node11\": {\"id\": \"node11\", \"summary\": \"CAMPUS_01_NATIVE_MOCKnode11\", \"type\": \"normal\"}}, \"edges\": [{\"from\": \"root\", \"to\": \"node1\", \"choice_text\": \"追查\"}, {\"from\": \"root\", \"to\": \"node2\", \"choice_text\": \"等待\"}, {\"from\": \"node1\", \"to\": \"node3\", \"choice_text\": null}, {\"from\": \"node2\", \"to\": \"node3\", \"choice_text\": null}, {\"from\": \"node3\", \"to\": \"node4\", \"choice_text\": null}, {\"from\": \"node4\", \"to\": \"node5\", \"choice_text\": null}, {\"from\": \"node5\", \"to\": \"node6\", \"choice_text\": null}, {\"from\": \"node6\", \"to\": \"node7\", \"choice_text\": null}, {\"from\": \"node7\", \"to\": \"node8\", \"choice_text\": null}, {\"from\": \"node8\", \"to\": \"node9\", \"choice_text\": null}, {\"from\": \"node9\", \"to\": \"node10\", \"choice_text\": null}, {\"from\": \"node10\", \"to\": \"node11\", \"choice_text\": null}]}",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      }
+    }
+  ],
+  "created": null,
+  "model": "fixture-model",
+  "object": null,
+  "metadata": null,
+  "moderation": null,
+  "service_tier": null,
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 20,
+    "prompt_tokens": 10,
+    "total_tokens": 30,
+    "completion_tokens_details": null,
+    "prompt_tokens_details": null
+  }
+}

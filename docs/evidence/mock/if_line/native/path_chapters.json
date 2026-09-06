@@ -1,0 +1,15 @@
+[
+  {
+    "id": "198b3e13-6e47-40ae-8295-1181e57dcf74",
+    "story_path_id": "c459e651-1b71-4ee5-99d9-108c961c8625",
+    "chapter_slot_id": "16837197-e5a8-4f55-8c8a-15d2ca2ad962",
+    "display_index": 1,
+    "predecessor_path_chapter_id": null,
+    "inherited_from_path_chapter_id": null,
+    "current_revision_id": "8c0d9dfc-a4ea-4a40-9447-7acd753fd139",
+    "status": "active",
+    "detached_at": null,
+    "detached_by_outline_revision_id": null,
+    "lock_version": 2
+  }
+]

@@ -1,0 +1,32 @@
+{
+  "method": "get",
+  "path": "/api/tts/status",
+  "operation": {
+    "summary": "读取语音服务状态",
+    "deprecated": false,
+    "description": "读取语音服务状态。",
+    "operationId": "get_tts_status_api_tts_status_get",
+    "tags": [
+      "素材管理与生成/语音",
+      "基础语音"
+    ],
+    "parameters": [],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {}
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "素材管理与生成/语音",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923861-run"
+  }
+}

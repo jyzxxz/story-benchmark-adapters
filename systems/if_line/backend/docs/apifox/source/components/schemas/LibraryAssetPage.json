@@ -1,0 +1,63 @@
+{
+  "name": "LibraryAssetPage",
+  "schema": {
+    "properties": {
+      "catalog_version": {
+        "title": "素材库版本",
+        "type": "string",
+        "description": "素材库版本。"
+      },
+      "items": {
+        "items": {
+          "$ref": "#/components/schemas/LibraryAssetRead",
+          "title": "itemsitem",
+          "description": "itemsitem。"
+        },
+        "title": "列表项",
+        "type": "array",
+        "description": "列表项列表。"
+      },
+      "limit": {
+        "title": "限制数量",
+        "type": "integer",
+        "description": "限制数量。"
+      },
+      "matcher_version": {
+        "title": "匹配器版本",
+        "type": "string",
+        "description": "匹配器版本。"
+      },
+      "offset": {
+        "title": "偏移量",
+        "type": "integer",
+        "description": "偏移量。"
+      },
+      "total": {
+        "title": "总数",
+        "type": "integer",
+        "description": "总数。"
+      }
+    },
+    "required": [
+      "items",
+      "total",
+      "limit",
+      "offset",
+      "catalog_version",
+      "matcher_version"
+    ],
+    "title": "素材库分页结果",
+    "type": "object",
+    "x-apifox-orders": [
+      "catalog_version",
+      "items",
+      "limit",
+      "matcher_version",
+      "offset",
+      "total"
+    ],
+    "description": "素材库分页结果数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

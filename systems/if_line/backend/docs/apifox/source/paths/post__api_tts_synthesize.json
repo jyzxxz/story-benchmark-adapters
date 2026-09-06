@@ -1,0 +1,87 @@
+{
+  "method": "post",
+  "path": "/api/tts/synthesize",
+  "operation": {
+    "summary": "即时合成短文本语音",
+    "deprecated": false,
+    "description": "合成短文本语音，主要用于试听。\n\n最小请求只需要传 `text`。其他字段都是可选项，不确定时不要传。\n\n字段约束：\n- `gender` 只能填 `male` 或 `female`，不要填中文“男/女”。\n- `age` 只能填 `young`、`middle`、`elderly`，不要填数字年龄。\n- `emotion` 只能填 `calm`、`happy`、`sad`、`angry`、`excited`。\n- `speaker` 是直接指定音色 ID，必须是后端已配置音色，例如 MiniMax 默认 `male-qn-qingse`。普通试听不传也可以。\n- `emotion_prompt` 是直接指定已配置的情绪 prompt，普通试听不建议传。\n- `project_id` 只有在项目内给某个 `character_name` 分配/复用音色时才传；传了以后必须是当前登录用户自己的项目。\n\n返回的 `audio_url` 是私有媒体地址，需要带同一个登录 cookie 访问；裸浏览器打开可能会返回“媒体不存在”。",
+    "operationId": "synthesize_speech_api_tts_synthesize_post",
+    "tags": [
+      "素材管理与生成/语音",
+      "基础语音"
+    ],
+    "parameters": [
+      {
+        "name": "sid",
+        "in": "cookie",
+        "description": "",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Sid",
+          "type": "string",
+          "nullable": true
+        }
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/TTSSynthesizeRequest"
+          },
+          "example": {
+            "text": "测试成功。",
+            "speaker": "male-qn-qingse"
+          }
+        }
+      },
+      "required": true
+    },
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TTSSynthesizeResponse"
+            },
+            "example": {
+              "success": true,
+              "audio_url": "/api/media/8d366515-fb9f-4d8e-98b5-8e5ca0060080",
+              "cached": false,
+              "speaker": "male-qn-qingse",
+              "emotion_prompt": "calm",
+              "engine": "minimax",
+              "model": "speech-2.8-hd",
+              "fallback_used": false,
+              "primary_engine": "minimax",
+              "primary_error": "",
+              "error": null
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "素材管理与生成/语音",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923862-run"
+  }
+}

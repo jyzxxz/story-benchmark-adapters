@@ -1,0 +1,37 @@
+{
+  "name": "DeleteProfileResponse",
+  "schema": {
+    "properties": {
+      "deleted": {
+        "title": "是否已删除",
+        "type": "boolean",
+        "description": "是否已删除。"
+      },
+      "success": {
+        "title": "是否成功",
+        "type": "boolean",
+        "description": "是否成功。"
+      },
+      "voice_id": {
+        "title": "声音编号",
+        "type": "string",
+        "description": "声音编号，用于关联对应数据。"
+      }
+    },
+    "required": [
+      "success",
+      "voice_id",
+      "deleted"
+    ],
+    "title": "声音档案删除响应",
+    "type": "object",
+    "x-apifox-orders": [
+      "deleted",
+      "success",
+      "voice_id"
+    ],
+    "description": "声音档案删除响应数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

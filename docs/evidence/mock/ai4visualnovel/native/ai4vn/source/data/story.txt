@@ -1,0 +1,126 @@
+
+=== Node: root ===
+<scene>教室</scene>
+<content id="旁白">CAMPUS_01_NATIVE_MOCK生成正文。</content>
+<content id="林">请作选择。</content>
+[CHOICE]
+<choice target="node1">追查</choice>
+<choice target="node2">等待</choice>
+
+=== Node: node1 ===
+<scene>教室</scene>
+<content id="旁白">CAMPUS_01_NATIVE_MOCK生成正文。</content>
+<content id="林">请作选择。</content>
+[CHOICE]
+<choice target="node1">追查</choice>
+<choice target="node2">等待</choice>
+
+<jump target="node3"/>
+
+
+=== Node: node2 ===
+<scene>教室</scene>
+<content id="旁白">CAMPUS_01_NATIVE_MOCK生成正文。</content>
+<content id="林">请作选择。</content>
+[CHOICE]
+<choice target="node1">追查</choice>
+<choice target="node2">等待</choice>
+
+<jump target="node3"/>
+
+
+=== Node: node3 ===
+<scene>教室</scene>
+<content id="旁白">CAMPUS_01_NATIVE_MOCK生成正文。</content>
+<content id="林">请作选择。</content>
+[CHOICE]
+<choice target="node1">追查</choice>
+<choice target="node2">等待</choice>
+
+<jump target="node4"/>
+
+
+=== Node: node4 ===
+<scene>教室</scene>
+<content id="旁白">CAMPUS_01_NATIVE_MOCK生成正文。</content>
+<content id="林">请作选择。</content>
+[CHOICE]
+<choice target="node1">追查</choice>
+<choice target="node2">等待</choice>
+
+<jump target="node5"/>
+
+
+=== Node: node5 ===
+<scene>教室</scene>
+<content id="旁白">CAMPUS_01_NATIVE_MOCK生成正文。</content>
+<content id="林">请作选择。</content>
+[CHOICE]
+<choice target="node1">追查</choice>
+<choice target="node2">等待</choice>
+
+<jump target="node6"/>
+
+
+=== Node: node6 ===
+<scene>教室</scene>
+<content id="旁白">CAMPUS_01_NATIVE_MOCK生成正文。</content>
+<content id="林">请作选择。</content>
+[CHOICE]
+<choice target="node1">追查</choice>
+<choice target="node2">等待</choice>
+
+<jump target="node7"/>
+
+
+=== Node: node7 ===
+<scene>教室</scene>
+<content id="旁白">CAMPUS_01_NATIVE_MOCK生成正文。</content>
+<content id="林">请作选择。</content>
+[CHOICE]
+<choice target="node1">追查</choice>
+<choice target="node2">等待</choice>
+
+<jump target="node8"/>
+
+
+=== Node: node8 ===
+<scene>教室</scene>
+<content id="旁白">CAMPUS_01_NATIVE_MOCK生成正文。</content>
+<content id="林">请作选择。</content>
+[CHOICE]
+<choice target="node1">追查</choice>
+<choice target="node2">等待</choice>
+
+<jump target="node9"/>
+
+
+=== Node: node9 ===
+<scene>教室</scene>
+<content id="旁白">CAMPUS_01_NATIVE_MOCK生成正文。</content>
+<content id="林">请作选择。</content>
+[CHOICE]
+<choice target="node1">追查</choice>
+<choice target="node2">等待</choice>
+
+<jump target="node10"/>
+
+
+=== Node: node10 ===
+<scene>教室</scene>
+<content id="旁白">CAMPUS_01_NATIVE_MOCK生成正文。</content>
+<content id="林">请作选择。</content>
+[CHOICE]
+<choice target="node1">追查</choice>
+<choice target="node2">等待</choice>
+
+<jump target="node11"/>
+
+
+=== Node: node11 ===
+<scene>教室</scene>
+<content id="旁白">CAMPUS_01_NATIVE_MOCK生成正文。</content>
+<content id="林">请作选择。</content>
+[CHOICE]
+<choice target="node1">追查</choice>
+<choice target="node2">等待</choice>

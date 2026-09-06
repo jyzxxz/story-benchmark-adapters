@@ -1,0 +1,90 @@
+{
+  "method": "put",
+  "path": "/api/projects/{project_id}/bible-head",
+  "operation": {
+    "operationId": "updateBibleHead",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "project_id",
+        "required": true,
+        "schema": {
+          "title": "Project Id",
+          "type": "integer"
+        },
+        "description": "项目编号。"
+      },
+      {
+        "in": "header",
+        "name": "If-Match",
+        "required": false,
+        "schema": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "If-Match"
+        },
+        "description": "乐观锁版本，填 GET head 或 GET 资源详情响应头里的 ETag，例如 \"2\"；不传时后端不做版本冲突保护。"
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/HeadUpdate"
+          },
+          "example": {
+            "revision_id": "cb4a0fcb-7808-437b-a1b7-87efe0ce0a78"
+          }
+        }
+      },
+      "required": true,
+      "description": "传入要设为当前故事圣经的 revision_id。"
+    },
+    "responses": {
+      "200": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/RevisionHead"
+            },
+            "example": {
+              "revision_id": "cb4a0fcb-7808-437b-a1b7-87efe0ce0a78",
+              "lock_version": 2,
+              "updated_at": "2026-08-11T12:27:23.176800Z"
+            }
+          }
+        },
+        "description": "Successful Response"
+      },
+      "422": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "description": "Validation Error"
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "summary": "设置当前故事圣经版本",
+    "tags": [
+      "创作版本与生成/故事圣经StoryBible",
+      "创作版本与生成"
+    ],
+    "x-apifox-folder": "创作版本与生成/故事圣经StoryBible",
+    "x-apifox-status": "released",
+    "description": "设置当前采用的修订版本。\n\n接口语义：\n- 这是“审核/选择当前版本”\n- 不会新建内容\n- 不会重新生成内容\n\n并发控制：\n- 建议先 GET 对应 head\n- 读取响应头 `ETag` 或响应体 `lock_version`\n- PUT 时通过 `If-Match` 带回，避免覆盖别人刚刚切换的版本"
+  }
+}

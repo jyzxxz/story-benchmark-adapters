@@ -1,0 +1,81 @@
+{
+  "method": "patch",
+  "path": "/api/story-paths/{story_path_id}",
+  "operation": {
+    "operationId": "updateStoryPath",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "story_path_id",
+        "required": true,
+        "schema": {
+          "title": "Story Path Id",
+          "type": "string"
+        },
+        "description": "故事路径编号。主线和分支线都会有自己的 story_path_id。"
+      },
+      {
+        "in": "header",
+        "name": "If-Match",
+        "required": false,
+        "schema": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "If-Match"
+        },
+        "description": "乐观锁版本，填 GET head 或 GET 资源详情响应头里的 ETag，例如 \"2\"；不传时后端不做版本冲突保护。"
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/StoryPathPatch"
+          }
+        }
+      },
+      "required": true,
+      "description": "故事路径元数据更新请求。至少传一个字段。"
+    },
+    "responses": {
+      "200": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/StoryPath"
+            }
+          }
+        },
+        "description": "Successful Response"
+      },
+      "422": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "description": "Validation Error"
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "summary": "更新故事路径元数据",
+    "tags": [
+      "分支生成"
+    ],
+    "x-apifox-folder": "创作版本与生成/故事路径",
+    "x-apifox-status": "released",
+    "description": "更新 story path 标题或状态。建议带 If-Match 防止覆盖并发修改。"
+  }
+}

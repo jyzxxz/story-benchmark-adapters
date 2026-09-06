@@ -1,0 +1,24 @@
+{
+  "task_id": "query.chapter_outline",
+  "instructions": "项目 1002 的第一章大纲是什么？",
+  "model": "",
+  "assistant_messages": [
+    {
+      "content": null,
+      "tool_calls": [
+        {
+          "id": "call_00_c9urimVxO1DoozYrXguP8267",
+          "type": "function",
+          "function": {
+            "name": "get_single_chapter_outline",
+            "arguments": "{\"project_id\": 1002, \"chapter_index\": 1}"
+          }
+        }
+      ]
+    },
+    {
+      "content": "项目 1002 的第一章大纲如下：\n\n- **标题**：第一章\n- **概要**：主角抵达码头。\n- **冲突**：信号中断。\n- **出场人物**：林夜\n- **场景**：旧码头\n- **情绪基调**：紧张\n- **视觉关键词**：雨夜\n- **状态**：completed（但 committed 为 false，即尚未正式提交/确认）",
+      "tool_calls": null
+    }
+  ]
+}

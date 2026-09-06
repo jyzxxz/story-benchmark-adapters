@@ -1,0 +1,79 @@
+{
+  "name": "ProjectCreate",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "characters": {
+        "title": "角色列表",
+        "items": {
+          "type": "object",
+          "title": "角色对象",
+          "description": "单个角色对象，可包含 name、role、personality 等业务字段。"
+        },
+        "type": "array",
+        "description": "初始角色列表，当前按对象数组传入。建议每个对象至少包含 name，可额外包含 role、personality、appearance 等前端已有字段。"
+      },
+      "extra_requirements": {
+        "title": "额外要求",
+        "type": "string",
+        "description": "额外要求，自由文本。适合放避雷点、题材限制、叙事偏好等。",
+        "nullable": true
+      },
+      "pace": {
+        "title": "节奏",
+        "type": "string",
+        "description": "节奏偏好，自由文本。当前没有后端枚举校验，建议前端先用 fast/medium/slow 或中文文案保持一致。",
+        "nullable": true
+      },
+      "source_work": {
+        "title": "原作来源",
+        "type": "string",
+        "description": "原作或参考作品说明。原创项目可传空字符串或 null。",
+        "nullable": true
+      },
+      "story_end": {
+        "default": "",
+        "title": "故事终点",
+        "type": "string",
+        "description": "故事终点，自由文本，用于告诉生成器最终目标或结局方向。可为空字符串。"
+      },
+      "story_start": {
+        "default": "",
+        "title": "故事起点",
+        "type": "string",
+        "description": "故事起点，自由文本，用于告诉生成器开局背景。可为空字符串。"
+      },
+      "style": {
+        "default": "",
+        "title": "风格",
+        "type": "string",
+        "description": "整体风格，自由文本，例如“轻松幽默”“赛博朋克”“严肃悬疑”。不是枚举。"
+      },
+      "title": {
+        "maxLength": 200,
+        "minLength": 1,
+        "title": "标题",
+        "type": "string",
+        "description": "项目标题，用户可见。"
+      }
+    },
+    "required": [
+      "title"
+    ],
+    "title": "项目创建请求",
+    "type": "object",
+    "x-apifox-orders": [
+      "title",
+      "characters",
+      "story_start",
+      "story_end",
+      "style",
+      "source_work",
+      "pace",
+      "extra_requirements"
+    ],
+    "description": "创建项目请求。只有 title 必填；其他字段用于给后续故事圣经、大纲、章节生成提供初始上下文。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

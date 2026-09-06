@@ -1,0 +1,74 @@
+{
+  "name": "UserQuotaResponse",
+  "schema": {
+    "properties": {
+      "quota_daily": {
+        "title": "每日配额",
+        "type": "integer",
+        "description": "每日配额。"
+      },
+      "quota_remaining_daily": {
+        "title": "今日剩余配额",
+        "type": "integer",
+        "description": "今日剩余配额。"
+      },
+      "quota_remaining_total": {
+        "title": "剩余总配额",
+        "type": "integer",
+        "description": "剩余总配额。"
+      },
+      "quota_reset_at": {
+        "title": "配额重置时间",
+        "format": "date-time",
+        "type": "string",
+        "description": "配额重置时间。",
+        "nullable": true
+      },
+      "quota_total": {
+        "title": "总配额",
+        "type": "integer",
+        "description": "总配额。"
+      },
+      "quota_used_daily": {
+        "title": "今日已用配额",
+        "type": "integer",
+        "description": "今日已用配额。"
+      },
+      "quota_used_total": {
+        "title": "已用总配额",
+        "type": "integer",
+        "description": "已用总配额。"
+      },
+      "user_id": {
+        "title": "用户编号",
+        "type": "integer",
+        "description": "用户编号，用于关联对应数据。"
+      }
+    },
+    "required": [
+      "user_id",
+      "quota_total",
+      "quota_daily",
+      "quota_used_total",
+      "quota_used_daily",
+      "quota_remaining_total",
+      "quota_remaining_daily",
+      "quota_reset_at"
+    ],
+    "title": "用户配额响应",
+    "type": "object",
+    "x-apifox-orders": [
+      "quota_daily",
+      "quota_remaining_daily",
+      "quota_remaining_total",
+      "quota_reset_at",
+      "quota_total",
+      "quota_used_daily",
+      "quota_used_total",
+      "user_id"
+    ],
+    "description": "用户配额响应数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

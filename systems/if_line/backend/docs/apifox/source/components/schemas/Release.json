@@ -1,0 +1,94 @@
+{
+  "name": "Release",
+  "schema": {
+    "properties": {
+      "authoring_fingerprint": {
+        "anyOf": [
+          {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Authoring Fingerprint"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "manifest_hash": {
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Manifest Hash",
+        "type": "string"
+      },
+      "project_id": {
+        "title": "Project Id",
+        "type": "integer"
+      },
+      "published_at": {
+        "anyOf": [
+          {
+            "format": "date-time",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Published At"
+      },
+      "release_notes": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Release Notes"
+      },
+      "status": {
+        "enum": [
+          "published",
+          "superseded",
+          "withdrawn"
+        ],
+        "title": "Status",
+        "type": "string"
+      },
+      "version": {
+        "minimum": 1.0,
+        "title": "Version",
+        "type": "integer"
+      },
+      "withdrawn_at": {
+        "anyOf": [
+          {
+            "format": "date-time",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Withdrawn At"
+      }
+    },
+    "required": [
+      "id",
+      "project_id",
+      "version",
+      "status",
+      "manifest_hash",
+      "authoring_fingerprint",
+      "release_notes",
+      "published_at",
+      "withdrawn_at"
+    ],
+    "title": "Release",
+    "type": "object"
+  }
+}

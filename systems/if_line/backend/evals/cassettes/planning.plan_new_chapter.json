@@ -1,0 +1,32 @@
+{
+  "task_id": "planning.plan_new_chapter",
+  "instructions": "给项目 2001 规划第 2 章，主题是雨夜追查信号。",
+  "model": "",
+  "assistant_messages": [
+    {
+      "content": null,
+      "tool_calls": [
+        {
+          "id": "call_00_kKbCydewhfh8RrfYlnvk7544",
+          "type": "function",
+          "function": {
+            "name": "view_project",
+            "arguments": "{\"project_id\": 2001, \"include_story_bible\": true, \"chapter_limit\": 3}"
+          }
+        },
+        {
+          "id": "call_01_Ms1UGoxgppCVgRJz0K8f0632",
+          "type": "function",
+          "function": {
+            "name": "plan_single_chapter",
+            "arguments": "{\"project_id\": 2001, \"chapter_index\": 2, \"user_instruction\": \"第 2 章主题：雨夜追查信号。围绕主角在雨夜追查一个神秘信号展开。\"}"
+          }
+        }
+      ]
+    },
+    {
+      "content": "第 2 章单章规划已生成（状态：待确认），内容如下：\n\n**标题**：雨夜追凶，信号源头\n\n**概要**：林夜在旧码头信号中断后未放弃，用随身设备捕捉到微弱二次信号，冒雨穿越废弃仓库与湿滑巷道追踪。信号时断时续，似有人故意引诱，途中遭遇神秘人物远程干扰，设备险些报废。最终锁定信号源在一座废弃灯塔，攀爬时发现近期活动痕迹，塔顶找到一台仍在运转的加密发报机，屏幕上显示倒计时，窗外雨幕中有黑影注视。\n\n**冲突**：林夜雨夜追踪信号，遭遇人为干扰与陷阱，与神秘势力对抗升级。\n\n**人物**：林夜、神秘黑影\n**场景**：废弃灯塔\n**情绪**：悬疑紧张\n\n**视觉关键词**：暴雨如注的夜幕、闪烁的信号指示灯、灯塔螺旋楼梯上的水渍脚印、发报机屏幕的幽蓝倒计时、窗外黑影轮廓。\n\n**规划备注**：承接第一章信号中断悬念，用追逐戏和环境描写增强紧张感，结尾以倒计时归零+黑影包围制造钩子。\n\n这是单章规划，还未生成正文或资源。请确认是否按此规划继续（确认后我会先批准该大纲，再执行章节流水线生成正文与资源）。",
+      "tool_calls": null
+    }
+  ]
+}

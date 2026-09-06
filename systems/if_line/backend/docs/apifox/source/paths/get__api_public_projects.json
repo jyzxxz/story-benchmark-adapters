@@ -1,0 +1,88 @@
+{
+  "method": "get",
+  "path": "/api/public/projects",
+  "operation": {
+    "summary": "读取公开项目列表",
+    "deprecated": false,
+    "description": "读取公开项目列表。",
+    "operationId": "list_public_projects_api_public_projects_get",
+    "tags": [
+      "公开阅读"
+    ],
+    "parameters": [
+      {
+        "name": "q",
+        "in": "query",
+        "description": "",
+        "required": false,
+        "schema": {
+          "title": "Q",
+          "maxLength": 200,
+          "type": "string",
+          "nullable": true
+        }
+      },
+      {
+        "name": "limit",
+        "in": "query",
+        "description": "",
+        "required": false,
+        "schema": {
+          "default": 20,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Limit",
+          "type": "integer"
+        }
+      },
+      {
+        "name": "offset",
+        "in": "query",
+        "description": "",
+        "required": false,
+        "schema": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Offset",
+          "type": "integer"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "items": {
+                "$ref": "#/components/schemas/PublicProjectRead"
+              },
+              "title": "Response List Public Projects Api Public Projects Get",
+              "type": "array"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "公开阅读",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923830-run"
+  }
+}

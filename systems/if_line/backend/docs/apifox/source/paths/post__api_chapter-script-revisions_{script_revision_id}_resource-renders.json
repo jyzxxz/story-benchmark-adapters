@@ -1,0 +1,88 @@
+{
+  "method": "post",
+  "path": "/api/chapter-script-revisions/{script_revision_id}/resource-renders",
+  "operation": {
+    "summary": "异步渲染脚本资源",
+    "deprecated": false,
+    "description": "异步生成接口。调用后只创建任务，不直接返回生成内容。\n\n前端处理方式：\n- 提交请求后读取返回的 `task_id`\n- 使用 `GET /api/tasks/{task_id}` 查询任务状态\n- 或使用 `/api/tasks/{task_id}/events` 监听 SSE 事件\n\n幂等要求：\n- 请求必须带 `Idempotency-Key`\n- 一次用户操作生成一个稳定 key\n- 用户重复点击或网络重试时复用同一个 key，避免重复扣费和重复创建任务\n\n生成内容：\n- 为章节脚本中的资源槽位创建素材生成任务\n- 返回父任务 `task_id`\n\n前端填写：\n- `role=portrait`：生成立绘类资源\n- `role=background`：生成背景类资源\n- `role=keyframe`：生成关键帧类资源\n\n建议流程：\n- 先调用 `GET /api/chapter-script-revisions/{script_revision_id}/resource-slots`\n- 看哪些槽位缺素材\n- 再按缺失的 role 发起渲染",
+    "operationId": "render_resources_api_projects__project_id__chapters__chapter_index__chapter_scripts_revisions__script_revision_id__resource_renders_post",
+    "tags": [
+      "创作版本与生成/视觉小说图步骤一：章节脚本与资源槽",
+      "章节脚本与资源槽"
+    ],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "script_revision_id",
+        "required": true,
+        "schema": {
+          "title": "Script Revision Id",
+          "type": "string"
+        },
+        "description": "章节脚本修订编号。"
+      },
+      {
+        "in": "header",
+        "name": "Idempotency-Key",
+        "required": true,
+        "schema": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Idempotency-Key",
+          "type": "string"
+        },
+        "description": "幂等键。一次用户操作生成一个稳定字符串；同一用户用同一个 key 重试同一请求会返回同一任务，换请求内容会返回冲突。"
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ResourceRenderRequest"
+          },
+          "example": {
+            "role": "background"
+          }
+        }
+      },
+      "required": true,
+      "description": "资源渲染请求。role 指定要生成哪类资源。"
+    },
+    "responses": {
+      "202": {
+        "description": "任务已接受",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TaskAccepted"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-folder": "创作版本与生成/视觉小说图步骤一：章节脚本与资源槽",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923820-run"
+  }
+}

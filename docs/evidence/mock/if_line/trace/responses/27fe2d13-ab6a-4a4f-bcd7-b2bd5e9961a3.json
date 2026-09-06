@@ -1,0 +1,21 @@
+{
+  "id": "fixed-5",
+  "model": "fixed-test-model",
+  "object": "chat.completion",
+  "created": 0,
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\"medium\": \"anime_cel\", \"art_direction\": \"Clean two dimensional animation with restrained color and consistent visual identity.\", \"linework\": \"clean line art with tapered ends\", \"shading\": \"flat two-level cel shading with subtle rim light\", \"texture\": \"subtle film grain, no paper texture\", \"base_palette\": [\"navy blue\", \"warm ivory\", \"slate gray\"], \"contrast_policy\": \"medium\", \"lighting_policy\": \"soft_diffused\", \"palette_policy\": \"low_sat_unity\", \"forbidden_styles\": [\"photorealistic rendering\", \"3D game render\", \"inconsistent art style drift\", \"neon lighting\"], \"rationale\": \"A simple fixture style for engineering integration testing.\"}"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 20,
+    "completion_tokens": 10,
+    "total_tokens": 30
+  }
+}

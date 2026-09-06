@@ -1,0 +1,161 @@
+{
+  "method": "post",
+  "path": "/api/story-paths/{story_path_id}/outline-revisions",
+  "operation": {
+    "summary": "手动保存章节大纲版本",
+    "deprecated": false,
+    "description": "保存一版手动编辑的章节大纲。该接口只创建 revision，不会自动设置为当前大纲。",
+    "operationId": "add_outline_revision_api_projects__project_id__outline_revisions_post",
+    "tags": [
+      "创作版本与生成/章节大纲",
+      "创作版本与生成"
+    ],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "story_path_id",
+        "required": true,
+        "schema": {
+          "title": "Story Path Id",
+          "type": "string"
+        },
+        "description": "故事路径编号。主线和分支线都会有自己的 story_path_id。"
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/OutlineRevisionCreate"
+          },
+          "example": {
+            "bible_revision_id": "cb4a0fcb-7808-437b-a1b7-87efe0ce0a78",
+            "parent_revision_id": null,
+            "chapters": [
+              {
+                "display_index": 1,
+                "title": "接口迷雾",
+                "summary": "牢梁发现接口文档和实际后端行为不一致，决定从运行时代码重新校验。",
+                "conflict": "旧文档、假前端和真实后端语义互相冲突。",
+                "characters": [
+                  "牢梁",
+                  "小伍"
+                ],
+                "scene": "会议室",
+                "emotion": "困惑但坚定",
+                "visual_keywords": [
+                  "白板",
+                  "接口列表",
+                  "调试窗口"
+                ]
+              },
+              {
+                "display_index": 2,
+                "title": "文档归位",
+                "summary": "小伍按真实请求返回补齐 Apifox 样例，前端终于知道字段怎么填。",
+                "conflict": "字段命名变化需要重新对齐。",
+                "characters": [
+                  "牢梁",
+                  "小伍"
+                ],
+                "scene": "开发工位",
+                "emotion": "放松",
+                "visual_keywords": [
+                  "Apifox",
+                  "绿色通过",
+                  "版本记录"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "required": true,
+      "description": "章节大纲修订内容。bible_revision_id 指明大纲基于哪一版故事圣经；chapters 是完整大纲数组。"
+    },
+    "responses": {
+      "201": {
+        "description": "创建成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/OutlineRevision"
+            },
+            "example": {
+              "bible_revision_id": "cb4a0fcb-7808-437b-a1b7-87efe0ce0a78",
+              "parent_revision_id": null,
+              "chapters": [
+                {
+                  "story_path_chapter_id": null,
+                  "display_index": 1,
+                  "title": "接口迷雾",
+                  "summary": "牢梁发现接口文档和实际后端行为不一致，决定从运行时代码重新校验。",
+                  "conflict": "旧文档、假前端和真实后端语义互相冲突。",
+                  "characters": [
+                    "牢梁",
+                    "小伍"
+                  ],
+                  "scene": "会议室",
+                  "emotion": "困惑但坚定",
+                  "visual_keywords": [
+                    "白板",
+                    "接口列表",
+                    "调试窗口"
+                  ]
+                },
+                {
+                  "story_path_chapter_id": null,
+                  "display_index": 2,
+                  "title": "文档归位",
+                  "summary": "小伍按真实请求返回补齐 Apifox 样例，前端终于知道字段怎么填。",
+                  "conflict": "字段命名变化需要重新对齐。",
+                  "characters": [
+                    "牢梁",
+                    "小伍"
+                  ],
+                  "scene": "开发工位",
+                  "emotion": "放松",
+                  "visual_keywords": [
+                    "Apifox",
+                    "绿色通过",
+                    "版本记录"
+                  ]
+                }
+              ],
+              "id": "6dc8cd91-305a-46fe-ade5-adeaa83d67f0",
+              "story_path_id": "689eafef-de0c-4dbe-a168-2c379bca58d1",
+              "revision_no": 1,
+              "source_hash": "3a7c05fd5ce0c3cbfe4974ccb859f0a86f8ff230783a10d6a474146323507ddc",
+              "content_hash": "03f9d34eae82032de84f1fe3e21f191870386ca5de681b28554190b7c6c55058",
+              "status": "ready"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-folder": "创作版本与生成/章节大纲",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923809-run"
+  }
+}

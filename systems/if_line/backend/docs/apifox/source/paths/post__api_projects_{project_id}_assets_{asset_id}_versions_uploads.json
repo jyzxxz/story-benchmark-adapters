@@ -1,0 +1,92 @@
+{
+  "method": "post",
+  "path": "/api/projects/{project_id}/assets/{asset_id}/versions/uploads",
+  "operation": {
+    "operationId": "upload_asset_version_api_projects__project_id__assets__asset_id__versions_uploads_post",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "project_id",
+        "required": true,
+        "schema": {
+          "title": "Project Id",
+          "type": "integer"
+        },
+        "description": "项目编号。"
+      },
+      {
+        "in": "path",
+        "name": "asset_id",
+        "required": true,
+        "schema": {
+          "title": "Asset Id",
+          "type": "integer"
+        },
+        "description": "逻辑素材编号。给已有素材追加版本时使用。"
+      },
+      {
+        "in": "header",
+        "name": "Idempotency-Key",
+        "required": false,
+        "schema": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Idempotency-Key"
+        },
+        "description": "幂等键。上传重试时复用同一个 key，避免网络重试导致重复创建素材版本。"
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "multipart/form-data": {
+          "schema": {
+            "$ref": "#/components/schemas/Body_upload_asset_version_api_projects__project_id__assets__asset_id__versions_uploads_post"
+          }
+        }
+      },
+      "required": true,
+      "description": "multipart/form-data 表单。file 和 rights_attested 必填。"
+    },
+    "responses": {
+      "201": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/VisualAssetUploadRead"
+            }
+          }
+        },
+        "description": "Successful Response"
+      },
+      "422": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "description": "Validation Error"
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "summary": "上传视觉素材新版本",
+    "tags": [
+      "素材管理与生成/视觉素材",
+      "视觉素材工作台"
+    ],
+    "x-apifox-folder": "素材管理与生成/视觉素材",
+    "x-apifox-status": "released",
+    "description": "上传已有视觉素材的新版本。\n\n接口语义：\n- 不创建新的逻辑素材\n- 给 path 中的 `asset_id` 追加一个新的 `asset_version`\n\n适用场景：\n- 用户替换图片\n- 用户上传高清版\n- 用户上传修正版\n\n表单字段：\n- `file`：新版本图片文件，最大 25 MB\n- `description`：本次版本说明，可为空\n- `rights_attested`：必须为 true，表示确认有权使用该素材\n\n返回后：\n- 使用返回的 `asset_version_id` 去绑定资源槽位"
+  }
+}

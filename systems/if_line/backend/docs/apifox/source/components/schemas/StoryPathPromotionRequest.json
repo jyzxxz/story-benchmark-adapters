@@ -1,0 +1,22 @@
+{
+  "name": "StoryPathPromotionRequest",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "title": {
+        "anyOf": [
+          {
+            "maxLength": 200,
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Title"
+      }
+    },
+    "title": "StoryPathPromotionRequest",
+    "type": "object"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "id": "89778387-2fcc-4d47-910e-bfe281a09cd4",
+  "root_task_id": null,
+  "parent_task_id": null,
+  "project_id": 1,
+  "kind": "outline.generate",
+  "status": "succeeded",
+  "stage": "completed",
+  "progress": 100.0,
+  "source_refs": {
+    "outline_source": {
+      "schema_version": "story-path-outline-source-v1",
+      "project_id": 1,
+      "story_path_id": "c459e651-1b71-4ee5-99d9-108c961c8625",
+      "bible_revision_id": "c240990c-d89a-499d-9657-768d9ee151b4",
+      "bible_content_hash": "da0b440db351a48d7e4d0b82c026010ea690655842adc61e1e41962d0d8b1be5",
+      "parent_revision_id": null,
+      "path_chapters": [],
+      "chapter_count": 1,
+      "instructions": null,
+      "pace": "medium"
+    },
+    "outline_source_hash": "6e1c010e888c2b3ae09cd8af6381e2a81fe4a9eb077d139e0fe57edefdd20962"
+  },
+  "result_refs": {
+    "outline_revision_id": "ca6cc31d-3f99-4c35-b848-141580503bda",
+    "story_path_id": "c459e651-1b71-4ee5-99d9-108c961c8625",
+    "activated": true,
+    "review_required": false
+  },
+  "attempt": 1,
+  "max_attempts": 3,
+  "error_code": null,
+  "error_detail": null,
+  "estimated_cost": "4.000000",
+  "reserved_cost": "4.000000",
+  "actual_cost": "4.000000",
+  "queued_at": "2026-09-06T14:40:39.606649Z",
+  "started_at": "2026-09-06T14:40:40.373199Z",
+  "finished_at": "2026-09-06T14:40:40.436601Z",
+  "created_at": "2026-09-06T14:40:39.606651Z",
+  "updated_at": "2026-09-06T14:40:40.437405Z"
+}

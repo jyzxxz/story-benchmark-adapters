@@ -1,0 +1,1312 @@
+openapi: 3.1.0
+info:
+  title: IF Line StoryPath Authoring API
+  version: 1.0.0
+  description: >-
+    Replacement authoring and publication contract. This contract is mounted
+    directly below /api. Legacy chapter-index authoring routes are not part of
+    this API and receive no compatibility adapter.
+servers:
+  - url: /api
+security:
+  - cookieAuth: []
+tags:
+  - name: Projects
+  - name: Bible
+  - name: StoryPaths
+  - name: Outlines
+  - name: Chapters
+  - name: Candidates
+  - name: Scripts
+  - name: VNGraphs
+  - name: Releases
+  - name: Public
+
+paths:
+  /projects:
+    post:
+      tags: [Projects]
+      operationId: createProject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ProjectCreate'}
+      responses:
+        '201': {$ref: '#/components/responses/Project'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+    get:
+      tags: [Projects]
+      operationId: listProjects
+      parameters:
+        - name: publication_state
+          in: query
+          schema:
+            type: string
+            enum: [all, unpublished, published, changes_pending]
+            default: all
+      responses:
+        '200':
+          description: Owner project list.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/ProjectRead'}
+
+  /projects/{project_id}:
+    parameters:
+      - {$ref: '#/components/parameters/ProjectId'}
+    get:
+      tags: [Projects]
+      operationId: getProject
+      responses:
+        '200': {$ref: '#/components/responses/Project'}
+        '404': {$ref: '#/components/responses/NotFound'}
+    patch:
+      tags: [Projects]
+      operationId: updateProject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ProjectPatch'}
+      responses:
+        '200': {$ref: '#/components/responses/Project'}
+        '404': {$ref: '#/components/responses/NotFound'}
+    delete:
+      tags: [Projects]
+      operationId: deleteProject
+      responses:
+        '204': {description: Project deleted or tombstoned.}
+        '409': {$ref: '#/components/responses/Conflict'}
+
+  /projects/{project_id}/publication-readiness:
+    parameters:
+      - {$ref: '#/components/parameters/ProjectId'}
+    get:
+      tags: [Projects]
+      operationId: getPublicationReadiness
+      responses:
+        '200':
+          description: Current authoring fingerprint and blocking items.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PublicationReadiness'}
+
+  /projects/{project_id}/metrics:
+    parameters:
+      - {$ref: '#/components/parameters/ProjectId'}
+    get:
+      tags: [Projects]
+      operationId: getProjectMetrics
+      responses:
+        '200':
+          description: Aggregate authoring metrics keyed by stable IDs.
+          content:
+            application/json:
+              schema: {type: object, additionalProperties: true}
+
+  /projects/{project_id}/metrics/artifacts:
+    parameters:
+      - {$ref: '#/components/parameters/ProjectId'}
+    get:
+      tags: [Projects]
+      operationId: getProjectArtifactMetrics
+      responses:
+        '200':
+          description: Artifact metrics keyed by stable IDs.
+          content:
+            application/json:
+              schema: {type: object, additionalProperties: true}
+
+  /projects/{project_id}/bible-generations:
+    parameters:
+      - {$ref: '#/components/parameters/ProjectId'}
+    post:
+      tags: [Bible]
+      operationId: generateBible
+      parameters:
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/GenerationRequest'}
+      responses:
+        '202': {$ref: '#/components/responses/TaskAccepted'}
+        '409': {$ref: '#/components/responses/Conflict'}
+
+  /projects/{project_id}/bible-revisions:
+    parameters:
+      - {$ref: '#/components/parameters/ProjectId'}
+    get:
+      tags: [Bible]
+      operationId: listBibleRevisions
+      responses:
+        '200':
+          description: Bible revision history.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/BibleRevision'}
+    post:
+      tags: [Bible]
+      operationId: createBibleRevision
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/BibleRevisionCreate'}
+      responses:
+        '201':
+          description: Unselected ready revision.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/BibleRevision'}
+
+  /projects/{project_id}/bible-head:
+    parameters:
+      - {$ref: '#/components/parameters/ProjectId'}
+    get:
+      tags: [Bible]
+      operationId: getBibleHead
+      responses:
+        '200': {$ref: '#/components/responses/RevisionHead'}
+        '404': {$ref: '#/components/responses/NotFound'}
+    put:
+      tags: [Bible]
+      operationId: updateBibleHead
+      parameters:
+        - {$ref: '#/components/parameters/IfMatch'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/HeadUpdate'}
+      responses:
+        '200': {$ref: '#/components/responses/RevisionHead'}
+        '409': {$ref: '#/components/responses/Conflict'}
+
+  /projects/{project_id}/story-paths:
+    parameters:
+      - {$ref: '#/components/parameters/ProjectId'}
+    get:
+      tags: [StoryPaths]
+      operationId: listStoryPaths
+      responses:
+        '200':
+          description: Project authoring paths.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/StoryPath'}
+    post:
+      tags: [StoryPaths]
+      operationId: createStoryPathFromCandidate
+      parameters:
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/StoryPathCreate'}
+      responses:
+        '201':
+          description: Child path promoted from an active candidate.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/StoryPath'}
+        '409': {$ref: '#/components/responses/Conflict'}
+
+  /story-paths/{story_path_id}:
+    parameters:
+      - {$ref: '#/components/parameters/StoryPathId'}
+    get:
+      tags: [StoryPaths]
+      operationId: getStoryPath
+      responses:
+        '200':
+          description: StoryPath details.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/StoryPath'}
+        '404': {$ref: '#/components/responses/NotFound'}
+    patch:
+      tags: [StoryPaths]
+      operationId: updateStoryPath
+      parameters:
+        - {$ref: '#/components/parameters/IfMatch'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/StoryPathPatch'}
+      responses:
+        '200':
+          description: Updated path metadata.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/StoryPath'}
+        '409': {$ref: '#/components/responses/Conflict'}
+
+  /story-paths/{story_path_id}/outline-generations:
+    parameters:
+      - {$ref: '#/components/parameters/StoryPathId'}
+    post:
+      tags: [Outlines]
+      operationId: generateOutline
+      parameters:
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/OutlineGenerationRequest'}
+      responses:
+        '202': {$ref: '#/components/responses/TaskAccepted'}
+
+  /story-paths/{story_path_id}/outline-revisions:
+    parameters:
+      - {$ref: '#/components/parameters/StoryPathId'}
+    get:
+      tags: [Outlines]
+      operationId: listOutlineRevisions
+      responses:
+        '200':
+          description: Path-specific outline history.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/OutlineRevision'}
+    post:
+      tags: [Outlines]
+      operationId: createOutlineRevision
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/OutlineRevisionCreate'}
+      responses:
+        '201':
+          description: Unselected outline revision.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/OutlineRevision'}
+
+  /story-paths/{story_path_id}/outline-head:
+    parameters:
+      - {$ref: '#/components/parameters/StoryPathId'}
+    get:
+      tags: [Outlines]
+      operationId: getOutlineHead
+      responses:
+        '200': {$ref: '#/components/responses/RevisionHead'}
+        '404': {$ref: '#/components/responses/NotFound'}
+    put:
+      tags: [Outlines]
+      operationId: updateOutlineHead
+      parameters:
+        - {$ref: '#/components/parameters/IfMatch'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/HeadUpdate'}
+      responses:
+        '200': {$ref: '#/components/responses/RevisionHead'}
+        '409': {$ref: '#/components/responses/Conflict'}
+
+  /story-paths/{story_path_id}/chapters:
+    parameters:
+      - {$ref: '#/components/parameters/StoryPathId'}
+    get:
+      tags: [Chapters]
+      operationId: listPathChapters
+      responses:
+        '200':
+          description: Chapters ordered for one path.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/PathChapter'}
+    post:
+      tags: [Chapters]
+      operationId: appendPathChapter
+      parameters:
+        - {$ref: '#/components/parameters/IfMatch'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PathChapterCreate'}
+      responses:
+        '201':
+          description: New stable path chapter and slot.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PathChapter'}
+        '409': {$ref: '#/components/responses/Conflict'}
+
+  /story-paths/{story_path_id}/chapter-generation-batches:
+    parameters:
+      - {$ref: '#/components/parameters/StoryPathId'}
+    post:
+      tags: [Chapters]
+      operationId: generateChapterBatch
+      parameters:
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ChapterBatchRequest'}
+      responses:
+        '202': {$ref: '#/components/responses/TaskAccepted'}
+
+  /path-chapters/{path_chapter_id}/generations:
+    parameters:
+      - {$ref: '#/components/parameters/PathChapterId'}
+    post:
+      tags: [Chapters]
+      operationId: generateChapter
+      parameters:
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/GenerationRequest'}
+      responses:
+        '202': {$ref: '#/components/responses/TaskAccepted'}
+
+  /path-chapters/{path_chapter_id}/revisions:
+    parameters:
+      - {$ref: '#/components/parameters/PathChapterId'}
+    get:
+      tags: [Chapters]
+      operationId: listChapterRevisions
+      responses:
+        '200':
+          description: Revisions in the path chapter's slot.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/ChapterRevision'}
+    post:
+      tags: [Chapters]
+      operationId: createChapterRevision
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ChapterRevisionCreate'}
+      responses:
+        '201':
+          description: Unselected chapter revision.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ChapterRevision'}
+
+  /path-chapters/{path_chapter_id}/head:
+    parameters:
+      - {$ref: '#/components/parameters/PathChapterId'}
+    get:
+      tags: [Chapters]
+      operationId: getChapterHead
+      responses:
+        '200': {$ref: '#/components/responses/RevisionHead'}
+        '404': {$ref: '#/components/responses/NotFound'}
+    put:
+      tags: [Chapters]
+      operationId: updateChapterHead
+      parameters:
+        - {$ref: '#/components/parameters/IfMatch'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/HeadUpdate'}
+      responses:
+        '200': {$ref: '#/components/responses/RevisionHead'}
+        '409': {$ref: '#/components/responses/Conflict'}
+
+  /chapter-revisions/{chapter_revision_id}:
+    parameters:
+      - {$ref: '#/components/parameters/ChapterRevisionId'}
+    get:
+      tags: [Chapters]
+      operationId: getChapterRevision
+      responses:
+        '200':
+          description: Immutable chapter revision.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ChapterRevision'}
+        '404': {$ref: '#/components/responses/NotFound'}
+
+  /chapter-revisions/{chapter_revision_id}/script-generations:
+    parameters:
+      - {$ref: '#/components/parameters/ChapterRevisionId'}
+    post:
+      tags: [Scripts]
+      operationId: generateChapterScript
+      parameters:
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/GenerationRequest'}
+      responses:
+        '202': {$ref: '#/components/responses/TaskAccepted'}
+
+  /chapter-revisions/{chapter_revision_id}/script-revisions:
+    parameters:
+      - {$ref: '#/components/parameters/ChapterRevisionId'}
+    get:
+      tags: [Scripts]
+      operationId: listScriptRevisions
+      responses:
+        '200':
+          description: Scripts generated for one exact chapter revision.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/ScriptRevision'}
+
+  /chapter-revisions/{chapter_revision_id}/script-head:
+    parameters:
+      - {$ref: '#/components/parameters/ChapterRevisionId'}
+    get:
+      tags: [Scripts]
+      operationId: getScriptHead
+      responses:
+        '200': {$ref: '#/components/responses/RevisionHead'}
+        '404': {$ref: '#/components/responses/NotFound'}
+    put:
+      tags: [Scripts]
+      operationId: updateScriptHead
+      parameters:
+        - {$ref: '#/components/parameters/IfMatch'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/HeadUpdate'}
+      responses:
+        '200': {$ref: '#/components/responses/RevisionHead'}
+        '409': {$ref: '#/components/responses/Conflict'}
+
+  /story-paths/{story_path_id}/checkpoints/{node_id}/candidate-set-generations:
+    parameters:
+      - {$ref: '#/components/parameters/StoryPathId'}
+      - {$ref: '#/components/parameters/NodeId'}
+    post:
+      tags: [Candidates]
+      operationId: generateCandidateSet
+      parameters:
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CandidateSetGenerationRequest'}
+      responses:
+        '202': {$ref: '#/components/responses/TaskAccepted'}
+        '409': {$ref: '#/components/responses/Conflict'}
+
+  /story-paths/{story_path_id}/checkpoints/{node_id}/candidate-set-revisions:
+    parameters:
+      - {$ref: '#/components/parameters/StoryPathId'}
+      - {$ref: '#/components/parameters/NodeId'}
+    get:
+      tags: [Candidates]
+      operationId: listCandidateSetRevisions
+      responses:
+        '200':
+          description: Candidate set history at this path checkpoint.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/CandidateSetRevision'}
+
+  /story-paths/{story_path_id}/checkpoints/{node_id}/candidate-set-head:
+    parameters:
+      - {$ref: '#/components/parameters/StoryPathId'}
+      - {$ref: '#/components/parameters/NodeId'}
+    get:
+      tags: [Candidates]
+      operationId: getCandidateSetHead
+      responses:
+        '200': {$ref: '#/components/responses/RevisionHead'}
+        '404': {$ref: '#/components/responses/NotFound'}
+    put:
+      tags: [Candidates]
+      operationId: updateCandidateSetHead
+      parameters:
+        - {$ref: '#/components/parameters/IfMatch'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/HeadUpdate'}
+      responses:
+        '200': {$ref: '#/components/responses/RevisionHead'}
+        '409': {$ref: '#/components/responses/Conflict'}
+
+  /candidate-set-revisions/{candidate_set_revision_id}/candidates:
+    parameters:
+      - {$ref: '#/components/parameters/CandidateSetRevisionId'}
+    get:
+      tags: [Candidates]
+      operationId: listBranchCandidates
+      responses:
+        '200':
+          description: Immutable candidates in one set revision.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/BranchCandidate'}
+
+  /branch-candidates/{candidate_id}/story-paths:
+    parameters:
+      - {$ref: '#/components/parameters/CandidateId'}
+    post:
+      tags: [Candidates]
+      operationId: promoteBranchCandidate
+      parameters:
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/StoryPathPromotion'}
+      responses:
+        '201':
+          description: Newly created child path.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/StoryPath'}
+        '409': {$ref: '#/components/responses/Conflict'}
+
+  /chapter-script-revisions/{script_revision_id}/resource-slots:
+    parameters:
+      - {$ref: '#/components/parameters/ScriptRevisionId'}
+    get:
+      tags: [Scripts]
+      operationId: listScriptResourceSlots
+      responses:
+        '200':
+          description: Resource slots for an immutable Script IR.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/ResourceSlot'}
+
+  /chapter-script-revisions/{script_revision_id}/resource-renders:
+    parameters:
+      - {$ref: '#/components/parameters/ScriptRevisionId'}
+    post:
+      tags: [Scripts]
+      operationId: renderScriptResources
+      parameters:
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ResourceRenderRequest'}
+      responses:
+        '202': {$ref: '#/components/responses/TaskAccepted'}
+
+  /chapter-script-revisions/{script_revision_id}/resource-slots/{slot_id}:
+    parameters:
+      - {$ref: '#/components/parameters/ScriptRevisionId'}
+      - {$ref: '#/components/parameters/SlotId'}
+    put:
+      tags: [Scripts]
+      operationId: bindScriptResourceSlot
+      parameters:
+        - {$ref: '#/components/parameters/IfMatch'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ResourceSlotBind'}
+      responses:
+        '200':
+          description: Updated slot binding.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ResourceSlot'}
+        '409': {$ref: '#/components/responses/Conflict'}
+
+  /chapter-script-revisions/{script_revision_id}/vn-graph-compilations:
+    parameters:
+      - {$ref: '#/components/parameters/ScriptRevisionId'}
+    post:
+      tags: [VNGraphs]
+      operationId: compileVNGraph
+      parameters:
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/VNGraphCompileRequest'}
+      responses:
+        '202': {$ref: '#/components/responses/TaskAccepted'}
+
+  /chapter-script-revisions/{script_revision_id}/vn-graph-revisions:
+    parameters:
+      - {$ref: '#/components/parameters/ScriptRevisionId'}
+    get:
+      tags: [VNGraphs]
+      operationId: listVNGraphRevisions
+      responses:
+        '200':
+          description: Graphs compiled from one exact Script IR.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/VNGraphRevision'}
+
+  /chapter-script-revisions/{script_revision_id}/vn-graph-head:
+    parameters:
+      - {$ref: '#/components/parameters/ScriptRevisionId'}
+    get:
+      tags: [VNGraphs]
+      operationId: getVNGraphHead
+      responses:
+        '200': {$ref: '#/components/responses/RevisionHead'}
+        '404': {$ref: '#/components/responses/NotFound'}
+    put:
+      tags: [VNGraphs]
+      operationId: updateVNGraphHead
+      parameters:
+        - {$ref: '#/components/parameters/IfMatch'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/HeadUpdate'}
+      responses:
+        '200': {$ref: '#/components/responses/RevisionHead'}
+        '409': {$ref: '#/components/responses/Conflict'}
+
+  /vn-graph-revisions/{vn_graph_revision_id}:
+    parameters:
+      - {$ref: '#/components/parameters/VNGraphRevisionId'}
+    get:
+      tags: [VNGraphs]
+      operationId: getVNGraphRevision
+      responses:
+        '200':
+          description: Immutable compiled graph.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/VNGraphRevision'}
+        '404': {$ref: '#/components/responses/NotFound'}
+
+  /projects/{project_id}/publish:
+    parameters:
+      - {$ref: '#/components/parameters/ProjectId'}
+    post:
+      tags: [Releases]
+      operationId: publishProject
+      parameters:
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PublishRequest'}
+      responses:
+        '201': {$ref: '#/components/responses/Release'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+
+  /projects/{project_id}/releases:
+    parameters:
+      - {$ref: '#/components/parameters/ProjectId'}
+    get:
+      tags: [Releases]
+      operationId: listReleases
+      responses:
+        '200':
+          description: Owner-visible release history.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/Release'}
+
+  /releases/{release_id}:
+    parameters:
+      - {$ref: '#/components/parameters/ReleaseId'}
+    get:
+      tags: [Releases]
+      operationId: getRelease
+      responses:
+        '200': {$ref: '#/components/responses/Release'}
+        '404': {$ref: '#/components/responses/NotFound'}
+
+  /projects/{project_id}/unpublish:
+    parameters:
+      - {$ref: '#/components/parameters/ProjectId'}
+    post:
+      tags: [Releases]
+      operationId: unpublishProject
+      parameters:
+        - {$ref: '#/components/parameters/IfMatch'}
+      responses:
+        '200': {$ref: '#/components/responses/Release'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+
+  /public/projects:
+    get:
+      security: []
+      tags: [Public]
+      operationId: listPublicProjects
+      responses:
+        '200':
+          description: Projects with an active published Release.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/PublicProject'}
+
+  /public/projects/{project_id}:
+    parameters:
+      - {$ref: '#/components/parameters/ProjectId'}
+    get:
+      security: []
+      tags: [Public]
+      operationId: getPublicProject
+      responses:
+        '200':
+          description: Public projection frozen in the active Release.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PublicProject'}
+        '404': {$ref: '#/components/responses/NotFound'}
+
+  /public/releases/{release_id}/manifest:
+    parameters:
+      - {$ref: '#/components/parameters/ReleaseId'}
+    get:
+      security: []
+      tags: [Public]
+      operationId: getPublicReleaseManifest
+      responses:
+        '200':
+          description: Manifest only when this is the current active Release.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ReleaseManifest'}
+        '404': {$ref: '#/components/responses/NotFound'}
+
+  /public/releases/{release_id}/path-chapters/{path_chapter_id}/manifest:
+    parameters:
+      - {$ref: '#/components/parameters/ReleaseId'}
+      - {$ref: '#/components/parameters/PathChapterId'}
+    get:
+      security: []
+      tags: [Public]
+      operationId: getPublicPathChapterManifest
+      responses:
+        '200':
+          description: Frozen path chapter manifest entry.
+          content:
+            application/json:
+              schema: {type: object, additionalProperties: true}
+        '404': {$ref: '#/components/responses/NotFound'}
+
+  /public/releases/{release_id}/path-chapters/{path_chapter_id}/vn-graph:
+    parameters:
+      - {$ref: '#/components/parameters/ReleaseId'}
+      - {$ref: '#/components/parameters/PathChapterId'}
+    get:
+      security: []
+      tags: [Public]
+      operationId: getPublicPathChapterVNGraph
+      responses:
+        '200':
+          description: Graph frozen in the active Release.
+          headers:
+            ETag:
+              schema: {type: string}
+          content:
+            application/json:
+              schema: {type: object, additionalProperties: true}
+        '304': {description: ETag matched.}
+        '404': {$ref: '#/components/responses/NotFound'}
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sid
+
+  parameters:
+    ProjectId:
+      name: project_id
+      in: path
+      required: true
+      schema: {type: integer, minimum: 1}
+    StoryPathId:
+      name: story_path_id
+      in: path
+      required: true
+      schema: {$ref: '#/components/schemas/UUID'}
+    PathChapterId:
+      name: path_chapter_id
+      in: path
+      required: true
+      schema: {$ref: '#/components/schemas/UUID'}
+    ChapterRevisionId:
+      name: chapter_revision_id
+      in: path
+      required: true
+      schema: {$ref: '#/components/schemas/UUID'}
+    ScriptRevisionId:
+      name: script_revision_id
+      in: path
+      required: true
+      schema: {$ref: '#/components/schemas/UUID'}
+    VNGraphRevisionId:
+      name: vn_graph_revision_id
+      in: path
+      required: true
+      schema: {$ref: '#/components/schemas/UUID'}
+    CandidateSetRevisionId:
+      name: candidate_set_revision_id
+      in: path
+      required: true
+      schema: {$ref: '#/components/schemas/UUID'}
+    CandidateId:
+      name: candidate_id
+      in: path
+      required: true
+      schema: {$ref: '#/components/schemas/UUID'}
+    NodeId:
+      name: node_id
+      in: path
+      required: true
+      schema: {$ref: '#/components/schemas/UUID'}
+    SlotId:
+      name: slot_id
+      in: path
+      required: true
+      schema: {$ref: '#/components/schemas/UUID'}
+    ReleaseId:
+      name: release_id
+      in: path
+      required: true
+      schema: {$ref: '#/components/schemas/UUID'}
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema: {type: string, minLength: 1, maxLength: 255}
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      description: Current integer lock version, optionally quoted.
+      schema: {type: string, pattern: '^("[1-9][0-9]*"|[1-9][0-9]*)$'}
+
+  responses:
+    Project:
+      description: Owner project projection.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ProjectRead'}
+    RevisionHead:
+      description: Current reviewed revision pointer.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/RevisionHead'}
+    TaskAccepted:
+      description: Durable asynchronous task accepted.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/TaskAccepted'}
+    Release:
+      description: Owner-visible immutable Release.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Release'}
+    NotFound:
+      description: Resource is absent or not visible to this caller.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Error'}
+    Conflict:
+      description: Lock, idempotency, provenance, or source fingerprint conflict.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Error'}
+    ValidationError:
+      description: Request or publication readiness validation failed.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Error'}
+
+  schemas:
+    UUID:
+      type: string
+      format: uuid
+    ProjectCreate:
+      type: object
+      required: [title]
+      properties:
+        title: {type: string, minLength: 1, maxLength: 200}
+        characters: {type: array, items: {type: object, additionalProperties: true}}
+        story_start: {type: string}
+        story_end: {type: string}
+        style: {type: string}
+        source_work: {type: [string, 'null']}
+        pace: {type: [string, 'null']}
+        extra_requirements: {type: [string, 'null']}
+    ProjectPatch:
+      type: object
+      minProperties: 1
+      properties:
+        title: {type: string, minLength: 1, maxLength: 200}
+        characters: {type: array, items: {type: object, additionalProperties: true}}
+        story_start: {type: string}
+        story_end: {type: string}
+        style: {type: string}
+        source_work: {type: [string, 'null']}
+        pace: {type: [string, 'null']}
+        extra_requirements: {type: [string, 'null']}
+    ProjectRead:
+      allOf:
+        - {$ref: '#/components/schemas/ProjectCreate'}
+        - type: object
+          required: [id, authoring, publication]
+          properties:
+            id: {type: integer}
+            root_story_path_id: {$ref: '#/components/schemas/UUID'}
+            authoring: {$ref: '#/components/schemas/AuthoringProjection'}
+            publication: {$ref: '#/components/schemas/PublicationProjection'}
+    AuthoringProjection:
+      type: object
+      required: [stage, blocking_items, running_task_count, has_unpublished_changes]
+      properties:
+        stage:
+          type: string
+          enum: [bible, story_paths, outlines, chapters, scripts, vn_graphs, ready, blocked]
+        blocking_items: {type: array, items: {$ref: '#/components/schemas/BlockingItem'}}
+        running_task_count: {type: integer, minimum: 0}
+        has_unpublished_changes: {type: boolean}
+    PublicationProjection:
+      type: object
+      required: [state, active_release_id, published_at, lock_version]
+      properties:
+        state: {type: string, enum: [unpublished, published, changes_pending]}
+        active_release_id: {oneOf: [{$ref: '#/components/schemas/UUID'}, {type: 'null'}]}
+        published_at: {type: [string, 'null'], format: date-time}
+        lock_version:
+          type: integer
+          minimum: 1
+          description: Current ProjectPublication version used by unpublish If-Match.
+    BlockingItem:
+      type: object
+      required: [code]
+      properties:
+        code: {type: string}
+        story_path_id: {oneOf: [{$ref: '#/components/schemas/UUID'}, {type: 'null'}]}
+        path_chapter_id: {oneOf: [{$ref: '#/components/schemas/UUID'}, {type: 'null'}]}
+        detail: {type: [string, 'null']}
+    PublicationReadiness:
+      type: object
+      required: [ready, authoring_fingerprint, blocking_items]
+      properties:
+        ready: {type: boolean}
+        authoring_fingerprint: {type: string, pattern: '^[0-9a-f]{64}$'}
+        blocking_items: {type: array, items: {$ref: '#/components/schemas/BlockingItem'}}
+    GenerationRequest:
+      type: object
+      properties:
+        instructions: {type: [string, 'null'], maxLength: 12000}
+        parameters: {type: object, additionalProperties: true}
+    BibleRevisionCreate:
+      type: object
+      required: [content_json]
+      properties:
+        parent_revision_id: {oneOf: [{$ref: '#/components/schemas/UUID'}, {type: 'null'}]}
+        content_json: {type: object, additionalProperties: true}
+    BibleRevision:
+      type: object
+      required: [id, project_id, revision_no, content_hash, content_json, created_at]
+      properties:
+        id: {$ref: '#/components/schemas/UUID'}
+        project_id: {type: integer}
+        parent_revision_id: {oneOf: [{$ref: '#/components/schemas/UUID'}, {type: 'null'}]}
+        revision_no: {type: integer, minimum: 1}
+        source_hash: {type: string}
+        content_hash: {type: string}
+        content_json: {type: object, additionalProperties: true}
+        created_at: {type: string, format: date-time}
+    RevisionHead:
+      type: object
+      required: [revision_id, lock_version]
+      properties:
+        revision_id: {oneOf: [{$ref: '#/components/schemas/UUID'}, {type: 'null'}]}
+        lock_version: {type: integer, minimum: 1}
+        updated_at: {type: string, format: date-time}
+    HeadUpdate:
+      type: object
+      required: [revision_id]
+      properties:
+        revision_id: {$ref: '#/components/schemas/UUID'}
+    StoryPathCreate:
+      type: object
+      required: [candidate_id]
+      properties:
+        candidate_id: {$ref: '#/components/schemas/UUID'}
+        title: {type: [string, 'null'], maxLength: 200}
+    StoryPathPromotion:
+      type: object
+      properties:
+        title: {type: [string, 'null'], maxLength: 200}
+    StoryPathPatch:
+      type: object
+      minProperties: 1
+      properties:
+        title: {type: string, minLength: 1, maxLength: 200}
+        status: {type: string, enum: [active, archived]}
+    StoryPath:
+      type: object
+      required: [id, project_id, title, status, lock_version]
+      properties:
+        id: {$ref: '#/components/schemas/UUID'}
+        project_id: {type: integer}
+        parent_path_id: {oneOf: [{$ref: '#/components/schemas/UUID'}, {type: 'null'}]}
+        fork_path_chapter_id: {oneOf: [{$ref: '#/components/schemas/UUID'}, {type: 'null'}]}
+        fork_checkpoint_node_id: {oneOf: [{$ref: '#/components/schemas/UUID'}, {type: 'null'}]}
+        fork_candidate_id: {oneOf: [{$ref: '#/components/schemas/UUID'}, {type: 'null'}]}
+        base_state_snapshot_id: {oneOf: [{$ref: '#/components/schemas/UUID'}, {type: 'null'}]}
+        title: {type: string}
+        status: {type: string, enum: [active, archived]}
+        lock_version: {type: integer, minimum: 1}
+    OutlineGenerationRequest:
+      type: object
+      required: [chapter_count]
+      properties:
+        chapter_count: {type: integer, minimum: 1, maximum: 500}
+        instructions: {type: [string, 'null'], maxLength: 12000}
+    OutlineChapterInput:
+      type: object
+      required: [display_index, title, summary]
+      properties:
+        story_path_chapter_id: {oneOf: [{$ref: '#/components/schemas/UUID'}, {type: 'null'}]}
+        display_index: {type: integer, minimum: 1}
+        title: {type: string}
+        summary: {type: string}
+        conflict: {type: [string, 'null']}
+        characters: {type: array, items: {type: string}}
+        scene: {type: [string, 'null']}
+        emotion: {type: [string, 'null']}
+        visual_keywords: {type: array, items: {type: string}}
+    OutlineRevisionCreate:
+      type: object
+      required: [bible_revision_id, chapters]
+      properties:
+        bible_revision_id: {$ref: '#/components/schemas/UUID'}
+        parent_revision_id: {oneOf: [{$ref: '#/components/schemas/UUID'}, {type: 'null'}]}
+        chapters: {type: array, minItems: 1, maxItems: 500, items: {$ref: '#/components/schemas/OutlineChapterInput'}}
+    OutlineRevision:
+      allOf:
+        - {$ref: '#/components/schemas/OutlineRevisionCreate'}
+        - type: object
+          required: [id, story_path_id, revision_no, source_hash, content_hash]
+          properties:
+            id: {$ref: '#/components/schemas/UUID'}
+            story_path_id: {$ref: '#/components/schemas/UUID'}
+            revision_no: {type: integer, minimum: 1}
+            source_hash: {type: string}
+            content_hash: {type: string}
+    PathChapterCreate:
+      type: object
+      properties:
+        after_path_chapter_id: {oneOf: [{$ref: '#/components/schemas/UUID'}, {type: 'null'}]}
+    PathChapter:
+      type: object
+      required: [id, story_path_id, chapter_slot_id, display_index, lock_version]
+      properties:
+        id: {$ref: '#/components/schemas/UUID'}
+        story_path_id: {$ref: '#/components/schemas/UUID'}
+        chapter_slot_id: {$ref: '#/components/schemas/UUID'}
+        display_index: {type: integer, minimum: 1}
+        predecessor_path_chapter_id: {oneOf: [{$ref: '#/components/schemas/UUID'}, {type: 'null'}]}
+        inherited_from_path_chapter_id: {oneOf: [{$ref: '#/components/schemas/UUID'}, {type: 'null'}]}
+        current_revision_id: {oneOf: [{$ref: '#/components/schemas/UUID'}, {type: 'null'}]}
+        lock_version: {type: integer, minimum: 1}
+    ChapterBatchRequest:
+      type: object
+      required: [path_chapter_ids]
+      properties:
+        path_chapter_ids:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items: {$ref: '#/components/schemas/UUID'}
+        instructions: {type: [string, 'null'], maxLength: 12000}
+    ChapterRevisionCreate:
+      type: object
+      required: [content]
+      properties:
+        parent_revision_id: {oneOf: [{$ref: '#/components/schemas/UUID'}, {type: 'null'}]}
+        content: {type: string}
+    ChapterRevision:
+      type: object
+      required: [id, chapter_slot_id, created_for_story_path_id, revision_no, context_manifest, context_hash, content_hash, content]
+      properties:
+        id: {$ref: '#/components/schemas/UUID'}
+        chapter_slot_id: {$ref: '#/components/schemas/UUID'}
+        created_for_story_path_id: {$ref: '#/components/schemas/UUID'}
+        parent_revision_id: {oneOf: [{$ref: '#/components/schemas/UUID'}, {type: 'null'}]}
+        revision_no: {type: integer, minimum: 1}
+        context_manifest: {type: object, additionalProperties: true}
+        context_hash: {type: string, pattern: '^[0-9a-f]{64}$'}
+        content_hash: {type: string, pattern: '^[0-9a-f]{64}$'}
+        content: {type: string}
+    CandidateSetGenerationRequest:
+      type: object
+      required: [chapter_revision_id, state_snapshot_id, candidate_count]
+      properties:
+        chapter_revision_id: {$ref: '#/components/schemas/UUID'}
+        state_snapshot_id: {$ref: '#/components/schemas/UUID'}
+        candidate_count: {type: integer, minimum: 2, maximum: 4}
+        instructions: {type: [string, 'null'], maxLength: 12000}
+    CandidateSetRevision:
+      type: object
+      required: [id, story_path_id, checkpoint_node_id, chapter_revision_id, state_snapshot_id, revision_no, source_hash, content_hash]
+      properties:
+        id: {$ref: '#/components/schemas/UUID'}
+        story_path_id: {$ref: '#/components/schemas/UUID'}
+        checkpoint_node_id: {$ref: '#/components/schemas/UUID'}
+        chapter_revision_id: {$ref: '#/components/schemas/UUID'}
+        state_snapshot_id: {$ref: '#/components/schemas/UUID'}
+        revision_no: {type: integer, minimum: 1}
+        source_hash: {type: string}
+        content_hash: {type: string, pattern: '^[0-9a-f]{64}$'}
+    BranchCandidate:
+      type: object
+      required: [id, candidate_set_revision_id, option_key, preview_text, state_delta]
+      properties:
+        id: {$ref: '#/components/schemas/UUID'}
+        candidate_set_revision_id: {$ref: '#/components/schemas/UUID'}
+        option_key: {type: string}
+        preview_text: {type: string}
+        state_delta: {type: object, additionalProperties: true}
+    ScriptRevision:
+      type: object
+      required: [id, chapter_revision_id, revision_no, source_hash, script_hash, script_json]
+      properties:
+        id: {$ref: '#/components/schemas/UUID'}
+        chapter_revision_id: {$ref: '#/components/schemas/UUID'}
+        revision_no: {type: integer, minimum: 1}
+        source_hash: {type: string}
+        script_hash: {type: string}
+        script_json: {type: object, additionalProperties: true}
+    ResourceSlot:
+      type: object
+      required: [id, script_revision_id, role, lock_version]
+      properties:
+        id: {$ref: '#/components/schemas/UUID'}
+        script_revision_id: {$ref: '#/components/schemas/UUID'}
+        role: {type: string}
+        asset_version_id: {oneOf: [{$ref: '#/components/schemas/UUID'}, {type: 'null'}]}
+        lock_version: {type: integer, minimum: 1}
+    ResourceRenderRequest:
+      type: object
+      required: [role]
+      properties:
+        role: {type: string}
+    ResourceSlotBind:
+      type: object
+      required: [asset_version_id]
+      properties:
+        asset_version_id: {$ref: '#/components/schemas/UUID'}
+    VNGraphCompileRequest:
+      type: object
+      properties:
+        compiler_version: {type: [string, 'null']}
+        schema_version: {type: [string, 'null']}
+    VNGraphRevision:
+      type: object
+      required: [id, script_revision_id, binding_manifest, binding_manifest_hash, graph_hash, graph_json]
+      properties:
+        id: {$ref: '#/components/schemas/UUID'}
+        script_revision_id: {$ref: '#/components/schemas/UUID'}
+        binding_manifest: {type: object, additionalProperties: true}
+        binding_manifest_hash: {type: string}
+        graph_hash: {type: string}
+        graph_json: {type: object, additionalProperties: true}
+    PublishRequest:
+      type: object
+      required: [expected_authoring_fingerprint]
+      properties:
+        expected_authoring_fingerprint: {type: string, pattern: '^[0-9a-f]{64}$'}
+        release_notes: {type: [string, 'null'], maxLength: 2000}
+    Release:
+      type: object
+      required: [id, project_id, version, status, manifest_hash, authoring_fingerprint, release_notes, published_at, withdrawn_at]
+      properties:
+        id: {$ref: '#/components/schemas/UUID'}
+        project_id: {type: integer}
+        version: {type: integer, minimum: 1}
+        status: {type: string, enum: [published, superseded, withdrawn]}
+        manifest_hash: {type: string, pattern: '^[0-9a-f]{64}$'}
+        authoring_fingerprint: {type: [string, 'null'], pattern: '^[0-9a-f]{64}$'}
+        release_notes: {type: [string, 'null']}
+        published_at: {type: [string, 'null'], format: date-time}
+        withdrawn_at: {type: [string, 'null'], format: date-time}
+    ReleaseManifest:
+      type: object
+      required: [release_id, version, manifest_hash, manifest]
+      properties:
+        release_id: {$ref: '#/components/schemas/UUID'}
+        version: {type: integer}
+        manifest_hash: {type: string}
+        manifest: {type: object, additionalProperties: true}
+    PublicProject:
+      type: object
+      required: [id, title, release_id, release_version, manifest_hash, published_at]
+      properties:
+        id: {type: integer}
+        title: {type: string}
+        summary: {type: string}
+        cover_url: {type: [string, 'null']}
+        release_id: {$ref: '#/components/schemas/UUID'}
+        release_version: {type: integer}
+        manifest_hash: {type: string}
+        published_at: {type: string, format: date-time}
+    TaskAccepted:
+      type: object
+      required: [task_id, status, events_url, created]
+      properties:
+        task_id: {$ref: '#/components/schemas/UUID'}
+        status: {type: string}
+        events_url: {type: string}
+        created: {type: boolean}
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: {type: string}
+        message: {type: string}
+        details: {type: object, additionalProperties: true}

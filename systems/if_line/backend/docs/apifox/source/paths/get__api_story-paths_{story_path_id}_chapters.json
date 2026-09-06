@@ -1,0 +1,86 @@
+{
+  "method": "get",
+  "path": "/api/story-paths/{story_path_id}/chapters",
+  "operation": {
+    "operationId": "listPathChapters",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "story_path_id",
+        "required": true,
+        "schema": {
+          "title": "Story Path Id",
+          "type": "string"
+        },
+        "description": "故事路径编号。主线和分支线都会有自己的 story_path_id。"
+      }
+    ],
+    "responses": {
+      "200": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "items": {
+                "$ref": "#/components/schemas/PathChapter"
+              },
+              "title": "Response Listpathchapters",
+              "type": "array"
+            },
+            "example": [
+              {
+                "id": "baecae68-4f30-4f65-b0c1-14834a75e250",
+                "story_path_id": "689eafef-de0c-4dbe-a168-2c379bca58d1",
+                "chapter_slot_id": "670f61d1-9ffc-454b-8e5e-a370506c5abb",
+                "display_index": 1,
+                "predecessor_path_chapter_id": null,
+                "inherited_from_path_chapter_id": null,
+                "current_revision_id": null,
+                "status": "active",
+                "detached_at": null,
+                "detached_by_outline_revision_id": null,
+                "lock_version": 1
+              },
+              {
+                "id": "4afa2fc1-2018-4539-92c3-1bf2ef95e5aa",
+                "story_path_id": "689eafef-de0c-4dbe-a168-2c379bca58d1",
+                "chapter_slot_id": "1eb6c8e4-b3f1-439d-b18b-eb9f18b2a255",
+                "display_index": 2,
+                "predecessor_path_chapter_id": "baecae68-4f30-4f65-b0c1-14834a75e250",
+                "inherited_from_path_chapter_id": null,
+                "current_revision_id": null,
+                "status": "active",
+                "detached_at": null,
+                "detached_by_outline_revision_id": null,
+                "lock_version": 1
+              }
+            ]
+          }
+        },
+        "description": "读取当前故事线路的章节位置列表。返回的是 PathChapter 位置记录，不是章节正文；status=active 表示当前线路仍使用该位置，detached 表示该位置已被后续大纲调整移出当前拓扑。"
+      },
+      "422": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "description": "Validation Error"
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "summary": "读取故事路径章节列表",
+    "tags": [
+      "创作版本与生成/章节生成",
+      "创作版本与生成"
+    ],
+    "x-apifox-folder": "创作版本与生成/章节生成",
+    "x-apifox-status": "released",
+    "description": "读取某条 story path 下的路径章节列表。这里返回的是 PathChapter，即“这条路径里的章节位置”，不是章节正文内容。"
+  }
+}

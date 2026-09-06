@@ -1,0 +1,210 @@
+{
+  "name": "LibraryAssetRead",
+  "schema": {
+    "properties": {
+      "asset_type": {
+        "enum": [
+          "portrait",
+          "background",
+          "keyframe"
+        ],
+        "title": "素材类型",
+        "type": "string",
+        "description": "素材类型，可选值：portrait、background、keyframe。"
+      },
+      "catalog_version": {
+        "title": "素材库版本",
+        "type": "string",
+        "description": "素材库版本。"
+      },
+      "confidence": {
+        "title": "置信度",
+        "type": "string",
+        "description": "图库匹配置信度，可为空。当前常见值为 high、medium、low，但后端 schema 不再限制为固定枚举。",
+        "nullable": true
+      },
+      "conflicts": {
+        "items": {
+          "type": "string",
+          "title": "conflictsitem",
+          "description": "conflictsitem。"
+        },
+        "title": "冲突列表",
+        "type": "array",
+        "description": "冲突列表列表。"
+      },
+      "description_cn": {
+        "title": "中文描述",
+        "type": "string",
+        "description": "中文描述。"
+      },
+      "description_en": {
+        "title": "英文描述",
+        "type": "string",
+        "description": "英文描述。"
+      },
+      "expression": {
+        "title": "表情",
+        "type": "string",
+        "description": "表情，可为空。",
+        "nullable": true
+      },
+      "fallback_reason": {
+        "title": "兜底原因",
+        "type": "string",
+        "description": "兜底原因，可为空。",
+        "nullable": true
+      },
+      "has_alpha": {
+        "title": "是否包含透明通道",
+        "type": "boolean",
+        "description": "是否包含透明通道。",
+        "nullable": true
+      },
+      "height": {
+        "title": "高度",
+        "type": "integer",
+        "description": "高度，可为空。",
+        "nullable": true
+      },
+      "id": {
+        "title": "编号",
+        "type": "string",
+        "description": "编号，用于关联对应数据。"
+      },
+      "identity_group": {
+        "title": "身份分组",
+        "type": "string",
+        "description": "身份分组，可为空。",
+        "nullable": true
+      },
+      "media_url": {
+        "title": "媒体地址",
+        "type": "string",
+        "description": "媒体地址，由服务端返回给客户端访问。"
+      },
+      "pose": {
+        "title": "姿态",
+        "type": "string",
+        "description": "姿态，可为空。",
+        "nullable": true
+      },
+      "quality_score": {
+        "title": "质量分",
+        "type": "number",
+        "description": "质量分。"
+      },
+      "score": {
+        "title": "评分",
+        "type": "number",
+        "description": "评分，可为空。",
+        "nullable": true
+      },
+      "score_breakdown": {
+        "additionalProperties": {
+          "type": "number"
+        },
+        "title": "评分明细",
+        "type": "object",
+        "x-apifox-orders": [],
+        "description": "评分明细对象。",
+        "properties": {},
+        "x-apifox-ignore-properties": []
+      },
+      "sha256": {
+        "title": "文件哈希",
+        "type": "string",
+        "description": "文件哈希。"
+      },
+      "stable_key": {
+        "title": "稳定键",
+        "type": "string",
+        "description": "稳定键。"
+      },
+      "storage_object_id": {
+        "title": "存储对象编号",
+        "type": "string",
+        "description": "存储对象编号，用于关联对应数据。"
+      },
+      "style": {
+        "title": "风格",
+        "type": "string",
+        "description": "风格，可为空。",
+        "nullable": true
+      },
+      "tags": {
+        "items": {
+          "type": "string",
+          "title": "tagsitem",
+          "description": "tagsitem。"
+        },
+        "title": "标签列表",
+        "type": "array",
+        "description": "标签列表列表。"
+      },
+      "taxonomy": {
+        "title": "分类信息",
+        "type": "object",
+        "x-apifox-orders": [],
+        "description": "分类信息对象。",
+        "properties": {},
+        "x-apifox-ignore-properties": []
+      },
+      "width": {
+        "title": "宽度",
+        "type": "integer",
+        "description": "宽度，可为空。",
+        "nullable": true
+      }
+    },
+    "required": [
+      "id",
+      "catalog_version",
+      "stable_key",
+      "asset_type",
+      "storage_object_id",
+      "media_url",
+      "sha256",
+      "description_cn",
+      "description_en",
+      "tags",
+      "taxonomy",
+      "identity_group",
+      "expression",
+      "pose",
+      "style",
+      "quality_score"
+    ],
+    "title": "素材库素材读取结果",
+    "type": "object",
+    "x-apifox-orders": [
+      "asset_type",
+      "catalog_version",
+      "confidence",
+      "conflicts",
+      "description_cn",
+      "description_en",
+      "expression",
+      "fallback_reason",
+      "has_alpha",
+      "height",
+      "id",
+      "identity_group",
+      "media_url",
+      "pose",
+      "quality_score",
+      "score",
+      "score_breakdown",
+      "sha256",
+      "stable_key",
+      "storage_object_id",
+      "style",
+      "tags",
+      "taxonomy",
+      "width"
+    ],
+    "description": "素材库素材读取结果数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

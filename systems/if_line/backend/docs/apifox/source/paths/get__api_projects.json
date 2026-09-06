@@ -1,0 +1,72 @@
+{
+  "method": "get",
+  "path": "/api/projects",
+  "operation": {
+    "summary": "读取我的项目列表",
+    "deprecated": false,
+    "description": "读取当前登录用户拥有的项目列表。publication_state 用于按发布状态筛选。",
+    "operationId": "list_projects_api_projects__get",
+    "tags": [
+      "项目管理"
+    ],
+    "parameters": [
+      {
+        "in": "query",
+        "name": "publication_state",
+        "required": false,
+        "schema": {
+          "default": "all",
+          "enum": [
+            "all",
+            "unpublished",
+            "published",
+            "changes_pending"
+          ],
+          "title": "Publication State",
+          "type": "string"
+        },
+        "description": "项目发布状态筛选：all=全部，unpublished=未发布，published=已发布且无未发布变更，changes_pending=已发布但当前创作内容有新变更。"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "items": {
+                "$ref": "#/components/schemas/ProjectRead"
+              },
+              "title": "Response Listprojects",
+              "type": "array"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-folder": "项目管理",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923782-run"
+  }
+}

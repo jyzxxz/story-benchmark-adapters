@@ -1,0 +1,32 @@
+{
+  "name": "ChapterRevisionCreate",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "content": {
+        "minLength": 1,
+        "title": "正文内容",
+        "type": "string",
+        "description": "章节正文完整文本。"
+      },
+      "parent_revision_id": {
+        "title": "父修订编号",
+        "type": "string",
+        "description": "父章节修订编号。基于某一版修改时传该 revision_id；第一版可不传。",
+        "nullable": true
+      }
+    },
+    "required": [
+      "content"
+    ],
+    "title": "章节修订创建请求",
+    "type": "object",
+    "x-apifox-orders": [
+      "content",
+      "parent_revision_id"
+    ],
+    "description": "手动保存章节正文修订版本。保存后不会自动成为当前版本，需要再 PUT /path-chapters/{path_chapter_id}/head。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "ProjectLikeResponse",
+  "schema": {
+    "properties": {
+      "like_count": {
+        "title": "点赞数量",
+        "type": "integer",
+        "description": "点赞数量。"
+      },
+      "liked": {
+        "title": "是否点赞",
+        "type": "boolean",
+        "description": "是否点赞。"
+      },
+      "project_id": {
+        "title": "项目编号",
+        "type": "integer",
+        "description": "项目编号，用于关联对应数据。"
+      }
+    },
+    "required": [
+      "project_id",
+      "liked",
+      "like_count"
+    ],
+    "title": "项目点赞响应",
+    "type": "object",
+    "x-apifox-orders": [
+      "like_count",
+      "liked",
+      "project_id"
+    ],
+    "description": "项目点赞响应数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

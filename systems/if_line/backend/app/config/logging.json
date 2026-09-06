@@ -1,0 +1,7 @@
+{
+  "file": {
+    "enabled": true,
+    "path": "python-backend.local.log"
+  },
+  "json_stderr": false
+}

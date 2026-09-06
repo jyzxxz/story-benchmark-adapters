@@ -1,0 +1,67 @@
+{
+  "method": "get",
+  "path": "/api/server-agent/threads/{thread_id}",
+  "operation": {
+    "summary": "读取 Agent 会话快照",
+    "deprecated": false,
+    "description": "读取 Agent 当前快照，用于调试和页面恢复。返回 messages 是当前模型活跃窗口，不是数据库全量审计历史；events 是已落库的前端事件历史。服务重启后会从数据库恢复 thread。",
+    "operationId": "get_server_agent_thread_get",
+    "tags": [
+      "服务端 Agent"
+    ],
+    "parameters": [
+      {
+        "name": "thread_id",
+        "in": "path",
+        "description": "Agent thread 编号。",
+        "required": true,
+        "schema": {
+          "title": "Thread Id",
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ServerAgentSnapshotResponse"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      },
+      "404": {
+        "description": "Agent 不存在。",
+        "content": {
+          "application/json": {
+            "schema": {}
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "不存在",
+        "x-apifox-ordering": 2
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "服务端 Agent",
+    "x-apifox-status": "released"
+  }
+}

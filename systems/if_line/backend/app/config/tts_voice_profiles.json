@@ -1,0 +1,411 @@
+[
+  {
+    "profile_id": "aliyun_male_calm_young_longshuo_v3",
+    "engine": "aliyun",
+    "speaker": "longshuo_v3",
+    "vcn": "longshuo_v3",
+    "model": "cosyvoice-v3-flash",
+    "gender": "male",
+    "age_group": "young",
+    "style_keywords": ["男声", "冷静", "克制", "理性", "沉稳", "平静", "青年"],
+    "emotion_prompt": "calm",
+    "tte": "calm",
+    "speed": 50,
+    "volume": 50,
+    "pitch": 50,
+    "rate": 1.0,
+    "pitch_rate": 1.0,
+    "audio_format": "mp3",
+    "sample_rate": 24000,
+    "description": "阿里云 CosyVoice v3 男声，冷静沉稳",
+    "fallback_voice_ids": {
+      "minimax": "male-qn-qingse"
+    }
+  },
+  {
+    "profile_id": "aliyun_male_warm_middle_longze_v3",
+    "engine": "aliyun",
+    "speaker": "longze_v3",
+    "vcn": "longze_v3",
+    "model": "cosyvoice-v3-flash",
+    "gender": "male",
+    "age_group": "middle",
+    "style_keywords": ["男声", "成熟", "磁性", "稳重", "温和", "低沉", "从容"],
+    "emotion_prompt": "calm",
+    "tte": "calm",
+    "speed": 49,
+    "volume": 50,
+    "pitch": 48,
+    "rate": 0.98,
+    "pitch_rate": 0.96,
+    "audio_format": "mp3",
+    "sample_rate": 24000,
+    "description": "阿里云 CosyVoice v3 男声，成熟稳重",
+    "fallback_voice_ids": {
+      "minimax": "Chinese (Mandarin)_Gentleman"
+    }
+  },
+  {
+    "profile_id": "aliyun_male_clear_young_longanlang_v3",
+    "engine": "aliyun",
+    "speaker": "longanlang_v3",
+    "vcn": "longanlang_v3",
+    "model": "cosyvoice-v3-flash",
+    "gender": "male",
+    "age_group": "young",
+    "style_keywords": ["男声", "清爽", "利落", "开朗", "明快", "干净", "旁白"],
+    "emotion_prompt": "happy",
+    "tte": "happy",
+    "speed": 52,
+    "volume": 52,
+    "pitch": 51,
+    "rate": 1.04,
+    "pitch_rate": 1.02,
+    "audio_format": "mp3",
+    "sample_rate": 24000,
+    "description": "阿里云 CosyVoice v3 男声，清爽利落",
+    "fallback_voice_ids": {
+      "minimax": "male-qn-daxuesheng"
+    }
+  },
+  {
+    "profile_id": "aliyun_male_positive_young_longshao_v2",
+    "engine": "aliyun",
+    "speaker": "longshao_v2",
+    "vcn": "longshao_v2",
+    "model": "cosyvoice-v2",
+    "gender": "male",
+    "age_group": "young",
+    "style_keywords": ["男声", "积极", "阳光", "坚定", "热血", "明亮", "少年"],
+    "emotion_prompt": "excited",
+    "tte": "excited",
+    "speed": 53,
+    "volume": 54,
+    "pitch": 52,
+    "rate": 1.06,
+    "pitch_rate": 1.04,
+    "audio_format": "mp3",
+    "sample_rate": 24000,
+    "description": "阿里云 CosyVoice v2 男声，积极向上",
+    "fallback_voice_ids": {
+      "minimax": "male-qn-badao"
+    }
+  },
+  {
+    "profile_id": "aliyun_female_sweet_young_longyingtian",
+    "engine": "aliyun",
+    "speaker": "longyingtian",
+    "vcn": "longyingtian",
+    "model": "cosyvoice-v2",
+    "gender": "female",
+    "age_group": "young",
+    "style_keywords": ["女声", "温柔", "甜美", "柔和", "亲切", "清甜", "少女"],
+    "emotion_prompt": "happy",
+    "tte": "happy",
+    "speed": 50,
+    "volume": 50,
+    "pitch": 52,
+    "rate": 1.0,
+    "pitch_rate": 1.04,
+    "audio_format": "mp3",
+    "sample_rate": 24000,
+    "description": "阿里云 CosyVoice v2 女声，温柔甜美",
+    "fallback_voice_ids": {
+      "minimax": "female-shaonv"
+    }
+  },
+  {
+    "profile_id": "aliyun_female_anime_young_chelsie",
+    "engine": "aliyun",
+    "speaker": "Chelsie",
+    "vcn": "Chelsie",
+    "model": "qwen3-tts-flash",
+    "gender": "female",
+    "age_group": "young",
+    "style_keywords": ["女声", "二次元", "虚拟", "活泼", "可爱", "甜美", "少女"],
+    "emotion_prompt": "happy",
+    "tte": "happy",
+    "speed": 52,
+    "volume": 50,
+    "pitch": 54,
+    "language_type": "Chinese",
+    "audio_format": "wav",
+    "description": "阿里云 Qwen-TTS 女声 Chelsie",
+    "fallback_voice_ids": {
+      "minimax": "female-tianmei"
+    }
+  },
+  {
+    "profile_id": "aliyun_female_gentle_middle_longyuyan_v3",
+    "engine": "aliyun",
+    "speaker": "longyuyan_v3",
+    "vcn": "longyuyan_v3",
+    "model": "cosyvoice-v3-flash",
+    "gender": "female",
+    "age_group": "middle",
+    "style_keywords": ["女声", "温婉", "知性", "成熟", "从容", "优雅", "中年"],
+    "emotion_prompt": "calm",
+    "tte": "calm",
+    "speed": 49,
+    "volume": 50,
+    "pitch": 48,
+    "rate": 0.98,
+    "pitch_rate": 0.97,
+    "audio_format": "mp3",
+    "sample_rate": 24000,
+    "description": "阿里云 CosyVoice v3 女声，温婉知性中年",
+    "fallback_voice_ids": {
+      "minimax": "female-chengshu"
+    }
+  },
+  {
+    "profile_id": "aliyun_female_kind_elderly_longlaotie_v3",
+    "engine": "aliyun",
+    "speaker": "longlaotie_v3",
+    "vcn": "longlaotie_v3",
+    "model": "cosyvoice-v3-flash",
+    "gender": "female",
+    "age_group": "elderly",
+    "style_keywords": ["女声", "慈祥", "温和", "苍老", "老年", "奶奶", "沧桑"],
+    "emotion_prompt": "calm",
+    "tte": "calm",
+    "speed": 48,
+    "volume": 50,
+    "pitch": 46,
+    "rate": 0.96,
+    "pitch_rate": 0.94,
+    "audio_format": "mp3",
+    "sample_rate": 24000,
+    "description": "阿里云 CosyVoice v3 女声，慈祥老年",
+    "fallback_voice_ids": {
+      "minimax": "Chinese (Mandarin)_Kind-hearted_Elder"
+    }
+  },
+  {
+    "profile_id": "aliyun_male_deep_elderly_longbaba_v3",
+    "engine": "aliyun",
+    "speaker": "longbaba_v3",
+    "vcn": "longbaba_v3",
+    "model": "cosyvoice-v3-flash",
+    "gender": "male",
+    "age_group": "elderly",
+    "style_keywords": ["男声", "浑厚", "苍老", "沧桑", "老年", "爷爷", "低沉"],
+    "emotion_prompt": "calm",
+    "tte": "calm",
+    "speed": 48,
+    "volume": 50,
+    "pitch": 44,
+    "rate": 0.95,
+    "pitch_rate": 0.92,
+    "audio_format": "mp3",
+    "sample_rate": 24000,
+    "description": "阿里云 CosyVoice v3 男声，浑厚苍老老年",
+    "fallback_voice_ids": {
+      "minimax": "male-qn-jingying"
+    }
+  },
+  {
+    "profile_id": "male_calm_young",
+    "speaker": "x6_lingfeiyi_pro",
+    "vcn": "x6_lingfeiyi_pro",
+    "gender": "male",
+    "age_group": "young",
+    "style_keywords": ["冷静", "克制", "理性", "沉稳", "温和", "平静"],
+    "emotion_prompt": "calm",
+    "tte": "calm",
+    "speed": 50,
+    "volume": 50,
+    "pitch": 50,
+    "description": "年轻男性，冷静理性",
+    "fallback_voice_ids": {
+      "minimax": "lengdan_xiongzhang"
+    }
+  },
+  {
+    "profile_id": "male_heroic_middle",
+    "speaker": "x6_lingfeibo_pro",
+    "vcn": "x6_lingfeibo_pro",
+    "gender": "male",
+    "age_group": "middle",
+    "style_keywords": ["豪迈", "坚定", "威严", "激昂", "霸气", "豪爽"],
+    "emotion_prompt": "excited",
+    "tte": "excited",
+    "speed": 50,
+    "volume": 55,
+    "pitch": 52,
+    "description": "中年男性，豪迈激昂（聆飞博）",
+    "fallback_voice_ids": {
+      "minimax": "badao_shaoye"
+    }
+  },
+  {
+    "profile_id": "male_gentle_young",
+    "speaker": "x6_lingbosong_pro",
+    "vcn": "x6_lingbosong_pro",
+    "gender": "male",
+    "age_group": "young",
+    "style_keywords": ["温柔", "细腻", "轻声", "含蓄", "斯文", "儒雅"],
+    "emotion_prompt": "happy",
+    "tte": "happy",
+    "speed": 48,
+    "volume": 50,
+    "pitch": 50,
+    "description": "年轻男性，温柔细腻（聆伯松）",
+    "fallback_voice_ids": {
+      "minimax": "chunzhen_xuedi"
+    }
+  },
+  {
+    "profile_id": "male_cold_middle",
+    "speaker": "x6_lingfeiyi_pro",
+    "vcn": "x6_lingfeiyi_pro",
+    "gender": "male",
+    "age_group": "middle",
+    "style_keywords": ["冷峻", "冷漠", "冷酷", "阴沉", "严肃", "严厉"],
+    "emotion_prompt": "sad",
+    "tte": "sad",
+    "speed": 48,
+    "volume": 50,
+    "pitch": 48,
+    "description": "中年男性，冷峻严肃（受限于已开通 vcn，共用聆飞逸）",
+    "fallback_voice_ids": {
+      "minimax": "lengdan_xiongzhang"
+    }
+  },
+  {
+    "profile_id": "female_gentle_young",
+    "speaker": "x6_lingxiaoxuan_pro",
+    "vcn": "x6_lingxiaoxuan_pro",
+    "gender": "female",
+    "age_group": "young",
+    "style_keywords": ["温柔", "细腻", "轻声", "含蓄", "婉约", "柔美"],
+    "emotion_prompt": "happy",
+    "tte": "happy",
+    "speed": 48,
+    "volume": 50,
+    "pitch": 50,
+    "description": "年轻女性，温柔婉约",
+    "fallback_voice_ids": {
+      "minimax": "danya_xuejie"
+    }
+  },
+  {
+    "profile_id": "female_lively_young",
+    "speaker": "x6_lingxiaoyue_pro",
+    "vcn": "x6_lingxiaoyue_pro",
+    "gender": "female",
+    "age_group": "young",
+    "style_keywords": ["活泼", "开朗", "热情", "俏皮", "灵动", "可爱"],
+    "emotion_prompt": "happy",
+    "tte": "happy",
+    "speed": 55,
+    "volume": 55,
+    "pitch": 55,
+    "description": "年轻女性，活泼开朗",
+    "fallback_voice_ids": {
+      "minimax": "qiaopi_mengmei"
+    }
+  },
+  {
+    "profile_id": "female_elegant_middle",
+    "speaker": "x6_lingyuyan_pro",
+    "vcn": "x6_lingyuyan_pro",
+    "gender": "female",
+    "age_group": "middle",
+    "style_keywords": ["优雅", "端庄", "沉稳", "大气", "从容", "高贵"],
+    "emotion_prompt": "calm",
+    "tte": "calm",
+    "speed": 48,
+    "volume": 50,
+    "pitch": 48,
+    "description": "中年女性，优雅端庄",
+    "fallback_voice_ids": {
+      "minimax": "female-yujie"
+    }
+  },
+  {
+    "profile_id": "female_sad_young",
+    "speaker": "x5_lingyuzhao_flow",
+    "vcn": "x5_lingyuzhao_flow",
+    "gender": "female",
+    "age_group": "young",
+    "style_keywords": ["悲伤", "忧郁", "哀愁", "凄美", "柔弱", "楚楚可怜"],
+    "emotion_prompt": "sad",
+    "tte": "sad",
+    "speed": 45,
+    "volume": 48,
+    "pitch": 48,
+    "description": "年轻女性，悲伤忧郁",
+    "fallback_voice_ids": {
+      "minimax": "bingjiao_didi"
+    }
+  },
+  {
+    "profile_id": "male_angry_middle",
+    "speaker": "x6_lingfeibo_pro",
+    "vcn": "x6_lingfeibo_pro",
+    "gender": "male",
+    "age_group": "middle",
+    "style_keywords": ["愤怒", "暴躁", "激动", "咆哮", "怒吼", "严厉"],
+    "emotion_prompt": "angry",
+    "tte": "angry",
+    "speed": 55,
+    "volume": 60,
+    "pitch": 52,
+    "description": "中年男性，愤怒激动（聆飞博）",
+    "fallback_voice_ids": {
+      "minimax": "badao_shaoye"
+    }
+  },
+  {
+    "profile_id": "female_angry_young",
+    "speaker": "x6_lingxiaoyue_pro",
+    "vcn": "x6_lingxiaoyue_pro",
+    "gender": "female",
+    "age_group": "young",
+    "style_keywords": ["愤怒", "尖锐", "激动", "不平", "愤慨", "怒气"],
+    "emotion_prompt": "angry",
+    "tte": "angry",
+    "speed": 55,
+    "volume": 58,
+    "pitch": 55,
+    "description": "年轻女性，愤怒尖锐（共用聆小明）",
+    "fallback_voice_ids": {
+      "minimax": "qiaopi_mengmei"
+    }
+  },
+  {
+    "profile_id": "male_elderly_wise",
+    "speaker": "x6_lingbosong_pro",
+    "vcn": "x6_lingbosong_pro",
+    "gender": "male",
+    "age_group": "elderly",
+    "style_keywords": ["苍老", "沧桑", "睿智", "深沉", "老练", "阅历"],
+    "emotion_prompt": "calm",
+    "tte": "calm",
+    "speed": 45,
+    "volume": 50,
+    "pitch": 45,
+    "description": "老年男性，沧桑睿智（聆伯松）",
+    "fallback_voice_ids": {
+      "minimax": "Chinese (Mandarin)_Gentleman"
+    }
+  },
+  {
+    "profile_id": "female_elderly_kind",
+    "speaker": "x6_lingyuyan_pro",
+    "vcn": "x6_lingyuyan_pro",
+    "gender": "female",
+    "age_group": "elderly",
+    "style_keywords": ["慈祥", "温和", "关爱", "唠叨", "关怀", "慈爱"],
+    "emotion_prompt": "happy",
+    "tte": "happy",
+    "speed": 45,
+    "volume": 50,
+    "pitch": 48,
+    "description": "老年女性，慈祥温和（共用聆玉言）",
+    "fallback_voice_ids": {
+      "minimax": "Chinese (Mandarin)_Kind-hearted_Elder"
+    }
+  }
+]

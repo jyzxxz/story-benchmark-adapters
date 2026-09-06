@@ -1,0 +1,35 @@
+{
+  "name": "NotificationListResponse",
+  "schema": {
+    "properties": {
+      "items": {
+        "items": {
+          "$ref": "#/components/schemas/NotificationResponse",
+          "title": "itemsitem",
+          "description": "itemsitem。"
+        },
+        "title": "列表项",
+        "type": "array",
+        "description": "列表项列表。"
+      },
+      "unread_count": {
+        "title": "未读数量",
+        "type": "integer",
+        "description": "未读数量。"
+      }
+    },
+    "required": [
+      "items",
+      "unread_count"
+    ],
+    "title": "通知列表响应",
+    "type": "object",
+    "x-apifox-orders": [
+      "items",
+      "unread_count"
+    ],
+    "description": "通知列表响应数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

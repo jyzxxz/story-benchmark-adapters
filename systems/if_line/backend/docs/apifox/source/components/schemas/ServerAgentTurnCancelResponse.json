@@ -1,0 +1,58 @@
+{
+  "name": "ServerAgentTurnCancelResponse",
+  "schema": {
+    "type": "object",
+    "title": "服务端 Agent Turn 打断响应",
+    "description": "请求打断当前 turn 的响应。running 状态下该响应只表示已请求取消，最终 interrupted 事件通过 SSE 返回。",
+    "required": [
+      "thread_id",
+      "turn_id",
+      "cancelled",
+      "status",
+      "message"
+    ],
+    "properties": {
+      "thread_id": {
+        "type": "string",
+        "title": "Thread 编号",
+        "description": "Agent thread 编号。"
+      },
+      "turn_id": {
+        "type": "string",
+        "title": "Turn 编号",
+        "description": "被请求打断的 turn 编号。"
+      },
+      "cancelled": {
+        "type": "boolean",
+        "title": "是否已请求打断",
+        "description": "是否已受理打断请求。"
+      },
+      "status": {
+        "type": "string",
+        "title": "当前状态",
+        "description": "打断请求返回时的 Agent 状态。"
+      },
+      "stop_reason": {
+        "type": "string",
+        "nullable": true,
+        "title": "停止原因",
+        "description": "如果已经同步收束，这里通常为 interrupted；running task 异步取消时可能暂时还是原状态。"
+      },
+      "message": {
+        "type": "string",
+        "title": "提示信息",
+        "description": "给调用方看的中文提示。"
+      }
+    },
+    "x-apifox-orders": [
+      "thread_id",
+      "turn_id",
+      "cancelled",
+      "status",
+      "stop_reason",
+      "message"
+    ],
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

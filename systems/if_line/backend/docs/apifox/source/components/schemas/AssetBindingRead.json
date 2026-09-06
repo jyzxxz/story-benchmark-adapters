@@ -1,0 +1,105 @@
+{
+  "name": "AssetBindingRead",
+  "schema": {
+    "properties": {
+      "asset_version_id": {
+        "title": "素材版本编号",
+        "type": "string",
+        "description": "素材版本编号，用于关联对应数据。"
+      },
+      "created_at": {
+        "format": "date-time",
+        "title": "创建时间",
+        "type": "string",
+        "description": "创建时间。"
+      },
+      "deleted_at": {
+        "title": "删除时间",
+        "format": "date-time",
+        "type": "string",
+        "description": "删除时间。",
+        "nullable": true
+      },
+      "id": {
+        "title": "编号",
+        "type": "string",
+        "description": "编号，用于关联对应数据。"
+      },
+      "node_key": {
+        "title": "节点键",
+        "type": "string",
+        "description": "节点键，可为空。",
+        "nullable": true
+      },
+      "order_index": {
+        "title": "排序序号",
+        "type": "integer",
+        "description": "排序序号。"
+      },
+      "project_id": {
+        "title": "项目编号",
+        "type": "integer",
+        "description": "项目编号，用于关联对应数据。"
+      },
+      "required": {
+        "title": "是否必需",
+        "type": "boolean",
+        "description": "是否必需。"
+      },
+      "role": {
+        "title": "角色",
+        "type": "string",
+        "description": "角色。"
+      },
+      "segment_key": {
+        "title": "片段键",
+        "type": "string",
+        "description": "片段键，可为空。",
+        "nullable": true
+      },
+      "source_id": {
+        "title": "来源编号",
+        "type": "string",
+        "description": "来源编号，用于关联对应数据。"
+      },
+      "source_kind": {
+        "title": "来源类型",
+        "type": "string",
+        "description": "来源类型。"
+      }
+    },
+    "required": [
+      "id",
+      "project_id",
+      "source_kind",
+      "source_id",
+      "node_key",
+      "segment_key",
+      "role",
+      "asset_version_id",
+      "order_index",
+      "required",
+      "created_at",
+      "deleted_at"
+    ],
+    "title": "素材绑定读取结果",
+    "type": "object",
+    "x-apifox-orders": [
+      "asset_version_id",
+      "created_at",
+      "deleted_at",
+      "id",
+      "node_key",
+      "order_index",
+      "project_id",
+      "required",
+      "role",
+      "segment_key",
+      "source_id",
+      "source_kind"
+    ],
+    "description": "素材绑定读取结果数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

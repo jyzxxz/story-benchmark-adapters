@@ -1,0 +1,113 @@
+{
+  "name": "AssetActionTarget",
+  "schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "resource_slot_id": {
+        "type": "string",
+        "nullable": true,
+        "maxLength": 64,
+        "title": "章节脚本资源槽位编号",
+        "description": "章节脚本资源槽位 id（GET /api/chapter-script-revisions/{script_revision_id}/resource-slots 获取）。传了它后端会自动推断章节脚本版本、素材类型、场景与绑定位置，其余定位字段可不传。"
+      },
+      "vn_graph_revision_id": {
+        "type": "string",
+        "nullable": true,
+        "maxLength": 64,
+        "title": "VNGraph 版本编号",
+        "description": "VNGraph revision id。后端会读取该版本的 graph_hash 和节点信息。"
+      },
+      "source_kind": {
+        "type": "string",
+        "nullable": true,
+        "enum": [
+          "story_bible_revision",
+          "outline_revision",
+          "chapter_revision",
+          "chapter_script_revision",
+          "vn_graph_revision",
+          "branch_candidate",
+          "reading_continuation"
+        ],
+        "title": "来源类型",
+        "description": "目标来源类型，与 source_id 搭配定位。"
+      },
+      "source_id": {
+        "type": "string",
+        "nullable": true,
+        "minLength": 1,
+        "maxLength": 64,
+        "title": "来源编号",
+        "description": "来源资源 id。"
+      },
+      "chapter_index": {
+        "type": "integer",
+        "nullable": true,
+        "minimum": 1,
+        "title": "章节序号",
+        "description": "章节序号（从 1 开始）。"
+      },
+      "node_index": {
+        "type": "integer",
+        "nullable": true,
+        "minimum": 0,
+        "title": "节点序号",
+        "description": "要替换图片的 VNGraph 节点 index。推荐优先使用，比 scene-001 这类 node_key 更精确。"
+      },
+      "node_key": {
+        "type": "string",
+        "nullable": true,
+        "maxLength": 128,
+        "title": "节点键",
+        "description": "要替换图片的 VNGraph 节点键，仅在能唯一定位节点时使用。"
+      },
+      "segment_key": {
+        "type": "string",
+        "nullable": true,
+        "maxLength": 128,
+        "title": "段落键",
+        "description": "章节脚本段落键。"
+      },
+      "asset_slot": {
+        "type": "string",
+        "nullable": true,
+        "enum": [
+          "BackgroundImage",
+          "TachiIamge",
+          "IllustrationImage"
+        ],
+        "title": "素材槽位类型",
+        "description": "VNGraph 节点素材槽位类型，后端可根据节点类型自动推断。"
+      },
+      "role": {
+        "type": "string",
+        "nullable": true,
+        "enum": [
+          "portrait",
+          "background",
+          "keyframe"
+        ],
+        "title": "素材角色",
+        "description": "素材语义角色：立绘/背景/关键帧。"
+      },
+      "graph_revision_id": {
+        "type": "string",
+        "nullable": true,
+        "maxLength": 64,
+        "title": "图版本编号",
+        "description": "生成 vngraph_patch 基于的图版本 id。"
+      },
+      "graph_hash": {
+        "type": "string",
+        "nullable": true,
+        "minLength": 64,
+        "maxLength": 64,
+        "title": "图哈希",
+        "description": "生成 vngraph_patch 基于的图内容哈希。"
+      }
+    },
+    "title": "素材动作目标",
+    "description": "target 表示这次图片素材要应用到哪里。统一扁平结构，全部字段可选：章节脚本目标只传 resource_slot_id 即可；VNGraph 节点目标传 vn_graph_revision_id + node_index/node_key。原 oneOf（ChapterScriptTarget/VNGraphTarget）已废弃合并。"
+  }
+}

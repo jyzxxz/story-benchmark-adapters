@@ -1,0 +1,88 @@
+{
+  "method": "post",
+  "path": "/api/server-agent/threads/{thread_id}/turns/{turn_id}/cancel",
+  "operation": {
+    "summary": "打断 Agent 当前轮",
+    "deprecated": false,
+    "description": "显式打断当前 turn。running 状态下会取消后台 asyncio task，并在下一个 await 挂起点收束为 turn.failed + stop_reason=interrupted。SSE 断开不会触发该接口。工具调用阶段打断时，后端会补一条 interrupted 的失败 tool result message，避免恢复后出现孤立 assistant tool_call。",
+    "operationId": "cancel_server_agent_turn_post",
+    "tags": [
+      "服务端 Agent"
+    ],
+    "parameters": [
+      {
+        "name": "thread_id",
+        "in": "path",
+        "description": "Agent thread 编号。",
+        "required": true,
+        "schema": {
+          "title": "Thread Id",
+          "type": "string"
+        }
+      },
+      {
+        "name": "turn_id",
+        "in": "path",
+        "description": "要打断的 turn 编号，必须是当前 turn。",
+        "required": true,
+        "schema": {
+          "title": "Turn Id",
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ServerAgentTurnCancelResponse"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      },
+      "404": {
+        "description": "Agent 不存在。",
+        "content": {
+          "application/json": {
+            "schema": {}
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "不存在",
+        "x-apifox-ordering": 2
+      },
+      "409": {
+        "description": "当前状态不允许执行该操作，例如已有 turn 正在运行、turn_id 不匹配或没有可打断任务。",
+        "content": {
+          "application/json": {
+            "schema": {}
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "状态冲突",
+        "x-apifox-ordering": 2
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "服务端 Agent",
+    "x-apifox-status": "released"
+  }
+}

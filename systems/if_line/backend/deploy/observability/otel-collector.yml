@@ -1,0 +1,45 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 512
+    spike_limit_mib: 128
+  batch:
+    timeout: 1s
+  routing/traces:
+    attribute_source: resource
+    from_attribute: service.name
+    default_exporters: [otlp/tempo]
+    table:
+      - value: if-line-agent
+        exporters: [otlphttp/phoenix]
+
+exporters:
+  otlphttp/phoenix:
+    traces_endpoint: http://phoenix:6006/v1/traces
+    headers:
+      Authorization: Bearer ${env:PHOENIX_ADMIN_SECRET}
+  otlp/tempo:
+    endpoint: tempo:4317
+    tls:
+      insecure: true
+  otlphttp/victorialogs:
+    logs_endpoint: http://victorialogs:9428/insert/opentelemetry/v1/logs
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch, routing/traces]
+      exporters: [otlp/tempo, otlphttp/phoenix]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlphttp/victorialogs]

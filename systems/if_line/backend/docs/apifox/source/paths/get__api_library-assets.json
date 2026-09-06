@@ -1,0 +1,125 @@
+{
+  "method": "get",
+  "path": "/api/library-assets",
+  "operation": {
+    "summary": "读取公共素材库",
+    "deprecated": false,
+    "description": "读取公共素材库素材列表。\n\n推荐前端流程：\n1. 先调用 GET /api/library-assets/facets?asset_type=... 获取当前素材类型下所有可检索标签。\n2. 用户勾选筛选项后，取分面返回的 options[].id，用英文逗号拼成 tag_ids。\n3. 再调用本接口读取匹配的素材列表。\n\n查询语义：\n- asset_type 用于限定素材类型，常用值：portrait=立绘，background=背景，keyframe=关键帧/插画。\n- tag_ids 是结构化标签筛选参数，来自分面接口返回的标签编号；多个标签是 AND 关系。\n- query 是文本检索关键词，不调用 LLM。",
+    "operationId": "list_library_api_library_assets_get",
+    "tags": [
+      "素材管理与生成/视觉素材",
+      "视觉素材工作台"
+    ],
+    "parameters": [
+      {
+        "name": "sid",
+        "in": "cookie",
+        "description": "",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Sid",
+          "type": "string",
+          "nullable": true
+        }
+      },
+      {
+        "name": "query",
+        "in": "query",
+        "description": "可选。文本检索关键词，用于按素材名称、描述、标签文本做匹配；不调用 LLM。",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Query",
+          "maxLength": 2000,
+          "type": "string",
+          "nullable": true
+        }
+      },
+      {
+        "name": "asset_type",
+        "in": "query",
+        "description": "可选但推荐填写。素材类型：portrait=立绘，background=背景，keyframe=关键帧/插画。",
+        "required": false,
+        "example": "background",
+        "schema": {
+          "title": "Asset Type",
+          "type": "string",
+          "nullable": true
+        }
+      },
+      {
+        "name": "tag_ids",
+        "in": "query",
+        "description": "可选。公共素材库分面标签编号，多个 id 用英文逗号拼接。标签 id 来自 GET /api/library-assets/facets 的 options[].id；多个标签是 AND 关系。",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Tag Ids",
+          "maxLength": 2000,
+          "type": "string",
+          "nullable": true
+        }
+      },
+      {
+        "name": "limit",
+        "in": "query",
+        "description": "分页大小，最大 100。",
+        "required": false,
+        "example": 100,
+        "schema": {
+          "default": 20,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Limit",
+          "type": "integer"
+        }
+      },
+      {
+        "name": "offset",
+        "in": "query",
+        "description": "分页偏移量，从 0 开始。",
+        "required": false,
+        "example": 0,
+        "schema": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Offset",
+          "type": "integer"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/LibraryAssetPage"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "素材管理与生成/视觉素材",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923756-run"
+  }
+}

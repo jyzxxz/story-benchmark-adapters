@@ -1,0 +1,148 @@
+{
+  "method": "post",
+  "path": "/api/voice-clone/profiles",
+  "operation": {
+    "summary": "创建音色档案",
+    "deprecated": false,
+    "description": "创建音色档案。",
+    "operationId": "create_profile_api_voice_clone_profiles_post",
+    "tags": [
+      "素材管理与生成/音色克隆：实验性接口",
+      "素材管理与生成/音色克隆",
+      "音色克隆"
+    ],
+    "parameters": [
+      {
+        "name": "sid",
+        "in": "cookie",
+        "description": "",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Sid",
+          "type": "string",
+          "nullable": true
+        }
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "multipart/form-data": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "age_group": {
+                "title": "Age Group",
+                "type": "string",
+                "example": "",
+                "nullable": true
+              },
+              "consent_confirmed": {
+                "title": "Consent Confirmed",
+                "type": "boolean",
+                "example": ""
+              },
+              "description": {
+                "title": "Description",
+                "type": "string",
+                "example": "",
+                "nullable": true
+              },
+              "gender": {
+                "title": "Gender",
+                "type": "string",
+                "example": "",
+                "nullable": true
+              },
+              "project_id": {
+                "title": "Project Id",
+                "type": "integer",
+                "example": ""
+              },
+              "prompt_text": {
+                "title": "Prompt Text",
+                "type": "string",
+                "example": ""
+              },
+              "prompt_wav": {
+                "format": "binary",
+                "title": "Prompt Wav",
+                "type": "string",
+                "example": ""
+              },
+              "sample_text": {
+                "title": "Sample Text",
+                "type": "string",
+                "example": "",
+                "nullable": true
+              },
+              "style_tags": {
+                "title": "Style Tags",
+                "type": "string",
+                "example": "",
+                "nullable": true
+              },
+              "voice_name": {
+                "title": "Voice Name",
+                "type": "string",
+                "example": ""
+              }
+            },
+            "required": [
+              "consent_confirmed",
+              "project_id",
+              "prompt_text",
+              "prompt_wav",
+              "voice_name"
+            ]
+          },
+          "example": {
+            "age_group": "",
+            "consent_confirmed": "",
+            "description": "",
+            "gender": "",
+            "project_id": "",
+            "prompt_text": "",
+            "prompt_wav": "",
+            "sample_text": "",
+            "style_tags": "",
+            "voice_name": ""
+          }
+        }
+      },
+      "required": true
+    },
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreateProfileResponse"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "素材管理与生成/音色克隆：实验性接口",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923866-run"
+  }
+}

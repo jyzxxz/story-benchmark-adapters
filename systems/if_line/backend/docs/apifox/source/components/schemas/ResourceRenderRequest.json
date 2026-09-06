@@ -1,0 +1,27 @@
+{
+  "name": "ResourceRenderRequest",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "role": {
+        "enum": [
+          "portrait",
+          "background",
+          "keyframe"
+        ],
+        "title": "Role",
+        "type": "string",
+        "description": "要渲染的资源类型：portrait=立绘，background=背景，keyframe=关键帧。通常先 GET resource-slots 看缺哪类，再按 role 发起渲染。"
+      }
+    },
+    "required": [
+      "role"
+    ],
+    "title": "ResourceRenderRequest",
+    "type": "object",
+    "description": "章节脚本资源渲染请求。会为指定类型的资源槽位创建素材生成任务。",
+    "x-apifox-orders": [
+      "role"
+    ]
+  }
+}

@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-feature-settings: "ss01", "kern", "liga";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-image:
+      radial-gradient(rgba(133, 79, 37, 0.025) 1px, transparent 1px),
+      radial-gradient(rgba(133, 79, 37, 0.018) 1px, transparent 1px);
+    background-size: 28px 28px, 38px 38px;
+    background-position: 0 0, 14px 19px;
+  }
+
+  ::selection {
+    background-color: rgb(217 122 46 / 0.28);
+    color: #2d1810;
+  }
+
+  textarea::placeholder {
+    color: rgb(168 105 59 / 0.45);
+  }
+}
+
+@layer utilities {
+  .hairline {
+    background-image: linear-gradient(
+      to right,
+      transparent,
+      rgba(45, 24, 16, 0.18) 18%,
+      rgba(45, 24, 16, 0.18) 82%,
+      transparent
+    );
+    height: 1px;
+  }
+
+  .hairline-full {
+    height: 1px;
+    background: rgba(45, 24, 16, 0.14);
+  }
+
+  .num {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  .smallcaps {
+    text-transform: uppercase;
+    letter-spacing: 0.32em;
+  }
+
+  .vn-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(195, 155, 75, 0.58) rgba(20, 14, 8, 0.32);
+  }
+
+  .vn-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .vn-scrollbar::-webkit-scrollbar-track {
+    background:
+      linear-gradient(
+        to right,
+        transparent 0,
+        transparent 3px,
+        rgba(20, 14, 8, 0.46) 3px,
+        rgba(20, 14, 8, 0.46) 5px,
+        transparent 5px
+      );
+  }
+
+  .vn-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(195, 155, 75, 0.52);
+    border: 2px solid rgba(14, 10, 6, 0.88);
+    border-radius: 999px;
+  }
+
+  .vn-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(220, 180, 95, 0.76);
+  }
+
+  .vn-scrollbar::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  /* 极细滚动条 · 无轨道背景 */
+  .thin-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(195, 155, 75, 0.5) transparent;
+  }
+
+  .thin-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  .thin-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .thin-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(195, 155, 75, 0.45);
+    border-radius: 999px;
+  }
+
+  .thin-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(220, 180, 95, 0.7);
+  }
+}
+
+@keyframes infiplot-ripple {
+  0% {
+    width: 14px;
+    height: 14px;
+    opacity: 0.95;
+  }
+  100% {
+    width: 110px;
+    height: 110px;
+    opacity: 0;
+  }
+}
+
+/* Hide Next.js dev compiler indicators and static overlays completely */
+next-route-announcer,
+nextjs-portal,
+#nextjs-dev-indicator,
+.nextjs-static-indicator,
+div[data-nextjs-toast-wrapper],
+div[data-nextjs-toast] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

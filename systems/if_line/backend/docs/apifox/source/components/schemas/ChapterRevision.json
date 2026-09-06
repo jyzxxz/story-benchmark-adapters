@@ -1,0 +1,66 @@
+{
+  "name": "ChapterRevision",
+  "schema": {
+    "properties": {
+      "chapter_slot_id": {
+        "title": "Chapter Slot Id",
+        "type": "string"
+      },
+      "content": {
+        "title": "Content",
+        "type": "string"
+      },
+      "content_hash": {
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Content Hash",
+        "type": "string"
+      },
+      "context_hash": {
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Context Hash",
+        "type": "string"
+      },
+      "context_manifest": {
+        "title": "Context Manifest",
+        "type": "object"
+      },
+      "created_for_story_path_id": {
+        "title": "Created For Story Path Id",
+        "type": "string"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "parent_revision_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Parent Revision Id"
+      },
+      "revision_no": {
+        "minimum": 1.0,
+        "title": "Revision No",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "id",
+      "chapter_slot_id",
+      "created_for_story_path_id",
+      "parent_revision_id",
+      "revision_no",
+      "context_manifest",
+      "context_hash",
+      "content_hash",
+      "content"
+    ],
+    "title": "ChapterRevision",
+    "type": "object"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "HeadUpdate",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "revision_id": {
+        "maxLength": 36,
+        "minLength": 36,
+        "title": "Revision Id",
+        "type": "string",
+        "description": "要设置为当前版本的修订编号。不同 head 接口对应不同 revision 类型：Bible、Outline、Chapter、Script、VNGraph 或 CandidateSet。"
+      }
+    },
+    "required": [
+      "revision_id"
+    ],
+    "title": "HeadUpdate",
+    "type": "object",
+    "description": "设置当前采用的修订版本。这个动作表示“审核/选择该 revision 成为当前版本”，不会新建内容。建议先 GET 对应 head 读取 lock_version 和响应头 ETag，再 PUT 时带 If-Match，避免覆盖别人刚刚切换的版本。",
+    "x-apifox-orders": [
+      "revision_id"
+    ]
+  }
+}

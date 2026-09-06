@@ -1,0 +1,45 @@
+{
+  "name": "StoryPathPatch",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "status": {
+        "anyOf": [
+          {
+            "enum": [
+              "active",
+              "archived"
+            ],
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Status",
+        "description": "故事路径状态：active=可用，archived=归档隐藏。"
+      },
+      "title": {
+        "anyOf": [
+          {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Title",
+        "description": "故事路径标题。"
+      }
+    },
+    "title": "StoryPathPatch",
+    "type": "object",
+    "description": "更新故事路径元数据。",
+    "x-apifox-orders": [
+      "status",
+      "title"
+    ]
+  }
+}

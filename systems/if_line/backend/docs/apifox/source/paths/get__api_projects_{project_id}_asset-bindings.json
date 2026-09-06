@@ -1,0 +1,87 @@
+{
+  "method": "get",
+  "path": "/api/projects/{project_id}/asset-bindings",
+  "operation": {
+    "summary": "读取项目素材绑定",
+    "deprecated": false,
+    "description": "读取项目素材绑定。\n\n主要利用项目中的asset id，获取对应详细asset version id",
+    "operationId": "read_bindings_api_projects__project_id__asset_bindings_get",
+    "tags": [
+      "素材管理与生成",
+      "素材管理"
+    ],
+    "parameters": [
+      {
+        "name": "sid",
+        "in": "cookie",
+        "description": "",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Sid",
+          "type": "string",
+          "nullable": true
+        }
+      },
+      {
+        "name": "project_id",
+        "in": "path",
+        "description": "",
+        "required": true,
+        "example": 1,
+        "schema": {
+          "title": "Project Id",
+          "type": "integer"
+        }
+      },
+      {
+        "name": "asset_id",
+        "in": "query",
+        "description": "",
+        "required": false,
+        "example": "47",
+        "schema": {
+          "title": "Asset Id",
+          "type": "integer",
+          "nullable": true
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "items": {
+                "$ref": "#/components/schemas/AssetBindingRead"
+              },
+              "title": "Response Read Bindings Api Projects  Project Id  Asset Bindings Get",
+              "type": "array"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "素材管理与生成",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923790-run"
+  }
+}

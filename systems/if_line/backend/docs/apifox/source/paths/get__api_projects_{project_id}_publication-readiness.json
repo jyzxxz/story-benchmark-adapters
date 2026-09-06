@@ -1,0 +1,61 @@
+{
+  "method": "get",
+  "path": "/api/projects/{project_id}/publication-readiness",
+  "operation": {
+    "summary": "检查项目是否可以发布",
+    "deprecated": false,
+    "description": "发布前检查接口。\n\n前端用途：\n- 判断项目当前是否可以发布\n- 获取 `authoring_fingerprint`\n- 展示阻塞发布的问题列表\n\n返回字段：\n- `ready=true`：可以发布\n- `ready=false`：不能发布，需要处理 `blocking_items`\n- `authoring_fingerprint`：发布接口必须原样传回\n- `blocking_items`：阻塞发布的问题列表",
+    "operationId": "readiness_api_projects__project_id__readiness_get",
+    "tags": [
+      "项目管理"
+    ],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "project_id",
+        "required": true,
+        "schema": {
+          "title": "Project Id",
+          "type": "integer"
+        },
+        "description": "项目编号。"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PublicationReadiness"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-folder": "项目管理",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923786-run"
+  }
+}

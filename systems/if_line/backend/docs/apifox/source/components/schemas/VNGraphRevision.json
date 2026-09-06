@@ -1,0 +1,41 @@
+{
+  "name": "VNGraphRevision",
+  "schema": {
+    "properties": {
+      "binding_manifest": {
+        "title": "Binding Manifest",
+        "type": "object"
+      },
+      "binding_manifest_hash": {
+        "title": "Binding Manifest Hash",
+        "type": "string"
+      },
+      "graph_hash": {
+        "title": "Graph Hash",
+        "type": "string"
+      },
+      "graph_json": {
+        "title": "Graph Json",
+        "type": "object"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "script_revision_id": {
+        "title": "Script Revision Id",
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "script_revision_id",
+      "binding_manifest",
+      "binding_manifest_hash",
+      "graph_hash",
+      "graph_json"
+    ],
+    "title": "VNGraphRevision",
+    "type": "object"
+  }
+}

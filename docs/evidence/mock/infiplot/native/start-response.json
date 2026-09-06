@@ -1,0 +1,54 @@
+{
+  "sessionId": "s_1788704251757_8dihbm",
+  "scene": {
+    "id": "scene_1788704251772_plwj",
+    "scenePrompt": "fixture room",
+    "beats": [
+      {
+        "id": "b1",
+        "narration": "你仍站在门前，窗外的雨没有停。",
+        "next": {
+          "type": "continue",
+          "nextBeatId": "b2"
+        }
+      },
+      {
+        "id": "b2",
+        "narration": "你把手从门把上移开，等待下一步行动。",
+        "next": {
+          "type": "choice",
+          "choices": [
+            {
+              "id": "c1",
+              "label": "继续等待",
+              "effect": {
+                "kind": "change-scene",
+                "nextSceneSeed": "等待"
+              }
+            },
+            {
+              "id": "c2",
+              "label": "离开",
+              "effect": {
+                "kind": "change-scene",
+                "nextSceneSeed": "离开"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "entryBeatId": "b1",
+    "sceneKey": "fixture-room",
+    "imageUrl": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%221792%22%20height%3D%221024%22%3E%0A%20%20%3Crect%20width%3D%221792%22%20height%3D%221024%22%20fill%3D%22%23161109%22%2F%3E%0A%20%20%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%221788%22%20height%3D%221020%22%20fill%3D%22none%22%20stroke%3D%22%235a4628%22%20stroke-width%3D%223%22%20stroke-dasharray%3D%2214%2010%22%2F%3E%0A%20%20%3Ctext%20x%3D%2250%25%22%20y%3D%2245%25%22%20fill%3D%22%23b88f4a%22%20font-family%3D%22Georgia%2C%20serif%22%20font-size%3D%2272%22%20letter-spacing%3D%226%22%20text-anchor%3D%22middle%22%3EMOCK%20IMAGE%3C%2Ftext%3E%0A%20%20%3Ctext%20x%3D%2250%25%22%20y%3D%2253%25%22%20fill%3D%22%236e5430%22%20font-family%3D%22Georgia%2C%20serif%22%20font-size%3D%2230%22%20letter-spacing%3D%223%22%20text-anchor%3D%22middle%22%3ETTS%20TEST%20%E2%80%94%20image%20generation%20skipped%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+    "orientation": "landscape"
+  },
+  "imageUrl": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%221792%22%20height%3D%221024%22%3E%0A%20%20%3Crect%20width%3D%221792%22%20height%3D%221024%22%20fill%3D%22%23161109%22%2F%3E%0A%20%20%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%221788%22%20height%3D%221020%22%20fill%3D%22none%22%20stroke%3D%22%235a4628%22%20stroke-width%3D%223%22%20stroke-dasharray%3D%2214%2010%22%2F%3E%0A%20%20%3Ctext%20x%3D%2250%25%22%20y%3D%2245%25%22%20fill%3D%22%23b88f4a%22%20font-family%3D%22Georgia%2C%20serif%22%20font-size%3D%2272%22%20letter-spacing%3D%226%22%20text-anchor%3D%22middle%22%3EMOCK%20IMAGE%3C%2Ftext%3E%0A%20%20%3Ctext%20x%3D%2250%25%22%20y%3D%2253%25%22%20fill%3D%22%236e5430%22%20font-family%3D%22Georgia%2C%20serif%22%20font-size%3D%2230%22%20letter-spacing%3D%223%22%20text-anchor%3D%22middle%22%3ETTS%20TEST%20%E2%80%94%20image%20generation%20skipped%3C%2Ftext%3E%0A%3C%2Fsvg%3E",
+  "characters": [],
+  "storyState": {
+    "logline": "fixture",
+    "genreTags": "",
+    "protagonist": "你",
+    "synopsis": ""
+  }
+}

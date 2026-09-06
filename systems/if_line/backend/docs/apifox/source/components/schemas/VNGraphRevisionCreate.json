@@ -1,0 +1,27 @@
+{
+  "name": "VNGraphRevisionCreate",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "parent_revision_id": {
+        "title": "父图修订 id（回滚链溯源，可空）",
+        "type": "string",
+        "minLength": 36,
+        "maxLength": 36,
+        "description": "父图修订 id（回滚链溯源，可空）",
+        "nullable": true
+      },
+      "graph_json": {
+        "title": "Graph Json",
+        "type": "object",
+        "description": "完整 VNGraph JSON（Godot 节点图）。需通过 validate_detailed 校验，失败返回 422；与已绑定图内容不一致且同脚本已存在编译绑定时返回 409（改图请走 VNGraph patch）。"
+      }
+    },
+    "required": [
+      "graph_json"
+    ],
+    "title": "VNGraphRevisionCreate",
+    "type": "object",
+    "description": "手动创建 VNGraph 修订（草稿物化）：内容寻址去重幂等，不激活 head。"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "id": "bb641db0-6dca-44a5-b64b-d7b728baf553",
+  "root_task_id": null,
+  "parent_task_id": null,
+  "project_id": 1,
+  "kind": "chapter.generate",
+  "status": "succeeded",
+  "stage": "completed",
+  "progress": 100.0,
+  "source_refs": {
+    "chapter_source": {
+      "schema_version": "story-path-chapter-source-v1",
+      "context_manifest": {
+        "project_id": 1,
+        "story_path_id": "c459e651-1b71-4ee5-99d9-108c961c8625",
+        "path_chapter_id": "198b3e13-6e47-40ae-8295-1181e57dcf74",
+        "bible_revision_id": "c240990c-d89a-499d-9657-768d9ee151b4",
+        "bible_content_hash": "da0b440db351a48d7e4d0b82c026010ea690655842adc61e1e41962d0d8b1be5",
+        "outline_revision_id": "ca6cc31d-3f99-4c35-b848-141580503bda",
+        "outline_chapter_hash": "ce99db867d54d7ad27ddcb620fea58132d4085321954bba77723b973915eb159",
+        "state_snapshot_id": null,
+        "state_hash": null,
+        "fork": {
+          "parent_path_id": null,
+          "checkpoint_node_id": null,
+          "candidate_id": null
+        },
+        "fork_choice": null,
+        "ancestors": []
+      },
+      "context_hash": "f3424755ae4df90752933b751f564b9321a298c7f0b795556627361e02bb1456",
+      "chapter_slot_id": "16837197-e5a8-4f55-8c8a-15d2ca2ad962",
+      "display_index": 1,
+      "parent_revision_id": null,
+      "generation_parameters": {
+        "word_count_min": 3000,
+        "word_count_max": 4500,
+        "stream": true,
+        "instructions": null
+      },
+      "revision_anchors": {
+        "bible_revision_id": "c240990c-d89a-499d-9657-768d9ee151b4",
+        "outline_revision_id": "ca6cc31d-3f99-4c35-b848-141580503bda",
+        "ancestor_revision_overrides": null
+      }
+    },
+    "chapter_source_hash": "1b4682f19bce1f18c37064ae723d89db20b580c1cdeca861811879097bf71364"
+  },
+  "result_refs": {
+    "chapter_revision_id": "8c0d9dfc-a4ea-4a40-9447-7acd753fd139",
+    "activated": false,
+    "review_required": true,
+    "story_path_id": "c459e651-1b71-4ee5-99d9-108c961c8625",
+    "path_chapter_id": "198b3e13-6e47-40ae-8295-1181e57dcf74"
+  },
+  "attempt": 1,
+  "max_attempts": 3,
+  "error_code": null,
+  "error_detail": null,
+  "estimated_cost": "8.000000",
+  "reserved_cost": "8.000000",
+  "actual_cost": "8.000000",
+  "queued_at": "2026-09-06T14:40:40.684997Z",
+  "started_at": "2026-09-06T14:40:41.374703Z",
+  "finished_at": "2026-09-06T14:40:41.418649Z",
+  "created_at": "2026-09-06T14:40:40.684999Z",
+  "updated_at": "2026-09-06T14:40:41.419908Z"
+}

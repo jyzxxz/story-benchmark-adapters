@@ -1,0 +1,58 @@
+{
+  "name": "FinalizePublishRequest",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "bible_revision_id": {
+        "title": "故事圣经锚点修订 id（只传有草稿的 subject；不传的类别沿用当前 head）。",
+        "type": "string",
+        "minLength": 36,
+        "maxLength": 36,
+        "description": "故事圣经锚点修订 id（只传有草稿的 subject；不传的类别沿用当前 head）。",
+        "nullable": true
+      },
+      "outline_revision_ids": {
+        "title": "Outline Revision Ids",
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        },
+        "description": "大纲锚点：{story_path_id: outline_revision_id}。"
+      },
+      "chapter_revision_ids": {
+        "title": "Chapter Revision Ids",
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        },
+        "description": "章节正文锚点：{path_chapter_id: chapter_revision_id}。"
+      },
+      "script_revision_ids": {
+        "title": "Script Revision Ids",
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        },
+        "description": "章节脚本锚点：{path_chapter_id: script_revision_id}。"
+      },
+      "graph_revision_ids": {
+        "title": "Graph Revision Ids",
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        },
+        "description": "VNGraph 锚点：{path_chapter_id: vn_graph_revision_id}。"
+      },
+      "release_notes": {
+        "title": "Release Notes",
+        "type": "string",
+        "maxLength": 2000,
+        "nullable": true,
+        "description": "版本说明（新书版本备注，可空）。"
+      }
+    },
+    "title": "FinalizePublishRequest",
+    "type": "object",
+    "description": "固化发布请求：只传有草稿的 subject 的修订 id（dict 键：outline→story_path_id；chapter/script/graph→path_chapter_id）。后端在单事务内按链路顺序激活并发布为新 Release；任一环节失败（锚点非法、就绪校验阻塞）整体回滚。阻塞时返回 422，details.blocking_items 列出需重做的下游环节。"
+  }
+}

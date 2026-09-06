@@ -1,0 +1,63 @@
+{
+  "name": "LibraryFacetResponse",
+  "schema": {
+    "properties": {
+      "catalog_version": {
+        "title": "素材库版本",
+        "type": "string",
+        "description": "当前查询使用的公共素材库版本。"
+      },
+      "asset_type": {
+        "enum": [
+          "portrait",
+          "background",
+          "keyframe"
+        ],
+        "title": "素材类型",
+        "type": "string",
+        "description": "素材类型：portrait=立绘，background=背景，keyframe=关键帧/插画。"
+      },
+      "selected_tag_ids": {
+        "items": {
+          "type": "string"
+        },
+        "title": "已选标签编号列表",
+        "type": "array",
+        "description": "本次请求已经选中的标签编号，来自 query 参数 tag_ids。"
+      },
+      "total": {
+        "minimum": 0,
+        "title": "当前命中总数",
+        "type": "integer",
+        "description": "当前 asset_type 和已选标签条件下的素材总数。"
+      },
+      "facets": {
+        "items": {
+          "$ref": "#/components/schemas/LibraryFacetGroup"
+        },
+        "title": "分面列表",
+        "type": "array",
+        "description": "按分面类别分组的可选标签及命中数量。"
+      }
+    },
+    "required": [
+      "catalog_version",
+      "asset_type",
+      "selected_tag_ids",
+      "total",
+      "facets"
+    ],
+    "title": "素材库分面响应",
+    "type": "object",
+    "x-apifox-orders": [
+      "catalog_version",
+      "asset_type",
+      "selected_tag_ids",
+      "total",
+      "facets"
+    ],
+    "description": "公共素材库分面检索结果。前端用它渲染筛选面板，用户勾选标签后再把标签编号通过 tag_ids 传回。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

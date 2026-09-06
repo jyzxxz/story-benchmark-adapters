@@ -1,0 +1,113 @@
+{
+  "name": "PathChapter",
+  "schema": {
+    "properties": {
+      "chapter_slot_id": {
+        "title": "Chapter Slot Id",
+        "type": "string"
+      },
+      "current_revision_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Current Revision Id"
+      },
+      "display_index": {
+        "minimum": 1.0,
+        "title": "Display Index",
+        "type": "integer"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "inherited_from_path_chapter_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Inherited From Path Chapter Id"
+      },
+      "lock_version": {
+        "minimum": 1.0,
+        "title": "Lock Version",
+        "type": "integer"
+      },
+      "predecessor_path_chapter_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Predecessor Path Chapter Id"
+      },
+      "story_path_id": {
+        "title": "Story Path Id",
+        "type": "string"
+      },
+      "status": {
+        "title": "章节位置状态",
+        "type": "string",
+        "enum": [
+          "active",
+          "detached"
+        ],
+        "description": "故事线路中的章节位置状态。active 表示当前线路仍使用；detached 表示已被后续大纲调整移出当前拓扑，但历史关系仍保留。"
+      },
+      "detached_at": {
+        "title": "脱离时间",
+        "type": "string",
+        "format": "date-time",
+        "nullable": true,
+        "description": "章节位置被标记为 detached 的时间；active 时为空。"
+      },
+      "detached_by_outline_revision_id": {
+        "title": "触发脱离的大纲版本编号",
+        "type": "string",
+        "nullable": true,
+        "description": "触发该章节位置脱离的 OutlineRevision 编号；active 时为空。"
+      }
+    },
+    "required": [
+      "id",
+      "story_path_id",
+      "chapter_slot_id",
+      "display_index",
+      "predecessor_path_chapter_id",
+      "inherited_from_path_chapter_id",
+      "current_revision_id",
+      "lock_version",
+      "status",
+      "detached_at",
+      "detached_by_outline_revision_id"
+    ],
+    "title": "故事线路章节位置",
+    "type": "object",
+    "description": "故事线路中的章节位置记录。它描述某个章节槽位在当前故事线路中的顺序、继承关系、当前正文版本以及是否已从当前线路拓扑脱离。",
+    "x-apifox-orders": [
+      "chapter_slot_id",
+      "current_revision_id",
+      "display_index",
+      "id",
+      "inherited_from_path_chapter_id",
+      "lock_version",
+      "predecessor_path_chapter_id",
+      "story_path_id",
+      "status",
+      "detached_at",
+      "detached_by_outline_revision_id"
+    ]
+  }
+}

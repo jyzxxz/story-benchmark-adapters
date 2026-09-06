@@ -1,0 +1,122 @@
+{
+  "method": "post",
+  "path": "/api/projects/{project_id}/bible-revisions",
+  "operation": {
+    "summary": "手动保存故事圣经版本",
+    "deprecated": false,
+    "description": "保存一版手动编辑的故事圣经 JSON。该接口只创建 revision，不会自动激活为当前故事圣经。",
+    "operationId": "add_bible_revision_api_projects__project_id__bible_revisions_post",
+    "tags": [
+      "创作版本与生成/故事圣经StoryBible",
+      "创作版本与生成"
+    ],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "project_id",
+        "required": true,
+        "schema": {
+          "title": "Project Id",
+          "type": "integer"
+        },
+        "description": "项目编号。"
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/BibleRevisionCreate"
+          },
+          "example": {
+            "content_json": {
+              "title": "Apifox文档校验项目",
+              "genre": "现代轻喜剧",
+              "worldview": "AI 创作工具已经成为团队日常协作的一部分。",
+              "characters": [
+                {
+                  "name": "牢梁",
+                  "role": "主角",
+                  "description": "负责把混乱接口整理清楚。"
+                },
+                {
+                  "name": "小伍",
+                  "role": "搭档",
+                  "description": "负责从前端视角验证接口是否好用。"
+                }
+              ],
+              "story_start": "牢梁决定做一套能跑通的接口文档。",
+              "story_end": "团队终于知道每个接口应该怎么调用。"
+            }
+          }
+        }
+      },
+      "required": true,
+      "description": "故事圣经修订内容。content_json 是完整结构化内容；parent_revision_id 用于记录基于哪一版修改。"
+    },
+    "responses": {
+      "201": {
+        "description": "创建成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/BibleRevision"
+            },
+            "example": {
+              "id": "cb4a0fcb-7808-437b-a1b7-87efe0ce0a78",
+              "project_id": 1,
+              "parent_revision_id": null,
+              "revision_no": 1,
+              "source_hash": "90c6dbbd001687336223f16500df5291a9356ccd802b45d5ccb20e3655648350",
+              "content_hash": "b66d8b106d858ad12e66464c7d01a9f3169dcc175cbf2593cc597e8b80542bed",
+              "content_json": {
+                "title": "Apifox文档校验项目",
+                "genre": "现代轻喜剧",
+                "worldview": "AI 创作工具已经成为团队日常协作的一部分。",
+                "characters": [
+                  {
+                    "name": "牢梁",
+                    "role": "主角",
+                    "description": "负责把混乱接口整理清楚。"
+                  },
+                  {
+                    "name": "小伍",
+                    "role": "搭档",
+                    "description": "负责从前端视角验证接口是否好用。"
+                  }
+                ],
+                "story_start": "牢梁决定做一套能跑通的接口文档。",
+                "story_end": "团队终于知道每个接口应该怎么调用。"
+              },
+              "created_at": "2026-08-11T12:27:23.119692Z"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-folder": "创作版本与生成/故事圣经StoryBible",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923798-run"
+  }
+}

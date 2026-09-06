@@ -1,0 +1,65 @@
+{
+  "method": "get",
+  "path": "/api/candidate-set-revisions/{candidate_set_revision_id}/candidates",
+  "operation": {
+    "summary": "读取分支候选列表",
+    "deprecated": false,
+    "description": "读取某个候选集合 revision 下的具体分支候选。用户选择其中一个 candidate 后，可以创建新的 story path。",
+    "operationId": "read_generated_candidates_api_projects__project_id__checkpoints__checkpoint_node_id__candidates_get",
+    "tags": [
+      "分支生成"
+    ],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "candidate_set_revision_id",
+        "required": true,
+        "schema": {
+          "title": "Candidate Set Revision Id",
+          "type": "string"
+        },
+        "description": "分支候选集合修订编号。"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "items": {
+                "$ref": "#/components/schemas/BranchCandidate"
+              },
+              "title": "Response Listbranchcandidates",
+              "type": "array"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-folder": "创作版本与生成/故事路径",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923812-run"
+  }
+}

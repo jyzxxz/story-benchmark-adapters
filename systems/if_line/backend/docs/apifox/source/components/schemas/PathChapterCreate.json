@@ -1,0 +1,26 @@
+{
+  "name": "PathChapterCreate",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "after_path_chapter_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "After Path Chapter Id",
+        "description": "插入位置。传某个 PathChapter id 表示插到它后面；传 null 表示插入到路径开头或由后端按默认位置处理。"
+      }
+    },
+    "title": "PathChapterCreate",
+    "type": "object",
+    "description": "在某条故事路径里新增一个空章节位置。",
+    "x-apifox-orders": [
+      "after_path_chapter_id"
+    ]
+  }
+}

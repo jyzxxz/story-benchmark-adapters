@@ -1,0 +1,114 @@
+{
+  "name": "ReadingSessionRead",
+  "schema": {
+    "properties": {
+      "created_at": {
+        "format": "date-time",
+        "title": "创建时间",
+        "type": "string",
+        "description": "创建时间。"
+      },
+      "forked_from_decision_id": {
+        "title": "分叉来源决策编号",
+        "type": "string",
+        "description": "分叉来源决策编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "head_node_id": {
+        "title": "头节点编号",
+        "type": "string",
+        "description": "头节点编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "id": {
+        "title": "编号",
+        "type": "string",
+        "description": "编号，用于关联对应数据。"
+      },
+      "lock_version": {
+        "title": "锁版本",
+        "type": "integer",
+        "description": "锁版本。"
+      },
+      "parent_session_id": {
+        "title": "父会话编号",
+        "type": "string",
+        "description": "父会话编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "project_id": {
+        "title": "项目编号",
+        "type": "integer",
+        "description": "项目编号，用于关联对应数据。"
+      },
+      "release_id": {
+        "title": "发布编号",
+        "type": "string",
+        "description": "发布编号，用于关联对应数据。"
+      },
+      "selected_continuation_id": {
+        "title": "已选续写编号",
+        "type": "string",
+        "description": "已选续写编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "state_snapshot_id": {
+        "title": "状态快照编号",
+        "type": "string",
+        "description": "状态快照编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "status": {
+        "title": "状态",
+        "type": "string",
+        "description": "状态。"
+      },
+      "updated_at": {
+        "format": "date-time",
+        "title": "更新时间",
+        "type": "string",
+        "description": "更新时间。"
+      },
+      "user_id": {
+        "title": "用户编号",
+        "type": "integer",
+        "description": "用户编号，用于关联对应数据。"
+      }
+    },
+    "required": [
+      "id",
+      "user_id",
+      "project_id",
+      "release_id",
+      "head_node_id",
+      "state_snapshot_id",
+      "selected_continuation_id",
+      "parent_session_id",
+      "forked_from_decision_id",
+      "lock_version",
+      "status",
+      "created_at",
+      "updated_at"
+    ],
+    "title": "阅读会话读取结果",
+    "type": "object",
+    "x-apifox-orders": [
+      "created_at",
+      "forked_from_decision_id",
+      "head_node_id",
+      "id",
+      "lock_version",
+      "parent_session_id",
+      "project_id",
+      "release_id",
+      "selected_continuation_id",
+      "state_snapshot_id",
+      "status",
+      "updated_at",
+      "user_id"
+    ],
+    "description": "阅读会话读取结果数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

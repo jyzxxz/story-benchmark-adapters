@@ -1,0 +1,30 @@
+{
+  "stream_events": [
+    {
+      "id": "fixed-stream",
+      "model": "fixed-test-model",
+      "choices": [
+        {
+          "index": 0,
+          "delta": {
+            "content": "{\"chapter_index\": 1,"
+          },
+          "finish_reason": null
+        }
+      ]
+    },
+    {
+      "id": "fixed-stream",
+      "model": "fixed-test-model",
+      "choices": [
+        {
+          "index": 0,
+          "delta": {
+            "content": " \"title\": \"第一章\", \"content\": \"雨继续下着。\"}"
+          },
+          "finish_reason": "stop"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,136 @@
+{
+  "name": "ServerAgentSnapshotResponse",
+  "schema": {
+    "type": "object",
+    "title": "服务端 Agent 快照响应",
+    "description": "Agent thread 当前快照。messages 是当前模型活跃窗口；events 是前端事件历史。",
+    "required": [
+      "thread_id",
+      "mode",
+      "status",
+      "stop_reason",
+      "message_count",
+      "event_count",
+      "created_at",
+      "updated_at",
+      "messages",
+      "events"
+    ],
+    "properties": {
+      "thread_id": {
+        "type": "string",
+        "title": "Thread 编号",
+        "description": "Agent thread 编号。"
+      },
+      "agent_kind": {
+        "type": "string",
+        "default": "server_agent",
+        "title": "Agent 类型",
+        "description": "Agent 类型。"
+      },
+      "current_turn_id": {
+        "type": "string",
+        "nullable": true,
+        "title": "当前 Turn 编号",
+        "description": "当前正在运行的 turn；没有运行中 turn 时为空。"
+      },
+      "last_turn_id": {
+        "type": "string",
+        "nullable": true,
+        "title": "最近 Turn 编号",
+        "description": "最近一次 turn 编号。"
+      },
+      "mode": {
+        "type": "string",
+        "title": "运行模式",
+        "description": "当前运行模式。"
+      },
+      "status": {
+        "type": "string",
+        "title": "状态",
+        "description": "Agent 当前状态。"
+      },
+      "stop_reason": {
+        "type": "string",
+        "nullable": true,
+        "title": "停止原因",
+        "description": "当前停止原因。"
+      },
+      "message_count": {
+        "type": "integer",
+        "title": "活跃消息数量",
+        "description": "当前模型活跃窗口中的 message 数量。"
+      },
+      "persisted_message_count": {
+        "type": "integer",
+        "nullable": true,
+        "title": "已持久化消息数量",
+        "description": "数据库审计账本中已持久化 message 数量。"
+      },
+      "event_count": {
+        "type": "integer",
+        "title": "事件数量",
+        "description": "thread 已产生事件数量。"
+      },
+      "subscriber_count": {
+        "type": "integer",
+        "default": 0,
+        "title": "订阅者数量",
+        "description": "当前 SSE 订阅者数量。"
+      },
+      "created_at": {
+        "type": "string",
+        "nullable": true,
+        "title": "创建时间",
+        "description": "创建时间。"
+      },
+      "updated_at": {
+        "type": "string",
+        "nullable": true,
+        "title": "更新时间",
+        "description": "更新时间。"
+      },
+      "messages": {
+        "type": "array",
+        "title": "模型活跃消息窗口",
+        "description": "当前会喂给模型的 messages，不是数据库全量历史。",
+        "items": {
+          "type": "object",
+          "properties": {},
+          "x-apifox-orders": [],
+          "x-apifox-ignore-properties": []
+        }
+      },
+      "events": {
+        "type": "array",
+        "title": "前端事件历史",
+        "description": "已落库的前端事件历史。agent_message.delta 当前也会作为事件返回，但普通日志不会逐条打印。",
+        "items": {
+          "type": "object",
+          "properties": {},
+          "x-apifox-orders": [],
+          "x-apifox-ignore-properties": []
+        }
+      }
+    },
+    "x-apifox-orders": [
+      "thread_id",
+      "agent_kind",
+      "current_turn_id",
+      "last_turn_id",
+      "mode",
+      "status",
+      "stop_reason",
+      "message_count",
+      "persisted_message_count",
+      "event_count",
+      "subscriber_count",
+      "created_at",
+      "updated_at",
+      "messages",
+      "events"
+    ],
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

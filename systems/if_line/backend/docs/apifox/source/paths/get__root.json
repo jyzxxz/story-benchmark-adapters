@@ -1,0 +1,32 @@
+{
+  "method": "get",
+  "path": "/",
+  "operation": {
+    "summary": "读取服务根信息",
+    "deprecated": false,
+    "description": "读取服务根信息。",
+    "operationId": "root__get",
+    "tags": [
+      "基础接口/系统基础",
+      "系统基础"
+    ],
+    "parameters": [],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {}
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "基础接口/系统基础",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923753-run"
+  }
+}

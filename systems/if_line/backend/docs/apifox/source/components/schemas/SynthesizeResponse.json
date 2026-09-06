@@ -1,0 +1,37 @@
+{
+  "name": "SynthesizeResponse",
+  "schema": {
+    "properties": {
+      "audio_url": {
+        "title": "音频地址",
+        "type": "string",
+        "description": "音频地址，由服务端返回给客户端访问。"
+      },
+      "cached": {
+        "title": "是否命中缓存",
+        "type": "boolean",
+        "description": "是否命中缓存。"
+      },
+      "success": {
+        "title": "是否成功",
+        "type": "boolean",
+        "description": "是否成功。"
+      }
+    },
+    "required": [
+      "success",
+      "audio_url",
+      "cached"
+    ],
+    "title": "声音合成响应",
+    "type": "object",
+    "x-apifox-orders": [
+      "audio_url",
+      "cached",
+      "success"
+    ],
+    "description": "声音合成响应数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

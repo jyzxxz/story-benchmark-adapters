@@ -1,0 +1,1032 @@
+{
+  "method": "get",
+  "path": "/api/projects/{project_id}/bible-revisions",
+  "operation": {
+    "summary": "读取故事圣经版本列表",
+    "deprecated": false,
+    "description": "按 revision_no 倒序读取项目下的故事圣经版本列表。",
+    "operationId": "list_bible_revisions_api_projects__project_id__bible_revisions_get",
+    "tags": [
+      "创作版本与生成/故事圣经StoryBible",
+      "创作版本与生成"
+    ],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "project_id",
+        "required": true,
+        "schema": {
+          "title": "Project Id",
+          "type": "integer"
+        },
+        "description": "项目编号。"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "items": {
+                "$ref": "#/components/schemas/BibleRevision"
+              },
+              "title": "Response Listbiblerevisions",
+              "type": "array"
+            },
+            "example": [
+              {
+                "id": "40098d71-1af5-491e-8a80-2b2cf5d98bd9",
+                "project_id": 1,
+                "parent_revision_id": "ad70ac6f-5a54-44c9-b408-714dc5b2b7cc",
+                "revision_no": 5,
+                "source_hash": "9fac31fe93fc4bdebd0d6a6c575b99ec1c86aaa85637425dd8d81f9144ff9249",
+                "content_hash": "950a78dba70394b25e4617566f520326c15d3ea433f8c88bca30128d542a7746",
+                "content_json": {
+                  "worldview": "2027年，全球AI竞争白热化。西方联盟以芯片禁运和技术封锁试图扼杀中国AI发展，但中国工程师们在家国情怀与技术热情驱动下，掀起了'自研AI'狂潮。本作以轻松幽默的笔触，将AI模型拟人化，把编程战场描绘成武侠擂台——牢梁在一次次'拳打codex、脚踢claude code'的民间赛事中扬名，最终他意识到真正的胜利不是个人秀，而是打造一个真正属于中国、普惠大众的AI——DeepSeek。世界既有硅谷的冷峻与资本算计，也有中关村创业咖啡馆的烟火气，核心规则是：谁能让算法更快、更准、更懂人心，谁就是新一代的'武林盟主'。",
+                  "characters": [
+                    {
+                      "name": "牢梁",
+                      "role": "主角",
+                      "gender": "male",
+                      "visual_profile": {
+                        "schema_version": "character_visual_v1",
+                        "world_style": "modern",
+                        "species": "human",
+                        "age_group": "adult",
+                        "gender_presentation": "masculine",
+                        "role_family": "office",
+                        "role_key": "startup_founder",
+                        "body": {
+                          "height": "average",
+                          "build": "average"
+                        },
+                        "face": {
+                          "shape": "oval",
+                          "skin_tone": "light",
+                          "eye_color": "dark_brown"
+                        },
+                        "hair": {
+                          "color": "black",
+                          "length": "short",
+                          "style": "messy"
+                        },
+                        "outfit": {
+                          "style": "casual",
+                          "primary_colors": [
+                            "black",
+                            "blue"
+                          ],
+                          "items": [
+                            "hoodie",
+                            "sneakers"
+                          ]
+                        },
+                        "signature_features": [
+                          "glasses"
+                        ],
+                        "accessories": [
+                          "tablet"
+                        ],
+                        "visual_temperament": [
+                          "confident",
+                          "weary"
+                        ]
+                      },
+                      "personality": "天马行空、敢闯敢干，技术狂热分子；优点：极具创造力，不怕失败；弱点：固执易上头，自负时容易轻敌，且有时忽视身边人的感受。",
+                      "motivation_and_goal": "打破西方对AI技术的封锁，证明中国工程师也能做出世界一流的大模型；同时暗中想摆脱自己'全靠引援'的自卑，真正掌握核心技术。",
+                      "internal_conflict": "内心深处常有'冒牌者综合征'：总觉得自己的成功是靠开源和现成框架，害怕一旦失去外部依赖就原形毕露。他既渴望被认可，又害怕公众的期待压垮自己。",
+                      "voice": "语气活泼幽默，爱用网络热梗和武侠术语（如'拳打codex、脚踢claude code'）；说话节奏很快，喜欢用排比和反问；情绪外露直接，但一旦涉及真实脆弱部分会突然转用玩笑掩饰；技术讨论时滔滔不绝，社会场合反而沉默寡言。",
+                      "visual_profile_source": "structured",
+                      "visual_description_cn": "现代、成年、男性化外观、人类、创业者；中等身高、匀称体型；椭圆脸，浅肤色，深棕色眼睛；黑发，短发，略显凌乱；身穿以黑色、蓝色为主的日常休闲装；整体气质自信、疲惫，标志元素为眼镜、平板设备、连帽衫、运动鞋。",
+                      "visual_prompt_en": "adult masculine human, startup founder, modern setting, average height, average build, oval face, light, dark brown, black short messy hair, casual, black and blue palette, confident, weary visual temperament, signature details: glasses, tablet, hoodie, sneakers",
+                      "visual_fingerprint": "cv1:8892ec04ba25e70d330d",
+                      "appearance": "现代、成年、男性化外观、人类、创业者；中等身高、匀称体型；椭圆脸，浅肤色，深棕色眼睛；黑发，短发，略显凌乱；身穿以黑色、蓝色为主的日常休闲装；整体气质自信、疲惫，标志元素为眼镜、平板设备、连帽衫、运动鞋。"
+                    },
+                    {
+                      "name": "吴小胖",
+                      "role": "重要配角",
+                      "gender": "male",
+                      "visual_profile": {
+                        "schema_version": "character_visual_v1",
+                        "world_style": "modern",
+                        "species": "human",
+                        "age_group": "adult",
+                        "gender_presentation": "masculine",
+                        "role_family": "professional",
+                        "role_key": "best_friend",
+                        "body": {
+                          "height": "short",
+                          "build": "stocky"
+                        },
+                        "face": {
+                          "shape": "round",
+                          "skin_tone": "light",
+                          "eye_color": "black"
+                        },
+                        "hair": {
+                          "color": "black",
+                          "length": "short",
+                          "style": "neat"
+                        },
+                        "outfit": {
+                          "style": "casual",
+                          "primary_colors": [
+                            "green"
+                          ],
+                          "items": [
+                            "hoodie",
+                            "sneakers"
+                          ]
+                        },
+                        "signature_features": [],
+                        "accessories": [
+                          "hat"
+                        ],
+                        "visual_temperament": [
+                          "cheerful",
+                          "energetic"
+                        ]
+                      },
+                      "personality": "乐天派，吃货，执行力强；优点：社交达人，心态稳，总能帮牢梁兜住烂摊子；弱点：做事大条，偶尔会粗心犯错。",
+                      "motivation_and_goal": "不希望兄弟孤军奋战，想帮牢梁实现梦想，同时希望能靠技术改善大家的生活（尤其是让外卖更好吃？）。",
+                      "internal_conflict": "羡慕牢梁的天才，但也知道自己只是普通人，有时会小小自卑；但从不嫉妒，而是默默支持。",
+                      "voice": "语气温和，爱开玩笑，常用生活化比喻（'这bug就像煮糊的泡面，看着糟心但还能吃'）；语速不紧不慢，喜欢用设问句自问自答；情感外露，会直接表达关心，偶尔用吐槽来缓和紧张气氛。",
+                      "visual_profile_source": "structured",
+                      "visual_description_cn": "现代、成年、男性化外观、人类、挚友；较矮、敦实体型；圆脸，浅肤色，黑色眼睛；黑发，短发，整齐利落；身穿以绿色为主的日常休闲装；整体气质开朗、活力，标志元素为帽子、连帽衫、运动鞋。",
+                      "visual_prompt_en": "adult masculine human, best friend, modern setting, short height, stocky build, round face, light, black, black short neat hair, casual, green palette, cheerful, energetic visual temperament, signature details: hat, hoodie, sneakers",
+                      "visual_fingerprint": "cv1:73a7459b00e34bba6999",
+                      "appearance": "现代、成年、男性化外观、人类、挚友；较矮、敦实体型；圆脸，浅肤色，黑色眼睛；黑发，短发，整齐利落；身穿以绿色为主的日常休闲装；整体气质开朗、活力，标志元素为帽子、连帽衫、运动鞋。"
+                    },
+                    {
+                      "name": "凯文",
+                      "role": "反派",
+                      "gender": "male",
+                      "visual_profile": {
+                        "schema_version": "character_visual_v1",
+                        "world_style": "modern",
+                        "species": "human",
+                        "age_group": "adult",
+                        "gender_presentation": "masculine",
+                        "role_family": "leadership",
+                        "role_key": "corporate_executive",
+                        "body": {
+                          "height": "tall",
+                          "build": "athletic"
+                        },
+                        "face": {
+                          "shape": "angular",
+                          "skin_tone": "pale",
+                          "eye_color": "blue"
+                        },
+                        "hair": {
+                          "color": "blonde",
+                          "length": "short",
+                          "style": "neat"
+                        },
+                        "outfit": {
+                          "style": "business",
+                          "primary_colors": [
+                            "gray",
+                            "white"
+                          ],
+                          "items": [
+                            "blazer",
+                            "trousers"
+                          ]
+                        },
+                        "signature_features": [],
+                        "accessories": [
+                          "wristwatch"
+                        ],
+                        "visual_temperament": [
+                          "cold",
+                          "stern"
+                        ]
+                      },
+                      "personality": "骄傲、毒舌，技术确实强，但看不起中国团队；本质不是坏人，只是深受刻板印象影响，被'中国AI不行'的错误观念蒙蔽。",
+                      "motivation_and_goal": "维护西方AI霸主地位，也为了让自己公司的市值不被影响；他真心相信自己的技术才是最好的，想通过比试彻底粉碎对手的自信。",
+                      "internal_conflict": "在几次被牢梁出人意料地击败后，开始怀疑自己的偏见；但碍于面子和公司立场，不肯认输，内心在'尊重对手'和'维护斯坦福式骄傲'之间拉扯。",
+                      "voice": "语气傲慢，爱用英文夹杂中文（如'Your algorithm is cute'），喜欢用冷嘲热讽和夸张的卷舌音；语速较快，典型的'精英式'反驳；情感封闭，从不直接表露真实想法，用讽刺作为防御；但偶尔在无意识中流露出对牢梁创意的钦佩。",
+                      "visual_profile_source": "structured",
+                      "visual_description_cn": "现代、成年、男性化外观、人类、企业高管；高挑、健美体型；轮廓分明，苍白肤色，蓝色眼睛；金发，短发，整齐利落；身穿以灰色、白色为主的商务装；整体气质冷峻、威严，标志元素为腕表、西装外套、长裤。",
+                      "visual_prompt_en": "adult masculine human, corporate executive, modern setting, tall height, athletic build, angular face, pale, blue, blonde short neat hair, business, gray and white palette, cold, stern visual temperament, signature details: wristwatch, blazer, trousers",
+                      "visual_fingerprint": "cv1:75bd053100e4fd29a3e6",
+                      "appearance": "现代、成年、男性化外观、人类、企业高管；高挑、健美体型；轮廓分明，苍白肤色，蓝色眼睛；金发，短发，整齐利落；身穿以灰色、白色为主的商务装；整体气质冷峻、威严，标志元素为腕表、西装外套、长裤。"
+                    }
+                  ],
+                  "character_relations": "牢梁与吴小胖是大学室友、创业搭档，关系铁如兄弟，日常互怼；凯文是国际AI大赛中的老对手，与牢梁从赛场上的'宿敌'逐渐变成惺惺相惜的伙伴；三人形成'主角-盟友-对手'的三角关系，在竞争中推动剧情。",
+                  "main_conflict": "表层冲突：牢梁与西方AI开发团队在顶级代码赛事中反复较量，争夺'全球最强AI'的称号；深层冲突：各国顶尖技术人才在硅谷设定的'米其林标准'与中国的'国货自强'之间，关于技术主权、文化自信和真正创新的守护之战。",
+                  "emotional_line": "起：牢梁在小型擂台赛上连胜Codex和Claude Code，志得意满；承：国际大赛上被凯文团队碾碎，信心受挫，开始怀疑自己的创造力；转：在吴小胖和社区开发者帮助下，重新定义'胜利'，转而投身DeepSeek的开发；合：最终用DeepSeek打破封锁，在发布会现场，与凯文相视一笑——他已不需要任何人的认可，因为信念已经完整。",
+                  "style_rules": "整体风格轻松幽默，大量使用拟人化、夸张化手法（如把AI模型比作武林高手）；技术名词尽量口语化，穿插编程梗和网络流行语；对白要有生活感，可以偶尔打破第四面墙；叙事节奏中等，战斗/比赛场景使用快节奏短句，感情段落用长句拉慢；用词建议：多用'整活儿''刚正面''破防'等调侃词汇，少用专业术语堆砌。",
+                  "ending_constraints": "必须明确展现DeepSeek的诞生过程及其打破西方封锁的意义；牢梁必须完成从个人英雄主义到集体主义协作的转变；凯文必须对牢梁的能力产生真实改观，两人关系从敌对转为对手间的尊重；结局要呼应开篇的'拳打脚踢'，但以更成熟的方式——不再靠拳脚，而是靠真正的技术实力赢得全球尊重。",
+                  "forbidden_points": [
+                    "避免将西方角色一棒子打死，要展现其复杂度（凯文最终转变）。",
+                    "避免过度吹嘘或贬低真实存在的公司/产品（如Codex、Claude Code）——它们在本作中是架空影射，绝不能直接映射现实。",
+                    "禁止出现烂俗的感情线——本作核心是技术友情与民族自信，不搞恋爱脑。",
+                    "禁止偏离轻松幽默基调，不得突然变成苦情悲壮剧。",
+                    "避免无意义的技术名词灌水，所有细节必须服务剧情。"
+                  ],
+                  "writing_notes": [
+                    "善用'代码即武功'的比喻系统，让编程对决像武林PK一样有画面感。",
+                    "伏笔建议：开篇牢梁吹嘘自己'拳打codex'，但背后其实是他调试了三天三夜才赢；中段可以埋下'某位神秘大佬'在论坛上匿名指点牢梁的线索，末尾揭示是凯文本人——两人早已在网上互相偷师。"
+                  ],
+                  "character_visual_schema_version": "character_visual_v1"
+                },
+                "status": "complete",
+                "generation_task_id": "b8d23aea-7522-461a-a2aa-dd9013c06c65",
+                "created_at": "2026-08-03T13:31:20.183630Z"
+              },
+              {
+                "id": "ad70ac6f-5a54-44c9-b408-714dc5b2b7cc",
+                "project_id": 1,
+                "parent_revision_id": "5ca0ada4-9040-4954-867f-f7fc2e586119",
+                "revision_no": 4,
+                "source_hash": "9fac31fe93fc4bdebd0d6a6c575b99ec1c86aaa85637425dd8d81f9144ff9249",
+                "content_hash": "f1305440baeecf1f252bca6cb55d02465e61e1cea8d1744a21384866536ab5b8",
+                "content_json": {
+                  "worldview": "本作设定在近未来的地球，人工智能技术高度发达，但顶尖模型被少数西方科技巨头垄断，成为变相的技术封锁。中国开发者凭借开源社区和自主创新，在夹缝中奋力追赶。核心规则是AI的智力水平取决于算力、数据与算法创新，而最强的力量来自于打破闭源壁垒。社会结构呈现‘巨头-开发者-用户’三层，巨头掌握话语权，开发者通过开源冲击旧秩序。牢梁与艾瑞克的对决，正是这场技术洪流中的一场幽默战斗。",
+                  "characters": [
+                    {
+                      "name": "牢梁",
+                      "role": "主角",
+                      "gender": "male",
+                      "visual_profile": {
+                        "schema_version": "character_visual_v1",
+                        "world_style": "modern",
+                        "species": "human",
+                        "age_group": "young_adult",
+                        "gender_presentation": "masculine",
+                        "role_family": "professional",
+                        "role_key": "engineer",
+                        "body": {
+                          "height": "average",
+                          "build": "slim"
+                        },
+                        "face": {
+                          "shape": "oval",
+                          "skin_tone": "light",
+                          "eye_color": "black"
+                        },
+                        "hair": {
+                          "color": "black",
+                          "length": "short",
+                          "style": "messy"
+                        },
+                        "outfit": {
+                          "style": "casual",
+                          "primary_colors": [
+                            "gray",
+                            "blue"
+                          ],
+                          "items": [
+                            "hoodie",
+                            "sneakers"
+                          ]
+                        },
+                        "signature_features": [
+                          "glasses"
+                        ],
+                        "accessories": [
+                          "tablet"
+                        ],
+                        "visual_temperament": [
+                          "cheerful",
+                          "energetic"
+                        ]
+                      },
+                      "personality": "聪明幽默，动手能力强，但拖延症严重、过度乐观。平时懒散随和，关键时刻靠得住。缺点是好面子，容易轻敌。",
+                      "motivation_and_goal": "打破西方AI垄断，证明中国开发者能做出世界级AI。终极目标是开发出名为DeepSeek的开放AI模型，让全球用户免费使用。",
+                      "internal_conflict": "内心焦虑于技术差距，却用自嘲掩盖。在商业变现和开源理想之间摇摆，害怕自己不够资格代表中国开发者。",
+                      "voice": "语气轻松诙谐，常用网络流行语和程序员梗（如‘这Bug比老母猪上树还难修’）。说话口语化，夹杂英文技术词，爱用夸张比喻和自黑。情绪外露，高兴就笑，烦躁就吐槽。语速偏快，偶尔激动到卡壳。",
+                      "visual_profile_source": "structured",
+                      "visual_description_cn": "现代、青年、男性化外观、人类、工程师；中等身高、纤细体型；椭圆脸，浅肤色，黑色眼睛；黑发，短发，略显凌乱；身穿以灰色、蓝色为主的日常休闲装；整体气质开朗、活力，标志元素为眼镜、平板设备、连帽衫、运动鞋。",
+                      "visual_prompt_en": "young adult masculine human, engineer, modern setting, average height, slim build, oval face, light, black, black short messy hair, casual, gray and blue palette, cheerful, energetic visual temperament, signature details: glasses, tablet, hoodie, sneakers",
+                      "visual_fingerprint": "cv1:cddc20dfdb2cc7c3ec10",
+                      "appearance": "现代、青年、男性化外观、人类、工程师；中等身高、纤细体型；椭圆脸，浅肤色，黑色眼睛；黑发，短发，略显凌乱；身穿以灰色、蓝色为主的日常休闲装；整体气质开朗、活力，标志元素为眼镜、平板设备、连帽衫、运动鞋。"
+                    },
+                    {
+                      "name": "艾瑞克·约翰逊",
+                      "role": "反派",
+                      "gender": "male",
+                      "visual_profile": {
+                        "schema_version": "character_visual_v1",
+                        "world_style": "modern",
+                        "species": "human",
+                        "age_group": "middle_aged",
+                        "gender_presentation": "masculine",
+                        "role_family": "leadership",
+                        "role_key": "corporate_executive",
+                        "body": {
+                          "height": "tall",
+                          "build": "athletic"
+                        },
+                        "face": {
+                          "shape": "angular",
+                          "skin_tone": "light",
+                          "eye_color": "blue"
+                        },
+                        "hair": {
+                          "color": "blonde",
+                          "length": "short",
+                          "style": "neat"
+                        },
+                        "outfit": {
+                          "style": "business",
+                          "primary_colors": [
+                            "black",
+                            "white"
+                          ],
+                          "items": [
+                            "blazer",
+                            "trousers"
+                          ]
+                        },
+                        "signature_features": [],
+                        "accessories": [
+                          "wristwatch"
+                        ],
+                        "visual_temperament": [
+                          "stern",
+                          "confident"
+                        ]
+                      },
+                      "personality": "商业头脑卓越，执行力强，但傲慢固执，轻视开源模式。擅长资本运作，却缺乏技术同理心。",
+                      "motivation_and_goal": "维护自家AI公司的市场垄断地位，阻挠一切可能颠覆商业版图的免费AI。终极目标是让全世界AI标准都由他的公司制定。",
+                      "internal_conflict": "一方面欣赏牢梁的技术天才，另一方面恐惧中国科技崛起。在商业利益和人工智能伦理之间纠结，试图说服自己‘垄断即是正义’。",
+                      "voice": "语气官腔十足，常用商业术语和英文缩写（如‘我们的生态闭环’、‘ROI比想象力更真实’）。措辞正式，偶尔带讽刺反问。情感外露度低，喜欢用长句和排比。语速不疾不徐，激动时会突然提速并提高分贝。",
+                      "visual_profile_source": "structured",
+                      "visual_description_cn": "现代、中年、男性化外观、人类、企业高管；高挑、健美体型；轮廓分明，浅肤色，蓝色眼睛；金发，短发，整齐利落；身穿以黑色、白色为主的商务装；整体气质威严、自信，标志元素为腕表、西装外套、长裤。",
+                      "visual_prompt_en": "middle aged masculine human, corporate executive, modern setting, tall height, athletic build, angular face, light, blue, blonde short neat hair, business, black and white palette, stern, confident visual temperament, signature details: wristwatch, blazer, trousers",
+                      "visual_fingerprint": "cv1:5015875802e0ccc801e7",
+                      "appearance": "现代、中年、男性化外观、人类、企业高管；高挑、健美体型；轮廓分明，浅肤色，蓝色眼睛；金发，短发，整齐利落；身穿以黑色、白色为主的商务装；整体气质威严、自信，标志元素为腕表、西装外套、长裤。"
+                    }
+                  ],
+                  "character_relations": "牢梁与艾瑞克构成核心对手：艾瑞克曾试图用高价收购牢梁的初创项目，被拒后转为打压，两人在技术发布会、算力招标等场合多次交锋。表面是商业竞争，暗地里艾瑞克对牢梁的才华既忌惮又认可，而牢梁则将艾瑞克视为自己必须超越的行业标尺。",
+                  "main_conflict": "表层冲突是牢梁的免费开源AI与艾瑞克商业闭源AI的正面市场对抗；深层冲突是‘技术垄断与开源民主’的价值观对立，以及东西方科技主导权的世纪博弈。",
+                  "emotional_line": "起：牢梁击败Codex和Claude Code，志得意满，觉得西方巨头不过如此；承：发现真正难关是艾瑞克背后的封锁网络，自己的模型在商业落地中被处处掣肘，陷入焦虑；转：在开源社区朋友帮助下，他找到突破性算法，顶着嘲笑和打压闭门开发；合：DeepSeek横空出世，轰动全球，牢梁对着发布会台下哭笑的观众，说‘这只是个开始’。",
+                  "style_rules": "轻松幽默主基调，多用夸张比喻、自嘲、程序员梗和互联网黑话。对话讲究节奏感，一个突发状况后接一个冷笑话。叙述部分采用轻快的短句，关键场景突然变热血。用词上，技术术语用口语化解说，例如‘这就等于把显卡塞进微波炉做甜品’。",
+                  "ending_constraints": "牢梁必须通过自己的编程和策略才能造出DeepSeek，不能靠运气或外力。最终DeepSeek要么开源，要么以极低成本惠及大众，体现‘打破西方封锁’的意图。开篇打败Codex和Claude Code的成就，与结局DeepSeek的诞生形成因果——他证明了那只是一个序幕。艾瑞克至少受到一次真正的挫败，并承认牢梁的价值。",
+                  "forbidden_points": [
+                    "不能将西方AI技术简单妖魔化，或出现‘洋人都是笨蛋’的轻浮处理；",
+                    "不能靠财大气粗的金手指获胜，必须符合技术爬坡的逻辑；",
+                    "不能把艾瑞克洗白，他最终应该是被折服而非突然变成好人；",
+                    "不能忽略开篇的‘拳打codex脚踢claude code’，否则人设断裂。"
+                  ],
+                  "writing_notes": [
+                    "擅长用技术梗制造笑点，比如给Bug起名‘代码雷区’，把算法比喻成‘炒菜火候’。幽默要落在程序员真实生活的细节上，避免浮夸。",
+                    "伏笔建议：牢梁早年写过的某个开源库成为DeepSeek的基石；艾瑞克办公桌角落摆着一台中国产的旧机箱，暗示他早年在华留学经历；牢梁的导师临终前留给他的笔记本里藏着一行代码。"
+                  ],
+                  "character_visual_schema_version": "character_visual_v1"
+                },
+                "status": "complete",
+                "generation_task_id": "74fe5fcd-d8a6-483a-b11d-b64713618114",
+                "created_at": "2026-08-03T13:30:49.894491Z"
+              },
+              {
+                "id": "a732dd76-5de5-416c-982f-3d0d8ff96939",
+                "project_id": 1,
+                "parent_revision_id": "5ca0ada4-9040-4954-867f-f7fc2e586119",
+                "revision_no": 3,
+                "source_hash": "c1853263bf057a4e9687ce0bba0fe9d4c4f736684a1f6d90e794be01465944c3",
+                "content_hash": "ec7b2be9330d81d6fa9b3d77bc7f910326585173202efca6af2ace7c95eeb6c1",
+                "content_json": {
+                  "worldview": "近未来2030年代，全球AI大模型竞赛白热化。西方科技巨头凭借算力与资本垄断了高端AI市场，并对中国实施技术封锁。中国本土AI创业者与开发者们抱着“自主可控”的信念，在开源社区和有限算力条件下奋力追赶。故事背景是充满编程梗、技术幽默与恶趣味的程序员生态圈，地点以北京的创业孵化器和线上论坛为主。",
+                  "characters": [
+                    {
+                      "name": "牢梁",
+                      "role": "主角",
+                      "gender": "male",
+                      "visual_profile": {
+                        "schema_version": "character_visual_v1",
+                        "world_style": "modern",
+                        "species": "human",
+                        "age_group": "young_adult",
+                        "gender_presentation": "masculine",
+                        "role_family": "professional",
+                        "role_key": "startup_founder",
+                        "body": {
+                          "height": "average",
+                          "build": "slim"
+                        },
+                        "face": {
+                          "shape": "oval",
+                          "skin_tone": "light",
+                          "eye_color": "dark_brown"
+                        },
+                        "hair": {
+                          "color": "black",
+                          "length": "short",
+                          "style": "messy"
+                        },
+                        "outfit": {
+                          "style": "casual",
+                          "primary_colors": [
+                            "black",
+                            "white"
+                          ],
+                          "items": [
+                            "hoodie",
+                            "trousers",
+                            "sneakers"
+                          ]
+                        },
+                        "signature_features": [
+                          "glasses"
+                        ],
+                        "accessories": [
+                          "wristwatch"
+                        ],
+                        "visual_temperament": [
+                          "energetic",
+                          "cheerful"
+                        ]
+                      },
+                      "personality": "乐观、脑子快、毒舌爱吐槽，但做事有韧劲。缺点是冒进、容易低估困难、爱在嘴上吃亏。",
+                      "motivation_and_goal": "想证明中国程序员也能做出顶级AI，打破西方垄断。核心驱动力是学生时代被西方网友嘲讽的创伤，以及想让家人过上好日子的朴素愿望。",
+                      "internal_conflict": "在“用现有开源方案快速赚钱”与“从头打造中国自己的大模型”之间摇摆；深陷自我怀疑，怕自己只是自嗨。",
+                      "voice": "语速快，语气跳脱，喜欢用程序员梗和网络流行语；习惯用反问句自嘲，例如“这不是Bug，是feature！”；遇到困难先吐槽两句，然后闷头干。情绪外露，高兴和沮丧都直接写在脸上。",
+                      "visual_profile_source": "structured",
+                      "visual_description_cn": "现代、青年、男性化外观、人类、创业者；中等身高、纤细体型；椭圆脸，浅肤色，深棕色眼睛；黑发，短发，略显凌乱；身穿以黑色、白色为主的日常休闲装；整体气质活力、开朗，标志元素为眼镜、腕表、连帽衫、长裤、运动鞋。",
+                      "visual_prompt_en": "young adult masculine human, startup founder, modern setting, average height, slim build, oval face, light, dark brown, black short messy hair, casual, black and white palette, energetic, cheerful visual temperament, signature details: glasses, wristwatch, hoodie, trousers, sneakers",
+                      "visual_fingerprint": "cv1:91ba3c153f98bf60d2d2",
+                      "appearance": "现代、青年、男性化外观、人类、创业者；中等身高、纤细体型；椭圆脸，浅肤色，深棕色眼睛；黑发，短发，略显凌乱；身穿以黑色、白色为主的日常休闲装；整体气质活力、开朗，标志元素为眼镜、腕表、连帽衫、长裤、运动鞋。"
+                    },
+                    {
+                      "name": "林晓",
+                      "role": "重要配角",
+                      "gender": "female",
+                      "visual_profile": {
+                        "schema_version": "character_visual_v1",
+                        "world_style": "modern",
+                        "species": "human",
+                        "age_group": "young_adult",
+                        "gender_presentation": "feminine",
+                        "role_family": "professional",
+                        "role_key": "engineer",
+                        "body": {
+                          "height": "average",
+                          "build": "slim"
+                        },
+                        "face": {
+                          "shape": "oval",
+                          "skin_tone": "light",
+                          "eye_color": "brown"
+                        },
+                        "hair": {
+                          "color": "dark_brown",
+                          "length": "long",
+                          "style": "straight"
+                        },
+                        "outfit": {
+                          "style": "casual",
+                          "primary_colors": [
+                            "blue",
+                            "white"
+                          ],
+                          "items": [
+                            "shirt",
+                            "trousers"
+                          ]
+                        },
+                        "signature_features": [],
+                        "accessories": [
+                          "hairpin"
+                        ],
+                        "visual_temperament": [
+                          "calm",
+                          "gentle"
+                        ]
+                      },
+                      "personality": "沉稳、理性、善于规划，是牢梁的“刹车片”。缺点是过于保守，对风险敏感，偶尔拖累节奏。",
+                      "motivation_and_goal": "想用AI技术解决社会问题，尤其希望帮助教育资源匮乏的山区孩子。核心驱动力是出身小县城的感恩和使命感。",
+                      "internal_conflict": "对牢梁的信任与对未来不确定性的恐惧；不愿冒险但又不忍看牢梁独自扛。",
+                      "voice": "语气温和，多用平实的陈述句，很少用夸张的修辞。习惯给出条理清晰的建议，比如“我们先跑通这个模块再想下一步。”情感内敛，但会在关键处轻声驳回牢梁的盲目乐观。",
+                      "visual_profile_source": "structured",
+                      "visual_description_cn": "现代、青年、女性化外观、人类、工程师；中等身高、纤细体型；椭圆脸，浅肤色，棕色眼睛；深棕发，长发，直发；身穿以蓝色、白色为主的日常休闲装；整体气质沉静、柔和，标志元素为发簪、衬衫、长裤。",
+                      "visual_prompt_en": "young adult feminine human, engineer, modern setting, average height, slim build, oval face, light, brown, dark brown long straight hair, casual, blue and white palette, calm, gentle visual temperament, signature details: hairpin, shirt, trousers",
+                      "visual_fingerprint": "cv1:b0737ccf58c727fae7ab",
+                      "appearance": "现代、青年、女性化外观、人类、工程师；中等身高、纤细体型；椭圆脸，浅肤色，棕色眼睛；深棕发，长发，直发；身穿以蓝色、白色为主的日常休闲装；整体气质沉静、柔和，标志元素为发簪、衬衫、长裤。"
+                    },
+                    {
+                      "name": "老周",
+                      "role": "重要配角",
+                      "gender": "male",
+                      "visual_profile": {
+                        "schema_version": "character_visual_v1",
+                        "world_style": "modern",
+                        "species": "human",
+                        "age_group": "middle_aged",
+                        "gender_presentation": "masculine",
+                        "role_family": "education",
+                        "role_key": "mentor",
+                        "body": {
+                          "height": "average",
+                          "build": "stocky"
+                        },
+                        "face": {
+                          "shape": "round",
+                          "skin_tone": "light",
+                          "eye_color": "black"
+                        },
+                        "hair": {
+                          "color": "gray",
+                          "length": "short",
+                          "style": "neat"
+                        },
+                        "outfit": {
+                          "style": "business",
+                          "primary_colors": [
+                            "gray",
+                            "black"
+                          ],
+                          "items": [
+                            "jacket",
+                            "trousers"
+                          ]
+                        },
+                        "signature_features": [],
+                        "accessories": [
+                          "wristwatch"
+                        ],
+                        "visual_temperament": [
+                          "serious",
+                          "warm"
+                        ]
+                      },
+                      "personality": "技术大牛，做过多年开源社区维护者，严厉但乐于提携后辈。缺点是固执，当观点被挑战时会有点固执己见。",
+                      "motivation_and_goal": "一生都在追求技术自由，希望后辈不再被“卡脖子”。核心驱动力是当年看到国内技术受制于人的愤懑。",
+                      "internal_conflict": "既欣赏牢梁的冲劲，又担心他走弯路；在“放手让年轻人干”和“亲自把关”之间纠结。",
+                      "voice": "语速中等，语气沉稳严肃，常用短句和命令式口吻，但偶尔露出长辈的关怀。习惯引用Linux和Unix哲学，比如“简单就是美。”情感克制，真正着急时会用叹气表达。",
+                      "visual_profile_source": "structured",
+                      "visual_description_cn": "现代、中年、男性化外观、人类、导师；中等身高、敦实体型；圆脸，浅肤色，黑色眼睛；灰发，短发，整齐利落；身穿以灰色、黑色为主的商务装；整体气质严肃、温和，标志元素为腕表、夹克、长裤。",
+                      "visual_prompt_en": "middle aged masculine human, mentor, modern setting, average height, stocky build, round face, light, black, gray short neat hair, business, gray and black palette, serious, warm visual temperament, signature details: wristwatch, jacket, trousers",
+                      "visual_fingerprint": "cv1:fd0fdaddd1d78f17e379",
+                      "appearance": "现代、中年、男性化外观、人类、导师；中等身高、敦实体型；圆脸，浅肤色，黑色眼睛；灰发，短发，整齐利落；身穿以灰色、黑色为主的商务装；整体气质严肃、温和，标志元素为腕表、夹克、长裤。"
+                    }
+                  ],
+                  "character_relations": "牢梁和林晓是大学同学兼创业搭档，牢梁负责激进创新，林晓负责理性落地，常有摩擦但彼此信任。老周是他们的技术导师，起初对牢梁的高调不屑，后被他的热忱打动，关键时刻帮忙调和团队矛盾。三人形成“闯祸-补救-兜底”的三角关系。另外，西方巨头的封锁是外部压力，但并非具体反派。",
+                  "main_conflict": "表层冲突是中国团队与西方技术霸权之间“突围与封锁”的竞赛；深层冲突是主角内心深处“想快速走捷径赚钱”与“坚持做难而正确的事”之间的自我搏斗。",
+                  "emotional_line": "起：牢梁刚拳打codex脚踢claude code，志得意满，觉得西方垄断不过如此。承：在自主开发deepseek时遭遇算力瓶颈和外部嘲笑，情绪跌入谷底。转：在老周和林晓的帮助下，认清“对抗封锁靠的不是一腔热血，而是务实积累”，重拾信心。合：deepseek破茧而出，牢梁站在国际发布会舞台上，用一句自嘲呼应开篇：“拳打codex？那是用Bug打出来的。”最终实现成长与和解。",
+                  "style_rules": "整体幽默轻松，但关键时刻要燃。用词上多用编程术语和生活化比喻，比如“这代码比我的发际线还秃”。句式上长短句结合，对话节奏快，适当插入计算机梗和网络热词。避免悲伤注脚，保持乐观向上的基调。场景描写可以带点数字官僚趣味。",
+                  "ending_constraints": "必须让deepseek成功推出并打破西方封锁；牢梁必须经历从膨胀到受挫再到踏实的心理转变；老周和林晓必须参与关键环节；结尾需与开篇“拳打codex脚踢claude code”形成呼应，比如以自嘲和玩笑确认开局行为并非真的靠拳头，而是靠代码。",
+                  "forbidden_points": [
+                    "不能出现龙傲天式直接碾压西方；",
+                    "不能贬低开源社区或抄袭行为；",
+                    "不能有软色情和低俗玩笑；",
+                    "不能把主角设定为天才高富帅，他必须是普通程序员；",
+                    "不能出现大段说教；",
+                    "不能以死伤追求深刻；",
+                    "不能写“全中国只有主角一人清醒”的孤傲氛围。",
+                    "不能出现被美国疯狂打压的情况"
+                  ],
+                  "writing_notes": [
+                    "善用技术梗制造笑点，但保证非技术读者也能通过上下文理解。",
+                    "伏笔建议：牢梁早期随口吹牛的“我要搞出deepseek”成为预言；老周年轻时失败的类似项目的手稿；林晓记录风险的本子最后写满成功日期的彩蛋。",
+                    "注意把握“轻松幽默”与“技术严肃性”的平衡，不要过度搞笑。"
+                  ],
+                  "character_visual_schema_version": "character_visual_v1"
+                },
+                "status": "complete",
+                "generation_task_id": null,
+                "created_at": "2026-08-03T12:32:33.548641Z"
+              },
+              {
+                "id": "5ca0ada4-9040-4954-867f-f7fc2e586119",
+                "project_id": 1,
+                "parent_revision_id": "dc5caa2c-a53a-498c-9b54-c5bc0bce3f9d",
+                "revision_no": 2,
+                "source_hash": "9fac31fe93fc4bdebd0d6a6c575b99ec1c86aaa85637425dd8d81f9144ff9249",
+                "content_hash": "a6e35510b3208e2dd895a0595fe54831c0f6e65f31f689c2ead77cc10409c39c",
+                "content_json": {
+                  "worldview": "近未来2030年代，全球AI大模型竞赛白热化。西方科技巨头凭借算力与资本垄断了高端AI市场，并对中国实施技术封锁。中国本土AI创业者与开发者们抱着“自主可控”的信念，在开源社区和有限算力条件下奋力追赶。故事背景是充满编程梗、技术幽默与恶趣味的程序员生态圈，地点以北京的创业孵化器和线上论坛为主。",
+                  "characters": [
+                    {
+                      "name": "牢梁",
+                      "role": "主角",
+                      "gender": "male",
+                      "visual_profile": {
+                        "schema_version": "character_visual_v1",
+                        "world_style": "modern",
+                        "species": "human",
+                        "age_group": "young_adult",
+                        "gender_presentation": "masculine",
+                        "role_family": "professional",
+                        "role_key": "startup_founder",
+                        "body": {
+                          "height": "average",
+                          "build": "slim"
+                        },
+                        "face": {
+                          "shape": "oval",
+                          "skin_tone": "light",
+                          "eye_color": "dark_brown"
+                        },
+                        "hair": {
+                          "color": "black",
+                          "length": "short",
+                          "style": "messy"
+                        },
+                        "outfit": {
+                          "style": "casual",
+                          "primary_colors": [
+                            "black",
+                            "white"
+                          ],
+                          "items": [
+                            "hoodie",
+                            "trousers",
+                            "sneakers"
+                          ]
+                        },
+                        "signature_features": [
+                          "glasses"
+                        ],
+                        "accessories": [
+                          "wristwatch"
+                        ],
+                        "visual_temperament": [
+                          "energetic",
+                          "cheerful"
+                        ]
+                      },
+                      "personality": "乐观、脑子快、毒舌爱吐槽，但做事有韧劲。缺点是冒进、容易低估困难、爱在嘴上吃亏。",
+                      "motivation_and_goal": "想证明中国程序员也能做出顶级AI，打破西方垄断。核心驱动力是学生时代被西方网友嘲讽的创伤，以及想让家人过上好日子的朴素愿望。",
+                      "internal_conflict": "在“用现有开源方案快速赚钱”与“从头打造中国自己的大模型”之间摇摆；深陷自我怀疑，怕自己只是自嗨。",
+                      "voice": "语速快，语气跳脱，喜欢用程序员梗和网络流行语；习惯用反问句自嘲，例如“这不是Bug，是feature！”；遇到困难先吐槽两句，然后闷头干。情绪外露，高兴和沮丧都直接写在脸上。",
+                      "visual_profile_source": "structured",
+                      "visual_description_cn": "现代、青年、男性化外观、人类、创业者；中等身高、纤细体型；椭圆脸，浅肤色，深棕色眼睛；黑发，短发，略显凌乱；身穿以黑色、白色为主的日常休闲装；整体气质活力、开朗，标志元素为眼镜、腕表、连帽衫、长裤、运动鞋。",
+                      "visual_prompt_en": "young adult masculine human, startup founder, modern setting, average height, slim build, oval face, light, dark brown, black short messy hair, casual, black and white palette, energetic, cheerful visual temperament, signature details: glasses, wristwatch, hoodie, trousers, sneakers",
+                      "visual_fingerprint": "cv1:91ba3c153f98bf60d2d2",
+                      "appearance": "现代、青年、男性化外观、人类、创业者；中等身高、纤细体型；椭圆脸，浅肤色，深棕色眼睛；黑发，短发，略显凌乱；身穿以黑色、白色为主的日常休闲装；整体气质活力、开朗，标志元素为眼镜、腕表、连帽衫、长裤、运动鞋。"
+                    },
+                    {
+                      "name": "林晓",
+                      "role": "重要配角",
+                      "gender": "female",
+                      "visual_profile": {
+                        "schema_version": "character_visual_v1",
+                        "world_style": "modern",
+                        "species": "human",
+                        "age_group": "young_adult",
+                        "gender_presentation": "feminine",
+                        "role_family": "professional",
+                        "role_key": "engineer",
+                        "body": {
+                          "height": "average",
+                          "build": "slim"
+                        },
+                        "face": {
+                          "shape": "oval",
+                          "skin_tone": "light",
+                          "eye_color": "brown"
+                        },
+                        "hair": {
+                          "color": "dark_brown",
+                          "length": "long",
+                          "style": "straight"
+                        },
+                        "outfit": {
+                          "style": "casual",
+                          "primary_colors": [
+                            "blue",
+                            "white"
+                          ],
+                          "items": [
+                            "shirt",
+                            "trousers"
+                          ]
+                        },
+                        "signature_features": [],
+                        "accessories": [
+                          "hairpin"
+                        ],
+                        "visual_temperament": [
+                          "calm",
+                          "gentle"
+                        ]
+                      },
+                      "personality": "沉稳、理性、善于规划，是牢梁的“刹车片”。缺点是过于保守，对风险敏感，偶尔拖累节奏。",
+                      "motivation_and_goal": "想用AI技术解决社会问题，尤其希望帮助教育资源匮乏的山区孩子。核心驱动力是出身小县城的感恩和使命感。",
+                      "internal_conflict": "对牢梁的信任与对未来不确定性的恐惧；不愿冒险但又不忍看牢梁独自扛。",
+                      "voice": "语气温和，多用平实的陈述句，很少用夸张的修辞。习惯给出条理清晰的建议，比如“我们先跑通这个模块再想下一步。”情感内敛，但会在关键处轻声驳回牢梁的盲目乐观。",
+                      "visual_profile_source": "structured",
+                      "visual_description_cn": "现代、青年、女性化外观、人类、工程师；中等身高、纤细体型；椭圆脸，浅肤色，棕色眼睛；深棕发，长发，直发；身穿以蓝色、白色为主的日常休闲装；整体气质沉静、柔和，标志元素为发簪、衬衫、长裤。",
+                      "visual_prompt_en": "young adult feminine human, engineer, modern setting, average height, slim build, oval face, light, brown, dark brown long straight hair, casual, blue and white palette, calm, gentle visual temperament, signature details: hairpin, shirt, trousers",
+                      "visual_fingerprint": "cv1:b0737ccf58c727fae7ab",
+                      "appearance": "现代、青年、女性化外观、人类、工程师；中等身高、纤细体型；椭圆脸，浅肤色，棕色眼睛；深棕发，长发，直发；身穿以蓝色、白色为主的日常休闲装；整体气质沉静、柔和，标志元素为发簪、衬衫、长裤。"
+                    },
+                    {
+                      "name": "老周",
+                      "role": "重要配角",
+                      "gender": "male",
+                      "visual_profile": {
+                        "schema_version": "character_visual_v1",
+                        "world_style": "modern",
+                        "species": "human",
+                        "age_group": "middle_aged",
+                        "gender_presentation": "masculine",
+                        "role_family": "education",
+                        "role_key": "mentor",
+                        "body": {
+                          "height": "average",
+                          "build": "stocky"
+                        },
+                        "face": {
+                          "shape": "round",
+                          "skin_tone": "light",
+                          "eye_color": "black"
+                        },
+                        "hair": {
+                          "color": "gray",
+                          "length": "short",
+                          "style": "neat"
+                        },
+                        "outfit": {
+                          "style": "business",
+                          "primary_colors": [
+                            "gray",
+                            "black"
+                          ],
+                          "items": [
+                            "jacket",
+                            "trousers"
+                          ]
+                        },
+                        "signature_features": [],
+                        "accessories": [
+                          "wristwatch"
+                        ],
+                        "visual_temperament": [
+                          "serious",
+                          "warm"
+                        ]
+                      },
+                      "personality": "技术大牛，做过多年开源社区维护者，严厉但乐于提携后辈。缺点是固执，当观点被挑战时会有点固执己见。",
+                      "motivation_and_goal": "一生都在追求技术自由，希望后辈不再被“卡脖子”。核心驱动力是当年看到国内技术受制于人的愤懑。",
+                      "internal_conflict": "既欣赏牢梁的冲劲，又担心他走弯路；在“放手让年轻人干”和“亲自把关”之间纠结。",
+                      "voice": "语速中等，语气沉稳严肃，常用短句和命令式口吻，但偶尔露出长辈的关怀。习惯引用Linux和Unix哲学，比如“简单就是美。”情感克制，真正着急时会用叹气表达。",
+                      "visual_profile_source": "structured",
+                      "visual_description_cn": "现代、中年、男性化外观、人类、导师；中等身高、敦实体型；圆脸，浅肤色，黑色眼睛；灰发，短发，整齐利落；身穿以灰色、黑色为主的商务装；整体气质严肃、温和，标志元素为腕表、夹克、长裤。",
+                      "visual_prompt_en": "middle aged masculine human, mentor, modern setting, average height, stocky build, round face, light, black, gray short neat hair, business, gray and black palette, serious, warm visual temperament, signature details: wristwatch, jacket, trousers",
+                      "visual_fingerprint": "cv1:fd0fdaddd1d78f17e379",
+                      "appearance": "现代、中年、男性化外观、人类、导师；中等身高、敦实体型；圆脸，浅肤色，黑色眼睛；灰发，短发，整齐利落；身穿以灰色、黑色为主的商务装；整体气质严肃、温和，标志元素为腕表、夹克、长裤。"
+                    }
+                  ],
+                  "character_relations": "牢梁和林晓是大学同学兼创业搭档，牢梁负责激进创新，林晓负责理性落地，常有摩擦但彼此信任。老周是他们的技术导师，起初对牢梁的高调不屑，后被他的热忱打动，关键时刻帮忙调和团队矛盾。三人形成“闯祸-补救-兜底”的三角关系。另外，西方巨头的封锁是外部压力，但并非具体反派。",
+                  "main_conflict": "表层冲突是中国团队与西方技术霸权之间“突围与封锁”的竞赛；深层冲突是主角内心深处“想快速走捷径赚钱”与“坚持做难而正确的事”之间的自我搏斗。",
+                  "emotional_line": "起：牢梁刚拳打codex脚踢claude code，志得意满，觉得西方垄断不过如此。承：在自主开发deepseek时遭遇算力瓶颈和外部嘲笑，情绪跌入谷底。转：在老周和林晓的帮助下，认清“对抗封锁靠的不是一腔热血，而是务实积累”，重拾信心。合：deepseek破茧而出，牢梁站在国际发布会舞台上，用一句自嘲呼应开篇：“拳打codex？那是用Bug打出来的。”最终实现成长与和解。",
+                  "style_rules": "整体幽默轻松，但关键时刻要燃。用词上多用编程术语和生活化比喻，比如“这代码比我的发际线还秃”。句式上长短句结合，对话节奏快，适当插入计算机梗和网络热词。避免悲伤注脚，保持乐观向上的基调。场景描写可以带点数字官僚趣味。",
+                  "ending_constraints": "必须让deepseek成功推出并打破西方封锁；牢梁必须经历从膨胀到受挫再到踏实的心理转变；老周和林晓必须参与关键环节；结尾需与开篇“拳打codex脚踢claude code”形成呼应，比如以自嘲和玩笑确认开局行为并非真的靠拳头，而是靠代码。",
+                  "forbidden_points": [
+                    "不能出现龙傲天式直接碾压西方；",
+                    "不能贬低开源社区或抄袭行为；",
+                    "不能有软色情和低俗玩笑；",
+                    "不能把主角设定为天才高富帅，他必须是普通程序员；",
+                    "不能出现大段说教；",
+                    "不能以死伤追求深刻；",
+                    "不能写“全中国只有主角一人清醒”的孤傲氛围。"
+                  ],
+                  "writing_notes": [
+                    "善用技术梗制造笑点，但保证非技术读者也能通过上下文理解。",
+                    "伏笔建议：牢梁早期随口吹牛的“我要搞出deepseek”成为预言；老周年轻时失败的类似项目的手稿；林晓记录风险的本子最后写满成功日期的彩蛋。",
+                    "注意把握“轻松幽默”与“技术严肃性”的平衡，不要过度搞笑。"
+                  ],
+                  "character_visual_schema_version": "character_visual_v1"
+                },
+                "status": "complete",
+                "generation_task_id": "d23562e7-eded-4e4a-b45e-4715060350bd",
+                "created_at": "2026-08-03T01:32:43.614536Z"
+              },
+              {
+                "id": "dc5caa2c-a53a-498c-9b54-c5bc0bce3f9d",
+                "project_id": 1,
+                "parent_revision_id": null,
+                "revision_no": 1,
+                "source_hash": "2517d7c73e873b00069a49d3af86fffc247ce4b18321189466a2581eb48b4c7f",
+                "content_hash": "a841dbfefdf0d6e8d3bdf3a7aabcaa386c58927a247475b3da0e7d293b7d911e",
+                "content_json": {
+                  "worldview": "近未来，全球AI产业被西方巨头垄断，中国开发者只能在夹缝中求生存。所谓的‘拳打codex脚踢claude code’，其实是程序员圈子里用‘神经网络武术’进行AI编程工具性能PK的调侃。西方封锁不仅限于芯片，更在于技术标准和话语权。中国科技圈自嘲为‘少林寺’，用太极、咏春等隐喻各种算法流派。牢梁作为民间野路子的代表，靠一套自创的‘太极焊代码’打遍圈内无敌手，却发现真正的对手是整条封锁链，而破局的关键在于打造自己的‘武功心法’——一个名为deepseek的开源大模型。",
+                  "characters": [
+                    {
+                      "name": "牢梁",
+                      "role": "主角",
+                      "gender": "male",
+                      "visual_profile": {
+                        "schema_version": "character_visual_v1",
+                        "world_style": "modern",
+                        "species": "human",
+                        "age_group": "young_adult",
+                        "gender_presentation": "masculine",
+                        "role_family": "office",
+                        "role_key": "engineer",
+                        "body": {
+                          "height": "average",
+                          "build": "slim"
+                        },
+                        "face": {
+                          "shape": "oval",
+                          "skin_tone": "light",
+                          "eye_color": "black"
+                        },
+                        "hair": {
+                          "color": "black",
+                          "length": "short",
+                          "style": "messy"
+                        },
+                        "outfit": {
+                          "style": "casual",
+                          "primary_colors": [
+                            "black",
+                            "gray"
+                          ],
+                          "items": [
+                            "hoodie",
+                            "sneakers"
+                          ]
+                        },
+                        "signature_features": [
+                          "glasses"
+                        ],
+                        "accessories": [],
+                        "visual_temperament": [
+                          "cheerful",
+                          "confident",
+                          "energetic"
+                        ]
+                      },
+                      "personality": "幽默机智，技术狂人，平时吊儿郎当，关键时刻靠谱。缺点是自大、拖延症，容易分心。",
+                      "motivation_and_goal": "最初只想在圈内出名，证明自己比西方工具强；后发现打破封锁、做出国产AI才是真正目标。",
+                      "internal_conflict": "他既不屑于西方巨头的傲慢，又暗自担心自己的技术是否足够；在个人名声与团队使命之间摇摆。",
+                      "voice": "语速快，爱用网络梗和比喻，说话夸张；常用反问和吐槽，但关键时刻会一本正经地简短表达。",
+                      "visual_profile_source": "structured",
+                      "visual_description_cn": "现代、青年、男性化外观、人类、工程师；中等身高、纤细体型；椭圆脸，浅肤色，黑色眼睛；黑发，短发，略显凌乱；身穿以黑色、灰色为主的日常休闲装；整体气质开朗、自信、活力，标志元素为眼镜、连帽衫、运动鞋。",
+                      "visual_prompt_en": "young adult masculine human, engineer, modern setting, average height, slim build, oval face, light, black, black short messy hair, casual, black and gray palette, cheerful, confident, energetic visual temperament, signature details: glasses, hoodie, sneakers",
+                      "visual_fingerprint": "cv1:778b7c9d0ad354e4931d",
+                      "appearance": "现代、青年、男性化外观、人类、工程师；中等身高、纤细体型；椭圆脸，浅肤色，黑色眼睛；黑发，短发，略显凌乱；身穿以黑色、灰色为主的日常休闲装；整体气质开朗、自信、活力，标志元素为眼镜、连帽衫、运动鞋。"
+                    },
+                    {
+                      "name": "李慕华",
+                      "role": "重要配角",
+                      "gender": "female",
+                      "visual_profile": {
+                        "schema_version": "character_visual_v1",
+                        "world_style": "modern",
+                        "species": "human",
+                        "age_group": "young_adult",
+                        "gender_presentation": "feminine",
+                        "role_family": "office",
+                        "role_key": "startup_founder",
+                        "body": {
+                          "height": "average",
+                          "build": "slim"
+                        },
+                        "face": {
+                          "shape": "oval",
+                          "skin_tone": "light",
+                          "eye_color": "dark_brown"
+                        },
+                        "hair": {
+                          "color": "black",
+                          "length": "long",
+                          "style": "straight"
+                        },
+                        "outfit": {
+                          "style": "business",
+                          "primary_colors": [
+                            "white",
+                            "blue"
+                          ],
+                          "items": [
+                            "blazer",
+                            "trousers"
+                          ]
+                        },
+                        "signature_features": [
+                          "beauty_mark"
+                        ],
+                        "accessories": [
+                          "earrings"
+                        ],
+                        "visual_temperament": [
+                          "serious",
+                          "gentle"
+                        ]
+                      },
+                      "personality": "理性冷静，善于规划，是牢梁的刹车片。认真负责，但有时过于保守，容易焦虑。",
+                      "motivation_and_goal": "不想让团队的努力白费，希望做出能真正商用的AI产品，让中国技术在国际上有一席之地。",
+                      "internal_conflict": "她欣赏牢梁的才华，但受不了他的散漫；既想支持他，又担心他会搞砸。",
+                      "voice": "语气平缓，用词正式，习惯用逻辑说服人；很少情绪激动，但会在压力下用短句催促。",
+                      "visual_profile_source": "structured",
+                      "visual_description_cn": "现代、青年、女性化外观、人类、创业者；中等身高、纤细体型；椭圆脸，浅肤色，深棕色眼睛；黑发，长发，直发；身穿以白色、蓝色为主的商务装；整体气质严肃、柔和，标志元素为美人痣、耳环、西装外套、长裤。",
+                      "visual_prompt_en": "young adult feminine human, startup founder, modern setting, average height, slim build, oval face, light, dark brown, black long straight hair, business, white and blue palette, serious, gentle visual temperament, signature details: beauty mark, earrings, blazer, trousers",
+                      "visual_fingerprint": "cv1:2f598e0a801c85a8e549",
+                      "appearance": "现代、青年、女性化外观、人类、创业者；中等身高、纤细体型；椭圆脸，浅肤色，深棕色眼睛；黑发，长发，直发；身穿以白色、蓝色为主的商务装；整体气质严肃、柔和，标志元素为美人痣、耳环、西装外套、长裤。"
+                    },
+                    {
+                      "name": "麦克·奥布莱恩",
+                      "role": "反派",
+                      "gender": "male",
+                      "visual_profile": {
+                        "schema_version": "character_visual_v1",
+                        "world_style": "modern",
+                        "species": "human",
+                        "age_group": "adult",
+                        "gender_presentation": "masculine",
+                        "role_family": "leadership",
+                        "role_key": "corporate_executive",
+                        "body": {
+                          "height": "tall",
+                          "build": "athletic"
+                        },
+                        "face": {
+                          "shape": "square",
+                          "skin_tone": "light",
+                          "eye_color": "blue"
+                        },
+                        "hair": {
+                          "color": "blonde",
+                          "length": "short",
+                          "style": "neat"
+                        },
+                        "outfit": {
+                          "style": "business",
+                          "primary_colors": [
+                            "navy",
+                            "black"
+                          ],
+                          "items": [
+                            "blazer",
+                            "trousers"
+                          ]
+                        },
+                        "signature_features": [],
+                        "accessories": [
+                          "wristwatch"
+                        ],
+                        "visual_temperament": [
+                          "cold",
+                          "stern"
+                        ]
+                      },
+                      "personality": "傲慢自大，信奉技术霸权，轻视中国开发者。优点是商业头脑强，手段老练；缺点是自负，无法接受失败。",
+                      "motivation_and_goal": "维护西方AI的垄断地位，扼杀任何可能的挑战者，以保住自己的财富与权力。",
+                      "internal_conflict": "他内心隐约意识到中国技术的进步，但为了既得利益，刻意否认和打压；在自尊与现实之间挣扎。",
+                      "voice": "语气居高临下，常用长句和商业用语，喜欢引用数据和权威；愤怒时会用讽刺和威胁。",
+                      "visual_profile_source": "structured",
+                      "visual_description_cn": "现代、成年、男性化外观、人类、企业高管；高挑、健美体型；方脸，浅肤色，蓝色眼睛；金发，短发，整齐利落；身穿以藏蓝色、黑色为主的商务装；整体气质冷峻、威严，标志元素为腕表、西装外套、长裤。",
+                      "visual_prompt_en": "adult masculine human, corporate executive, modern setting, tall height, athletic build, square face, light, blue, blonde short neat hair, business, navy and black palette, cold, stern visual temperament, signature details: wristwatch, blazer, trousers",
+                      "visual_fingerprint": "cv1:1b329792badf4c4013e0",
+                      "appearance": "现代、成年、男性化外观、人类、企业高管；高挑、健美体型；方脸，浅肤色，蓝色眼睛；金发，短发，整齐利落；身穿以藏蓝色、黑色为主的商务装；整体气质冷峻、威严，标志元素为腕表、西装外套、长裤。"
+                    }
+                  ],
+                  "character_relations": "牢梁与李慕华是‘技术天才+产品经理’的欢喜搭档，一个天马行空，一个拉回现实，互相嫌弃又彼此信任；麦克·奥布莱恩是外部威胁，代表封锁与垄断，也是牢梁想要超越的标杆。三人形成‘挑战-应战-审视’的三角关系。",
+                  "main_conflict": "表层冲突：牢梁的团队与西方巨头在AI竞赛中的正面对抗——从产品迭代、商业争夺到技术封锁与反封锁。深层冲突：牢梁从‘证明自己’到‘改变世界’的心理转变，以及他在个人英雄主义与团队协作之间的挣扎。",
+                  "emotional_line": "起：牢梁因打败国外工具而沾沾自喜（开篇），整日嬉皮笑脸；承：遭遇封锁危机，团队陷入困境，李慕华的冷静让他感到挫败；转：在目睹用户对国产AI的期待后，他第一次感到责任重大，开始收敛；合：历经万难后，deepseek诞生，他不再轻浮，而是谦卑而坚定。",
+                  "style_rules": "写作风格：轻松幽默为主，多使用互联网用语、技术圈黑话和夸张比喻；对话要鲜活，允许插科打诨；描述技术时避免枯燥，用拟人化和武侠化语言；但情节挫折和关键转折处要收住搞笑，体现真实情感。用词建议：多用‘调参’‘炼丹’‘跑模型’等术语，配合‘祖传优化’‘玄学调参’等梗。",
+                  "ending_constraints": "必须达成‘牢梁团队成功发布deepseek并打破西方封锁’的结局；牢梁必须经历从自负到成熟的性格成长；故事要以轻松治愈的方式收尾，但要有足够的说服力，不能靠开挂。",
+                  "forbidden_points": [
+                    "不能出现牢梁因失败而放弃或黑化的负面结局；不能对西方技术做过度贬低或夸大，保持幽默的讽刺而非仇恨。",
+                    "不能为了搞笑而推翻人物成长的逻辑，不能出现无厘头机械降神（比如突然出现政府帮助等）来解决一切。"
+                  ],
+                  "writing_notes": [
+                    "本题材的特殊写作技巧：将AI开发过程类比为武侠修炼，把模型训练写成‘炼丹’，把调参写成‘修武学’，用喜剧化手法展现枯燥的编程；同时可插入真实AI工具的名字（如Codex、Claude Code）制造代入感。",
+                    "伏笔建议：牢梁开篇炫耀的某个‘废代码’正是后来deepseek的雏形；麦克·奥布莱恩在对话中不经意透露的一个专利漏洞，成为结局破局的关键。"
+                  ],
+                  "character_visual_schema_version": "character_visual_v1"
+                },
+                "status": "complete",
+                "generation_task_id": "00878897-6206-4bb0-bb96-9139ac8089c3",
+                "created_at": "2026-08-03T01:28:11.527157Z"
+              }
+            ]
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-folder": "创作版本与生成/故事圣经StoryBible",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923797-run"
+  }
+}

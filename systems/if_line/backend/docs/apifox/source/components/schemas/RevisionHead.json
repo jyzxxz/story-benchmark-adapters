@@ -1,0 +1,35 @@
+{
+  "name": "RevisionHead",
+  "schema": {
+    "properties": {
+      "lock_version": {
+        "minimum": 1.0,
+        "title": "Lock Version",
+        "type": "integer"
+      },
+      "revision_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Revision Id"
+      },
+      "updated_at": {
+        "format": "date-time",
+        "title": "Updated At",
+        "type": "string"
+      }
+    },
+    "required": [
+      "revision_id",
+      "lock_version",
+      "updated_at"
+    ],
+    "title": "RevisionHead",
+    "type": "object"
+  }
+}

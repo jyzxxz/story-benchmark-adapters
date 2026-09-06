@@ -1,0 +1,25 @@
+{
+  "method": "get",
+  "path": "/api/image-generation/status",
+  "operation": {
+    "operationId": "get_image_generation_status_api_image_generation_status_get",
+    "responses": {
+      "200": {
+        "content": {
+          "application/json": {
+            "schema": {}
+          }
+        },
+        "description": "Successful Response"
+      }
+    },
+    "summary": "读取视觉素材",
+    "tags": [
+      "素材管理与生成/视觉素材",
+      "视觉素材工作台"
+    ],
+    "x-apifox-folder": "素材管理与生成/视觉素材",
+    "x-apifox-status": "released",
+    "description": "读取视觉素材。"
+  }
+}

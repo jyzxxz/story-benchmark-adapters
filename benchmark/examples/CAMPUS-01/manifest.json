@@ -1,0 +1,26 @@
+{
+  "case_id": "CAMPUS-01",
+  "case_sha256": "1407f86b387003d05644f881f5cbda0740af81dff412e58b9a7f560d13bd0a1d",
+  "files": {
+    "case.json": "3c9ef318d4656619b3d848f647fa794e42fd4264df20b7d58b49ebbfc72252ff",
+    "opening.txt": "196d04a58ba5bce543e93788e496ae42fdd547d1583d185cda42c3b969159c65",
+    "payloads/ai4vn.json": "78ff69122ebd844caa3fcec1b82cff3340d8a7ff3f7c185df055c941ad2765fe",
+    "payloads/if_line.json": "ac067cdd6312f00bfac5d5cfc43821848b960873e2fe45248fa45a473f5117ee",
+    "payloads/infiplot.json": "93f114c8c6fe3c8354d4831355ff6c5b94dd2bde09ed38b161eac9292bbf4040",
+    "payloads/requirements.txt": "af81207f820c2e6e8ea56939e4b4ed313f1810bf089068bfa1853549c440302a",
+    "shared_task.txt": "af81207f820c2e6e8ea56939e4b4ed313f1810bf089068bfa1853549c440302a"
+  },
+  "native_integration": "not_run",
+  "payload_check": "passed",
+  "profile": "TEXT_CONTINUATION_DEV",
+  "review_status": "pilot",
+  "schema_version": "2.1",
+  "shared_bytes": 5231,
+  "shared_chars": 1939,
+  "shared_sha256": "af81207f820c2e6e8ea56939e4b4ed313f1810bf089068bfa1853549c440302a",
+  "source_sha256": {
+    "brief": "810e10baf5259d9961498266a940b82783d660da4047002506f98dfa7f7bbf0a",
+    "opening": "196d04a58ba5bce543e93788e496ae42fdd547d1583d185cda42c3b969159c65",
+    "prefix": "6998316f87df98ea6359d6e6e064bb47eb32d247be237f042320907f15337f04"
+  }
+}

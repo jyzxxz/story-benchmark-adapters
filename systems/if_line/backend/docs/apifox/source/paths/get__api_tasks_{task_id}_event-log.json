@@ -1,0 +1,153 @@
+{
+  "method": "get",
+  "path": "/api/tasks/{task_id}/event-log",
+  "operation": {
+    "summary": "读取任务事件日志",
+    "deprecated": false,
+    "description": "读取任务事件日志。",
+    "operationId": "read_task_events_api_tasks__task_id__event_log_get",
+    "tags": [
+      "后台任务"
+    ],
+    "parameters": [
+      {
+        "name": "sid",
+        "in": "cookie",
+        "description": "",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Sid",
+          "type": "string",
+          "nullable": true
+        }
+      },
+      {
+        "name": "task_id",
+        "in": "path",
+        "description": "",
+        "required": true,
+        "example": "",
+        "schema": {
+          "title": "Task Id",
+          "type": "string"
+        }
+      },
+      {
+        "name": "after",
+        "in": "query",
+        "description": "",
+        "required": false,
+        "schema": {
+          "default": 0,
+          "minimum": 0,
+          "title": "After",
+          "type": "integer"
+        }
+      },
+      {
+        "name": "limit",
+        "in": "query",
+        "description": "",
+        "required": false,
+        "schema": {
+          "default": 100,
+          "maximum": 500,
+          "minimum": 1,
+          "title": "Limit",
+          "type": "integer"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "items": {
+                "$ref": "#/components/schemas/TaskEventRead"
+              },
+              "title": "Response Read Task Events Api Tasks  Task Id  Event Log Get",
+              "type": "array"
+            },
+            "example": [
+              {
+                "seq": 1,
+                "event_type": "queued",
+                "payload": {
+                  "kind": "chapter_script.generate"
+                },
+                "created_at": "2026-08-09T15:29:15.804223Z"
+              },
+              {
+                "seq": 2,
+                "event_type": "started",
+                "payload": {
+                  "attempt": 1
+                },
+                "created_at": "2026-08-09T15:29:16.890396Z"
+              },
+              {
+                "seq": 3,
+                "event_type": "provider.call.started",
+                "payload": {
+                  "purpose": "chapter_script.semantic_annotations",
+                  "attempt": 1
+                },
+                "created_at": "2026-08-09T15:29:16.911736Z"
+              },
+              {
+                "seq": 4,
+                "event_type": "artifact.ready",
+                "payload": {
+                  "type": "chapter_script_revision",
+                  "id": "3697c856-bcf5-4e14-9310-9bc7874f4fa8",
+                  "coverage_ratio": 1.0,
+                  "resource_slot_count": 2
+                },
+                "created_at": "2026-08-09T15:29:20.947570Z"
+              },
+              {
+                "seq": 5,
+                "event_type": "completed",
+                "payload": {
+                  "result_refs": {
+                    "chapter_script_revision_id": "3697c856-bcf5-4e14-9310-9bc7874f4fa8",
+                    "script_hash": "bc97ae5d13aa151ad38e45e118cfc419af63b325559c0542d9bf9797a31c54c3",
+                    "coverage_ratio": 1.0,
+                    "resource_slot_ids": [
+                      "84e8fd79-65e5-4266-b961-5dc393dd4cc7",
+                      "b3612cf8-33b6-4f01-8c1c-0c70544d294f"
+                    ]
+                  }
+                },
+                "created_at": "2026-08-09T15:29:20.960191Z"
+              }
+            ]
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "后台任务",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923858-run"
+  }
+}

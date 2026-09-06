@@ -1,0 +1,42 @@
+{
+  "name": "VoiceManifest",
+  "schema": {
+    "properties": {
+      "chapter_revision_id": {
+        "title": "章节修订编号",
+        "type": "string",
+        "description": "章节修订编号，用于关联对应数据。"
+      },
+      "count": {
+        "title": "数量",
+        "type": "integer",
+        "description": "数量。"
+      },
+      "items": {
+        "items": {
+          "$ref": "#/components/schemas/VoiceLineRead",
+          "title": "itemsitem",
+          "description": "itemsitem。"
+        },
+        "title": "列表项",
+        "type": "array",
+        "description": "列表项列表。"
+      }
+    },
+    "required": [
+      "chapter_revision_id",
+      "count",
+      "items"
+    ],
+    "title": "语音清单",
+    "type": "object",
+    "x-apifox-orders": [
+      "chapter_revision_id",
+      "count",
+      "items"
+    ],
+    "description": "语音清单数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

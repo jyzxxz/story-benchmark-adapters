@@ -1,0 +1,87 @@
+{
+  "method": "get",
+  "path": "/api/projects/{project_id}/asset-versions/{asset_version_id}",
+  "operation": {
+    "summary": "按版本编号读取素材版本",
+    "deprecated": false,
+    "description": "按 asset_version_id 直接读取素材版本详情（含 asset_id、media_url、media_type、source_hash、storage_status）。资源槽位只返回 asset_version_id 时，用本接口闭合下载链路，无需遍历项目素材索引反查 asset_id；素材被归档后其历史版本仍可解析。storage_status 为 active 时 media_url 才非空，处理中可轮询本接口。",
+    "operationId": "read_asset_version_api_projects__project_id__asset_versions__asset_version_id__get",
+    "tags": [
+      "素材管理与生成",
+      "素材管理"
+    ],
+    "parameters": [
+      {
+        "name": "sid",
+        "in": "cookie",
+        "description": "",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Sid",
+          "type": "string",
+          "nullable": true
+        }
+      },
+      {
+        "name": "project_id",
+        "in": "path",
+        "description": "",
+        "required": true,
+        "example": "",
+        "schema": {
+          "title": "Project Id",
+          "type": "integer"
+        }
+      },
+      {
+        "name": "asset_version_id",
+        "in": "path",
+        "description": "",
+        "required": true,
+        "example": "",
+        "schema": {
+          "title": "Asset Version Id",
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AssetVersionRead"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "404": {
+        "description": "素材版本不存在或不属于当前项目",
+        "headers": {},
+        "x-apifox-name": "未找到",
+        "x-apifox-ordering": 1
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 2
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "素材管理与生成",
+    "x-apifox-status": "released"
+  }
+}

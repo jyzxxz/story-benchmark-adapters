@@ -1,0 +1,42 @@
+{
+  "name": "SynthesizeRequest",
+  "schema": {
+    "properties": {
+      "tts_text": {
+        "maxLength": 600,
+        "minLength": 1,
+        "title": "语音合成文本",
+        "type": "string",
+        "description": "语音合成文本。"
+      },
+      "use_cache": {
+        "default": true,
+        "title": "是否使用缓存",
+        "type": "boolean",
+        "description": "是否使用缓存。"
+      },
+      "voice_id": {
+        "maxLength": 38,
+        "minLength": 14,
+        "pattern": "^voice_[0-9a-f]{8,32}$",
+        "title": "声音编号",
+        "type": "string",
+        "description": "声音编号，用于关联对应数据。"
+      }
+    },
+    "required": [
+      "voice_id",
+      "tts_text"
+    ],
+    "title": "声音合成请求",
+    "type": "object",
+    "x-apifox-orders": [
+      "tts_text",
+      "use_cache",
+      "voice_id"
+    ],
+    "description": "声音合成请求数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

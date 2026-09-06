@@ -1,0 +1,38 @@
+{
+  "name": "StoryPathCreate",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "candidate_id": {
+        "maxLength": 36,
+        "minLength": 36,
+        "title": "Candidate Id",
+        "type": "string",
+        "description": "要采用的分支候选编号。"
+      },
+      "title": {
+        "anyOf": [
+          {
+            "maxLength": 200,
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Title",
+        "description": "新分支标题。不传时后端使用候选信息生成默认标题。"
+      }
+    },
+    "required": [
+      "candidate_id"
+    ],
+    "title": "StoryPathCreate",
+    "type": "object",
+    "description": "从分支候选创建新的故事路径。",
+    "x-apifox-orders": [
+      "candidate_id",
+      "title"
+    ]
+  }
+}

@@ -1,0 +1,189 @@
+{
+  "name": "TaskRead",
+  "schema": {
+    "properties": {
+      "actual_cost": {
+        "title": "实际消耗",
+        "type": "string",
+        "description": "实际消耗。"
+      },
+      "attempt": {
+        "title": "尝试次数",
+        "type": "integer",
+        "description": "尝试次数。"
+      },
+      "created_at": {
+        "format": "date-time",
+        "title": "创建时间",
+        "type": "string",
+        "description": "创建时间。"
+      },
+      "error_code": {
+        "title": "错误码",
+        "type": "string",
+        "description": "错误码，可为空。",
+        "nullable": true
+      },
+      "error_detail": {
+        "title": "错误详情",
+        "type": "string",
+        "description": "错误详情，可为空。",
+        "nullable": true
+      },
+      "estimated_cost": {
+        "title": "预计消耗",
+        "type": "string",
+        "description": "预计消耗。"
+      },
+      "finished_at": {
+        "title": "结束时间",
+        "format": "date-time",
+        "type": "string",
+        "description": "结束时间。",
+        "nullable": true
+      },
+      "id": {
+        "title": "编号",
+        "type": "string",
+        "description": "编号，用于关联对应数据。"
+      },
+      "kind": {
+        "title": "类型",
+        "type": "string",
+        "description": "类型。"
+      },
+      "max_attempts": {
+        "title": "最大尝试次数",
+        "type": "integer",
+        "description": "最大尝试次数。"
+      },
+      "parent_task_id": {
+        "title": "父任务编号",
+        "type": "string",
+        "description": "父任务编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "progress": {
+        "title": "进度",
+        "type": "number",
+        "description": "进度。"
+      },
+      "project_id": {
+        "title": "项目编号",
+        "type": "integer",
+        "description": "项目编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "queued_at": {
+        "format": "date-time",
+        "title": "入队时间",
+        "type": "string",
+        "description": "入队时间。"
+      },
+      "reserved_cost": {
+        "title": "预留消耗",
+        "type": "string",
+        "description": "预留消耗。"
+      },
+      "result_refs": {
+        "title": "结果引用",
+        "type": "object",
+        "x-apifox-orders": [],
+        "description": "结果引用对象。",
+        "properties": {},
+        "x-apifox-ignore-properties": []
+      },
+      "root_task_id": {
+        "title": "根任务编号",
+        "type": "string",
+        "description": "根任务编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "source_refs": {
+        "title": "来源引用",
+        "type": "object",
+        "x-apifox-orders": [],
+        "description": "来源引用对象。",
+        "properties": {},
+        "x-apifox-ignore-properties": []
+      },
+      "stage": {
+        "title": "阶段",
+        "type": "string",
+        "description": "阶段，可为空。",
+        "nullable": true
+      },
+      "started_at": {
+        "title": "开始时间",
+        "format": "date-time",
+        "type": "string",
+        "description": "开始时间。",
+        "nullable": true
+      },
+      "status": {
+        "title": "状态",
+        "type": "string",
+        "description": "状态。"
+      },
+      "updated_at": {
+        "format": "date-time",
+        "title": "更新时间",
+        "type": "string",
+        "description": "更新时间。"
+      }
+    },
+    "required": [
+      "id",
+      "root_task_id",
+      "parent_task_id",
+      "project_id",
+      "kind",
+      "status",
+      "stage",
+      "progress",
+      "source_refs",
+      "result_refs",
+      "attempt",
+      "max_attempts",
+      "error_code",
+      "error_detail",
+      "estimated_cost",
+      "reserved_cost",
+      "actual_cost",
+      "queued_at",
+      "started_at",
+      "finished_at",
+      "created_at",
+      "updated_at"
+    ],
+    "title": "任务读取结果",
+    "type": "object",
+    "x-apifox-orders": [
+      "actual_cost",
+      "attempt",
+      "created_at",
+      "error_code",
+      "error_detail",
+      "estimated_cost",
+      "finished_at",
+      "id",
+      "kind",
+      "max_attempts",
+      "parent_task_id",
+      "progress",
+      "project_id",
+      "queued_at",
+      "reserved_cost",
+      "result_refs",
+      "root_task_id",
+      "source_refs",
+      "stage",
+      "started_at",
+      "status",
+      "updated_at"
+    ],
+    "description": "任务读取结果数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

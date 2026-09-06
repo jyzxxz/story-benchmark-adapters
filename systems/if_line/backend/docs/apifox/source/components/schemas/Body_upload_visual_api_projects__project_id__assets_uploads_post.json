@@ -1,0 +1,83 @@
+{
+  "name": "Body_upload_visual_api_projects__project_id__assets_uploads_post",
+  "schema": {
+    "properties": {
+      "asset_type": {
+        "title": "Asset Type",
+        "type": "string",
+        "description": "素材类型，自由字符串但建议使用 portrait/background/keyframe，便于后续列表筛选和资源槽绑定。"
+      },
+      "description": {
+        "default": "",
+        "title": "Description",
+        "type": "string",
+        "description": "素材说明，可为空。"
+      },
+      "file": {
+        "format": "binary",
+        "title": "File",
+        "type": "string",
+        "description": "要上传的图片文件。当前后端限制最大 25 MB。"
+      },
+      "ownership_scope": {
+        "default": "session",
+        "title": "Ownership Scope",
+        "type": "string",
+        "description": "素材归属范围。默认 session；项目级素材建议按后端约定传 project，阅读会话临时素材可使用 session。"
+      },
+      "reading_session_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Reading Session Id",
+        "description": "阅读会话编号。上传阅读会话临时素材时传；作者侧项目素材通常不传。"
+      },
+      "rights_attested": {
+        "title": "Rights Attested",
+        "type": "boolean",
+        "description": "必须为 true，表示上传者确认有权使用该素材。"
+      },
+      "target_json": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Target Json",
+        "description": "可选结构化目标上下文，JSON 字符串。例如绑定来源、章节、槽位、用途等；没有明确需求时不传。"
+      },
+      "target_name": {
+        "title": "Target Name",
+        "type": "string",
+        "description": "素材显示名称，例如“第一章咖啡馆背景”“牢梁默认立绘”。"
+      }
+    },
+    "required": [
+      "file",
+      "asset_type",
+      "target_name",
+      "rights_attested"
+    ],
+    "title": "Body_upload_visual_api_projects__project_id__assets_uploads_post",
+    "type": "object",
+    "description": "上传视觉素材表单。该接口会创建新的逻辑素材 asset，并同时创建第一个素材版本 asset_version。",
+    "x-apifox-orders": [
+      "asset_type",
+      "description",
+      "file",
+      "ownership_scope",
+      "reading_session_id",
+      "rights_attested",
+      "target_json",
+      "target_name"
+    ]
+  }
+}

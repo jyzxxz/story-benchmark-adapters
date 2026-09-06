@@ -1,0 +1,35 @@
+{
+  "name": "ServerAgentInputRequest",
+  "schema": {
+    "type": "object",
+    "title": "服务端 Agent 输入请求",
+    "description": "向 Agent thread 提交一轮用户输入。前端工具结果不要走本接口，收到 waiting_input 事件时按前端运行时协议处理。",
+    "properties": {
+      "content": {
+        "type": "string",
+        "default": "",
+        "title": "用户输入",
+        "description": "本轮用户输入正文。"
+      },
+      "prompt": {
+        "type": "string",
+        "default": "",
+        "title": "本轮补充上下文",
+        "description": "本轮额外补充给 Agent 的临时上下文，不作为长期系统提示，也不会替代用户输入。普通聊天 UI 可以留空；适合内部调用时传当前页面选中的项目、章节、资源等上下文。"
+      },
+      "mode": {
+        "type": "string",
+        "nullable": true,
+        "title": "运行模式",
+        "description": "本轮临时切换运行模式；不传则沿用 thread 当前模式。"
+      }
+    },
+    "x-apifox-orders": [
+      "content",
+      "prompt",
+      "mode"
+    ],
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

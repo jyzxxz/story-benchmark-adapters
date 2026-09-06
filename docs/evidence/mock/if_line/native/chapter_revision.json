@@ -1,0 +1,28 @@
+{
+  "id": "8c0d9dfc-a4ea-4a40-9447-7acd753fd139",
+  "chapter_slot_id": "16837197-e5a8-4f55-8c8a-15d2ca2ad962",
+  "created_for_story_path_id": "c459e651-1b71-4ee5-99d9-108c961c8625",
+  "parent_revision_id": null,
+  "revision_no": 1,
+  "context_manifest": {
+    "project_id": 1,
+    "story_path_id": "c459e651-1b71-4ee5-99d9-108c961c8625",
+    "path_chapter_id": "198b3e13-6e47-40ae-8295-1181e57dcf74",
+    "bible_revision_id": "c240990c-d89a-499d-9657-768d9ee151b4",
+    "bible_content_hash": "da0b440db351a48d7e4d0b82c026010ea690655842adc61e1e41962d0d8b1be5",
+    "outline_revision_id": "ca6cc31d-3f99-4c35-b848-141580503bda",
+    "outline_chapter_hash": "ce99db867d54d7ad27ddcb620fea58132d4085321954bba77723b973915eb159",
+    "state_snapshot_id": null,
+    "state_hash": null,
+    "fork": {
+      "parent_path_id": null,
+      "checkpoint_node_id": null,
+      "candidate_id": null
+    },
+    "fork_choice": null,
+    "ancestors": []
+  },
+  "context_hash": "f3424755ae4df90752933b751f564b9321a298c7f0b795556627361e02bb1456",
+  "content_hash": "f9face924b6f4c16974b6d79bcc29480c17eb94483f67e62226abe61b02ae6bc",
+  "content": "雨继续下着。"
+}

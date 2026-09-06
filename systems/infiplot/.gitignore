@@ -1,0 +1,37 @@
+node_modules
+.pnpm-store
+.next
+dist
+build
+out
+*.tsbuildinfo
+
+.env
+.env.local
+.env.*.local
+
+.vercel
+.turbo
+.claude
+
+.open-next
+.wrangler
+.opendeploy
+
+.DS_Store
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+repomix-output.xml
+
+users.md
+.dev.vars
+
+pitch/
+
+# OpenDeploy-only build with hardcoded public proxy URL — local, never commit
+# (a public fork would route image traffic through our Cloudflare Worker).
+Dockerfile.opendeploy
+
+piolium/

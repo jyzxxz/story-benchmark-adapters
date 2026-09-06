@@ -1,0 +1,60 @@
+{
+  "name": "BlockingItem",
+  "schema": {
+    "properties": {
+      "code": {
+        "title": "Code",
+        "type": "string",
+        "description": "问题代码，例如 bible.head_missing、chapter.head_missing、script.head_missing。"
+      },
+      "detail": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Detail",
+        "description": "面向开发和排查的详细说明。"
+      },
+      "path_chapter_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Path Chapter Id",
+        "description": "相关路径章节编号，可为空。"
+      },
+      "story_path_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Story Path Id",
+        "description": "相关故事路径编号，可为空。"
+      }
+    },
+    "required": [
+      "code"
+    ],
+    "title": "BlockingItem",
+    "type": "object",
+    "description": "阻塞项。用于告诉前端当前还缺哪一步。",
+    "x-apifox-orders": [
+      "code",
+      "detail",
+      "path_chapter_id",
+      "story_path_id"
+    ]
+  }
+}

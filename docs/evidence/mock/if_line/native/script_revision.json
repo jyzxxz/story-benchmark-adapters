@@ -1,0 +1,70 @@
+{
+  "id": "f589a69f-7728-49a5-8690-89e3e7339221",
+  "chapter_revision_id": "8c0d9dfc-a4ea-4a40-9447-7acd753fd139",
+  "revision_no": 1,
+  "source_hash": "8c040e3a06abf2fb2b1aab9a025a4cec847873faf305378cc492a0ed7348433c",
+  "script_hash": "f5f6838c34fc12e946b3bf3a1c03c7863e61e35f7da23fb56805b64e060b9b2a",
+  "script_json": {
+    "schema_version": "script-ir-v3",
+    "chapter_revision_id": "8c0d9dfc-a4ea-4a40-9447-7acd753fd139",
+    "bible_revision_id": "c240990c-d89a-499d-9657-768d9ee151b4",
+    "outline_revision_id": "ca6cc31d-3f99-4c35-b848-141580503bda",
+    "source": {
+      "content_hash": "f9face924b6f4c16974b6d79bcc29480c17eb94483f67e62226abe61b02ae6bc",
+      "character_count": 6
+    },
+    "characters": [],
+    "spans": [
+      {
+        "span_id": "span-0001",
+        "kind": "paragraph",
+        "start": 0,
+        "end": 6,
+        "text": "雨继续下着。",
+        "paragraph_id": "paragraph-0001"
+      }
+    ],
+    "scenes": [
+      {
+        "scene_id": "scene-001",
+        "order_index": 0,
+        "title": "门廊",
+        "location": "门廊",
+        "paragraph_ids": [
+          "paragraph-0001"
+        ]
+      }
+    ],
+    "paragraphs": [
+      {
+        "paragraph_id": "paragraph-0001",
+        "order_index": 0,
+        "source_span_id": "span-0001",
+        "source_start": 0,
+        "source_end": 6,
+        "source_text": "雨继续下着。",
+        "text": "雨继续下着。",
+        "kind": "narration",
+        "scene_id": "scene-001",
+        "speaker_character_id": null,
+        "speaker_name": "旁白",
+        "unregistered_speaker": false,
+        "speaker_display_name": null,
+        "stage_events": [],
+        "emotion": "neutral",
+        "keyframe_required": false,
+        "keyframe_prompt": ""
+      }
+    ],
+    "annotation_gaps": [],
+    "coverage": {
+      "mode": "llm-segments-v2",
+      "total_characters": 6,
+      "covered_characters": 6,
+      "coverage_ratio": 1.0,
+      "content_hash": "f9face924b6f4c16974b6d79bcc29480c17eb94483f67e62226abe61b02ae6bc",
+      "paragraph_count": 1,
+      "span_count": 1
+    }
+  }
+}

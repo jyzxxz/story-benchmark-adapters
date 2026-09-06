@@ -1,0 +1,39 @@
+{
+  "name": "PublicationReadiness",
+  "schema": {
+    "properties": {
+      "authoring_fingerprint": {
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Authoring Fingerprint",
+        "type": "string",
+        "description": "当前已审核创作产物的指纹。发布接口必须原样传回 expected_authoring_fingerprint。"
+      },
+      "blocking_items": {
+        "items": {
+          "$ref": "#/components/schemas/BlockingItem"
+        },
+        "title": "Blocking Items",
+        "type": "array",
+        "description": "阻塞发布的问题列表。为空才表示可发布。"
+      },
+      "ready": {
+        "title": "Ready",
+        "type": "boolean",
+        "description": "是否满足发布条件。false 时不能发布。"
+      }
+    },
+    "required": [
+      "ready",
+      "authoring_fingerprint",
+      "blocking_items"
+    ],
+    "title": "PublicationReadiness",
+    "type": "object",
+    "description": "发布前检查响应。前端发布按钮应根据 ready 判断是否可发布。",
+    "x-apifox-orders": [
+      "authoring_fingerprint",
+      "blocking_items",
+      "ready"
+    ]
+  }
+}

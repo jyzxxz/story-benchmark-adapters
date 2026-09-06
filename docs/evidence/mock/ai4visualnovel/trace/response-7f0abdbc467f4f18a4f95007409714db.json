@@ -1,0 +1,19 @@
+{
+  "id": "synthetic-response",
+  "model": "fixture-model",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "<scene>教室</scene>\n<content id=\"旁白\">CAMPUS_01_NATIVE_MOCK生成正文。</content>\n<content id=\"林\">请作选择。</content>\n[CHOICE]\n<choice target=\"node1\">追查</choice>\n<choice target=\"node2\">等待</choice>"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 10,
+    "completion_tokens": 20,
+    "total_tokens": 30
+  }
+}

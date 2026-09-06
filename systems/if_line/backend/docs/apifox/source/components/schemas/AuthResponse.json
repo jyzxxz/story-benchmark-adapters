@@ -1,0 +1,23 @@
+{
+  "name": "AuthResponse",
+  "schema": {
+    "properties": {
+      "user": {
+        "$ref": "#/components/schemas/UserResponse",
+        "title": "用户信息",
+        "description": "用户信息。"
+      }
+    },
+    "required": [
+      "user"
+    ],
+    "title": "认证响应",
+    "type": "object",
+    "x-apifox-orders": [
+      "user"
+    ],
+    "description": "认证响应数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

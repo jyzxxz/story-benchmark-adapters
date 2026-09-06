@@ -1,0 +1,56 @@
+{
+  "name": "ChapterBatchRequest",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "instructions": {
+        "anyOf": [
+          {
+            "maxLength": 12000,
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Instructions",
+        "description": "本次生成的附加指令，自由文本，不是枚举，也不是固定业务码。可以来自用户输入、前端表单或运营预设，例如“更轻松幽默”“控制在 3 章”“减少技术术语”。不传或传 null 时，后端按项目设定、当前版本上下文和默认提示词生成。"
+      },
+      "path_chapter_ids": {
+        "items": {
+          "type": "string"
+        },
+        "minItems": 1,
+        "title": "Path Chapter Ids",
+        "type": "array",
+        "description": "要生成正文的路径章节编号列表，不是旧 chapter_index。列表内不能重复。"
+      },
+      "bible_revision_id": {
+        "title": "可选物化草稿锚点：故事圣经修订 id。与 outline_revision_id 成对出现；都不传沿用 head。",
+        "type": "string",
+        "minLength": 36,
+        "maxLength": 36,
+        "description": "可选物化草稿锚点：故事圣经修订 id。与 outline_revision_id 成对出现；都不传沿用 head。",
+        "nullable": true
+      },
+      "outline_revision_id": {
+        "title": "可选物化草稿锚点：大纲修订 id（需与传入 bible 锚点配套）。",
+        "type": "string",
+        "minLength": 36,
+        "maxLength": 36,
+        "description": "可选物化草稿锚点：大纲修订 id（需与传入 bible 锚点配套）。",
+        "nullable": true
+      }
+    },
+    "required": [
+      "path_chapter_ids"
+    ],
+    "title": "ChapterBatchRequest",
+    "type": "object",
+    "description": "批量生成章节正文任务请求。\n2026-08：新增可选成对锚点；批量内部按 provisional 链自管前章上下文。",
+    "x-apifox-orders": [
+      "instructions",
+      "path_chapter_ids"
+    ]
+  }
+}

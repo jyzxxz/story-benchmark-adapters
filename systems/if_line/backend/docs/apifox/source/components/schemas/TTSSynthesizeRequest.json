@@ -1,0 +1,121 @@
+{
+  "name": "TTSSynthesizeRequest",
+  "schema": {
+    "description": "文本转语音合成请求数据模型。",
+    "properties": {
+      "age": {
+        "description": "年龄分组，可为空。只能填 young、middle、elderly，不要填数字年龄。",
+        "enum": [
+          "young",
+          "middle",
+          "elderly"
+        ],
+        "example": "young",
+        "title": "年龄",
+        "type": "string",
+        "nullable": true
+      },
+      "character_name": {
+        "description": "角色名称，可为空。",
+        "example": "烟静怡",
+        "title": "角色名称",
+        "maxLength": 100,
+        "type": "string",
+        "nullable": true
+      },
+      "character_voice": {
+        "description": "角色卡里的 voice 字段，可为空。用于让后端匹配音色，不是直接传 voice_id。",
+        "example": null,
+        "title": "character语音",
+        "maxLength": 200,
+        "type": "string",
+        "nullable": true
+      },
+      "emotion": {
+        "description": "情绪，可为空。只能填 calm、happy、sad、angry、excited。",
+        "enum": [
+          "calm",
+          "happy",
+          "sad",
+          "angry",
+          "excited"
+        ],
+        "example": "sad",
+        "title": "情绪",
+        "type": "string",
+        "nullable": true
+      },
+      "emotion_prompt": {
+        "description": "直接指定已配置的情绪 prompt，可为空。普通试听不建议传。",
+        "enum": [
+          "calm",
+          "happy",
+          "sad",
+          "angry",
+          "excited"
+        ],
+        "example": null,
+        "title": "情绪提示词",
+        "maxLength": 50,
+        "type": "string",
+        "nullable": true
+      },
+      "gender": {
+        "description": "性别，可为空。只能填 male 或 female，不要填中文。",
+        "enum": [
+          "male",
+          "female"
+        ],
+        "example": "female",
+        "title": "性别",
+        "type": "string",
+        "nullable": true
+      },
+      "project_id": {
+        "description": "项目编号，可为空。只有项目内角色音色绑定时才传，且必须是当前用户自己的项目。",
+        "example": null,
+        "title": "项目编号",
+        "type": "integer",
+        "nullable": true
+      },
+      "speaker": {
+        "description": "直接指定已配置的 TTS 音色 ID，可为空。例如 MiniMax 默认 male-qn-qingse。",
+        "example": "male-qn-qingse",
+        "title": "说话人",
+        "maxLength": 100,
+        "type": "string",
+        "nullable": true
+      },
+      "text": {
+        "description": "要合成的文本。",
+        "example": "测试成功。",
+        "maxLength": 600,
+        "minLength": 1,
+        "title": "文本",
+        "type": "string"
+      }
+    },
+    "required": [
+      "text"
+    ],
+    "example": {
+      "text": "测试成功。",
+      "speaker": "male-qn-qingse"
+    },
+    "title": "文本转语音合成请求",
+    "type": "object",
+    "x-apifox-orders": [
+      "text",
+      "speaker",
+      "character_name",
+      "character_voice",
+      "gender",
+      "age",
+      "emotion",
+      "emotion_prompt",
+      "project_id"
+    ],
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

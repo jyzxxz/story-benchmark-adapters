@@ -1,0 +1,45 @@
+{
+  "name": "AuthoringProjection",
+  "schema": {
+    "properties": {
+      "blocking_items": {
+        "items": {
+          "$ref": "#/components/schemas/BlockingItem"
+        },
+        "title": "Blocking Items",
+        "type": "array"
+      },
+      "has_unpublished_changes": {
+        "title": "Has Unpublished Changes",
+        "type": "boolean"
+      },
+      "running_task_count": {
+        "minimum": 0.0,
+        "title": "Running Task Count",
+        "type": "integer"
+      },
+      "stage": {
+        "enum": [
+          "bible",
+          "story_paths",
+          "outlines",
+          "chapters",
+          "scripts",
+          "vn_graphs",
+          "ready",
+          "blocked"
+        ],
+        "title": "Stage",
+        "type": "string"
+      }
+    },
+    "required": [
+      "stage",
+      "blocking_items",
+      "running_task_count",
+      "has_unpublished_changes"
+    ],
+    "title": "AuthoringProjection",
+    "type": "object"
+  }
+}

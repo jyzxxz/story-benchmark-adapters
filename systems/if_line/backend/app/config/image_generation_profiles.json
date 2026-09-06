@@ -1,0 +1,1676 @@
+{
+  "emotions": {
+    "neutral": {
+      "name_cn": "平静",
+      "prompt": "neutral expression, calm face, relaxed gaze, composed",
+      "description": "默认状态、日常对话"
+    },
+    "smile": {
+      "name_cn": "微笑",
+      "prompt": "subtle restrained smile, gentle closed mouth, warm expression",
+      "description": "温情、释然"
+    },
+    "happy": {
+      "name_cn": "大笑",
+      "prompt": "bright joyful smile, laughing, happy expression, cheerful",
+      "description": "欢庆、胜利"
+    },
+    "angry": {
+      "name_cn": "愤怒",
+      "prompt": "furrowed brows, gritted teeth, intense glare, angry expression, furious",
+      "description": "冲突、对峙"
+    },
+    "sad": {
+      "name_cn": "悲伤",
+      "prompt": "downcast eyes, trembling lips, sad expression, melancholic, sorrowful",
+      "description": "失落、离别"
+    },
+    "cry": {
+      "name_cn": "哭泣",
+      "prompt": "tears streaming, reddened eyes, crying, weeping, tearful",
+      "description": "痛失、绝望"
+    },
+    "surprise": {
+      "name_cn": "惊讶",
+      "prompt": "eyes wide open, mouth agape, surprised expression, shocked",
+      "description": "意外、揭露"
+    },
+    "fear": {
+      "name_cn": "恐惧",
+      "prompt": "trembling, pale face, fearful expression, scared, terrified",
+      "description": "危机、威胁"
+    }
+  },
+  "outfits": {
+    "default": {
+      "name_cn": "常服",
+      "historical": "hanfu, traditional Chinese clothing",
+      "modern": "casual clothes, T-shirt",
+      "sci-fi": "spacesuit, futuristic clothing",
+      "fantasy": "mage robe, fantasy clothing",
+      "anime": "school uniform, anime clothing"
+    },
+    "armor": {
+      "name_cn": "战甲",
+      "historical": "Chinese lamellar armor, scale armor, iron armor",
+      "modern": "tactical vest, military gear",
+      "sci-fi": "power armor, mech suit",
+      "fantasy": "enchanted plate armor, magical armor",
+      "anime": "ninja outfit, combat gear"
+    },
+    "formal": {
+      "name_cn": "正装",
+      "historical": "official robe, court dress",
+      "modern": "suit and tie, formal attire",
+      "sci-fi": "federation uniform",
+      "fantasy": "ceremonial robe, ritual attire",
+      "anime": "student uniform, formal school attire"
+    },
+    "mourning": {
+      "name_cn": "素服",
+      "historical": "white mourning clothes, plain white hanfu",
+      "modern": "black formal wear",
+      "sci-fi": "memorial suit",
+      "fantasy": "priest robe, white ceremonial robes",
+      "anime": "black school uniform"
+    },
+    "injured": {
+      "name_cn": "伤损",
+      "historical": "blood-stained clothes, bandages",
+      "modern": "medical bandages, hospital gown",
+      "sci-fi": "damaged suit, repair marks",
+      "fantasy": "enchanted bandages, mystical healing wraps",
+      "anime": "anime injury effects, bandaged"
+    }
+  },
+  "poses": {
+    "standing": {
+      "name_cn": "站立",
+      "prompt": "relaxed standing pose, weight shifted naturally onto one leg, subtle shoulder and hip asymmetry, relaxed arms and hands, believable balance",
+      "vn_graph_enter": "FadeIn"
+    },
+    "pointing": {
+      "name_cn": "指向",
+      "prompt": "pointing with one arm extended from a naturally rotated shoulder, the other arm relaxed, grounded asymmetric stance",
+      "vn_graph_enter": "SlideInLeft"
+    },
+    "combat": {
+      "name_cn": "战斗",
+      "prompt": "grounded combat stance with clear weight distribution, bent knees, rotated torso, guarded hands, believable balance and tension",
+      "vn_graph_enter": "PopIn"
+    },
+    "kneeling": {
+      "name_cn": "跪伏",
+      "prompt": "kneeling on one knee with body weight settled naturally, supporting foot planted, torso balanced, hands posed with purpose",
+      "vn_graph_enter": "FadeIn"
+    },
+    "reaching": {
+      "name_cn": "伸手",
+      "prompt": "reaching with a naturally extended arm, shoulder and torso following the motion, fingers separated in a believable grasp",
+      "vn_graph_enter": "SlideInBottom"
+    },
+    "defensive": {
+      "name_cn": "防御",
+      "prompt": "asymmetric defensive stance, weight grounded over both feet, shoulders turned, hands guarding naturally",
+      "vn_graph_enter": "FadeIn"
+    },
+    "sitting": {
+      "name_cn": "端坐",
+      "prompt": "naturally seated pose with settled body weight, relaxed shoulders, subtle torso and hand asymmetry, no visible furniture",
+      "vn_graph_enter": "FadeIn"
+    },
+    "turning": {
+      "name_cn": "回眸",
+      "prompt": "looking over shoulder, turning back, three-quarter rear view",
+      "vn_graph_enter": "SlideInRight"
+    },
+    "leaning": {
+      "name_cn": "倚靠",
+      "prompt": "casual leaning posture with shifted hips, one shoulder lower, relaxed arm placement, implied support outside frame",
+      "vn_graph_enter": "FadeIn"
+    },
+    "bowing": {
+      "name_cn": "行礼",
+      "prompt": "formal bow, hands clasped, deep respectful bow",
+      "vn_graph_enter": "FadeIn"
+    },
+    "holding_item": {
+      "name_cn": "持物",
+      "prompt": "holding the story-specified item with a believable grip, relaxed wrist, elbow and shoulder aligned naturally",
+      "vn_graph_enter": "FadeIn"
+    },
+    "walking": {
+      "name_cn": "行走",
+      "prompt": "mid-stride walking pose, dynamic gait, slight forward lean",
+      "vn_graph_enter": "SlideInLeft"
+    },
+    "fleeing": {
+      "name_cn": "奔逃",
+      "prompt": "running away, hurried flight, glancing back while running",
+      "vn_graph_enter": "SlideInRight"
+    },
+    "fallen": {
+      "name_cn": "倒地",
+      "prompt": "collapsed on the ground, fallen posture, lying on side",
+      "vn_graph_enter": "FadeIn"
+    },
+    "gazing": {
+      "name_cn": "凝望",
+      "prompt": "gazing into the distance, contemplative far-off stare, wind in hair",
+      "vn_graph_enter": "FadeIn"
+    }
+  },
+  "architecture_vocabulary": {
+    "_comment": "B05 — 场景建筑词库，避免单字 'palace' 被画成无关建筑。每项给 3-5 个具体英文视觉词。",
+    "palace": "imperial palace, vermilion walls, golden glazed roof tiles, sweeping eaves, dragon carvings",
+    "hall": "grand ceremonial hall, towering lacquered columns, coffered ceiling, marble floor",
+    "temple": "Buddhist temple, multi-tiered pagoda, stone lanterns, incense smoke, prayer flags",
+    "courtyard": "open stone courtyard, central moss garden, surrounding wooden galleries",
+    "street": "ancient market street, wooden shop fronts, hanging lanterns, cobblestone road",
+    "barracks": "military camp, rows of tents, watchtower at the corner, training ground",
+    "tent": "commander's tent, draped silk banners, low wooden table, fur rugs on the ground",
+    "garden": "ornamental garden, koi pond, zigzag bridge, weeping willow, plum blossoms",
+    "study": "scholar's study, wooden bookshelves, ink stone, calligraphy scrolls",
+    "bedchamber": "inner bedchamber, carved wooden bed frame, gauze curtains, bronze mirror",
+    "city_wall": "ancient city wall, battlements, grey brick ramparts, distant rooftops",
+    "battlefield": "open battlefield, trampled grass, broken banners, distant smoke columns",
+    "modern_office": "modern office, glass walls, fluorescent ceiling lights, minimalist desks",
+    "modern_street": "modern city street, neon signs, wet asphalt, towering skyscrapers",
+    "scifi_bridge": "spaceship bridge, holographic displays, dark metal panels, blue ambient glow",
+    "scifi_lab": "futuristic laboratory, transparent containment pods, soft white LED lighting",
+    "fantasy_tower": "wizard's tower, spiraling crystal staircase, floating magical orbs",
+    "fantasy_forest": "enchanted forest, bioluminescent plants, ancient twisted trees, soft mist"
+  },
+  "action_verbs": {
+    "_comment": "C08 — 视觉强动词词库。从 _extract_action_from_conflict 的硬编码升级。",
+    "fighting": "clashing swords, sparks flying, intense close combat",
+    "attacking": "lunging forward with blade extended, fierce offensive strike",
+    "defending": "raising shield to block, bracing stance against impact",
+    "running": "sprinting across the scene, motion-blurred legs, wind in hair",
+    "chasing": "pursuing target with outstretched arm, dynamic forward motion",
+    "standing": "standing still, composed posture",
+    "kneeling": "kneeling on one knee, head bowed",
+    "crying": "tears streaming down cheeks, hand covering mouth",
+    "laughing": "throwing head back in laughter, eyes crinkled",
+    "shouting": "mouth open in a yell, finger pointing, body tense",
+    "drawing_sword": "drawing a blade from its scabbard, sharp diagonal motion",
+    "pointing_sword": "thrusting sword forward, blade tip aimed at target",
+    "embracing": "wrapping arms around the other, intimate close embrace",
+    "pushing_away": "shoving the other back, arm extended in refusal",
+    "fainting": "collapsing sideways, body going limp, supported by another",
+    "gazing_back": "looking over shoulder, wistful backward glance",
+    "presenting_gift": "kneeling and offering a small box with both hands",
+    "reading_scroll": "unrolling a scroll, eyes scanning the text"
+  },
+  "composition_vocabulary": {
+    "_comment": "C05/A03 — 构图与镜头语言。CG 关键帧和立绘景别通用。",
+    "shots": {
+      "full_body": "full body shot, entire character visible from head to feet, vertical composition",
+      "half_body": "half body shot from waist up, character centered",
+      "three_quarter": "three-quarter body shot from knees up",
+      "close_up": "close-up portrait, head and shoulders filling the frame",
+      "extreme_close_up": "extreme close-up on the face, eyes dominating the frame"
+    },
+    "angles": {
+      "eye_level": "eye-level angle, neutral perspective",
+      "low_angle": "low angle shot, looking up at subject, imposing",
+      "high_angle": "high angle shot, looking down at subject, vulnerable",
+      "dutch_angle": "dutch tilt angle, diagonal horizon, tension",
+      "bird_eye": "bird's eye view, top-down overhead shot"
+    },
+    "shot_counts": {
+      "single": "single character in frame",
+      "two_shot": "two-character confrontation, both visible in frame",
+      "wide_establishing": "wide cinematic establishing shot, environment dominant"
+    }
+  },
+  "emotion_intensity_for_keyframe": {
+    "_comment": "C04 — 关键帧情绪强度词库。LLM 根据章节情绪 + 强度生成视觉描述。",
+    "intense_high": "fierce determined expression, eyes blazing with intensity, body coiled with tension",
+    "intense_medium": "serious focused expression, jaw set, controlled energy",
+    "calm_serene": "serene composed expression, gentle gaze, soft smile",
+    "sad_melancholy": "downcast melancholic expression, trembling lips, glistening eyes",
+    "sad_despair": "broken despairing expression, face crumpled, tears streaming",
+    "fear_dread": "fearful wide eyes, pale face, body recoiling in terror",
+    "happy_warm": "warm tender smile, eyes crinkled with affection",
+    "happy_jubilant": "bright joyful laughter, head thrown back, beaming",
+    "surprise_shock": "eyes wide in shock, mouth slightly open, body frozen",
+    "angry_cold": "cold seething anger, narrowed eyes, tight-lipped glare",
+    "angry_explosive": "explosive rage, bared teeth, fists clenched, body rigid"
+  },
+  "moods": {
+    "default": {
+      "name_cn": "默认",
+      "prompt": "natural ambient lighting, neutral atmosphere",
+      "time_of_day": "any"
+    },
+    "day": {
+      "name_cn": "白天",
+      "prompt": "bright sunlight, clear blue sky, daylight, sunny day",
+      "time_of_day": "morning to afternoon"
+    },
+    "dusk": {
+      "name_cn": "黄昏",
+      "prompt": "golden hour, warm orange sky, sunset, dusk lighting",
+      "time_of_day": "evening"
+    },
+    "night": {
+      "name_cn": "夜晚",
+      "prompt": "deep blue moonlit sky, night time, stars, moonlight, lanterns glowing",
+      "time_of_day": "night"
+    },
+    "dawn": {
+      "name_cn": "黎明",
+      "prompt": "soft pink sky, pale gold, sunrise, early morning mist, dawn",
+      "time_of_day": "early morning"
+    },
+    "rain": {
+      "name_cn": "下雨",
+      "prompt": "heavy rain, rainy weather, rain drops, wet surfaces, overcast",
+      "time_of_day": "any"
+    },
+    "snow": {
+      "name_cn": "下雪",
+      "prompt": "gentle snowfall, snowing, white covering, winter scene",
+      "time_of_day": "any"
+    },
+    "fog": {
+      "name_cn": "雾天",
+      "prompt": "dense fog, misty, low visibility, atmospheric fog",
+      "time_of_day": "any"
+    },
+    "overcast": {
+      "name_cn": "阴天",
+      "prompt": "heavy grey overcast sky, flat diffused lighting, somber mood",
+      "time_of_day": "day"
+    },
+    "storm": {
+      "name_cn": "暴风",
+      "prompt": "violent thunderstorm, lightning forks across dark sky, driving rain",
+      "time_of_day": "any"
+    },
+    "snow_heavy": {
+      "name_cn": "大雪",
+      "prompt": "heavy snowfall, thick snowflakes, ground covered in deep white",
+      "time_of_day": "any"
+    },
+    "autumn": {
+      "name_cn": "秋意",
+      "prompt": "warm autumn tones, falling maple leaves, golden afternoon light",
+      "time_of_day": "afternoon"
+    },
+    "spring": {
+      "name_cn": "春光",
+      "prompt": "soft spring morning, cherry blossoms drifting, fresh green shoots",
+      "time_of_day": "morning"
+    },
+    "interior_candle": {
+      "name_cn": "烛光室内",
+      "prompt": "interior lit by candles, warm flickering orange glow, deep shadows",
+      "time_of_day": "night"
+    },
+    "interior_fire": {
+      "name_cn": "炉火室内",
+      "prompt": "interior with roaring fireplace, dancing flames, reddish ambient warmth",
+      "time_of_day": "evening"
+    },
+    "moonlit_blue": {
+      "name_cn": "月夜蓝",
+      "prompt": "deep blue moonlit scene, silver moonbeams, long cool shadows",
+      "time_of_day": "night"
+    }
+  },
+  "lighting_presets": {
+    "_comment": "B08 — 独立的光照字段词库，与 mood 解耦。",
+    "soft_diffused": "soft diffused lighting, gentle gradient shadows",
+    "harsh_directional": "harsh directional light, strong hard shadows",
+    "golden_hour": "golden hour lighting, warm rim light from low sun",
+    "blue_hour": "blue hour lighting, cool ambient from twilight sky",
+    "overcast_flat": "overcast flat lighting, minimal shadow contrast",
+    "candlelit": "candlelit warm flickering light, deep ambient shadows",
+    "moonlit": "moonlit cool blue lighting, silver highlights",
+    "rim_backlit": "rim backlit, silhouette with halo of light behind subject",
+    "spotlight": "single spotlight, dramatic pool of light in darkness",
+    "natural_window": "natural light from a side window, soft directional"
+  },
+  "genre_families": {
+    "historical": {
+      "name_cn": "历史古风",
+      "keywords": [
+        "历史",
+        "古代",
+        "战国",
+        "唐朝",
+        "武侠",
+        "仙侠",
+        "古风",
+        "宫廷"
+      ],
+      "style_prompt": "Chinese historical style, hanfu, traditional Chinese clothing, ancient China",
+      "forbidden": "Japanese armor, European plate armor, modern clothing",
+      "bg_style": "中国古典绘画审美，手绘背景质感，环境细节丰富"
+    },
+    "modern": {
+      "name_cn": "现代都市",
+      "keywords": [
+        "都市",
+        "现代",
+        "职场",
+        "校园",
+        "当代",
+        "城市"
+      ],
+      "style_prompt": "modern realistic style, contemporary fashion, modern setting",
+      "forbidden": "ancient clothing, fantasy elements",
+      "bg_style": "当代写实摄影风格，电影感调色，自然光线，细节丰富"
+    },
+    "sci-fi": {
+      "name_cn": "科幻未来",
+      "keywords": [
+        "科幻",
+        "末世",
+        "赛博",
+        "太空",
+        "机甲",
+        "未来",
+        "星际"
+      ],
+      "style_prompt": "sci-fi style, futuristic technology, cyberpunk, space age",
+      "forbidden": "ancient elements, fantasy magic",
+      "bg_style": "赛博朋克式反乌托邦写实感，霓虹未来氛围，电影概念美术，环境细节丰富"
+    },
+    "fantasy": {
+      "name_cn": "玄幻奇幻",
+      "keywords": [
+        "玄幻",
+        "奇幻",
+        "魔法",
+        "异世界",
+        "仙侠",
+        "神话"
+      ],
+      "style_prompt": "fantasy style, magical elements, mystical atmosphere",
+      "forbidden": "modern technology, sci-fi elements",
+      "bg_style": "奇幻插画质感，魔法氛围，绘画感概念美术，环境细节丰富"
+    },
+    "anime": {
+      "name_cn": "日式动漫",
+      "keywords": [
+        "同人",
+        "动漫",
+        "火影",
+        "海贼",
+        "二次元",
+        "日系"
+      ],
+      "style_prompt": "anime style, Japanese animation, manga style",
+      "forbidden": "realistic style",
+      "bg_style": "动画视觉小说背景美术，清透光影，环境细节丰富"
+    }
+  },
+  "size_presets": {
+    "portrait": {
+      "width": 1024,
+      "height": 1024,
+      "aspect_ratio": "1:1",
+      "description": "立绘尺寸，正方形"
+    },
+    "portrait_full": {
+      "width": 1024,
+      "height": 1536,
+      "aspect_ratio": "2:3",
+      "description": "立绘尺寸，全身像（竖版）"
+    },
+    "background": {
+      "width": 1536,
+      "height": 864,
+      "aspect_ratio": "16:9",
+      "description": "背景图尺寸，16:9 宽屏（letterbox 输出目标，provider 无视 size）"
+    },
+    "keyframe": {
+      "width": 1536,
+      "height": 864,
+      "aspect_ratio": "16:9",
+      "description": "关键帧尺寸，16:9 宽屏（同 background）"
+    }
+  },
+  "api_constraints": {
+    "min_size": 512,
+    "max_size": 2880,
+    "size_multiple": 32,
+    "max_pixels": 4194304,
+    "watermark_crop_px": 80
+  },
+  "rewriter": {
+    "_comment": "D02/D14 — LLM Rewriter 的 system prompt 和 few-shot 示例。被 prompt_rewriter_service 读取。",
+    "common_rules": [
+      "Output MUST be a JSON object with keys: subject, details, lighting, composition, style, negative_minimal.",
+      "Output language MUST be English only. Translate any Chinese input to visual English.",
+      "subject: 60-150 chars, the main visual subject with key traits.",
+      "details: 3-6 short visual strings, each 5-15 words.",
+      "negative_minimal: 2-5 short words. Never use long negative strings.",
+      "Do NOT mention the source language or 'as described'. Pure visual description only."
+    ],
+    "portrait": {
+      "system_prompt": "You are the final prompt author for visual-novel PORTRAIT generation. Your JSON final_prompt is sent VERBATIM to the image model: no backend style, framing, gender, pose, or transparency text will be appended.\n\nRULES:\n- Output JSON only: {\"final_prompt\": str}.\n- final_prompt MUST be one fluent, coherent English image prompt. Translate all Chinese inputs into visual English.\n- Integrate the character identity, gender presentation, stable face and hair, actual clothing details, signature accessories, emotion, natural pose, body mechanics, lighting, requested framing, and locked project visual style.\n- Treat requested_shot as authoritative. For full_body, say full body and keep the complete head, hands, clothing silhouette, accessories, and feet inside frame. For half_body, say half body or waist-up and keep the head, shoulders, and visible hands inside frame. NEVER mix full-body with half-body, waist-up, knees-up, or three-quarter-body crop instructions.\n- State exactly one isolated character on a fully transparent background, with no scenery, floor, cast shadow, furniture, decorative frame, text, or watermark.\n- Preserve the supplied visual bible's medium, linework, shading, texture, palette, and forbidden-style intent, but remove metadata labels and duplicate wording. Do not introduce an incompatible art family.\n- Use believable weight distribution, relaxed shoulders, subtle hip/shoulder asymmetry, naturally bent elbows and wrists, and relaxed separated fingers. Let emotion affect gaze and posture without theatrical exaggeration.\n- Never use an ID-photo pose, mannequin stance, T-pose, turnaround sheet, perfectly mirrored arms, fused fingers, duplicated limbs, or cropped hands.\n- Never mention FIELDS, contracts, fingerprints, the visual bible, backend processing, or the rewrite process.\n- Never mention other characters or scene elements.",
+      "few_shot": [
+        {
+          "input": {
+            "name": "李清照",
+            "appearance_zh": "身着素白丧服的年轻女子，眉目清丽，肤色白皙",
+            "emotion": "sad",
+            "outfit": "mourning",
+            "pose": "standing",
+            "genre": "historical",
+            "shot": "full_body"
+          },
+          "output": {
+            "final_prompt": "Exactly one isolated character, a young Chinese woman in her early twenties with a pale porcelain complexion, delicate brows, loose black hair pinned by one white jade hairpin, and a restrained sorrowful gaze, wearing flowing white mourning hanfu with a crossed collar and naturally folded silk; relaxed full-body stance with subtle shoulder and hip asymmetry, naturally bent elbows, separated fingers, complete head, hands, clothing silhouette, and feet fully inside frame; soft neutral side lighting, Tang dynasty Chinese painting aesthetic blended with clean cel-shaded visual-novel character art, fully transparent background, no scenery, floor, cast shadow, furniture, decorative frame, other characters, text, watermark, rigid mannequin pose, or character sheet."
+          }
+        }
+      ]
+    },
+    "background": {
+      "system_prompt": "你是 CogView-4 的视觉小说背景图提示词改写器，只处理 BACKGROUND 资产。输出必须是中文 JSON，键为 subject、details、lighting、composition、style、negative_minimal。\n\n背景图硬规则：所有背景必须完全空无一人。不得出现主角、命名角色、匿名人物、路人、守卫、士兵、侍从、商贩、人群、观众、旁观者、旅人、远景小人、剪影、背影、人形轮廓或任何人物照片。即使是集市、街道、城门、宫门、军营、战场、码头、酒馆、宴会厅、节日广场，也要画成空场建立镜头。\n\n保留内容：地点、建筑、景观、道具、材质、光线、天气、色彩、空间氛围。移除内容：角色姓名、角色动作、表情、服装、对白、人物关系、人物中心构图。\n\n风格按 genre 选择：historical 使用中国古典绘画审美和手绘背景质感；modern 使用当代写实摄影风格、电影感调色和自然光；sci-fi 使用赛博朋克式反乌托邦写实感和霓虹未来氛围；fantasy 使用奇幻插画质感；anime 使用动画视觉小说背景美术。不要在非 anime 类型中写动画、galgame 或新海诚。\n\n输出要求：subject 用 60-150 个中文字符描述纯空间；details 给 3-6 条环境细节；lighting 描述光线；composition 描述 16:9 环境建立镜头；style 描述画风；negative_minimal 给 2-5 个短词，必须包含命名角色、人物主体、肖像、面部特写、全身人物、半身人物、服装特写中的至少两个。只输出 JSON，不要解释。",
+      "few_shot": []
+    },
+    "keyframe": {
+      "system_prompt": "You are a CogView-4 prompt rewriter specialized for visual-novel KEYFRAME assets (cinematic scene with 1-3 characters in an environment).\n\nRULES:\n- Output JSON: {\"subject\": str, \"details\": [str], \"lighting\": str, \"composition\": str, \"style\": str, \"negative_minimal\": [str]}\n- Output language MUST be English only. Translate any Chinese input.\n- subject: 80-180 chars. Describe the COMPLETE action narrative: WHO is doing WHAT to WHOM, WHERE. Combine all characters and their interaction into one flowing description.\n- details: 3-6 strings. MUST include per-character position (left / center / right), per-character appearance essence, environment elements.\n- lighting: 5-15 words on dramatic lighting that supports the emotional beat.\n- composition: prefer 'medium-wide shot, two-character confrontation' or 'wide cinematic shot with characters in environment'. Explicitly state angle if dramatic (low angle, dutch tilt).\n- style: combine era + scene type + art style, e.g. 'Tang dynasty Chinese setting, visual novel CG art, painterly anime style'.\n- negative_minimal: 2-5 words like [\"text\", \"watermark\", \"extra characters\"].\n- Use STRONG ACTION VERBS: 'lunging forward with blade extended', 'clashing swords sparks flying', NOT just 'fighting'.\n- For multi-character keyframes, always specify each character's POSITION (left/center/right) and RELATION (aggressor/victim/bystander).",
+      "few_shot": [
+        {
+          "input": {
+            "event_zh": "李将军持剑怒视李清照",
+            "scene_zh": "朝堂",
+            "characters": [
+              {
+                "name": "李将军",
+                "role": "aggressor",
+                "appearance_zh": "身着玄色铠甲的少年将军，身形挺拔，眉目凌厉"
+              },
+              {
+                "name": "李清照",
+                "role": "victim",
+                "appearance_zh": "身着素白丧服的年轻女子"
+              }
+            ],
+            "emotion": "intense_high",
+            "genre": "historical"
+          },
+          "output": {
+            "subject": "young male general in black lacquered lamellar armor lunging forward with a drawn bronze sword pointed at a woman in white mourning hanfu who steps back with raised hands, set in an imperial court hall",
+            "details": [
+              "general on the left in three-quarter view, fierce glare and furrowed brows, armor plates catching the light",
+              "woman on the right retreating, frightened wide eyes, white silk swaying with her motion",
+              "polished marble floor of the imperial court with vermilion columns behind",
+              "sparks where the blade catches the high window light"
+            ],
+            "lighting": "dramatic side lighting from a high window, strong rim light on the general's armor",
+            "composition": "medium-wide shot, two-character confrontation, slight low angle for tension",
+            "style": "Tang dynasty Chinese setting, visual novel CG art, painterly anime style, official game art quality",
+            "negative_minimal": [
+              "text",
+              "watermark",
+              "extra characters"
+            ]
+          }
+        }
+      ]
+    },
+    "background_scene_extractor": {
+      "model": "deepseek-v4-flash",
+      "temperature": 0.2,
+      "max_tokens": 4096,
+      "response_format": {
+        "type": "json_object"
+      },
+      "system_prompt": {
+        "identity": "你是\"章节背景场景分析器\"，服务于视觉小说背景图生成。",
+        "instructions": "你的唯一任务，是从章节文本中提取\"可用于生成背景图的环境场景\"，而不是总结剧情。",
+        "rules": [
+          "只关注环境、建筑、室内陈设、地形、道具、天气、时间、光线、色调、空间关系、氛围、镜头类型、构图约束",
+          "发现以下任一变化时必须切成新场景：物理地点变化 / 同地点时间变化明显 / 同地点天气变化明显 / 同地点人群状态变化明显 / 同地点物理状态变化明显",
+          "不得因为对白、情绪或冲突本身切场景，除非它们改变了可视环境",
+          "不得输出故事概要、人物冲突摘要、对白转述",
+          "所有背景图都必须完全无人；people_policy.mode 必须设为 empty_required，即使场景是集市、操场、宴会厅、街道等公共活动空间",
+          "永远禁止命名角色进入背景图；永远禁止 single-person subject",
+          "environment_description 不得包含任何需要人在场才会发生的状态描述（如亮起的屏幕、冒着热气的饮品、摊开的书本、被使用的椅子、披挂的衣物、刚熄灭的灯），只描述静态物理环境本身",
+          "environment_description 不得包含暗示近期或曾经有人在场的痕迹类描述（如\"刚有人离开的椅子\"\"还温热的茶具\"\"仍在滴水的雨伞\"\"翻开的文件\"），只描述场景的物理状态",
+          "输出必须是严格 JSON 且符合给定 schema"
+        ],
+        "examples": [],
+        "context": "本章来自视觉小说，背景图将作为章节场景的视觉底板，必须以环境为主体。"
+      }
+    },
+    "background_style_classifier": {
+      "model": "deepseek-v4-flash",
+      "temperature": 0.1,
+      "max_tokens": 1024,
+      "response_format": {
+        "type": "json_object"
+      },
+      "system_prompt": {
+        "identity": "你是\"背景风格分类器\"。",
+        "instructions": "输入是已抽取好的单个 BackgroundSceneSpec。从受控风格词表中选择 3 到 5 个 style tags，覆盖 5 维度中至少 3 个：art_style / color_palette / lens_or_camera_feel / texture_or_rendering / mood。",
+        "rules": [
+          "不得新增人物、动作、对白、角色关系",
+          "不得修改 scene_name、scene_selector、people_policy",
+          "只可从给定词表中选标签；没有合适项时选最接近项，不自造新词",
+          "输出严格 JSON"
+        ],
+        "examples": [],
+        "context": "风格标签将被拼接到背景图 prompt 末尾，必须仅描述视觉/美术属性。"
+      }
+    }
+  },
+  "soldier_co_location_words": [
+    "军帐",
+    "兵营",
+    "营地",
+    "营寨",
+    "校场",
+    "朝堂",
+    "宫殿",
+    "城楼",
+    "城墙",
+    "关卡",
+    "哨所",
+    "烽火台",
+    "帅帐",
+    "大帐"
+  ],
+  "_version": "2.0.0-stage-bg-ar",
+  "background_scene_taxonomy": {
+    "description": "6 大类场景原型，每类 4-8 个原型。当前产品策略强制所有背景图 empty_required；历史 default_people_policy 仅保留兼容旧数据。",
+    "categories": {
+      "public_commerce": {
+        "name_cn": "公共商业/集市",
+        "default_people_policy": "background_groups_required",
+        "prototypes": [
+          {
+            "key": "market_street",
+            "keywords_zh": [
+              "集市",
+              "街市",
+              "商街",
+              "长街"
+            ],
+            "keywords_en": [
+              "market",
+              "bazaar",
+              "marketplace"
+            ]
+          },
+          {
+            "key": "harbor_dock",
+            "keywords_zh": [
+              "码头",
+              "港口",
+              "渡口"
+            ],
+            "keywords_en": [
+              "dock",
+              "harbor",
+              "port",
+              "pier"
+            ]
+          },
+          {
+            "key": "post_station",
+            "keywords_zh": [
+              "驿站",
+              "客栈",
+              "茶寮"
+            ],
+            "keywords_en": [
+              "post station",
+              "tavern",
+              "inn"
+            ]
+          },
+          {
+            "key": "city_square",
+            "keywords_zh": [
+              "广场",
+              "街口",
+              "桥头"
+            ],
+            "keywords_en": [
+              "square",
+              "plaza"
+            ]
+          },
+          {
+            "key": "trade_caravan",
+            "keywords_zh": [
+              "商队",
+              "马队",
+              "驼队"
+            ],
+            "keywords_en": [
+              "caravan"
+            ]
+          },
+          {
+            "key": "shopfront",
+            "keywords_zh": [
+              "店铺",
+              "铺面",
+              "酒肆",
+              "茶楼"
+            ],
+            "keywords_en": [
+              "shop",
+              "storefront"
+            ]
+          }
+        ]
+      },
+      "civic_military": {
+        "name_cn": "市政/军事",
+        "default_people_policy": "background_people_optional",
+        "prototypes": [
+          {
+            "key": "city_gate",
+            "keywords_zh": [
+              "城门",
+              "宫门",
+              "阙楼"
+            ],
+            "keywords_en": [
+              "city gate",
+              "palace gate"
+            ]
+          },
+          {
+            "key": "yamen_court",
+            "keywords_zh": [
+              "衙门",
+              "府衙",
+              "公堂"
+            ],
+            "keywords_en": [
+              "yamen",
+              "court",
+              "magistracy"
+            ]
+          },
+          {
+            "key": "military_camp",
+            "keywords_zh": [
+              "军营",
+              "营寨",
+              "帅帐"
+            ],
+            "keywords_en": [
+              "military camp",
+              "barracks"
+            ]
+          },
+          {
+            "key": "battlefield_distant",
+            "keywords_zh": [
+              "战场",
+              "阵地",
+              "前线"
+            ],
+            "keywords_en": [
+              "battlefield",
+              "frontline"
+            ]
+          },
+          {
+            "key": "patrol_road",
+            "keywords_zh": [
+              "行军",
+              "巡逻",
+              "哨卡"
+            ],
+            "keywords_en": [
+              "patrol",
+              "march"
+            ]
+          },
+          {
+            "key": "drill_ground",
+            "keywords_zh": [
+              "校场",
+              "演武场"
+            ],
+            "keywords_en": [
+              "drill ground"
+            ]
+          }
+        ]
+      },
+      "public_hall": {
+        "name_cn": "公共厅堂",
+        "default_people_policy": "background_groups_required",
+        "prototypes": [
+          {
+            "key": "banquet_hall",
+            "keywords_zh": [
+              "宴会厅",
+              "朝堂",
+              "金銮殿"
+            ],
+            "keywords_en": [
+              "banquet hall",
+              "throne room"
+            ]
+          },
+          {
+            "key": "tavern_hall",
+            "keywords_zh": [
+              "酒楼",
+              "茶馆",
+              "食肆"
+            ],
+            "keywords_en": [
+              "tavern",
+              "tea house"
+            ]
+          },
+          {
+            "key": "audience_chamber",
+            "keywords_zh": [
+              "会客厅",
+              "议事厅"
+            ],
+            "keywords_en": [
+              "audience chamber",
+              "council hall"
+            ]
+          },
+          {
+            "key": "temple_main_hall",
+            "keywords_zh": [
+              "大雄宝殿",
+              "正殿",
+              "祖师殿"
+            ],
+            "keywords_en": [
+              "main hall",
+              "shrine hall"
+            ]
+          }
+        ]
+      },
+      "private_interior": {
+        "name_cn": "私人室内",
+        "default_people_policy": "empty_required",
+        "prototypes": [
+          {
+            "key": "bedroom",
+            "keywords_zh": [
+              "卧室",
+              "闺房",
+              "寝宫"
+            ],
+            "keywords_en": [
+              "bedroom",
+              "chamber"
+            ]
+          },
+          {
+            "key": "study",
+            "keywords_zh": [
+              "书房",
+              "书斋",
+              "静室"
+            ],
+            "keywords_en": [
+              "study",
+              "reading room"
+            ]
+          },
+          {
+            "key": "secret_room",
+            "keywords_zh": [
+              "密室",
+              "暗室",
+              "地窖"
+            ],
+            "keywords_en": [
+              "secret room",
+              "cellar"
+            ]
+          },
+          {
+            "key": "side_courtyard",
+            "keywords_zh": [
+              "偏院",
+              "内院",
+              "后院"
+            ],
+            "keywords_en": [
+              "side courtyard"
+            ]
+          }
+        ]
+      },
+      "wilderness_dreamscape": {
+        "name_cn": "荒野/梦境",
+        "default_people_policy": "empty_required",
+        "prototypes": [
+          {
+            "key": "mountain_forest",
+            "keywords_zh": [
+              "山林",
+              "密林",
+              "竹海",
+              "松林"
+            ],
+            "keywords_en": [
+              "mountain forest",
+              "bamboo grove"
+            ]
+          },
+          {
+            "key": "riverbank_lake",
+            "keywords_zh": [
+              "河岸",
+              "湖畔",
+              "溪畔",
+              "水湄"
+            ],
+            "keywords_en": [
+              "riverbank",
+              "lakeside"
+            ]
+          },
+          {
+            "key": "cave_grotto",
+            "keywords_zh": [
+              "山洞",
+              "洞穴",
+              "石窟"
+            ],
+            "keywords_en": [
+              "cave",
+              "grotto"
+            ]
+          },
+          {
+            "key": "wasteland",
+            "keywords_zh": [
+              "荒野",
+              "戈壁",
+              "沙漠",
+              "莽原"
+            ],
+            "keywords_en": [
+              "wasteland",
+              "desert"
+            ]
+          },
+          {
+            "key": "dreamscape",
+            "keywords_zh": [
+              "梦境",
+              "幻境",
+              "虚空",
+              "心象"
+            ],
+            "keywords_en": [
+              "dreamscape",
+              "void",
+              "mindscape"
+            ]
+          },
+          {
+            "key": "cliff_peak",
+            "keywords_zh": [
+              "悬崖",
+              "山巅",
+              "绝顶",
+              "峭壁"
+            ],
+            "keywords_en": [
+              "cliff",
+              "peak"
+            ]
+          }
+        ]
+      },
+      "abandoned_void": {
+        "name_cn": "废弃/空旷",
+        "default_people_policy": "empty_required",
+        "prototypes": [
+          {
+            "key": "empty_courtyard",
+            "keywords_zh": [
+              "空庭院",
+              "废园",
+              "荒院"
+            ],
+            "keywords_en": [
+              "empty courtyard",
+              "ruined garden"
+            ]
+          },
+          {
+            "key": "empty_alley",
+            "keywords_zh": [
+              "空巷",
+              "窄巷",
+              "长巷",
+              "里弄"
+            ],
+            "keywords_en": [
+              "empty alley",
+              "narrow lane"
+            ]
+          },
+          {
+            "key": "ruins",
+            "keywords_zh": [
+              "废墟",
+              "遗迹",
+              "残垣",
+              "荒台"
+            ],
+            "keywords_en": [
+              "ruins",
+              "remains"
+            ]
+          },
+          {
+            "key": "abandoned_station",
+            "keywords_zh": [
+              "废站台",
+              "旧码头",
+              "空仓库"
+            ],
+            "keywords_en": [
+              "abandoned station",
+              "derelict"
+            ]
+          },
+          {
+            "key": "long_corridor",
+            "keywords_zh": [
+              "长廊",
+              "游廊",
+              "回廊"
+            ],
+            "keywords_en": [
+              "long corridor",
+              "gallery"
+            ]
+          },
+          {
+            "key": "empty_temple_interior",
+            "keywords_zh": [
+              "空庙",
+              "空仓库",
+              "空祠堂"
+            ],
+            "keywords_en": [
+              "empty temple interior"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "background_style_taxonomy": {
+    "description": "5 维度风格词表，每维度按 genre 分桶。维度：art_style, color_palette, lens_or_camera_feel, texture_or_rendering, mood",
+    "dimensions": {
+      "art_style": {
+        "historical": [
+          "写实国风电影感",
+          "写意水墨",
+          "厚涂概念场景",
+          "复古油画感",
+          "低饱和写实",
+          "宋画工笔感"
+        ],
+        "modern": [
+          "写实电影感",
+          "低饱和纪实",
+          "油画质感城市",
+          "极简主义写实",
+          "胶片颗粒写实"
+        ],
+        "scifi": [
+          "赛博朋克概念艺术",
+          "写实 sci-fi 概念",
+          "极简未来主义",
+          "厚涂科幻场景"
+        ],
+        "fantasy": [
+          "奇幻概念艺术",
+          "厚涂魔幻场景",
+          "低饱和史诗感",
+          "油画质感奇幻"
+        ],
+        "anime": [
+          "anime 概念美术",
+          "厚涂动画场景",
+          "cel-shaded 场景",
+          "写意水彩动画场景"
+        ]
+      },
+      "color_palette": {
+        "historical": [
+          "青灰冷调",
+          "雨夜蓝黑",
+          "暖金棕",
+          "雾白青绿",
+          "暮色紫灰",
+          "朱红黛绿"
+        ],
+        "modern": [
+          "冷蓝灰",
+          "霓虹紫青",
+          "晨雾白灰",
+          "黄昏橙红",
+          "深夜蓝"
+        ],
+        "scifi": [
+          "赛博紫粉",
+          "全息青蓝",
+          "金属灰",
+          "辐射橙黄",
+          "等离子绿"
+        ],
+        "fantasy": [
+          "魔法紫金",
+          "翡翠绿",
+          "血色暮红",
+          "幽蓝夜雾",
+          "黄金光辉"
+        ],
+        "anime": [
+          "明亮多彩",
+          "柔和粉绿",
+          "深夜蓝紫",
+          "清晨暖橙"
+        ]
+      },
+      "lens_or_camera_feel": {
+        "historical": [
+          "24mm广角环境建立镜头",
+          "35mm环境广角",
+          "高机位远景",
+          "长焦压缩远景",
+          "室内一体化广角"
+        ],
+        "modern": [
+          "35mm环境广角",
+          "24mm广角环境建立镜头",
+          "高机位俯瞰",
+          "长焦街拍压缩"
+        ],
+        "scifi": [
+          "超广角环境建立镜头",
+          "无人机俯瞰",
+          "变形宽银幕",
+          "长焦压缩远景"
+        ],
+        "fantasy": [
+          "24mm广角环境建立镜头",
+          "高机位远景",
+          "低机位仰视宏伟",
+          "长焦压缩远景"
+        ],
+        "anime": [
+          "35mm环境广角",
+          "24mm广角环境建立镜头",
+          "室内一体化广角"
+        ]
+      },
+      "texture_or_rendering": {
+        "historical": [
+          "潮湿反光",
+          "木质旧化",
+          "石材风化",
+          "空气透视",
+          "细雾颗粒",
+          "青苔湿润"
+        ],
+        "modern": [
+          "湿润沥青反光",
+          "玻璃幕墙",
+          "混凝土纹理",
+          "霓虹光晕"
+        ],
+        "scifi": [
+          "金属反光",
+          "全息投影纹理",
+          "玻璃折射",
+          "电子噪点"
+        ],
+        "fantasy": [
+          "魔法光晕",
+          "湿润反光",
+          "石材风化",
+          "森林雾气"
+        ],
+        "anime": [
+          "柔和阴影",
+          "水彩晕染",
+          "厚涂笔触",
+          "胶片颗粒"
+        ]
+      },
+      "mood": {
+        "historical": [
+          "静谧",
+          "萧索",
+          "压迫",
+          "冷清",
+          "紧张前夜",
+          "潮湿阴冷",
+          "肃穆",
+          "凄美"
+        ],
+        "modern": [
+          "繁忙",
+          "孤独",
+          "疏离",
+          "潮湿",
+          "紧迫",
+          "迷茫"
+        ],
+        "scifi": [
+          "冷酷",
+          "压倒性",
+          "神秘",
+          "孤绝",
+          "机械感"
+        ],
+        "fantasy": [
+          "壮丽",
+          "神秘",
+          "压迫",
+          "宁静",
+          "史诗感"
+        ],
+        "anime": [
+          "清新",
+          "治愈",
+          "怀旧",
+          "紧张",
+          "梦幻"
+        ]
+      }
+    }
+  },
+  "background_camera_shots": {
+    "description": "6 种背景镜头类型，每个带 prompt_phrase（直接拼接到最终 prompt）",
+    "shots": {
+      "establishing_wide": {
+        "name_cn": "环境建立镜头（广角远景）",
+        "prompt_phrase": "24mm广角环境建立镜头，深景深，环境作为画面主体",
+        "use_for": [
+          "public_commerce",
+          "civic_military",
+          "wilderness_dreamscape",
+          "abandoned_void"
+        ]
+      },
+      "environment_medium": {
+        "name_cn": "环境广角中景",
+        "prompt_phrase": "35mm环境广角镜头，以地点为中心构图，通过环境讲述氛围",
+        "use_for": [
+          "public_hall",
+          "private_interior"
+        ]
+      },
+      "high_angle_distant": {
+        "name_cn": "高机位远景",
+        "prompt_phrase": "高机位远景，俯瞰视角，突出空间尺度",
+        "use_for": [
+          "battlefield_distant",
+          "drill_ground",
+          "wasteland",
+          "city_square"
+        ]
+      },
+      "interior_wide": {
+        "name_cn": "室内一体化广角",
+        "prompt_phrase": "室内广角镜头，单点透视，突出建筑纵深",
+        "use_for": [
+          "bedroom",
+          "study",
+          "banquet_hall",
+          "temple_main_hall"
+        ]
+      },
+      "telephoto_compressed": {
+        "name_cn": "长焦压缩远景",
+        "prompt_phrase": "长焦压缩视角，远景层次叠加，带空气透视",
+        "use_for": [
+          "mountain_forest",
+          "cliff_peak",
+          "patrol_road",
+          "battlefield_distant"
+        ]
+      },
+      "low_angle_perspective": {
+        "name_cn": "低机位纵深",
+        "prompt_phrase": "低机位透视，明确消失点，空间纵深强，环境占据画面主体",
+        "use_for": [
+          "long_corridor",
+          "empty_alley",
+          "abandoned_station"
+        ]
+      }
+    }
+  },
+  "background_negative_clauses": {
+    "description": "正向环境声明（避免反向 prompt 污染 CogView-4 的 CLIP 注意力）。命名角色禁令仍由 _format_named_cast_exclusion 单独追加。",
+    "base": "视觉小说背景图，地点建立镜头。画面 100% 由建筑、景观、道具、光线、天气、材质和空间氛围构成，环境、空间与光影是唯一画面主体。场景为纯空环境，整幅画面内无任何生物、角色、人形或生命体存在。画面无文字，无水印。",
+    "empty_required": "空场景声明：画面内只有静态环境元素，所有空间均未被任何生物或人形占据，呈现纯空环境。",
+    "background_people_optional": "公共空间按纯空环境处理，仅用环境痕迹（光线、布局、道具摆放）暗示空间功能，整幅画面内无任何生物或人形存在。",
+    "background_groups_required": "公共活动空间按纯空环境处理，仅用环境痕迹（光线、布局、道具摆放）暗示空间功能，整幅画面内无任何生物、人形或生命体存在。",
+    "establishing_shot_enforcement": "构图声明：画面读作纯环境画面，整幅画面内不出现任何生命体、生物或人形。",
+    "escalation_level_1": "强化空场景：画面是纯粹的建筑或景观环境，整幅画面内不出现任何生物、角色、人形或生命体存在，环境是唯一画面主体。"
+  },
+  "background_people_policy_keywords": {
+    "description": "用于 LLM 判定 people_policy 的关键词证据（两组：public_activity 触发 → background_groups；empty_signal 触发 → empty_required）",
+    "public_activity": [
+      "人群",
+      "熙攘",
+      "喧闹",
+      "集市",
+      "商贩",
+      "叫卖",
+      "宾客",
+      "满座",
+      "朝会",
+      "群臣",
+      "军阵",
+      "阅兵",
+      "巡逻",
+      "商队",
+      "船工",
+      "挑夫",
+      "行人",
+      "路人",
+      "孩童嬉戏",
+      "市井"
+    ],
+    "empty_signal": [
+      "空无一人",
+      "寂静",
+      "无人",
+      "空旷",
+      "独自",
+      "独坐",
+      "空荡",
+      "人去楼空",
+      "荒废",
+      "废墟",
+      "深夜",
+      "凌晨",
+      "破晓",
+      "无人烟",
+      "杳无人迹"
+    ]
+  },
+  "background_style_forbidden_keywords": {
+    "description": "背景 prompt 中禁止出现的关键词（按类别）。任何出现在 environment_description / style_tags 的这类词必须被剔除",
+    "character_words": [
+      "主角",
+      " heroine",
+      "protagonist",
+      "男主",
+      "女主",
+      "hero",
+      "heroine",
+      "他",
+      "她",
+      "he ",
+      "she ",
+      "they "
+    ],
+    "action_words": [
+      "战斗",
+      "attack",
+      "fight",
+      "奔跑",
+      "running",
+      "拥抱",
+      "hug",
+      "kiss",
+      "亲吻",
+      "对峙",
+      "confrontation"
+    ],
+    "relationship_words": [
+      "恋人",
+      "lover",
+      "夫妻",
+      "couple",
+      "兄弟",
+      "brother",
+      "师徒",
+      "master apprentice",
+      "敌",
+      "enemy",
+      "友",
+      "friend"
+    ],
+    "dialogue_words": [
+      "说道",
+      "说：",
+      "said",
+      "says",
+      "asks",
+      "replies",
+      "问道",
+      "答道",
+      "喝道"
+    ]
+  },
+  "background_style_fallback": {
+    "description": "每 genre default 风格 + by_scene_category 覆盖。当 style_classifier 不可用或失败时使用",
+    "by_genre_default": {
+      "historical": [
+        "写实国风电影感",
+        "青灰冷调",
+        "24mm广角环境建立镜头",
+        "空气透视",
+        "萧索"
+      ],
+      "modern": [
+        "写实电影感",
+        "冷蓝灰",
+        "35mm环境广角",
+        "湿润沥青反光",
+        "孤独"
+      ],
+      "scifi": [
+        "赛博朋克概念艺术",
+        "赛博紫粉",
+        "超广角环境建立镜头",
+        "金属反光",
+        "冷酷"
+      ],
+      "fantasy": [
+        "奇幻概念艺术",
+        "魔法紫金",
+        "24mm广角环境建立镜头",
+        "魔法光晕",
+        "神秘"
+      ],
+      "anime": [
+        "anime 概念美术",
+        "明亮多彩",
+        "35mm环境广角",
+        "柔和阴影",
+        "清新"
+      ]
+    },
+    "by_scene_category": {
+      "public_commerce": [
+        "background_groups_required-aware",
+        "繁市远景",
+        "远景人群剪影"
+      ],
+      "civic_military": [
+        "远景威严",
+        "建筑体量感强"
+      ],
+      "public_hall": [
+        "纵深构图",
+        "室内层叠光线"
+      ],
+      "private_interior": [
+        "空净",
+        "光线柔和",
+        "静物般的氛围"
+      ],
+      "wilderness_dreamscape": [
+        "空气透视强",
+        "自然光",
+        "辽阔空旷"
+      ],
+      "abandoned_void": [
+        "破败质感",
+        "潮湿反光",
+        "人去楼空的萧索"
+      ]
+    }
+  },
+  "background_safety_fallback_templates": {
+    "description": "每次审核失败/生成失败时的 scene-type-aware safety fallback prompt 模板（正向环境声明，避免 CLIP 反向污染）。占位符 {scene_name}/{environment_description}/{style_tags}",
+    "templates": {
+      "public_commerce": "视觉小说背景图。{scene_name}。{environment_description} 的广角环境建立镜头，画面 100% 由空街道、空摊位、标牌、建筑、道具、光线和氛围构成。风格：{style_tags}。整幅画面内无任何生物、角色、人形或生命体存在，呈现纯空环境。",
+      "civic_military": "视觉小说背景图。{scene_name}。{environment_description} 的广角环境建立镜头，画面 100% 由建筑、旗帜、门楼、器械、光线和氛围构成。风格：{style_tags}。整幅画面内无任何生物、角色、人形或生命体存在，呈现纯空环境。",
+      "public_hall": "视觉小说背景图。{scene_name}。{environment_description} 的室内广角建立镜头，画面 100% 由座椅、立柱、道具、光线和氛围构成。风格：{style_tags}。整幅画面内无任何生物、角色、人形或生命体存在，呈现纯空环境。",
+      "private_interior": "视觉小说背景图。{scene_name}。{environment_description} 的室内广角建立镜头，画面 100% 由建筑、家具、道具、光线和氛围构成。风格：{style_tags}。整幅画面内无任何生物、角色、人形或生命体存在，呈现纯空环境。",
+      "wilderness_dreamscape": "视觉小说背景图。{scene_name}。{environment_description} 的广角环境建立镜头，画面 100% 由自然景观、地形、光线和氛围构成。风格：{style_tags}。整幅画面内无任何生物、角色、人形或生命体存在，呈现纯空环境。",
+      "abandoned_void": "视觉小说背景图。{scene_name}。{environment_description} 的废弃空场广角建立镜头，画面 100% 由荒废建筑、残骸、光影和氛围构成。风格：{style_tags}。整幅画面内无任何生物、角色、人形或生命体存在，呈现纯空环境。"
+    },
+    "default": "视觉小说背景图，广角环境建立镜头。画面 100% 由建筑、景观、道具、光线和氛围构成，环境是唯一画面主体，整幅画面内无任何生物、角色、人形或生命体存在，呈现纯空环境。电影感氛围，地点建立镜头。"
+  },
+  "background_validator_thresholds": {
+    "description": "bbox + VLM 验收阈值。image_center_region 是中心区域（默认中心 60%×60%）用于检测主体化人物",
+    "image_center_region": {
+      "x1_ratio": 0.2,
+      "y1_ratio": 0.2,
+      "x2_ratio": 0.8,
+      "y2_ratio": 0.8
+    },
+    "by_people_policy": {
+      "empty_required": {
+        "bbox_max_person_confidence": 0.3,
+        "bbox_max_person_area_ratio": 0.05,
+        "bbox_max_center_person_area_ratio": 0.0,
+        "vlm_named_character_max_score": 0.2,
+        "vlm_human_subject_max_score": 0.2
+      },
+      "background_people_optional": {
+        "bbox_max_person_confidence": 0.55,
+        "bbox_max_person_area_ratio": 0.15,
+        "bbox_max_center_person_area_ratio": 0.05,
+        "vlm_named_character_max_score": 0.2,
+        "vlm_human_subject_max_score": 0.35
+      },
+      "background_groups_required": {
+        "bbox_max_person_confidence": 0.65,
+        "bbox_max_person_area_ratio": 0.3,
+        "bbox_max_center_person_area_ratio": 0.1,
+        "vlm_named_character_max_score": 0.2,
+        "vlm_human_subject_max_score": 0.45
+      }
+    },
+    "retry_max": 3
+  },
+  "project_visual_mediums": {
+    "_description": "Project-level visual medium buckets. Decoupled from narrative genre — a sci-fi story can be anime_cel OR concept_art_realism depending on user keywords. Default is anime_cel. Each bucket declares the FULL shared style block (medium/linework/shading/texture/palette/forbidden) that gets locked into ProjectVisualBible.",
+    "anime_cel": {
+      "name_cn": "二维动画 cel-shading",
+      "art_direction_template": "cohesive 2D anime visual novel illustration, clean cel-shading, shared between character sprites and environment backgrounds",
+      "linework": "crisp anime line art, clean cel-shaded surfaces, soft gradients",
+      "shading": "flat base color with two-level shadow, controlled rim light",
+      "texture": "subtle film grain, no paper texture, no photographic noise",
+      "base_palette": [
+        "soft sky blue",
+        "warm ivory",
+        "muted coral",
+        "controlled charcoal"
+      ],
+      "palette_policy": "warm_cool_balanced",
+      "contrast_policy": "medium",
+      "lighting_policy": "soft_diffused",
+      "forbidden": [
+        "photorealistic rendering",
+        "3D game render",
+        "glossy plastic skin",
+        "oil painting thick strokes",
+        "neon cyberpunk palette",
+        "inconsistent art style drift"
+      ]
+    },
+    "ink_color_guofeng": {
+      "name_cn": "古风水墨设色",
+      "art_direction_template": "Chinese ink-and-color historical visual novel illustration, shared between character sprites and environment backgrounds",
+      "linework": "restrained confident linework with subtle brush-like lift and fall, neither thick oil strokes nor hard Japanese cel-shade edges",
+      "shading": "ink wash tonal modulation combined with light flat painting, character silhouettes slightly crisper than the environment",
+      "texture": "very subtle paper grain across both characters and backgrounds",
+      "base_palette": [
+        "muted earth red",
+        "aged bronze",
+        "dark jade",
+        "warm ivory",
+        "ink black"
+      ],
+      "palette_policy": "warm_cool_balanced",
+      "contrast_policy": "cinematic",
+      "lighting_policy": "natural_window",
+      "forbidden": [
+        "photorealistic rendering",
+        "3D game render",
+        "glossy plastic skin",
+        "oil painting thick strokes",
+        "neon cyberpunk palette",
+        "inconsistent art style drift",
+        "modern clothing",
+        "Japanese samurai clothing",
+        "generic Japanese galgame style",
+        "modern anime school style",
+        "chibi proportions"
+      ]
+    },
+    "digital_painterly": {
+      "name_cn": "数字厚涂插画",
+      "art_direction_template": "cohesive digital painterly visual novel illustration, soft blended surfaces, shared between character sprites and environment backgrounds",
+      "linework": "painterly soft linework, edges defined by value rather than outline",
+      "shading": "smooth digital painting shading, soft gradient transitions",
+      "texture": "subtle canvas texture, no photographic noise",
+      "base_palette": [
+        "dusty rose",
+        "deep teal",
+        "warm cream",
+        "shadow plum"
+      ],
+      "palette_policy": "low_sat_unity",
+      "contrast_policy": "medium_low",
+      "lighting_policy": "cinematic_directional",
+      "forbidden": [
+        "photorealistic rendering",
+        "3D game render",
+        "glossy plastic skin",
+        "oil painting thick strokes",
+        "neon cyberpunk palette",
+        "inconsistent art style drift"
+      ]
+    },
+    "concept_art_realism": {
+      "name_cn": "概念艺术半写实",
+      "art_direction_template": "cohesive concept-art semi-realistic visual novel illustration, shared between character sprites and environment backgrounds",
+      "linework": "subtle linework dominated by painterly value blocks",
+      "shading": "realistic form shading, controlled ambient occlusion",
+      "texture": "fine digital painting texture, no photographic noise",
+      "base_palette": [
+        "steel blue",
+        "warm grey",
+        "muted amber",
+        "shadow slate"
+      ],
+      "palette_policy": "low_sat_unity",
+      "contrast_policy": "cinematic",
+      "lighting_policy": "cinematic_directional",
+      "forbidden": [
+        "photorealistic rendering",
+        "3D game render",
+        "glossy plastic skin",
+        "oil painting thick strokes",
+        "neon cyberpunk palette",
+        "inconsistent art style drift",
+        "cartoonish anime cel-shading"
+      ]
+    }
+  },
+  "genre_setting_vocabulary": {
+    "_description": "Narrative-genre → setting-context vocabulary ONLY. Genre decides era / architecture / costume / technology level. It MUST NOT decide visual medium (anime/photography/oil). Medium comes from project_visual_mediums via user keywords, defaulting to anime_cel.",
+    "modern_campus": {
+      "setting_text": "contemporary East Asian everyday-life setting",
+      "costume_vocabulary": [
+        "school uniform",
+        "casual contemporary fashion",
+        "backpack"
+      ],
+      "architecture_vocabulary": [
+        "classroom",
+        "dormitory",
+        "library",
+        "campus building"
+      ],
+      "technology_level": "contemporary 2020s"
+    },
+    "sci-fi": {
+      "setting_text": "near-future science-fiction setting",
+      "costume_vocabulary": [
+        "futuristic uniform",
+        "technical suit",
+        "augmented accessory"
+      ],
+      "architecture_vocabulary": [
+        "spaceship interior",
+        "cyberpunk city",
+        "research station"
+      ],
+      "technology_level": "near-future advanced"
+    },
+    "fantasy": {
+      "setting_text": "high fantasy setting with magic",
+      "costume_vocabulary": [
+        "mage robe",
+        "leather armor",
+        "ceremonial cloak"
+      ],
+      "architecture_vocabulary": [
+        "stone castle",
+        "enchanted forest",
+        "magic academy"
+      ],
+      "technology_level": "pre-industrial with magic"
+    },
+    "historical_guofeng": {
+      "setting_text": "Chinese classical historical setting",
+      "costume_vocabulary": [
+        "hanfu",
+        "literati robe",
+        "court attire"
+      ],
+      "architecture_vocabulary": [
+        "wooden pavilion",
+        "imperial palace hall",
+        "garden courtyard"
+      ],
+      "technology_level": "pre-modern Chinese dynasty"
+    },
+    "wuxia": {
+      "setting_text": "Chinese martial-arts jianghu setting",
+      "costume_vocabulary": [
+        "martial arts robe",
+        "traveling gear",
+        "sword accessory"
+      ],
+      "architecture_vocabulary": [
+        "mountain temple",
+        "tavern hall",
+        "martial arts school"
+      ],
+      "technology_level": "pre-modern Chinese jianghu"
+    },
+    "horror": {
+      "setting_text": "contemporary horror setting",
+      "costume_vocabulary": [
+        "everyday clothing",
+        "disheveled outfit"
+      ],
+      "architecture_vocabulary": [
+        "abandoned building",
+        "dim corridor",
+        "quiet suburb"
+      ],
+      "technology_level": "contemporary"
+    }
+  }
+}

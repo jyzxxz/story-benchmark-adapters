@@ -1,0 +1,61 @@
+{
+  "method": "get",
+  "path": "/api/vn-graph-revisions/{vn_graph_revision_id}",
+  "operation": {
+    "summary": "读取视觉小说图版本详情",
+    "deprecated": false,
+    "description": "读取视觉小说图版本详情。",
+    "operationId": "read_vn_graph_revision_api_projects__project_id__chapters__chapter_index__vn_graphs_revisions__revision_id__get",
+    "tags": [
+      "创作版本与生成/视觉小说图步骤二：最终产物生成",
+      "视觉小说图"
+    ],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "vn_graph_revision_id",
+        "required": true,
+        "schema": {
+          "title": "Vn Graph Revision Id",
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/VNGraphRevision"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-folder": "创作版本与生成/视觉小说图步骤二：最终产物生成",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923826-run"
+  }
+}

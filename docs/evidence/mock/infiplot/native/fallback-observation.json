@@ -1,0 +1,6 @@
+{
+  "native_fallback_observation": "unknown_without_exhaustive_native_hooks",
+  "generation_status": "generated_unreviewed_fallback_unknown",
+  "direct_native_route_receiver_observed": false,
+  "task_receiver_observation_boundary": "native_sdk_task_block"
+}

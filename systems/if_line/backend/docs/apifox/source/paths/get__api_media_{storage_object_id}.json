@@ -1,0 +1,104 @@
+{
+  "method": "get",
+  "path": "/api/media/{storage_object_id}",
+  "operation": {
+    "summary": "读取媒体文件",
+    "deprecated": false,
+    "description": "读取媒体文件。",
+    "operationId": "read_media_api_media__storage_object_id__get",
+    "tags": [
+      "素材管理与生成",
+      "媒体文件"
+    ],
+    "parameters": [
+      {
+        "name": "sid",
+        "in": "cookie",
+        "description": "",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Sid",
+          "type": "string",
+          "nullable": true
+        }
+      },
+      {
+        "name": "storage_object_id",
+        "in": "path",
+        "description": "",
+        "required": true,
+        "example": "",
+        "schema": {
+          "title": "Storage Object Id",
+          "type": "string"
+        }
+      },
+      {
+        "name": "download",
+        "in": "query",
+        "description": "",
+        "required": false,
+        "schema": {
+          "default": false,
+          "title": "Download",
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "Range",
+        "in": "header",
+        "description": "",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Range",
+          "type": "string",
+          "nullable": true
+        }
+      },
+      {
+        "name": "If-None-Match",
+        "in": "header",
+        "description": "",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "If-None-Match",
+          "type": "string",
+          "nullable": true
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {}
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "素材管理与生成",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923773-run"
+  }
+}

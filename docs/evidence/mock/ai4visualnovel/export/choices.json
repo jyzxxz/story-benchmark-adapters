@@ -1,0 +1,24 @@
+[
+  {
+    "choice_id": "choice-001",
+    "text": "追查",
+    "native_target": "node1",
+    "native_source": "native/ai4vn/source/data/story.txt",
+    "native_pointer": {
+      "node_id": "root",
+      "parsed_line_index": 4,
+      "line": 7
+    }
+  },
+  {
+    "choice_id": "choice-002",
+    "text": "等待",
+    "native_target": "node2",
+    "native_source": "native/ai4vn/source/data/story.txt",
+    "native_pointer": {
+      "node_id": "root",
+      "parsed_line_index": 5,
+      "line": 8
+    }
+  }
+]

@@ -1,0 +1,44 @@
+{
+  "name": "CreateProfileResponse",
+  "schema": {
+    "properties": {
+      "profile": {
+        "title": "档案",
+        "type": "object",
+        "x-apifox-orders": [],
+        "description": "档案对象。",
+        "properties": {},
+        "x-apifox-ignore-properties": []
+      },
+      "success": {
+        "title": "是否成功",
+        "type": "boolean",
+        "description": "是否成功。"
+      },
+      "warnings": {
+        "items": {
+          "type": "string",
+          "title": "warningsitem",
+          "description": "warningsitem。"
+        },
+        "title": "警告列表",
+        "type": "array",
+        "description": "警告列表列表。"
+      }
+    },
+    "required": [
+      "success",
+      "profile"
+    ],
+    "title": "声音档案创建响应",
+    "type": "object",
+    "x-apifox-orders": [
+      "profile",
+      "success",
+      "warnings"
+    ],
+    "description": "声音档案创建响应数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

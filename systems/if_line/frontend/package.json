@@ -1,0 +1,30 @@
+{
+  "name": "novel-agent-frontend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "type-check": "vue-tsc --noEmit -p tsconfig.json",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test:unit": "tsx --test src/utils/__tests__/*.test.ts src/api/__tests__/*.test.ts src/composables/__tests__/*.test.ts",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
+    "axios": "^1.6.8",
+    "element-plus": "^2.6.1",
+    "pinia": "^2.1.7",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^22.20.1",
+    "@vitejs/plugin-vue": "^5.0.4",
+    "tsx": "^4.20.5",
+    "typescript": "^5.4.2",
+    "vite": "^5.1.6",
+    "vue-tsc": "^3.3.6"
+  }
+}

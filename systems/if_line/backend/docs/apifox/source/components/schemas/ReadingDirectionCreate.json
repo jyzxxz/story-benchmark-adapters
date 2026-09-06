@@ -1,0 +1,66 @@
+{
+  "name": "ReadingDirectionCreate",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "direction": {
+        "maxLength": 4000,
+        "minLength": 1,
+        "title": "方向",
+        "type": "string",
+        "description": "方向。"
+      },
+      "max_generated_assets": {
+        "default": 3,
+        "maximum": 3,
+        "minimum": 0,
+        "title": "max已生成assets",
+        "type": "integer",
+        "description": "max已生成assets。"
+      },
+      "parent_continuation_id": {
+        "title": "父续写编号",
+        "maxLength": 64,
+        "type": "string",
+        "description": "父续写编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "uploaded_asset_version_ids": {
+        "items": {
+          "type": "string",
+          "title": "uploaded素材版本idsitem",
+          "description": "uploaded素材版本idsitem。"
+        },
+        "maxItems": 3,
+        "title": "已上传素材版本编号列表",
+        "type": "array",
+        "description": "已上传素材版本编号列表，用于批量关联对应数据。"
+      },
+      "visual_mode": {
+        "enum": [
+          "user_upload",
+          "system_generate"
+        ],
+        "title": "视觉mode",
+        "type": "string",
+        "description": "视觉mode，可选值：user_upload、system_generate。"
+      }
+    },
+    "required": [
+      "direction",
+      "visual_mode"
+    ],
+    "title": "阅读方向创建请求",
+    "type": "object",
+    "x-apifox-orders": [
+      "direction",
+      "max_generated_assets",
+      "parent_continuation_id",
+      "uploaded_asset_version_ids",
+      "visual_mode"
+    ],
+    "description": "阅读方向创建请求数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "ContinuationConfirmResult",
+  "schema": {
+    "properties": {
+      "continuation": {
+        "$ref": "#/components/schemas/ReadingContinuationRead",
+        "title": "续写内容",
+        "description": "续写内容。"
+      },
+      "session_lock_version": {
+        "title": "会话锁版本",
+        "type": "integer",
+        "description": "会话锁版本。"
+      }
+    },
+    "required": [
+      "continuation",
+      "session_lock_version"
+    ],
+    "title": "续写确认结果",
+    "type": "object",
+    "x-apifox-orders": [
+      "continuation",
+      "session_lock_version"
+    ],
+    "description": "续写确认结果数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

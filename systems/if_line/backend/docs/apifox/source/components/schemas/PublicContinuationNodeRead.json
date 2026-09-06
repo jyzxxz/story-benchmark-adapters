@@ -1,0 +1,85 @@
+{
+  "name": "PublicContinuationNodeRead",
+  "schema": {
+    "properties": {
+      "assets": {
+        "items": {
+          "$ref": "#/components/schemas/AssetActionAsset",
+          "title": "assetsitem",
+          "description": "assetsitem。"
+        },
+        "title": "素材列表",
+        "type": "array",
+        "description": "素材列表。"
+      },
+      "chapter_number": {
+        "title": "章节编号",
+        "type": "integer",
+        "description": "章节编号。"
+      },
+      "confirmed_at": {
+        "format": "date-time",
+        "title": "确认时间",
+        "type": "string",
+        "description": "确认时间。"
+      },
+      "continuation_text": {
+        "title": "续写文本",
+        "type": "string",
+        "description": "续写文本。"
+      },
+      "depth": {
+        "title": "深度",
+        "type": "integer",
+        "description": "深度。"
+      },
+      "direction": {
+        "title": "方向",
+        "type": "string",
+        "description": "方向。"
+      },
+      "id": {
+        "title": "编号",
+        "type": "string",
+        "description": "编号，用于关联对应数据。"
+      },
+      "parent_continuation_id": {
+        "title": "父续写编号",
+        "type": "string",
+        "description": "父续写编号，用于关联对应数据。",
+        "nullable": true
+      },
+      "selection_count": {
+        "title": "selection数量",
+        "type": "integer",
+        "description": "selection数量。"
+      }
+    },
+    "required": [
+      "id",
+      "parent_continuation_id",
+      "direction",
+      "continuation_text",
+      "chapter_number",
+      "depth",
+      "selection_count",
+      "confirmed_at"
+    ],
+    "title": "公开续写节点读取结果",
+    "type": "object",
+    "x-apifox-orders": [
+      "assets",
+      "chapter_number",
+      "confirmed_at",
+      "continuation_text",
+      "depth",
+      "direction",
+      "id",
+      "parent_continuation_id",
+      "selection_count"
+    ],
+    "description": "公开续写节点读取结果数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "name": "UserResponse",
+  "schema": {
+    "properties": {
+      "avatar_url": {
+        "title": "头像地址",
+        "type": "string",
+        "description": "头像地址，由服务端返回给客户端访问。",
+        "nullable": true
+      },
+      "created_at": {
+        "format": "date-time",
+        "title": "创建时间",
+        "type": "string",
+        "description": "创建时间。"
+      },
+      "display_name": {
+        "title": "显示名称",
+        "type": "string",
+        "description": "显示名称。"
+      },
+      "email": {
+        "title": "邮箱",
+        "type": "string",
+        "description": "邮箱。"
+      },
+      "id": {
+        "title": "编号",
+        "type": "integer",
+        "description": "编号，用于关联对应数据。"
+      },
+      "quota_daily": {
+        "title": "每日配额",
+        "type": "integer",
+        "description": "每日配额。"
+      },
+      "quota_reset_at": {
+        "title": "配额重置时间",
+        "format": "date-time",
+        "type": "string",
+        "description": "配额重置时间。",
+        "nullable": true
+      },
+      "quota_total": {
+        "title": "总配额",
+        "type": "integer",
+        "description": "总配额。"
+      },
+      "quota_used_daily": {
+        "title": "今日已用配额",
+        "type": "integer",
+        "description": "今日已用配额。"
+      },
+      "quota_used_total": {
+        "title": "已用总配额",
+        "type": "integer",
+        "description": "已用总配额。"
+      },
+      "updated_at": {
+        "format": "date-time",
+        "title": "更新时间",
+        "type": "string",
+        "description": "更新时间。"
+      }
+    },
+    "required": [
+      "id",
+      "email",
+      "display_name",
+      "avatar_url",
+      "quota_total",
+      "quota_daily",
+      "quota_used_total",
+      "quota_used_daily",
+      "quota_reset_at",
+      "created_at",
+      "updated_at"
+    ],
+    "title": "用户响应",
+    "type": "object",
+    "x-apifox-orders": [
+      "avatar_url",
+      "created_at",
+      "display_name",
+      "email",
+      "id",
+      "quota_daily",
+      "quota_reset_at",
+      "quota_total",
+      "quota_used_daily",
+      "quota_used_total",
+      "updated_at"
+    ],
+    "description": "用户响应数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "method": "post",
+  "path": "/api/path-chapters/{path_chapter_id}/revisions",
+  "operation": {
+    "summary": "手动保存章节正文版本",
+    "deprecated": false,
+    "description": "手动保存一版章节正文。该接口只创建 revision，不会自动设置为当前章节正文。",
+    "operationId": "add_chapter_revision_api_projects__project_id__chapters__chapter_index__revisions_post",
+    "tags": [
+      "创作版本与生成/章节生成",
+      "创作版本与生成"
+    ],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "path_chapter_id",
+        "required": true,
+        "schema": {
+          "title": "Path Chapter Id",
+          "type": "string"
+        },
+        "description": "路径章节编号。它表示某条 story path 里的一个章节位置，不等同于旧接口的 chapter_index。"
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ChapterRevisionCreate"
+          },
+          "example": {
+            "content": "2027年，中关村的夜晚灯火通明。牢梁坐在创业咖啡馆角落里，盯着屏幕上的代码，准备挑战Codex。",
+            "parent_revision_id": null
+          }
+        }
+      },
+      "required": true,
+      "description": "章节正文修订内容。content 是完整正文文本；parent_revision_id 表示基于哪一版修改。"
+    },
+    "responses": {
+      "201": {
+        "description": "创建成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ChapterRevision"
+            },
+            "example": {
+              "id": "e959dbf6-35dc-4be0-bff9-dbd1d52dc497",
+              "chapter_slot_id": "202a78d9-7a12-4b63-9a15-589bfa00b888",
+              "created_for_story_path_id": "a3dacdd2-c874-4291-b7b1-628a7bbd30f5",
+              "parent_revision_id": null,
+              "revision_no": 1,
+              "context_manifest": {
+                "project_id": 3,
+                "story_path_id": "a3dacdd2-c874-4291-b7b1-628a7bbd30f5",
+                "path_chapter_id": "1252f436-69e3-4f6e-87c9-0cc007e8dc2e",
+                "bible_revision_id": "76b5dc9f-cfc4-4bed-930d-98acd4adf221",
+                "bible_content_hash": "e7a587c233084facbe6067743921d13ddaf0b0dceb09209189686dca8b77c8aa",
+                "outline_revision_id": "8b3c6a78-c2f6-4f00-81d0-882151dcadf1",
+                "outline_chapter_hash": "dd99173008a93db3d286f5ddbfdf007dfd73eb9a28170d594a5c1182486e9c1b",
+                "state_snapshot_id": null,
+                "state_hash": null,
+                "fork": {
+                  "parent_path_id": null,
+                  "checkpoint_node_id": null,
+                  "candidate_id": null
+                },
+                "fork_choice": null,
+                "ancestors": []
+              },
+              "context_hash": "c512a7544a12a2f50716ea100f1e01f60980b750158cb90e8b31a46629bd4490",
+              "content_hash": "27476d385609ae21f068977cb1301078f96392c4bb3e44f9bc4ed277aa2d8d0e",
+              "content": "2027年，中关村的夜晚灯火通明。牢梁坐在创业咖啡馆角落里，盯着屏幕上的代码，准备挑战Codex。"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-folder": "创作版本与生成/章节生成",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923804-run"
+  }
+}

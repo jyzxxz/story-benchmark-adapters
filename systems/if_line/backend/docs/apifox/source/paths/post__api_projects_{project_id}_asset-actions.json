@@ -1,0 +1,179 @@
+{
+  "method": "post",
+  "path": "/api/projects/{project_id}/asset-actions",
+  "operation": {
+    "summary": "发起视觉素材动作",
+    "deprecated": false,
+    "description": "发起视觉素材动作。\n\n前端先按用户意图选择一种请求形态，不要把不同模式的字段混着传。Apifox 的 Body 区可能只展示一个默认示例，下面按实际用法列出完整请求和返回摘要。\n\n## target 怎么填\n\n`target` 只负责定位要应用到哪里，前端不需要传素材类型、槽位类型或 graph_hash。\n\n章节脚本资源槽位：\n\n```json\n{\n  \"resource_slot_id\": \"84e8fd79-65e5-4266-b961-5dc393dd4cc7\"\n}\n```\n\n后端会自动推断章节脚本版本、background/portrait/keyframe、scene_id、paragraph_id，并优先复用槽位预分配的逻辑素材。\n\nVNGraph 图片节点：\n\n```json\n{\n  \"vn_graph_revision_id\": \"96706094-3049-47f4-a9a7-38619d0c6b60\",\n  \"node_index\": 63\n}\n```\n\n也可以在能唯一定位时传 `node_key`。后端会自动读取 graph_hash，并根据节点类型推断 BackgroundImage/TachiIamge/IllustrationImage。\n\n只有 VNGraph 图片节点目标会返回 `vngraph_patch`；章节脚本槽位目标只绑定素材，不同步 VNGraph。\n\n## input 怎么填\n\n`input` 的结构由 `mode` 决定。\n\n`direct_generate`：直接生图。必须传 `instruction`，这是用户输入的生图要求。后端会把项目的二创原作信息拼进最终图片 prompt。常用可选字段有 `target_name`、`width`、`height`、`seed`、`negative_prompt`、`extra_parameters`。普通前端一般只传 `instruction`，尺寸和模型参数先交给后端默认值。\n\n`library_select + library_asset_id`：用户已经从公共素材库选中一张图。`library_asset_id` 来自 `GET /api/library-assets` 或 `GET /api/library-assets/{library_asset_id}`。这种模式不需要再传 `instruction`。\n\n`library_select + instruction`：用户没有明确选图，只输入检索要求。`instruction`、`query`、`description` 三个字段任选一个即可，推荐统一用 `instruction`。`required_tag_ids` 是强约束标签 id，必须来自 `GET /api/library-assets/facets` 返回的 `facets[].options[].id`；不填就是只按文字检索。`max_assets` 是最多取几张，当前产品前端建议传 `1`。\n\n`upload`：用户已经上传过项目素材，现在要把这个项目素材应用到某个 target。传 `asset_id` 即可，后端会取该素材最新可用版本；如果前端要精确指定某个版本，也可以传 `asset_version_id`。`asset_id` 通常来自 `POST /api/projects/{project_id}/assets/uploads` 的返回，也可以来自 `GET /api/projects/{project_id}/assets`。\n\n`agent_compose`：保留给后续 Agent 自动选图/生图编排，当前公开接口暂未实现，会返回 501。\n\n## 用法一：章节脚本槽位直接生图\n\n请求：\n\n```json\n{\n  \"mode\": \"direct_generate\",\n  \"target\": {\n    \"resource_slot_id\": \"b3612cf8-33b6-4f01-8c1c-0c70544d294f\"\n  },\n  \"input\": {\n    \"instruction\": \"生成一张测试用关键帧占位图，画面中心写着第1章关键帧\"\n  }\n}\n```\n\n返回摘要：\n\n```json\n{\n  \"action_id\": \"dea47652-b176-4d19-aec5-e21882cf22ac\",\n  \"status\": \"processing\",\n  \"stage\": \"queued\",\n  \"origin\": \"ai_generated\",\n  \"task_id\": \"4eac5619-aa43-4c84-89ff-62e6d3208f3d\",\n  \"events_url\": \"/api/tasks/4eac5619-aa43-4c84-89ff-62e6d3208f3d/events\",\n  \"vngraph_patch\": []\n}\n```\n\n## 用法二：章节脚本槽位选择公共图库素材\n\n请求：\n\n```json\n{\n  \"mode\": \"library_select\",\n  \"target\": {\n    \"resource_slot_id\": \"84e8fd79-65e5-4266-b961-5dc393dd4cc7\"\n  },\n  \"input\": {\n    \"library_asset_id\": \"d4118573-e73e-4ce5-99dc-f5853ca78b8a\"\n  }\n}\n```\n\n返回摘要：\n\n```json\n{\n  \"action_id\": \"83b49357-1c1f-4ddb-994b-9b050b02ff32\",\n  \"status\": \"awaiting_confirmation\",\n  \"stage\": \"preview_ready\",\n  \"selection_method\": \"manual_library\",\n  \"origin\": \"library\",\n  \"assets\": [\n    {\n      \"asset_id\": 49,\n      \"asset_version_id\": \"f5ffdee0-640d-471e-9934-1cf5151f01d3\",\n      \"asset_type\": \"background\",\n      \"media_url\": \"/api/media/d45b8226-5c81-463c-bbf5-c26b2c8cfd61\"\n    }\n  ],\n  \"vngraph_patch\": []\n}\n```\n\n## 用法三：章节脚本槽位按文字检索公共图库\n\n请求：\n\n```json\n{\n  \"mode\": \"library_select\",\n  \"target\": {\n    \"resource_slot_id\": \"84e8fd79-65e5-4266-b961-5dc393dd4cc7\"\n  },\n  \"input\": {\n    \"instruction\": \"找一张赛博朋克夜晚街道背景\",\n    \"required_tag_ids\": [\n      \"7d2859b9-c3c5-4e8c-a4b5-69df88637b89\"\n    ],\n    \"max_assets\": 1\n  }\n}\n```\n\n返回结构和“章节脚本槽位选择公共图库素材”一致，区别是后端先按 instruction/tag 检索公共素材库，再把命中的素材物化为项目素材版本。\n\n## 用法四：章节脚本槽位选择用户上传素材\n\n请求：\n\n```json\n{\n  \"mode\": \"upload\",\n  \"target\": {\n    \"resource_slot_id\": \"84e8fd79-65e5-4266-b961-5dc393dd4cc7\"\n  },\n  \"input\": {\n    \"asset_id\": 49\n  }\n}\n```\n\n如果要指定具体版本：\n\n```json\n{\n  \"mode\": \"upload\",\n  \"target\": {\n    \"resource_slot_id\": \"84e8fd79-65e5-4266-b961-5dc393dd4cc7\"\n  },\n  \"input\": {\n    \"asset_version_id\": \"f5ffdee0-640d-471e-9934-1cf5151f01d3\"\n  }\n}\n```\n\n返回摘要：\n\n```json\n{\n  \"action_id\": \"a6d5d339-1ec2-4baf-9234-b9b94da10001\",\n  \"status\": \"awaiting_confirmation\",\n  \"stage\": \"preview_ready\",\n  \"selection_method\": \"manual_upload\",\n  \"origin\": \"upload\",\n  \"assets\": [\n    {\n      \"asset_id\": 49,\n      \"asset_version_id\": \"f5ffdee0-640d-471e-9934-1cf5151f01d3\",\n      \"asset_type\": \"background\",\n      \"media_url\": \"/api/media/d45b8226-5c81-463c-bbf5-c26b2c8cfd61\"\n    }\n  ],\n  \"vngraph_patch\": []\n}\n```\n\n## 用法五：VNGraph 节点选择用户上传素材\n\n请求：\n\n```json\n{\n  \"mode\": \"upload\",\n  \"target\": {\n    \"vn_graph_revision_id\": \"96706094-3049-47f4-a9a7-38619d0c6b60\",\n    \"node_index\": 63\n  },\n  \"input\": {\n    \"asset_id\": 49\n  }\n}\n```\n\n返回里会带 `vngraph_patch`，前端预览 patch 后再调用确认接口。\n\n## 用法六：VNGraph 节点选择公共图库素材\n\n请求：\n\n```json\n{\n  \"mode\": \"library_select\",\n  \"target\": {\n    \"vn_graph_revision_id\": \"96706094-3049-47f4-a9a7-38619d0c6b60\",\n    \"node_index\": 63\n  },\n  \"input\": {\n    \"library_asset_id\": \"d4118573-e73e-4ce5-99dc-f5853ca78b8a\"\n  }\n}\n```\n\n返回摘要：\n\n```json\n{\n  \"action_id\": \"472565d9-b531-4347-aacc-3d211bd350ae\",\n  \"status\": \"awaiting_confirmation\",\n  \"stage\": \"preview_ready\",\n  \"selection_method\": \"manual_library\",\n  \"origin\": \"library\",\n  \"base_graph_hash\": \"5e896b5dc903e528b2cb6e52900231063297c39227fb783115158a796bfc9cd5\",\n  \"assets\": [\n    {\n      \"asset_id\": 54,\n      \"asset_version_id\": \"9aed0296-cdef-4cfe-a0e8-aa292cc9a150\",\n      \"asset_type\": \"background\",\n      \"media_url\": \"/api/media/d45b8226-5c81-463c-bbf5-c26b2c8cfd61\"\n    }\n  ],\n  \"vngraph_patch\": [\n    {\n      \"op\": \"set_node_data\",\n      \"path\": [\"BackgroundImage\"],\n      \"value\": {\n        \"Kind\": \"String\",\n        \"StringValue\": \"/api/media/d45b8226-5c81-463c-bbf5-c26b2c8cfd61\"\n      },\n      \"node_index\": 63\n    }\n  ]\n}\n```\n\n## 其他说明\n\n如果返回 `requires_confirmation=true`，后续确认应用看 `POST /api/projects/{project_id}/asset-actions/{action_id}/confirm`。VNGraph 确认需要前端把预览并应用 patch 后的完整 graph_json 提交到 confirm 接口，用于服务端校验并创建新的 VNGraph revision。",
+    "operationId": "start_asset_action_api_projects__project_id__asset_actions_post",
+    "tags": [
+      "素材管理与生成/视觉素材",
+      "视觉素材工作台"
+    ],
+    "parameters": [
+      {
+        "name": "sid",
+        "in": "cookie",
+        "description": "",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Sid",
+          "type": "string",
+          "nullable": true
+        }
+      },
+      {
+        "name": "project_id",
+        "in": "path",
+        "description": "",
+        "required": true,
+        "example": "",
+        "schema": {
+          "title": "Project Id",
+          "type": "integer"
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "description": "",
+        "required": false,
+        "example": "",
+        "schema": {
+          "title": "Idempotency-Key",
+          "type": "string",
+          "nullable": true
+        }
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/AssetActionCreate"
+          },
+          "examples": {
+            "direct_generate": {
+              "summary": "直接生图",
+              "value": {
+                "mode": "direct_generate",
+                "target": {
+                  "resource_slot_id": "84e8fd79-65e5-4266-b961-5dc393dd4cc7"
+                },
+                "input": {
+                  "instruction": "生成一张雨夜赛博朋克街道背景，霓虹反光明显，适合作为第一章主场景。"
+                }
+              }
+            },
+            "library_asset_select": {
+              "summary": "图库素材直选",
+              "value": {
+                "mode": "library_select",
+                "target": {
+                  "resource_slot_id": "84e8fd79-65e5-4266-b961-5dc393dd4cc7"
+                },
+                "input": {
+                  "library_asset_id": "lib-bg-meeting-room-001"
+                }
+              }
+            },
+            "library_search": {
+              "summary": "图库条件检索",
+              "value": {
+                "mode": "library_select",
+                "target": {
+                  "resource_slot_id": "84e8fd79-65e5-4266-b961-5dc393dd4cc7"
+                },
+                "input": {
+                  "instruction": "找一张赛博朋克夜晚街道背景",
+                  "required_tag_ids": [
+                    "7d2859b9-c3c5-4e8c-a4b5-69df88637b89"
+                  ],
+                  "max_assets": 1
+                }
+              }
+            },
+            "vngraph_node": {
+              "summary": "VNGraph 节点换图",
+              "value": {
+                "mode": "library_select",
+                "target": {
+                  "vn_graph_revision_id": "8b2f2f0a-0b1d-4a86-9f3e-7e5a2ad0a111",
+                  "node_index": 63
+                },
+                "input": {
+                  "library_asset_id": "lib-bg-meeting-room-001"
+                }
+              }
+            },
+            "uploaded_asset_select": {
+              "summary": "用户上传素材选择",
+              "value": {
+                "mode": "upload",
+                "target": {
+                  "resource_slot_id": "84e8fd79-65e5-4266-b961-5dc393dd4cc7"
+                },
+                "input": {
+                  "asset_id": 49
+                }
+              }
+            }
+          }
+        }
+      },
+      "required": true
+    },
+    "responses": {
+      "202": {
+        "description": "任务已接受",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AssetActionRead"
+            },
+            "example": {
+              "action_id": "0f7d0a7f-8d91-4d7c-9f41-9e15d2e77a01",
+              "status": "processing",
+              "stage": "accepted",
+              "progress": 5.0,
+              "selection_method": "manual_library",
+              "origin": null,
+              "task_id": "71b572d5-2616-47b0-86b5-89462fd2b7a0",
+              "events_url": "/api/tasks/71b572d5-2616-47b0-86b5-89462fd2b7a0/events",
+              "assets": [],
+              "scene_manifest": null,
+              "vngraph_patch": [],
+              "base_graph_hash": null,
+              "result_graph_hash": null,
+              "requires_confirmation": true,
+              "error": null,
+              "created_at": "2026-08-11T12:27:40.000000Z",
+              "updated_at": "2026-08-11T12:27:40.000000Z"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "素材管理与生成/视觉素材",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923758-run"
+  }
+}

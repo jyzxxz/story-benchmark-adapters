@@ -1,0 +1,45 @@
+{
+  "name": "OutlineRevisionCreate",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "bible_revision_id": {
+        "maxLength": 36,
+        "minLength": 36,
+        "title": "故事圣经修订编号",
+        "type": "string",
+        "description": "本次大纲基于的故事圣经修订编号。必须是当前项目可访问的 Bible revision。"
+      },
+      "parent_revision_id": {
+        "title": "父修订编号",
+        "type": "string",
+        "description": "父大纲修订编号。基于某一版大纲修改时传该 revision_id；第一版可不传。",
+        "nullable": true
+      },
+      "chapters": {
+        "items": {
+          "$ref": "#/components/schemas/OutlineChapterInput"
+        },
+        "maxItems": 500,
+        "minItems": 1,
+        "title": "章节大纲列表",
+        "type": "array",
+        "description": "章节大纲数组。设置 outline-head 后，后端会按大纲章节同步 story path 的章节拓扑。"
+      }
+    },
+    "required": [
+      "bible_revision_id",
+      "chapters"
+    ],
+    "title": "大纲修订创建请求",
+    "type": "object",
+    "x-apifox-orders": [
+      "bible_revision_id",
+      "parent_revision_id",
+      "chapters"
+    ],
+    "description": "手动保存章节大纲修订版本。保存后不会自动成为当前版本，需要再 PUT /outline-head。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

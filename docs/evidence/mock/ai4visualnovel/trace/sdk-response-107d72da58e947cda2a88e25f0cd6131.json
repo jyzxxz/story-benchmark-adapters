@@ -1,0 +1,33 @@
+{
+  "id": "synthetic-response",
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": "[{\"id\": 1, \"summary\": \"CAMPUS_01_NATIVE_MOCK片段\", \"characters\": [\"林\"], \"location\": \"教室\"}, {\"id\": 2, \"summary\": \"CAMPUS_01_NATIVE_MOCK片段\", \"characters\": [\"林\"], \"location\": \"教室\"}, {\"id\": 3, \"summary\": \"CAMPUS_01_NATIVE_MOCK片段\", \"characters\": [\"林\"], \"location\": \"教室\"}]",
+        "refusal": null,
+        "role": "assistant",
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      }
+    }
+  ],
+  "created": null,
+  "model": "fixture-model",
+  "object": null,
+  "metadata": null,
+  "moderation": null,
+  "service_tier": null,
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 20,
+    "prompt_tokens": 10,
+    "total_tokens": 30,
+    "completion_tokens_details": null,
+    "prompt_tokens_details": null
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "method": "get",
+  "path": "/api/server-agent/threads/{thread_id}/events/page",
+  "operation": {
+    "summary": "分页读取 Agent 事件",
+    "deprecated": false,
+    "description": "按 seq 游标读取历史事件页。页面恢复时先用该接口补历史；实时增量仍使用 SSE 事件流。",
+    "operationId": "list_server_agent_event_page_get",
+    "tags": [
+      "服务端 Agent"
+    ],
+    "parameters": [
+      {
+        "name": "thread_id",
+        "in": "path",
+        "description": "Agent thread 编号。",
+        "required": true,
+        "schema": {
+          "title": "Thread Id",
+          "type": "string"
+        }
+      },
+      {
+        "name": "after_seq",
+        "in": "query",
+        "description": "只返回 seq 大于该值的事件。",
+        "required": false,
+        "schema": {
+          "title": "After Seq",
+          "type": "integer",
+          "default": 0,
+          "minimum": 0
+        }
+      },
+      {
+        "name": "limit",
+        "in": "query",
+        "description": "每页事件数量，默认 100，最大 500。",
+        "required": false,
+        "schema": {
+          "title": "Limit",
+          "type": "integer",
+          "default": 100,
+          "minimum": 1,
+          "maximum": 500
+        }
+      },
+      {
+        "name": "turn_id",
+        "in": "query",
+        "description": "可选，只读取某一轮 turn 的事件。",
+        "required": false,
+        "schema": {
+          "title": "Turn Id",
+          "type": "string",
+          "nullable": true
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "请求成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ServerAgentEventPageResponse"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      },
+      "404": {
+        "description": "Agent 不存在。",
+        "content": {
+          "application/json": {
+            "schema": {}
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "不存在",
+        "x-apifox-ordering": 2
+      }
+    },
+    "security": [],
+    "x-apifox-folder": "服务端 Agent",
+    "x-apifox-status": "released"
+  }
+}

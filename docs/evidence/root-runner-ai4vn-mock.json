@@ -1,0 +1,22 @@
+{
+  "evidence_kind": "mock",
+  "implementation": "external_launcher_pristine_source",
+  "entrypoint": "root_run_once_injected_adapter",
+  "run": "ROOT_RUNNER_CAMPUS_01_MOCK",
+  "native_cli_stages": {
+    "design": "completed",
+    "script": "completed"
+  },
+  "observed_http_calls": 78,
+  "native_source_files_unchanged": 35,
+  "source_lock": "<workspace>/outputs/story-benchmark-adapters/baseline-lock.json",
+  "shared_task_file": "<workspace>/work/compiled/CAMPUS-01/shared_task.txt",
+  "shared_sha256": "af81207f820c2e6e8ea56939e4b4ed313f1810bf089068bfa1853549c440302a",
+  "opening_sha256": "196d04a58ba5bce543e93788e496ae42fdd547d1583d185cda42c3b969159c65",
+  "audit_status": "passed",
+  "native_integration": "verified_with_fixture_provider",
+  "cleanup_status": "completed",
+  "sealed_resume_no_dispatch": true,
+  "sealed_evidence_unchanged_after_resume": true,
+  "external_paid_generation": false
+}

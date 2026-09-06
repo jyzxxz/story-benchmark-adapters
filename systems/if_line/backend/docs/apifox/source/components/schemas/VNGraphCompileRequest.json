@@ -1,0 +1,33 @@
+{
+  "name": "VNGraphCompileRequest",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "compiler_version": {
+        "maxLength": 32,
+        "minLength": 1,
+        "title": "编译器版本",
+        "type": "string",
+        "description": "编译器版本。普通前端不需要传；只在回归测试或灰度指定编译器时填写。",
+        "nullable": true
+      },
+      "schema_version": {
+        "maxLength": 32,
+        "minLength": 1,
+        "title": "结构版本",
+        "type": "string",
+        "description": "输出图结构版本。普通前端不需要传；只在兼容特定前端运行时版本时填写。",
+        "nullable": true
+      }
+    },
+    "title": "视觉小说图编译请求",
+    "type": "object",
+    "x-apifox-orders": [
+      "compiler_version",
+      "schema_version"
+    ],
+    "description": "VNGraph 编译任务请求。通常不需要前端填写版本字段，传 {} 或 null 使用后端默认编译器。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

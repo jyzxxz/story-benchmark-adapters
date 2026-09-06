@@ -1,0 +1,26 @@
+[Unit]
+Description=if_line text/audio/compile worker (paired with if-line-worker-image.service)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/workspace/fengbohan/if_line/backend
+EnvironmentFile=-/home/workspace/fengbohan/if_line/backend/.env
+ExecStart=/bin/bash /home/workspace/fengbohan/if_line/backend/start_worker_text.sh
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=60
+KillSignal=SIGTERM
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

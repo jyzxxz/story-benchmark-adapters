@@ -1,0 +1,2 @@
+# Preserve upstream and task bytes, including when core.autocrlf is enabled.
+* -text

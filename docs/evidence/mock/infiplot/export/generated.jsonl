@@ -1,0 +1,2 @@
+{"segment_id": "p0001", "kind": "narration", "speaker": null, "text": "你仍站在门前，窗外的雨没有停。", "native_source": "native/start-response.json", "native_pointer": "/scene/beats/0/narration"}
+{"segment_id": "p0002", "kind": "narration", "speaker": null, "text": "你把手从门把上移开，等待下一步行动。", "native_source": "native/start-response.json", "native_pointer": "/scene/beats/1/narration"}

@@ -1,0 +1,51 @@
+{
+  "name": "ServerAgentTurnAcceptedResponse",
+  "schema": {
+    "type": "object",
+    "title": "服务端 Agent Turn 受理响应",
+    "description": "提交输入后的受理结果。生成内容不在该响应中返回，需要通过 SSE 读取。",
+    "required": [
+      "thread_id",
+      "turn_id",
+      "accepted",
+      "status",
+      "message"
+    ],
+    "properties": {
+      "thread_id": {
+        "type": "string",
+        "title": "Thread 编号",
+        "description": "Agent thread 编号。"
+      },
+      "turn_id": {
+        "type": "string",
+        "title": "Turn 编号",
+        "description": "本轮 turn 编号，用于订阅和打断。"
+      },
+      "accepted": {
+        "type": "boolean",
+        "title": "是否已受理",
+        "description": "是否已成功投递到后台执行。"
+      },
+      "status": {
+        "type": "string",
+        "title": "当前状态",
+        "description": "投递后的 Agent 当前状态。"
+      },
+      "message": {
+        "type": "string",
+        "title": "提示信息",
+        "description": "给调用方看的中文提示。"
+      }
+    },
+    "x-apifox-orders": [
+      "thread_id",
+      "turn_id",
+      "accepted",
+      "status",
+      "message"
+    ],
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

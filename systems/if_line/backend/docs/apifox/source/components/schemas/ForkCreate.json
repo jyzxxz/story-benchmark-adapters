@@ -1,0 +1,22 @@
+{
+  "name": "ForkCreate",
+  "schema": {
+    "properties": {
+      "decision_id": {
+        "title": "决策编号",
+        "maxLength": 64,
+        "type": "string",
+        "description": "决策编号，用于关联对应数据。",
+        "nullable": true
+      }
+    },
+    "title": "阅读分叉创建请求",
+    "type": "object",
+    "x-apifox-orders": [
+      "decision_id"
+    ],
+    "description": "阅读分叉创建请求数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

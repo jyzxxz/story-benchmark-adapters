@@ -1,0 +1,24 @@
+{
+  "task_id": "query.view_project",
+  "instructions": "帮我看一下项目 1001 的当前情况。",
+  "model": "",
+  "assistant_messages": [
+    {
+      "content": null,
+      "tool_calls": [
+        {
+          "id": "call_00_0brAacNNy6BNY82FDtLC9690",
+          "type": "function",
+          "function": {
+            "name": "view_project",
+            "arguments": "{\"project_id\": 1001}"
+          }
+        }
+      ]
+    },
+    {
+      "content": "项目 1001 当前情况如下：\n\n**项目基本信息**\n- 标题：测试项目\n- 角色：林夜、阿澄\n- 风格：轻科幻，节奏 medium，额外要求「少一点旁白」\n- 状态：reading（阅读中）\n- StoryBible：尚未生成（story_bible 为 null）\n\n**章节规划**（1 章）\n- 第 1 章《第一章》— 状态 completed\n  - 概要：主角抵达码头\n  - 冲突：信号中断\n  - 场景：旧码头 / 情绪：紧张 / 视觉关键词：雨夜\n\n**章节正文**\n- 第 1 章 version 1，状态 completed，正文长度 800 字\n\n**素材**（1 个）\n- 背景「旧码头」，状态 completed（/static/assets/backgrounds/a.png）\n\n整体来看，项目已完成第 1 章的规划、正文和 1 个背景素材，但 StoryBible 还是空的。需要我继续帮你做什么？例如：生成 StoryBible、查看第 1 章正文全文、或规划下一章。",
+      "tool_calls": null
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "name": "UserUpdateRequest",
+  "schema": {
+    "properties": {
+      "avatar_url": {
+        "title": "头像地址",
+        "maxLength": 500,
+        "type": "string",
+        "description": "头像地址，由服务端返回给客户端访问。",
+        "nullable": true
+      },
+      "display_name": {
+        "title": "显示名称",
+        "maxLength": 100,
+        "type": "string",
+        "description": "显示名称，可为空。",
+        "nullable": true
+      }
+    },
+    "title": "用户更新请求",
+    "type": "object",
+    "x-apifox-orders": [
+      "avatar_url",
+      "display_name"
+    ],
+    "description": "用户更新请求数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

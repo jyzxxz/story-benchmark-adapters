@@ -1,0 +1,37 @@
+{
+  "name": "ChoiceResult",
+  "schema": {
+    "properties": {
+      "created": {
+        "title": "是否已创建",
+        "type": "boolean",
+        "description": "是否已创建。"
+      },
+      "decision": {
+        "$ref": "#/components/schemas/ChoiceRead",
+        "title": "决策",
+        "description": "决策。"
+      },
+      "session": {
+        "$ref": "#/components/schemas/ReadingSessionRead",
+        "title": "会话",
+        "description": "会话。"
+      }
+    },
+    "required": [
+      "decision",
+      "session",
+      "created"
+    ],
+    "title": "阅读选择结果",
+    "type": "object",
+    "x-apifox-orders": [
+      "created",
+      "decision",
+      "session"
+    ],
+    "description": "阅读选择结果数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

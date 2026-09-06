@@ -1,0 +1,52 @@
+{
+  "name": "PublicationProjection",
+  "schema": {
+    "properties": {
+      "active_release_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Active Release Id"
+      },
+      "lock_version": {
+        "minimum": 1.0,
+        "title": "Lock Version",
+        "type": "integer"
+      },
+      "published_at": {
+        "anyOf": [
+          {
+            "format": "date-time",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Published At"
+      },
+      "state": {
+        "enum": [
+          "unpublished",
+          "published",
+          "changes_pending"
+        ],
+        "title": "State",
+        "type": "string"
+      }
+    },
+    "required": [
+      "state",
+      "active_release_id",
+      "published_at",
+      "lock_version"
+    ],
+    "title": "PublicationProjection",
+    "type": "object"
+  }
+}

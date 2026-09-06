@@ -1,0 +1,12 @@
+{
+  "id": "local-fixture",
+  "model": "local-fixture-model",
+  "choices": [
+    {
+      "message": {
+        "content": "{\"shotType\": \"wide\", \"integratedPrompt\": \"fixture room\"}"
+      },
+      "finish_reason": "stop"
+    }
+  ]
+}

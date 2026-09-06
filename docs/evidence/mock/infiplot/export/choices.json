@@ -1,0 +1,22 @@
+[
+  {
+    "id": "c1",
+    "label": "继续等待",
+    "effect": {
+      "kind": "change-scene",
+      "nextSceneSeed": "等待"
+    },
+    "native_source": "native/start-response.json",
+    "native_pointer": "/scene/beats/1/next/choices/0"
+  },
+  {
+    "id": "c2",
+    "label": "离开",
+    "effect": {
+      "kind": "change-scene",
+      "nextSceneSeed": "离开"
+    },
+    "native_source": "native/start-response.json",
+    "native_pointer": "/scene/beats/1/next/choices/1"
+  }
+]

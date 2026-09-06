@@ -1,0 +1,84 @@
+{
+  "name": "OutlineRevision",
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "bible_revision_id": {
+        "maxLength": 36,
+        "minLength": 36,
+        "title": "Bible Revision Id",
+        "type": "string"
+      },
+      "chapters": {
+        "items": {
+          "$ref": "#/components/schemas/OutlineChapterInput"
+        },
+        "maxItems": 500,
+        "minItems": 1,
+        "title": "Chapters",
+        "type": "array"
+      },
+      "content_hash": {
+        "title": "Content Hash",
+        "type": "string"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "parent_revision_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Parent Revision Id"
+      },
+      "revision_no": {
+        "minimum": 1.0,
+        "title": "Revision No",
+        "type": "integer"
+      },
+      "source_hash": {
+        "title": "Source Hash",
+        "type": "string"
+      },
+      "story_path_id": {
+        "title": "Story Path Id",
+        "type": "string"
+      },
+      "status": {
+        "title": "版本状态",
+        "type": "string",
+        "description": "大纲版本状态。当前手动创建成功后通常为 ready，表示版本内容已生成但是否成为当前版本仍由 outline-head 决定。"
+      }
+    },
+    "required": [
+      "bible_revision_id",
+      "chapters",
+      "id",
+      "story_path_id",
+      "revision_no",
+      "source_hash",
+      "content_hash",
+      "status"
+    ],
+    "title": "故事线路大纲版本",
+    "type": "object",
+    "description": "故事线路的一版章节大纲。创建后不会自动切换为当前版本，需要通过 outline-head 激活。",
+    "x-apifox-orders": [
+      "bible_revision_id",
+      "chapters",
+      "content_hash",
+      "id",
+      "parent_revision_id",
+      "revision_no",
+      "source_hash",
+      "story_path_id",
+      "status"
+    ]
+  }
+}

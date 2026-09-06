@@ -1,0 +1,58 @@
+{
+  "name": "ServerAgentToolCallResultAcceptedResponse",
+  "schema": {
+    "type": "object",
+    "title": "服务端 Agent 前端工具结果受理响应",
+    "description": "前端工具结果提交后的受理结果。Agent 后续输出仍通过 SSE 读取。",
+    "required": [
+      "thread_id",
+      "tool_call_id",
+      "accepted",
+      "status",
+      "message"
+    ],
+    "properties": {
+      "thread_id": {
+        "type": "string",
+        "title": "Thread 编号",
+        "description": "Agent thread 编号。"
+      },
+      "turn_id": {
+        "type": "string",
+        "nullable": true,
+        "title": "Turn 编号",
+        "description": "当前等待该工具结果的 turn 编号。"
+      },
+      "tool_call_id": {
+        "type": "string",
+        "title": "工具调用编号",
+        "description": "Agent SSE 事件里 tool_call item 的 id。"
+      },
+      "accepted": {
+        "type": "boolean",
+        "title": "是否已受理",
+        "description": "是否已成功交给等待中的 Agent turn。"
+      },
+      "status": {
+        "type": "string",
+        "title": "当前状态",
+        "description": "提交后的 Agent 当前状态。"
+      },
+      "message": {
+        "type": "string",
+        "title": "提示信息",
+        "description": "给调用方看的中文提示。"
+      }
+    },
+    "x-apifox-orders": [
+      "thread_id",
+      "turn_id",
+      "tool_call_id",
+      "accepted",
+      "status",
+      "message"
+    ],
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

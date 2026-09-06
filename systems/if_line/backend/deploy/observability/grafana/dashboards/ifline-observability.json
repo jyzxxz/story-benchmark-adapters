@@ -1,0 +1,112 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "grafana",
+        "uid": "-- Grafana --"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "content": "## if_line 通用观测\n\n- 后端只配置一个 OTel 出口: Collector HTTP http://localhost:14318\n- Agent 对话 trace 看 Phoenix: http://localhost:6006\n- 普通后端 trace 看 Grafana Explore -> Tempo\n- 普通后端日志看 Grafana Explore -> VictoriaLogs\n- 如果日志里带有 trace_id，可以从 VictoriaLogs 跳转到 Tempo。\n\n后端建议配置:\n\n```text\nOTEL_EXPORTER_OTLP_ENDPOINT=http://127.0.0.1:14318\nOTEL_SERVICE_NAME=if-line-backend\nAGENT_TRACE_SERVICE_NAME=if-line-agent\n```\n\n约定: Collector 根据 service.name 分发；if-line-agent 进 Phoenix，其他 trace 进 Tempo。",
+        "mode": "markdown"
+      },
+        "pluginVersion": "11.2.0",
+      "title": "使用说明",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "victoriametrics-logs-datasource",
+        "uid": "victorialogs"
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 6
+      },
+      "id": 2,
+      "options": {
+        "dedupStrategy": "none",
+        "enableLogDetails": true,
+        "prettifyLogMessage": false,
+        "showCommonLabels": false,
+        "showLabels": false,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "victorialogs"
+          },
+          "expr": "trace_id:$trace_id",
+          "refId": "A"
+        }
+      ],
+      "title": "按 trace_id 检索日志",
+      "type": "logs"
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": [
+    "if_line",
+    "observability"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "",
+          "value": ""
+        },
+        "description": "从 Tempo 或日志里复制 trace_id 后粘贴到这里。",
+        "hide": 0,
+        "label": "trace_id",
+        "name": "trace_id",
+        "options": [
+          {
+            "selected": true,
+            "text": "",
+            "value": ""
+          }
+        ],
+        "query": "",
+        "skipUrlSync": false,
+        "type": "textbox"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "if_line 通用观测",
+  "uid": "ifline-observability",
+  "version": 1,
+  "weekStart": ""
+}

@@ -1,0 +1,53 @@
+{
+  "name": "BookmarkRead",
+  "schema": {
+    "properties": {
+      "created_at": {
+        "format": "date-time",
+        "title": "创建时间",
+        "type": "string",
+        "description": "创建时间。"
+      },
+      "id": {
+        "title": "编号",
+        "type": "string",
+        "description": "编号，用于关联对应数据。"
+      },
+      "label": {
+        "title": "标签",
+        "type": "string",
+        "description": "标签，可为空。",
+        "nullable": true
+      },
+      "node_id": {
+        "title": "节点编号",
+        "type": "string",
+        "description": "节点编号，用于关联对应数据。"
+      },
+      "session_id": {
+        "title": "会话编号",
+        "type": "string",
+        "description": "会话编号，用于关联对应数据。"
+      }
+    },
+    "required": [
+      "id",
+      "session_id",
+      "node_id",
+      "label",
+      "created_at"
+    ],
+    "title": "书签读取结果",
+    "type": "object",
+    "x-apifox-orders": [
+      "created_at",
+      "id",
+      "label",
+      "node_id",
+      "session_id"
+    ],
+    "description": "书签读取结果数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "name": "ReadingSessionCreate",
+  "schema": {
+    "properties": {
+      "initial_state": {
+        "title": "初始状态",
+        "type": "object",
+        "x-apifox-orders": [],
+        "description": "初始状态对象。",
+        "properties": {},
+        "x-apifox-ignore-properties": []
+      },
+      "project_id": {
+        "minimum": 1,
+        "title": "项目编号",
+        "type": "integer",
+        "description": "项目编号，用于关联对应数据。"
+      },
+      "release_id": {
+        "maxLength": 64,
+        "minLength": 1,
+        "title": "发布编号",
+        "type": "string",
+        "description": "发布编号，用于关联对应数据。"
+      }
+    },
+    "required": [
+      "project_id",
+      "release_id"
+    ],
+    "title": "阅读会话创建请求",
+    "type": "object",
+    "x-apifox-orders": [
+      "initial_state",
+      "project_id",
+      "release_id"
+    ],
+    "description": "阅读会话创建请求数据模型。",
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}

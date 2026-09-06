@@ -1,0 +1,60 @@
+{
+  "name": "BibleRevision",
+  "schema": {
+    "properties": {
+      "content_hash": {
+        "title": "Content Hash",
+        "type": "string"
+      },
+      "content_json": {
+        "title": "Content Json",
+        "type": "object"
+      },
+      "created_at": {
+        "format": "date-time",
+        "title": "Created At",
+        "type": "string"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "parent_revision_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Parent Revision Id"
+      },
+      "project_id": {
+        "title": "Project Id",
+        "type": "integer"
+      },
+      "revision_no": {
+        "minimum": 1.0,
+        "title": "Revision No",
+        "type": "integer"
+      },
+      "source_hash": {
+        "title": "Source Hash",
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "project_id",
+      "parent_revision_id",
+      "revision_no",
+      "source_hash",
+      "content_hash",
+      "content_json",
+      "created_at"
+    ],
+    "title": "BibleRevision",
+    "type": "object"
+  }
+}

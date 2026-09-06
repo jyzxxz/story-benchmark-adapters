@@ -1,0 +1,132 @@
+{
+  "method": "post",
+  "path": "/api/projects",
+  "operation": {
+    "summary": "创建项目",
+    "deprecated": false,
+    "description": "创建作者侧项目。这里只保存项目基础设定，并初始化根故事路径；不会自动生成故事圣经、大纲或章节。",
+    "operationId": "create_project_api_projects__post",
+    "tags": [
+      "项目管理"
+    ],
+    "parameters": [],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ProjectCreate"
+          },
+          "example": {
+            "title": "Apifox文档校验项目",
+            "style": "轻松幽默",
+            "pace": "medium",
+            "source_work": "",
+            "characters": [
+              {
+                "name": "牢梁",
+                "role": "主角"
+              },
+              {
+                "name": "小伍",
+                "role": "搭档"
+              }
+            ],
+            "story_start": "牢梁决定做一套能跑通的接口文档。",
+            "story_end": "团队终于知道每个接口应该怎么调用。",
+            "extra_requirements": "用于接口文档样例验证"
+          }
+        }
+      },
+      "required": true,
+      "description": "项目基础设定。只有 title 必填；其他字段是后续生成的初始上下文。"
+    },
+    "responses": {
+      "201": {
+        "description": "创建成功",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ProjectRead"
+            },
+            "example": {
+              "title": "Apifox文档校验项目",
+              "characters": [
+                {
+                  "name": "牢梁",
+                  "role": "主角"
+                },
+                {
+                  "name": "小伍",
+                  "role": "搭档"
+                }
+              ],
+              "story_start": "牢梁决定做一套能跑通的接口文档。",
+              "story_end": "团队终于知道每个接口应该怎么调用。",
+              "style": "轻松幽默",
+              "source_work": "",
+              "pace": "medium",
+              "extra_requirements": "用于接口文档样例验证",
+              "id": 1,
+              "root_story_path_id": "689eafef-de0c-4dbe-a168-2c379bca58d1",
+              "authoring": {
+                "stage": "bible",
+                "blocking_items": [
+                  {
+                    "code": "bible.head_missing",
+                    "story_path_id": null,
+                    "path_chapter_id": null,
+                    "detail": "Project has no reviewed StoryBible revision"
+                  },
+                  {
+                    "code": "outline.head_missing",
+                    "story_path_id": "689eafef-de0c-4dbe-a168-2c379bca58d1",
+                    "path_chapter_id": null,
+                    "detail": "Active StoryPath has no reviewed Outline revision"
+                  },
+                  {
+                    "code": "story_path.chapters_missing",
+                    "story_path_id": "689eafef-de0c-4dbe-a168-2c379bca58d1",
+                    "path_chapter_id": null,
+                    "detail": "Active StoryPath has no chapters"
+                  }
+                ],
+                "running_task_count": 0,
+                "has_unpublished_changes": true
+              },
+              "publication": {
+                "state": "unpublished",
+                "active_release_id": null,
+                "published_at": null,
+                "lock_version": 1
+              }
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "成功",
+        "x-apifox-ordering": 0
+      },
+      "422": {
+        "description": "请求参数校验失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        },
+        "headers": {},
+        "x-apifox-name": "参数错误",
+        "x-apifox-ordering": 1
+      }
+    },
+    "security": [
+      {
+        "cookieAuth": []
+      }
+    ],
+    "x-apifox-folder": "项目管理",
+    "x-apifox-status": "released",
+    "x-run-in-apifox": "https://app.apifox.com/web/project/8663103/apis/api-495923783-run"
+  }
+}

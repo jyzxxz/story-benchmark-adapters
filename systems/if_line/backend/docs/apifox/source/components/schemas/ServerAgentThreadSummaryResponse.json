@@ -1,0 +1,100 @@
+{
+  "name": "ServerAgentThreadSummaryResponse",
+  "schema": {
+    "type": "object",
+    "title": "服务端 Agent 会话摘要",
+    "description": "Agent thread 列表项。",
+    "required": [
+      "thread_id",
+      "agent_kind",
+      "mode",
+      "status",
+      "persisted_message_count",
+      "event_count"
+    ],
+    "properties": {
+      "thread_id": {
+        "type": "string",
+        "title": "Thread 编号",
+        "description": "Agent thread 编号。"
+      },
+      "agent_kind": {
+        "type": "string",
+        "title": "Agent 类型",
+        "description": "Agent 类型。"
+      },
+      "current_turn_id": {
+        "type": "string",
+        "nullable": true,
+        "title": "当前 Turn 编号",
+        "description": "当前正在运行的 turn；没有运行中 turn 时为空。"
+      },
+      "last_turn_id": {
+        "type": "string",
+        "nullable": true,
+        "title": "最近 Turn 编号",
+        "description": "最近一次 turn 编号。"
+      },
+      "mode": {
+        "type": "string",
+        "title": "运行模式",
+        "description": "运行模式。"
+      },
+      "status": {
+        "type": "string",
+        "title": "状态",
+        "description": "状态。"
+      },
+      "stop_reason": {
+        "type": "string",
+        "nullable": true,
+        "title": "停止原因",
+        "description": "停止原因。"
+      },
+      "model": {
+        "type": "string",
+        "nullable": true,
+        "title": "模型",
+        "description": "Agent 使用的模型。"
+      },
+      "persisted_message_count": {
+        "type": "integer",
+        "title": "已持久化消息数量",
+        "description": "数据库审计账本中已持久化 message 数量。"
+      },
+      "event_count": {
+        "type": "integer",
+        "title": "事件数量",
+        "description": "事件数量。"
+      },
+      "created_at": {
+        "type": "string",
+        "nullable": true,
+        "title": "创建时间",
+        "description": "创建时间。"
+      },
+      "updated_at": {
+        "type": "string",
+        "nullable": true,
+        "title": "更新时间",
+        "description": "更新时间。"
+      }
+    },
+    "x-apifox-orders": [
+      "thread_id",
+      "agent_kind",
+      "current_turn_id",
+      "last_turn_id",
+      "mode",
+      "status",
+      "stop_reason",
+      "model",
+      "persisted_message_count",
+      "event_count",
+      "created_at",
+      "updated_at"
+    ],
+    "x-apifox-ignore-properties": [],
+    "x-apifox-folder": ""
+  }
+}
