@@ -24,7 +24,9 @@ with:
 
 The public task itself, its original system-message position, all other message content, native planning, native memories, and native response schemas remain intact. Missing/duplicated signatures or changed public text cause rejection before a provider request. `shared_opening=false` disables the sentence replacement; the messages then remain identical.
 
-The independent budget policy sets an absent output cap to `max_output_tokens`, preserving any lower native cap. `max_calls` limits actual provider sends for one root run. `max_input_chars` measures Unicode codepoints of the complete compact JSON HTTP payload **after** adaptation and the output cap. It does not claim equal monetary cost. Request logs disclose both the prompt replacement and sampling changes.
+The common `model_parameters` object is applied to every native text request after the exact message adaptation. For the v2 non-reasoning validation, the shared setting is `{"thinking":{"type":"disabled"}}`; the relay places this at the HTTP payload's top level, including auxiliary character and cinematography calls. It does not modify `messages`. An empty `{}` leaves native model settings untouched. The shared helper validates supported parameters before sending; systems cannot override this common condition independently.
+
+The independent budget policy sets an absent output cap to `max_output_tokens`, preserving any lower native cap. `max_calls` limits actual provider sends for one root run. `max_input_chars` measures Unicode codepoints of the complete compact JSON HTTP payload **after** message adaptation, common model parameter injection, and the output cap. It does not claim equal monetary cost. Request logs disclose the prompt replacement, common parameter changes, and output-cap changes separately.
 
 `MOCK_IMAGE=true` uses the native image placeholders. Empty server TTS configuration and `clientTts=true` disable server TTS. Image/vision configuration points at a disabled loopback endpoint; failures are not used as a substitute for disabling media. Native text calls by character and cinematography translators still consume the same call budget.
 
@@ -40,6 +42,7 @@ Alongside the runner's common settings:
 | `base_url` | Adapter-owned loopback Next.js address, default `http://127.0.0.1:3217`. Existing services are never reused. |
 | `model_base_url` | Explicit final text-provider endpoint; distinct from `base_url`. |
 | `model` | Exact model sent by all native text requests. |
+| `model_parameters` | Shared provider settings, applied to the complete HTTP body; `{}` preserves native settings. |
 | `cookie_env` | Environment variable holding the native Supabase session cookie; default `INFIPLOT_COOKIE`. |
 | `shared_opening` | Whether to apply the exact transition adaptation; default true in this dedicated adapter. |
 | `dependency_timeout_seconds` | Frozen offline installation timeout, default 180. |
@@ -53,7 +56,8 @@ Use Node >=22 and pnpm 9.12.0. Runtime installation runs `pnpm install --frozen-
 
 - `native/source-before.json`, `source-after.json`, and `source-attestation.json` compare the original source byte hashes before and after the run.
 - The runtime copy receives identical source bytes. Only native generated files (`next-env.d.ts`, `tsconfig.tsbuildinfo`) may differ and are listed separately. Unexpected source changes fail attestation and preserve the runtime for inspection.
-- `trace/requests/*.before.json` records the unmodified native SDK payload; `*.after.json` records the exact adapted/capped provider payload. HTTP records include hashes, changed message index/codepoint offset, requested/actual model, provider request id, finish reason, raw JSON/SSE response, and usage. Missing usage is null. Streaming cumulative usage is not summed repeatedly.
+- `trace/requests/*.before.json` records the unmodified native SDK payload; `*.after.json` records the exact adapted/parameterized/capped provider payload. HTTP records include original, post-prompt, post-model-parameter, and final payload hashes; `model_parameters`/`model_parameter_changes`; changed message index/codepoint offset; requested/actual model; provider request id; finish reason; raw JSON/SSE response; and usage. Missing usage is null. Streaming cumulative usage is not summed repeatedly.
+- On a response read failure, `trace/responses/*.partial.bin` retains bytes already read plus `IncompleteRead.partial`. Secret values are redacted before binary storage; original and stored hashes, observed byte count, redaction status, HTTP status, and request id are recorded. The call remains an error with `response_complete=false`, `delivery_status=delivery_unknown`, and unknown usage. A truncated declared Content-Length is also rejected. Partial evidence never becomes a successful response and adds no retry.
 - `trace/received-*.json` is explicitly a **`native_sdk_task_block`** observation. Its text is extracted from the real SDK request, not copied from the bundle. It is not a direct observation of the native route's decoded `worldSetting` field; `direct_native_route_receiver_observed=false` remains explicit.
 - Native fallback/degradation console signatures can establish a positive observation. Their absence does not prove absence of native fallback. Normal-looking exports remain `generated_unreviewed_fallback_unknown` unless stronger evidence exists. All other console output is discarded to prevent credential leakage.
 - `native/start-response.json` retains the complete native response. Export walks native `entryBeatId`/continue edges to the first choice and applies the actual PlayCanvas visibility rule. It does not use `scenePrompt`, internal memory, or other branches to fill output.
@@ -69,7 +73,7 @@ Default offline suite:
 python3 -m unittest discover -s tests -p 'test_infiplot*.py' -v
 ```
 
-This covers exact/default-off adaptation, untouched auxiliary messages/schema, rejected signature/input drift, JSON/SSE forwarding, usage, missing usage, budgets, model mismatch, native graph/visibility export, and ambiguous-delivery no-resend behavior. The expensive native route fixture is opt-in.
+This covers exact/default-off adaptation, untouched auxiliary messages/schema, shared non-reasoning parameters on real local HTTP sends, empty-parameter defaults, full-payload budget accounting, rejected signature/input drift, JSON/SSE forwarding, partial chunked/Content-Length response evidence, usage, missing usage, budgets, model mismatch, native graph/visibility export, and ambiguous-delivery no-resend behavior. The expensive native route fixture is opt-in. These tests use local providers only and do not establish real-vendor v2 results.
 
 To test the actual original route with only local auth/provider fixtures, a published no-Git source snapshot, and the shared compiled case:
 

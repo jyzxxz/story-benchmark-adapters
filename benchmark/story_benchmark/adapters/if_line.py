@@ -202,7 +202,9 @@ class IFLineAdapter:
         self.base = f"http://127.0.0.1:{port}"
         benchmark_root = Path(__file__).resolve().parents[2]
         launch_config = {k: v for k, v in self.config.items() if k not in {"transport", "managed_runtime"}}
-        launch_config.update(runtime_dir=str(runtime), port=port, chapter_count=int(self.config.get("chapter_count",1)))
+        # This is the whole outline length. generate_first_artifact still selects
+        # only its first chapter. 13 is the frozen native new-project UI default.
+        launch_config.update(runtime_dir=str(runtime), port=port, chapter_count=int(self.config.get("chapter_count",13)))
         launch_config["repo_path"] = str(Path(self.config.get("repo_path",self.config.get("repo_dir"))).resolve())
         if self.config.get("source_lock"):
             launch_config["source_lock"] = str(Path(self.config["source_lock"]).resolve())
@@ -345,6 +347,8 @@ class IFLineAdapter:
                     "model": self.config["model"]}
         endpoint_key = "requested_model_base_url" if self.config.get("managed_runtime")=="engineering_fixed_response" else "model_base_url"
         expected[endpoint_key] = self.config["model_base_url"]
+        expected["model_parameters"] = self.config.get("model_parameters", {})
+        expected["async_transport_keepalive_connections"] = 0
         if any(receipt.get(k) != v for k, v in expected.items()):
             raise IFLineError("worker_config_mismatch")
         # Local experiment only: stale/dead worker receipts cannot authorize dispatch.
@@ -378,7 +382,7 @@ class IFLineAdapter:
         self._get_revision(handle, f"/projects/{pid}/bible-revisions", bible, "bible_revision.json")
         self._activate(handle, "activate_bible", f"/projects/{pid}/bible-head", bible)
         outline, _ = self._generate(handle, "outline", f"/story-paths/{root}/outline-generations",
-            {"chapter_count": int(self.config.get("chapter_count", 1 if self.config.get("managed_runtime") else 6)), "bible_revision_id": bible}, "outline_revision_id")
+            {"chapter_count": int(self.config.get("chapter_count", 13)), "bible_revision_id": bible}, "outline_revision_id")
         outline_obj = self._get_revision(handle, f"/story-paths/{root}/outline-revisions", outline, "outline_revision.json")
         self._activate(handle, "activate_outline", f"/story-paths/{root}/outline-head", outline)
         chapters = self._request("GET", f"{self.prefix}/story-paths/{root}/chapters")

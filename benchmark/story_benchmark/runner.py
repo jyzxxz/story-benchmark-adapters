@@ -61,6 +61,11 @@ def adapter_for(system, config):
 
 def validate_config(config):
     errors = []
+    from .model_parameters import validate_model_parameters
+    try:
+        validate_model_parameters(config.get('model_parameters', {}))
+    except BenchmarkError as exc:
+        errors.append(str(exc))
     for field in ('timeout_seconds', 'max_calls', 'max_output_tokens', 'max_input_chars'):
         if type(config.get(field)) not in (int, float) or config[field] <= 0:
             errors.append('missing_positive_limit: ' + field)
@@ -133,6 +138,7 @@ def _export(run_dir, adapter, handle, manifest):
                      and audit['task_entry_shared_occurrences'] == 1
                      and audit['call_context_valid'] and not audit['delivery_unknown_calls']
                      and audit['configured_model_matches_requests'] is True
+                     and audit['configured_model_parameters_match_requests'] is True
                      and not audit['trace_parse_errors'] and not audit['missing_response_files'])
     generation_status = export.get('generation_status', 'generated_unreviewed' if segments else 'empty')
     if 'budget_exhausted' in issue_codes: generation_status='budget_exhausted'

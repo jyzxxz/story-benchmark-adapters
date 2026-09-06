@@ -96,10 +96,14 @@ def audit_trace(run_dir, shared, opening, materialize=False):
                 'root_run_id','system','operation_id','call_id','attempt','stage','requested_model',
                 'actual_model','request_messages','request_schema_and_sampling','start_time')}))
             if response_path is not None:
-                atomic_write(root/'responses'/(call_id+response_path.suffix), response_path.read_text(encoding='utf-8'))
+                atomic_write(root/'responses'/(call_id+response_path.suffix), response_path.read_bytes())
     configured_model = None
+    configured_parameters = {}
     config_path = root/'config.json'
-    if config_path.exists(): configured_model = read_json(config_path).get('model')
+    if config_path.exists():
+        config=read_json(config_path)
+        configured_model = config.get('model')
+        configured_parameters = config.get('model_parameters', {})
     requested_models = sorted({v['requested_model'] for v in observations if v.get('requested_model')})
     actual_models = sorted({v['actual_model'] for v in observations if v.get('actual_model')})
     native_context_valid = True
@@ -121,6 +125,10 @@ def audit_trace(run_dir, shared, opening, materialize=False):
             'call_context_valid': native_context_valid,
             'requested_models':requested_models,'actual_models':actual_models,
             'configured_model_matches_requests': all(v.get('requested_model')==configured_model for v in observations) if observations and configured_model else None,
+            'configured_model_parameters_match_requests': all(
+                all(v.get('request_schema_and_sampling',{}).get(k)==value for k,value in configured_parameters.items())
+                for v in observations) if observations else None,
+            'configured_model_parameters': configured_parameters,
             'reported_model_matches_requested': all(v['actual_model']==v.get('requested_model') for v in observations) if observations and all(v.get('actual_model') for v in observations) else None,
             'missing_response_files':response_missing,
             'native_issue_codes':sorted(set(native_issues)),

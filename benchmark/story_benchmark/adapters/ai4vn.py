@@ -139,6 +139,12 @@ class AI4VNAdapter:
         checks, errors = [], []
         bundle_dir = Path(bundle_dir).resolve()
         try:
+            from story_benchmark.model_parameters import validate_model_parameters
+            validate_model_parameters(self.config.get('model_parameters', {}))
+            checks.append('shared_model_parameters_valid')
+        except (TypeError, ValueError) as error:
+            errors.append('invalid_model_parameters:' + str(error))
+        try:
             shared = (bundle_dir / 'shared_task.txt').read_bytes()
             if not shared or shared.decode('utf-8').strip() != shared.decode('utf-8'):
                 raise ValueError('shared_task_empty_or_outer_whitespace')
@@ -267,6 +273,7 @@ class AI4VNAdapter:
                             'BENCH_RUN_ID': str(self.config.get('root_run_id') or Path(handle['run_dir']).name),
                             'BENCH_TRACE_DIR': handle['trace_dir'], 'BENCH_OPERATION_ID': 'ai4vn.' + stage,
                             'BENCH_MAX_CALLS': str(self.config['max_calls']),
+                            'BENCH_MODEL_PARAMETERS': json.dumps(self.config.get('model_parameters', {}), ensure_ascii=False),
                             'BENCH_MAX_OUTPUT_TOKENS': str(self.config['max_output_tokens']),
                             'BENCH_MAX_INPUT_CHARS': str(self.config['max_input_chars']), 'BENCH_ALLOW_LIVE': '1'})
         return environment

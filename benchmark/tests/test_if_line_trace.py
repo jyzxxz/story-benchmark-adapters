@@ -11,6 +11,7 @@ def env(monkeypatch, tmp_path):
                  'BENCH_MAX_OUTPUT_TOKENS':'100','BENCH_MAX_INPUT_CHARS':'10000'}.items():
         monkeypatch.setenv(k,v)
     monkeypatch.delenv('LLM_MODEL',raising=False)
+    monkeypatch.setenv('BENCH_MODEL_PARAMETERS','{}')
     return tmp_path
 
 def events(root):
@@ -140,3 +141,116 @@ def test_unanswered_http_call_finalizes_as_delivery_unknown(env):
     assert rows[-1]['event']=='error'
     assert rows[-1]['error']['code']=='delivery_unknown'
     assert rows[-1]['usage'] is None
+
+
+@pytest.mark.asyncio
+async def test_wire_model_parameters_are_shared_and_observed(env,monkeypatch):
+    monkeypatch.setenv('BENCH_MODEL_PARAMETERS','{"thinking":{"type":"disabled"}}')
+    native={'model':'fake','messages':[{'role':'user','content':'共同任务：雨夜'}],'max_tokens':20}
+    sent=[]
+    async def respond(request):
+        sent.append(json.loads(request.content))
+        assert int(request.headers['Content-Length'])==len(request.content)
+        return httpx.Response(200,json={'model':'fake','choices':[]})
+    client=httpx.AsyncClient(transport=httpx.MockTransport(respond))
+    trace.instrument_client_kwargs({'http_client':client})
+    await client.post('https://example.test',json=native)
+    assert sent[0]=={**native,'thinking':{'type':'disabled'}}
+    assert 'thinking' not in native
+    assert events(env)[0]['request_messages']==native['messages']
+    assert events(env)[0]['request_schema_and_sampling']['thinking']=={'type':'disabled'}
+    await client.aclose()
+
+
+def test_empty_model_parameters_preserve_original_wire_bytes(env):
+    raw=b'{ "model":"fake", "messages":[], "max_tokens":20 }'
+    request=httpx.Request('POST','https://example.test',content=raw)
+    trace.on_request_sync(request)
+    assert request.content==raw
+
+
+@pytest.mark.asyncio
+async def test_injected_parameters_count_toward_input_limit(env,monkeypatch):
+    native={'model':'fake','messages':[],'max_tokens':20}
+    monkeypatch.setenv('BENCH_MAX_INPUT_CHARS',str(len(json.dumps(native,separators=(',',':')))))
+    monkeypatch.setenv('BENCH_MODEL_PARAMETERS','{"thinking":{"type":"disabled"}}')
+    sent=[]
+    async def respond(request):
+        sent.append(request)
+        return httpx.Response(200,json={})
+    client=httpx.AsyncClient(transport=httpx.MockTransport(respond))
+    trace.instrument_client_kwargs({'http_client':client})
+    with pytest.raises(RuntimeError,match='input character budget'):
+        await client.post('https://example.test',json=native)
+    assert sent==[]
+    assert events(env)[0]['wire_sent'] is False
+    await client.aclose()
+
+
+@pytest.mark.asyncio
+async def test_transport_error_is_unknown_and_native_sdk_retry_survives(env):
+    calls=[]
+    async def respond(request):
+        calls.append(request)
+        if len(calls)==1: raise httpx.ReadError('fixture transport failed after sending')
+        return httpx.Response(200,json={'id':'ok','model':'fake','object':'chat.completion','created':0,
+            'choices':[{'index':0,'message':{'role':'assistant','content':'ok'},'finish_reason':'stop'}]})
+    http=httpx.AsyncClient(transport=httpx.MockTransport(respond))
+    client=AsyncOpenAI(api_key='fixture-key',base_url='https://example.test',max_retries=1,
+        **trace.instrument_client_kwargs({'http_client':http}))
+    response=await client.chat.completions.create(model='fake',messages=[],max_tokens=20)
+    assert response.choices[0].message.content=='ok'
+    records=events(env)
+    failed=next(r for r in records if r['event']=='error')
+    assert failed['error']['type']=='ReadError'
+    assert failed['delivery_status']=='delivery_unknown'
+    assert failed['wire_sent'] is None and failed['usage'] is None and failed['actual_model'] is None
+    assert len([r for r in records if r['event']=='started'])==2
+    trace.finalize_pending()
+    assert len(events(env))==len(records)
+    await client.close()
+
+
+def test_sync_transport_error_is_recorded(env):
+    def respond(request): raise httpx.ConnectError('fixture connect failure')
+    client=httpx.Client(transport=httpx.MockTransport(respond))
+    trace.instrument_client_kwargs({'http_client':client},sync=True)
+    with pytest.raises(httpx.ConnectError):
+        client.post('https://example.test',json={'messages':[],'max_tokens':20})
+    assert events(env)[-1]['error']['type']=='ConnectError'
+    assert events(env)[-1]['delivery_status']=='delivery_unknown'
+    client.close()
+
+
+def test_constructed_async_client_across_loops_has_no_keepalive_retry(env,monkeypatch):
+    import asyncio
+    import threading
+    from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
+    monkeypatch.setenv('BENCH_MODEL_PARAMETERS','{"thinking":{"type":"disabled"}}')
+    received=[]
+    class Handler(BaseHTTPRequestHandler):
+        protocol_version='HTTP/1.1'
+        def log_message(self,*args): pass
+        def do_POST(self):
+            received.append(json.loads(self.rfile.read(int(self.headers['Content-Length']))))
+            raw=json.dumps({'id':'local','model':'fake','object':'chat.completion','created':0,
+                'choices':[{'index':0,'message':{'role':'assistant','content':'ok'},'finish_reason':'stop'}]}).encode()
+            self.send_response(200);self.send_header('Content-Type','application/json')
+            self.send_header('Content-Length',str(len(raw)));self.end_headers();self.wfile.write(raw)
+    server=ThreadingHTTPServer(('127.0.0.1',0),Handler)
+    thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
+    client=AsyncOpenAI(api_key='local-fixture',base_url=f'http://127.0.0.1:{server.server_port}',
+        **trace.instrument_client_kwargs({}))
+    async def call():
+        response=await client.chat.completions.create(model='fake',messages=[{'role':'user','content':'原始正文任务'}],max_tokens=20)
+        assert response.choices[0].message.content=='ok'
+    try:
+        for _ in range(3): asyncio.run(call())
+        asyncio.run(client.close())
+    finally:
+        server.shutdown();server.server_close();thread.join(timeout=5)
+    assert len(received)==3
+    assert all(r['thinking']=={'type':'disabled'} for r in received)
+    assert len([r for r in events(env) if r['event']=='started'])==3
+    assert len([r for r in events(env) if r['event']=='completed'])==3
+    assert not [r for r in events(env) if r['event']=='error']

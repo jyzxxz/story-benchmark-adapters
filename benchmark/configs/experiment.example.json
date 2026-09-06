@@ -8,7 +8,8 @@
     "max_calls": null,
     "max_output_tokens": null,
     "max_input_chars": null,
-    "allow_pilot": true
+    "allow_pilot": true,
+    "model_parameters": {}
   },
   "systems": {
     "if_line": {
@@ -20,7 +21,7 @@
       "database_url_env": "IFLINE_BENCH_DATABASE_URL",
       "model_api_key_env": "OPENAI_API_KEY",
       "redis_executable": null,
-      "chapter_count": 1
+      "chapter_count": 13
     },
     "ai4visualnovel": {
       "repo_path": "../../systems/AI4VisualNovel",

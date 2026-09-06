@@ -40,6 +40,18 @@ Execution budgets are explicit adapter settings, separate from observation:
   this limit over the whole root run, including preparation and both CLI stages.
   Do not automatically resend.
 
+The shared experiment may also set `common.model_parameters`, for example
+`{"thinking":{"type":"disabled"}}` for the selected DeepSeek provider.
+The adapter passes this object as `BENCH_MODEL_PARAMETERS`; the external HTTP
+hook applies the shared `story_benchmark.model_parameters` rule to the actual
+outgoing JSON before checking the full input budget and reserving a send.
+These provider parameters are recorded in HTTP `request_schema_and_sampling`,
+including every SDK retry. They are part of the common experiment configuration,
+not a native story-prompt change. The empty default `{}` preserves the native
+HTTP body; messages and output schema are not changed by this setting.
+DeepSeek documents `thinking.type="disabled"` as its non-thinking mode in the
+[official thinking-mode guide](https://api-docs.deepseek.com/guides/thinking_mode/).
+
 Configuration fields:
 
 ```json
@@ -50,6 +62,7 @@ Configuration fields:
   "text_provider": "openai",
   "model": "the-frozen-common-model",
   "model_base_url": "https://the-selected-provider/v1",
+  "model_parameters": {},
   "api_key_env": "OPENAI_API_KEY",
   "live": false,
   "max_calls": 200,
@@ -86,6 +99,8 @@ four native agent types, validates shared-input receipts, real SDK/HTTP hooks,
 source maps, usage fields and unchanged source hashes. These results are marked
 `evidence_kind=mock` and are not model-quality or paid-generation results.
 Set `AI4VN_TEST_ARTIFACT_DIR` to a fresh directory to retain those mock artifacts.
+The root-runner fixture additionally checks that shared `thinking` parameters
+arrive at every actual localhost HTTP request and appear in trace records.
 
 For the common compiled case, set `BENCH_SHARED_BUNDLE` to its existing bundle
 directory and run only `test_ai4vn_native_flow.py`; this executes one native flow

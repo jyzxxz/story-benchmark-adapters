@@ -9,6 +9,7 @@ try:
 except ImportError:  # Native mode remains usable on platforms without flock.
     fcntl = None
 import inspect
+import importlib
 import json
 import os
 import re
@@ -101,6 +102,18 @@ def http_request(request):
         payload = json.loads(request.content)
     except (ValueError, UnicodeError):
         raise RuntimeError('benchmark_non_json_http_payload_unsupported')
+    from story_benchmark.model_parameters import apply_model_parameters
+    parameters = json.loads(os.getenv('BENCH_MODEL_PARAMETERS', '{}'))
+    configured_payload = apply_model_parameters(payload, parameters)
+    if configured_payload != payload:
+        # This is the actual synchronous SDK request, including retry attempts.
+        # Keep HTTPX's cached body, outgoing stream and length consistent.
+        wire = json.dumps(configured_payload, ensure_ascii=False, separators=(',', ':')).encode('utf-8')
+        httpx_module = importlib.import_module(type(request).__module__.split('.')[0])
+        request._content = wire
+        request.stream = httpx_module.ByteStream(wire)
+        request.headers['Content-Length'] = str(len(wire))
+    payload = configured_payload
     serialized = json.dumps(payload, ensure_ascii=False, separators=(',', ':'))
     if len(serialized) > int(os.environ['BENCH_MAX_INPUT_CHARS']):
         raise RuntimeError('benchmark_input_budget_exhausted')

@@ -36,7 +36,9 @@ def atomic_write(path, text):
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, temp = tempfile.mkstemp(dir=path.parent, prefix='.' + path.name)
     try:
-        with os.fdopen(fd, 'w', encoding='utf-8', newline='\n') as stream:
+        binary = isinstance(text, bytes)
+        options = {} if binary else {'encoding': 'utf-8', 'newline': '\n'}
+        with os.fdopen(fd, 'wb' if binary else 'w', **options) as stream:
             stream.write(text)
             stream.flush()
             os.fsync(stream.fileno())

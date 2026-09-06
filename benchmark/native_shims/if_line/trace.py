@@ -117,6 +117,19 @@ def _reserve(body):
 
 def on_request_sync(request):
     body = json.loads(request.content)
+    parameters = json.loads(os.getenv("BENCH_MODEL_PARAMETERS", "{}"))
+    from story_benchmark.model_parameters import apply_model_parameters
+    effective = apply_model_parameters(body, parameters)
+    if effective != body:
+        import httpx
+        # The old native OpenAI SDK does not accept provider-specific keyword
+        # arguments. Apply the shared policy to the final JSON wire body.
+        raw = json.dumps(effective, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+        request._content = raw
+        request.stream = httpx.ByteStream(raw)
+        request.headers["Content-Length"] = str(len(raw))
+        request.headers.pop("Transfer-Encoding", None)
+    body = effective
     try:
         if os.getenv("LLM_MODEL") and body.get("model") != os.environ["LLM_MODEL"]:
             raise RuntimeError("requested model differs from frozen common model")
@@ -141,6 +154,8 @@ def on_request_sync(request):
         "provider_request_id": None, "response_file": None, "finish_reason": None,
         "usage": None, "usage_complete": False, "start_time": _now(), "end_time": None,
         "error": None, "budget_policy": "clamp_native_output_cap_and_root_http_call_cap",
+        "model_parameters": parameters,
+        "async_transport_keepalive_connections": 0,
         "budget_output_cap": int(os.environ["BENCH_MAX_OUTPUT_TOKENS"])}
     request.extensions["benchmark_event"] = event
     _emit(event)
@@ -268,14 +283,69 @@ def instrument_client_kwargs(kwargs, *, sync=False):
     client = result.get("http_client")
     if client is None:
         factory = SyncHttpxClientWrapper if sync else AsyncHttpxClientWrapper
+        limits = DEFAULT_LIMITS
+        if not sync:
+            import httpx
+            # Native workers use asyncio.run repeatedly while caching the same
+            # AsyncOpenAI client. Live HTTP/1.1 connections belong to their first
+            # loop; retaining one can send a request then fail on the next loop.
+            limits = httpx.Limits(max_connections=DEFAULT_LIMITS.max_connections,
+                max_keepalive_connections=0, keepalive_expiry=DEFAULT_LIMITS.keepalive_expiry)
         client = factory(timeout=result.get("timeout", DEFAULT_TIMEOUT),
-            limits=DEFAULT_LIMITS)
+            limits=limits)
         result["http_client"] = client
+    _observe_client_transport(client, sync=sync)
     hooks = (("request", on_request_sync), ("response", on_response_sync)) if sync else (("request", on_request), ("response", on_response))
     for key, hook in hooks:
         if hook not in client.event_hooks[key]:
             client.event_hooks[key].append(hook)
     return result
+
+
+def _transport_error(request, exc):
+    event = request.extensions.get("benchmark_event")
+    if event is None:
+        return
+    _emit({**event, "event":"error", "end_time":_now(),
+        "actual_model":None, "response_file":None, "usage":None, "usage_complete":False,
+        "delivery_status":"delivery_unknown", "wire_sent":None,
+        "error":{"code":"transport_error", "type":type(exc).__name__, "detail":str(exc)}})
+
+
+def _observe_client_transport(client, *, sync=False):
+    """Observe exceptions below HTTPX hooks without changing SDK retry behavior.
+
+All existing proxy mounts and transports are retained and delegated to. A
+transport error does not prove a request stayed local: retain unknown delivery.
+"""
+    import httpx
+    class AsyncObserved(httpx.AsyncBaseTransport):
+        _ifline_benchmark_observed = True
+        def __init__(self, inner): self.inner = inner
+        async def handle_async_request(self, request):
+            try: return await self.inner.handle_async_request(request)
+            except BaseException as exc:
+                _transport_error(request, exc)
+                raise
+        async def aclose(self): await self.inner.aclose()
+    class SyncObserved(httpx.BaseTransport):
+        _ifline_benchmark_observed = True
+        def __init__(self, inner): self.inner = inner
+        def handle_request(self, request):
+            try: return self.inner.handle_request(request)
+            except BaseException as exc:
+                _transport_error(request, exc)
+                raise
+        def close(self): self.inner.close()
+    observed = {}
+    def wrap(inner):
+        if inner is None or getattr(inner, "_ifline_benchmark_observed", False):
+            return inner
+        if id(inner) not in observed:
+            observed[id(inner)] = (SyncObserved if sync else AsyncObserved)(inner)
+        return observed[id(inner)]
+    client._transport = wrap(client._transport)
+    client._mounts = {pattern:wrap(inner) for pattern,inner in client._mounts.items()}
 
 
 def apply_output_budget(kwargs, path):
@@ -301,6 +371,8 @@ def write_worker_receipt():
         "max_output_tokens": int(os.environ["BENCH_MAX_OUTPUT_TOKENS"]),
         "max_input_chars": int(os.environ["BENCH_MAX_INPUT_CHARS"]),
         "model": os.environ["LLM_MODEL"], "model_base_url": os.environ["OPENAI_BASE_URL"], "created_at": _now()}
+    receipt.update(model_parameters=json.loads(os.getenv("BENCH_MODEL_PARAMETERS", "{}")),
+                   async_transport_keepalive_connections=0)
     (_root() / "if_line_worker_receipt.json").write_text(json.dumps(receipt), encoding="utf-8")
 
 

@@ -44,6 +44,7 @@ def configure(config,mode):
         BENCH_MAX_INPUT_CHARS=str(config['max_input_chars']),LLM_MODEL=config['model'],
         OPENAI_BASE_URL=config['model_base_url'],APP_ENV='test' if mode.startswith('engineering') else 'development',
         CHECK_DEPENDENCIES_ON_STARTUP='false',DATABASE_URL='sqlite:///'+str(runtime/'native.sqlite3'))
+    os.environ['BENCH_MODEL_PARAMETERS']=json.dumps(config.get('model_parameters',{}),ensure_ascii=False,separators=(',',':'))
     # Both are native text settings used by the Script IR resource planner.
     os.environ.update(PROMPT_REWRITER_MODEL=config['model'],STYLE_CLASSIFIER_MODEL=config['model'],
         STYLE_CLASSIFIER_BASE_URL=config['model_base_url'])
@@ -145,7 +146,7 @@ def engineering_server(config):
         if any(part in key for part in ('API_KEY','API_KEYS')):
             os.environ[key]=''
     FixedProvider.requests=[]
-    FixedProvider.chapter_count=int(config.get('chapter_count',1))
+    FixedProvider.chapter_count=int(config.get('chapter_count',13))
     FixedProvider.model=config['model']
     provider=ThreadingHTTPServer(('127.0.0.1',0),FixedProvider)
     provider_thread=threading.Thread(target=provider.serve_forever,daemon=True)

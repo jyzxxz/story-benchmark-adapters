@@ -8,6 +8,7 @@ from __future__ import annotations
 from copy import deepcopy
 from datetime import datetime, timezone
 import hashlib
+from http.client import IncompleteRead
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import os
@@ -18,6 +19,8 @@ import time
 from urllib import error, request
 from urllib.parse import urlsplit
 from uuid import uuid4
+
+from story_benchmark.model_parameters import apply_model_parameters
 
 BASE_COMMIT = "a60e18bc663caaa134d9323a2b89159b7cc9bd05"
 COLD_START = "这是故事的开场。请按【故事档案】里的 nextHook 把第一幕的冷开场设计出来——开场即抓人，别花笔墨铺垫世界观。"
@@ -142,6 +145,20 @@ class Relay:
         with target.open("x", encoding="utf-8") as file:
             file.write(self.safe(value) if isinstance(value, str) else json.dumps(self.safe(value), ensure_ascii=False, indent=2))
 
+    def save_partial(self, path, raw):
+        """Retain incomplete wire bytes, redacting secrets before binary storage."""
+        stored = raw
+        for secret in self.secret_values:
+            stored = stored.replace(secret.encode("utf-8"), b"[REDACTED]")
+        target = self.trace / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        with target.open("xb") as file:
+            file.write(stored)
+        return {"partial_response_bytes_observed": len(raw),
+                "partial_response_sha256": digest(raw),
+                "partial_response_saved_sha256": digest(stored),
+                "partial_response_redacted": stored != raw}
+
     def start(self):
         relay = self
 
@@ -183,6 +200,9 @@ class Relay:
     def handle_request(self, handler):
         common = None
         sent_headers = False
+        chunks = []
+        status = None
+        provider_id = None
         call_id = str(uuid4())
         try:
             if handler.headers.get("Authorization") != "Bearer " + self.api_key:
@@ -198,6 +218,12 @@ class Relay:
             if before.get("model") != self.config["model"]:
                 raise ValueError("native_request_model_mismatch")
             after_prompt_hash = digest(compact(after))
+            parameters = deepcopy(self.config.get("model_parameters", {}))
+            native_parameters = after
+            after = apply_model_parameters(after, parameters)
+            parameter_changes = [{"field": key, "before": deepcopy(native_parameters.get(key)), "after": deepcopy(value)}
+                                 for key, value in parameters.items() if native_parameters.get(key) != value]
+            after_parameters_hash = digest(compact(after))
             cap_key = "max_completion_tokens" if "max_completion_tokens" in after else "max_tokens"
             native_cap = after.get(cap_key)
             if native_cap is not None and (not isinstance(native_cap, int) or isinstance(native_cap, bool) or native_cap <= 0):
@@ -226,7 +252,10 @@ class Relay:
                       "response_file": None, "provider_request_id": None, "finish_reason": None,
                       "native_project_id": None, "native_task_id": None,
                       "sdk_raw_request_sha256": digest(raw), "before_request_sha256": digest(compact(before)),
-                      "after_prompt_adaptation_sha256": after_prompt_hash, "after_request_sha256": digest(serialized),
+                      "after_prompt_adaptation_sha256": after_prompt_hash,
+                      "after_model_parameters_sha256": after_parameters_hash,
+                      "after_request_sha256": digest(serialized),
+                      "model_parameters": parameters, "model_parameter_changes": parameter_changes,
                       "prompt_replacements": replacements,
                       "sampling_changes": [{"field": cap_key, "before": native_cap, "after": after[cap_key]}] if native_cap != after[cap_key] else [],
                       "input_chars": len(serialized), "input_character_metric": "compact_http_json_unicode_codepoints_after_cap"}
@@ -238,7 +267,6 @@ class Relay:
                 response = opener.open(upstream, timeout=float(self.config.get("timeout_seconds", 180)))
             except error.HTTPError as exc:
                 response = exc
-            chunks = []
             disconnected = False
             with response:
                 status = response.status
@@ -252,6 +280,10 @@ class Relay:
                 while True:
                     chunk = response.read1(65536)
                     if not chunk:
+                        # HTTPResponse.read1 may return EOF while a declared
+                        # Content-Length still has unread bytes.
+                        if isinstance(response.length, int) and response.length > 0:
+                            raise IncompleteRead(b"", response.length)
                         break
                     chunks.append(chunk)
                     if not disconnected:
@@ -286,8 +318,23 @@ class Relay:
                        "delivery_status": "delivery_unknown" if disconnected else "response_received"})
         except Exception as exc:
             issue = str(exc) if isinstance(exc, ValueError) else type(exc).__name__
+            partial_evidence = {}
+            if common is not None and (status is not None or chunks):
+                # read1() can raise with bytes from its final read; previous
+                # successful reads are already in chunks. Never mark this as a
+                # complete response or invent usage from a partial JSON/SSE.
+                tail = exc.partial if isinstance(exc, IncompleteRead) else b""
+                raw_partial = b"".join(chunks) + tail
+                partial_path = f"responses/{call_id}.partial.bin"
+                partial_evidence = self.save_partial(partial_path, raw_partial)
+                partial_evidence.update({"response_file": partial_path, "response_complete": False,
+                                         "response_capture_status": "partial", "http_status": status,
+                                         "provider_request_id": provider_id, "usage_complete": False})
+                if isinstance(exc, IncompleteRead):
+                    partial_evidence["read_error_expected_additional_bytes"] = exc.expected
             self.emit({**(common or {}), "event": "error" if common else "blocked", "error": issue,
-                       "generation_issue_code": issue, "delivery_status": "delivery_unknown" if common else "not_sent"})
+                       "generation_issue_code": issue, "delivery_status": "delivery_unknown" if common else "not_sent",
+                       **partial_evidence})
             if not sent_headers:
                 handler.send_response(502 if common else 400)
                 handler.send_header("Content-Type", "application/json")

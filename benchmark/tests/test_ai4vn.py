@@ -276,6 +276,53 @@ server.shutdown()
                    'BENCH_RUN_ID': 'synthetic', 'BENCH_MAX_CALLS': '2', 'BENCH_MAX_OUTPUT_TOKENS': '128',
                    'BENCH_MAX_INPUT_CHARS': '10000', 'BENCH_ALLOW_LIVE': '1', 'BENCH_OPERATION_ID': 'fixture'})
 
+    def test_shared_model_parameters_reach_wire_and_count_toward_input_cap(self):
+        with tempfile.TemporaryDirectory() as directory:
+            self.run_native('''
+import os,json,threading
+from http.server import BaseHTTPRequestHandler,HTTPServer
+from pathlib import Path
+requests=[]
+class Handler(BaseHTTPRequestHandler):
+ def do_POST(self):
+  body=self.rfile.read(int(self.headers['Content-Length']))
+  requests.append(json.loads(body))
+  self.send_response(200)
+  self.send_header('Content-Type','application/json')
+  self.end_headers()
+  self.wfile.write(json.dumps({'id':'fixture','model':'fixture-model','choices':[{'index':0,'message':{'role':'assistant','content':'中文正文'},'finish_reason':'stop'}]}).encode())
+ def log_message(self,*args):pass
+server=HTTPServer(('127.0.0.1',0),Handler)
+threading.Thread(target=server.serve_forever,daemon=True).start()
+from agents.llm_client import LLMClient
+client=LLMClient(api_key='offline-test-key',base_url=f'http://127.0.0.1:{server.server_port}/v1')
+messages=[{'role':'user','content':'公共输入汉字🙂保持原样'}]
+os.environ['BENCH_MODEL_PARAMETERS']='{}'
+assert client._chat_openai(messages,0.7,True)=='中文正文'
+os.environ['BENCH_MODEL_PARAMETERS']=json.dumps({'thinking':{'type':'disabled'}})
+assert client._chat_openai(messages,0.7,True)=='中文正文'
+assert len(requests)==2
+assert 'thinking' not in requests[0]
+assert requests[1]=={**requests[0],'thinking':{'type':'disabled'}}
+assert all(r['messages']==messages and r['response_format']=={'type':'json_object'} for r in requests)
+records=[json.loads(line) for p in Path(os.environ['BENCH_TRACE_DIR']).glob('*.jsonl') for line in p.read_text().splitlines()]
+starts=[r for r in records if r['boundary']=='http' and r['event']=='started']
+assert len(starts)==2
+assert 'thinking' not in starts[0]['request_schema_and_sampling']
+assert starts[1]['request_schema_and_sampling']['thinking']=={'type':'disabled'}
+# The common provider parameter is counted in the full actual request JSON cap.
+size=len(json.dumps(requests[1],ensure_ascii=False,separators=(',',':')))
+os.environ['BENCH_MAX_INPUT_CHARS']=str(size-1)
+try:client._chat_openai(messages,0.7,True)
+except Exception:pass
+else:raise AssertionError('added model parameters escaped the input budget')
+assert len(requests)==2
+assert (Path(os.environ['BENCH_TRACE_DIR'])/'ai4vn-call-count').read_text()=='2'
+server.shutdown()
+''', {'TEXT_PROVIDER': 'openai', 'BENCH_TRACE_DIR': str(Path(directory)/'trace'),
+      'BENCH_RUN_ID': 'synthetic-parameters', 'BENCH_MAX_CALLS': '3', 'BENCH_MAX_OUTPUT_TOKENS': '128',
+      'BENCH_MAX_INPUT_CHARS': '10000', 'BENCH_ALLOW_LIVE': '1', 'BENCH_OPERATION_ID': 'fixture'})
+
 
 if __name__ == '__main__':
     unittest.main()

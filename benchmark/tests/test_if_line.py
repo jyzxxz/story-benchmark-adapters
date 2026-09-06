@@ -80,6 +80,7 @@ class IFLineTests(unittest.TestCase):
         self.assertEqual(len(posts),5)
         self.assertNotIn('instructions',posts[1][2])
         self.assertEqual(posts[1][2]['parameters']['benchmark_input_mode'],'shared_task')
+        self.assertEqual(posts[2][2]['chapter_count'],13)
         resumed=self.adapter.prepare(self.bundle,self.root/'run')
         self.adapter.generate_first_artifact(resumed)
         self.assertEqual(len([c for c in self.native.calls if c[0]=='POST']),5)
@@ -118,5 +119,13 @@ class IFLineTests(unittest.TestCase):
         result=export_script_ir(script(),{'id':'chapter-r','content':'雨下着。'})
         self.assertEqual(result['choices'],[])
         self.assertEqual(result['choice_support'],'not_in_script_ir_v3')
+    def test_explicit_total_chapter_count_is_preserved(self):
+        self.adapter.config['chapter_count']=7
+        handle=self.adapter.prepare(self.bundle,self.root/'run')
+        self.adapter.generate_first_artifact(handle)
+        outlines=[c for c in self.native.calls if c[0]=='POST' and c[1].endswith('outline-generations')]
+        self.assertEqual(outlines[0][2]['chapter_count'],7)
+        generated=[c for c in self.native.calls if c[0]=='POST' and c[1].startswith('/api/path-chapters/')]
+        self.assertEqual(len(generated),1)
 
 if __name__=='__main__': unittest.main()

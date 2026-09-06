@@ -8,6 +8,9 @@ from pathlib import Path
 import sys
 
 # This directory belongs to the adapter, never to the native source snapshot.
+# Shared execution rules are imported from the same adapter checkout in each
+# native subprocess; no helper is copied into the frozen source tree.
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 import ai4vn_observer as benchmark_trace
 
 

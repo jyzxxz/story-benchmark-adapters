@@ -46,7 +46,7 @@ class NativeServicesTests(unittest.TestCase):
                 subprocess.run([str(pg_bin/'createdb'),'-h','127.0.0.1','-p',str(port),'-U','benchmark',
                     'if_line_bench_native_e2e'],check=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
                 FixedProvider.requests=[]
-                FixedProvider.chapter_count=1
+                FixedProvider.chapter_count=13
                 FixedProvider.model='fixed-test-model'
                 provider=ThreadingHTTPServer(('127.0.0.1',0),FixedProvider)
                 thread=threading.Thread(target=provider.serve_forever,daemon=True);thread.start()
@@ -56,7 +56,8 @@ class NativeServicesTests(unittest.TestCase):
                     'source_lock':os.environ['IFLINE_SOURCE_LOCK'],'max_calls':12,'max_output_tokens':32768,
                     'max_input_chars':100000,'model':'fixed-test-model','model_base_url':f'http://127.0.0.1:{provider.server_port}/v1',
                     'live':True,'timeout_seconds':60,'python_executable':python,'managed_runtime':'native_services',
-                    'chapter_count':1,'isolated_deployment':True,'database_url_env':'IFLINE_NATIVE_TEST_DATABASE_URL',
+                    'model_parameters':{'thinking':{'type':'disabled'}},
+                    'isolated_deployment':True,'database_url_env':'IFLINE_NATIVE_TEST_DATABASE_URL',
                     'model_api_key_env':'IFLINE_NATIVE_TEST_KEY','redis_executable':shutil.which('redis-server')}
                 adapter=IFLineAdapter(config)
                 handle=adapter.prepare(bundle,root/'run')
@@ -68,6 +69,12 @@ class NativeServicesTests(unittest.TestCase):
                 self.assertEqual(exported['segments'][0]['text'],'雨继续下着。')
                 self.assertEqual(result['execution_environment'],'native_services')
                 self.assertEqual(count,5)
+                outline=json.loads((root/'run/native/outline_revision.json').read_text())
+                self.assertEqual(len(outline['chapters']),13)
+                chapter_requests=[r for r in FixedProvider.requests if '小说作家' in r['messages'][0]['content']]
+                self.assertEqual(len(chapter_requests),1)
+                self.assertIn('第 1/13 章（非最后一章）',chapter_requests[0]['messages'][1]['content'])
+                self.assertTrue(all(r['thinking']=={'type':'disabled'} for r in FixedProvider.requests))
                 with self.assertRaisesRegex(IFLineError,'native_http_error: 409'):
                     adapter._request('PUT',f"/api/projects/{result['native_project_id']}/bible-head",
                         {'revision_id':handle['bible_revision_id']},{'If-Match':'"1"'})

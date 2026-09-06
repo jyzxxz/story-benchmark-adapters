@@ -3,7 +3,7 @@ from http.server import BaseHTTPRequestHandler
 import json
 
 class FixedProvider(BaseHTTPRequestHandler):
-    protocol_version = 'HTTP/1.0'
+    protocol_version = 'HTTP/1.1'
     requests = []
     chapter_count = 1
     model = 'fixed-test-model'

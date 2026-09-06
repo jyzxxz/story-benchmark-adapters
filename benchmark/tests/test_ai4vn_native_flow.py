@@ -195,6 +195,7 @@ class NativeFlowTests(unittest.TestCase):
         common_config = {
             **REPO_CONFIG, 'python_executable': NATIVE_PYTHON,
             'model': 'fixture-model', 'text_provider': 'openai',
+            'model_parameters': {'thinking': {'type': 'disabled'}},
             'api_key_env': 'AI4VN_FIXTURE_API_KEY',
             'model_base_url': f'http://127.0.0.1:{server.server_port}/v1',
             'root_run_id': marker, 'trace_dir': str(run / 'trace'),
@@ -256,6 +257,10 @@ class NativeFlowTests(unittest.TestCase):
         self.assertEqual(int((run / 'trace/ai4vn-call-count').read_text()), len(fixture['calls']))
         self.assertLessEqual(len(fixture['calls']), common_config['max_calls'])
         self.assertTrue(all(request['model'] == common_config['model'] for request in fixture['calls']))
+        self.assertTrue(all(request['thinking'] == {'type': 'disabled'} for request in fixture['calls']))
+        records = [json.loads(line) for path in (run / 'trace').glob('*.jsonl') for line in path.read_text().splitlines()]
+        starts = [record for record in records if record['boundary'] == 'http' and record['event'] == 'started']
+        self.assertTrue(all(record['request_schema_and_sampling']['thinking'] == {'type': 'disabled'} for record in starts))
         self.assertTrue(all(request['max_tokens'] <= common_config['max_output_tokens'] for request in fixture['calls']))
         self.assertTrue(all(len(json.dumps(request, ensure_ascii=False, separators=(',', ':'))) <= common_config['max_input_chars']
                             for request in fixture['calls']))
