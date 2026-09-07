@@ -28,6 +28,22 @@ def message_text(value):
     return ''
 
 
+def is_http_attempt_record(record):
+    """Whether a record belongs to a provider HTTP attempt, not a local block.
+
+    Started records remain attempts even if their delivery later becomes
+    unknown. Completed/error-only HTTP observations support existing fixtures
+    and captured partial responses. SDK and budget boundaries never count as
+    provider attempts; explicit not-sent evidence wins over an event name.
+    """
+    if not record.get('call_id') or record.get('boundary') not in (None, 'http'):
+        return False
+    if (record.get('event') == 'blocked' or record.get('delivery_status') == 'not_sent'
+            or record.get('wire_sent') is False):
+        return False
+    return record.get('event') in ('started', 'completed', 'complete', 'response', 'error')
+
+
 def audit_trace(run_dir, shared, opening, materialize=False):
     root = Path(run_dir)
     calls = {}
@@ -46,7 +62,7 @@ def audit_trace(run_dir, shared, opening, materialize=False):
                 native_issues.append(record['generation_issue_code'])
             if 'budget' in error_text and any(s in error_text for s in ('exhaust','exceed','limit')):
                 native_issues.append('budget_exhausted')
-            if record.get('boundary') == 'sdk' or not record.get('call_id'):
+            if not is_http_attempt_record(record):
                 continue
             call_id = record['call_id']
             calls.setdefault(call_id, {}).update(record)

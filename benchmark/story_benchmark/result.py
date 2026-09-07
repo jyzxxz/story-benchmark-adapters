@@ -4,7 +4,7 @@ This is a deterministic export of recorded facts, never a story writer or judge.
 """
 import json
 from pathlib import Path
-from .audit import audit_trace, validate_source_map
+from .audit import audit_trace, validate_source_map, is_http_attempt_record
 from .io import atomic_json, read_json, sha256, redact, BenchmarkError
 from .output_boundary import choice_label, validate_choice_sources
 
@@ -22,6 +22,10 @@ NATIVE_CODES = {
     'native_empty_model_response','native_http_error','native_artifact_empty',
     'native_artifact_parse_error','native_artifact_invalid_shape','native_automatic_jump_cycle',
     'native_jump_target_missing','native_previous_stage_failed','invalid_response',
+    # IF Line's frozen client uses these names for invalid/missing native
+    # artifacts. Source-identity and export-mapping errors remain adapter errors.
+    'missing_native_artifact','missing_result_ref','invalid_native_candidate_count',
+    'invalid_native_candidate','duplicate_native_candidate_identity',
 }
 
 
@@ -208,12 +212,18 @@ def finalize_result(run_dir, manifest):
         if manifest['evidence_kind']=='live' and (not observations or not all(o['opening_equal'] is True and o['instructions_empty'] is True for o in observations)):
             result.update(outcome='adapter_error',adapter_status='failed')
             result['errors'].append({'category':'adapter','code':'native_snapshot_boundary_not_verified','message':'See structured_opening_observations in audit.json'})
+    # A budget hook can stop the provider before the native worker reports its
+    # generic task failure. Preserve the actual stop cause, but never mask a
+    # source/mapping/cleanup failure or an uncertain delivery with that cause.
+    if (any(error['code']=='budget_exhausted' for error in result['errors'])
+            and result['outcome'] in {'completed','native_error','native_output_incomplete','budget_exhausted'}):
+        result['outcome']='budget_exhausted'
     calls = {}
     for path in (root/'trace').rglob('*.jsonl'):
         for line in path.read_text(encoding='utf-8').splitlines():
             try:record=json.loads(line)
             except ValueError:continue
-            if record.get('call_id') and record.get('boundary') != 'sdk':calls.setdefault(record['call_id'],{}).update(record)
+            if is_http_attempt_record(record):calls.setdefault(record['call_id'],{}).update(record)
     result['usage'].update(http_calls=audit['observed_http_calls'],complete=audit['usage_coverage_complete'])
     if audit['usage_coverage_complete']:
         for field in ('prompt_tokens','completion_tokens','total_tokens'):
