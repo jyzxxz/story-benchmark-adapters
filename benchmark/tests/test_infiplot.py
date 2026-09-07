@@ -1,12 +1,15 @@
 """Offline native-shape fixtures only, never live generation evidence."""
 from copy import deepcopy
+from http.client import IncompleteRead
+from io import BytesIO
 import json
 from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
+from urllib import error
 
-from story_benchmark.adapters.infiplot import InfiPlotAdapter, InfiPlotError, export_scene
+from story_benchmark.adapters.infiplot import InfiPlotAdapter, InfiPlotError, NATIVE_ARTIFACT_ERROR_CODES, export_scene
 
 
 def fixture():
@@ -27,6 +30,7 @@ class ExportTests(unittest.TestCase):
         self.assertEqual(result["visited_beat_ids"], ["entry", "pick"])
         self.assertIs(result["selection_executed"], False)
         self.assertEqual(result["choices"][0]["effect"]["nextSceneSeed"], "internal seed")
+        self.assertEqual(result["previews"], [])
 
     def test_cycle(self):
         value = fixture()
@@ -51,6 +55,46 @@ class ExportTests(unittest.TestCase):
         result = export_scene(value)
         self.assertEqual(result["segments"], [])
         self.assertIn("empty_prose", result["generation_issue_codes"])
+
+    def test_v3_allows_zero_visible_body_with_native_choices(self):
+        value = fixture()
+        del value["scene"]["beats"][1]["narration"]
+        del value["scene"]["beats"][2]["line"]
+        result = export_scene(value, allow_empty_body=True)
+        self.assertEqual(result["segments"], [])
+        self.assertEqual(len(result["choices"]), 1)
+        self.assertEqual(result["generation_issue_codes"], [])
+        self.assertEqual(result["previews"], [])
+
+    def test_v3_empty_body_cannot_hide_empty_first_choice(self):
+        value = fixture()
+        value["scene"]["beats"][1].pop("narration")
+        value["scene"]["beats"][1]["next"] = {"type": "choice", "choices": []}
+        result = export_scene(value, allow_empty_body=True)
+        self.assertEqual(set(result["generation_issue_codes"]), {"empty_prose", "empty_choice_boundary"})
+        self.assertEqual(result["visited_beat_ids"], ["entry"])
+
+    def test_malformed_native_shapes_have_codes_not_python_type_errors(self):
+        values = [None, []]
+        for key, bad in (("entryBeatId", []), ("entryBeatId", {})):
+            value = fixture()
+            value["scene"][key] = bad
+            values.append(value)
+        for target in ([], {}, 2):
+            value = fixture()
+            value["scene"]["beats"][1]["next"]["nextBeatId"] = target
+            values.append(value)
+        for speaker in ([], {}, 2):
+            value = fixture()
+            value["scene"]["beats"][2]["speaker"] = speaker
+            values.append(value)
+        value = fixture()
+        value["scene"]["beats"][2]["next"]["choices"][0]["label"] = "  "
+        values.append(value)
+        for value in values:
+            with self.subTest(value=value), self.assertRaises(InfiPlotError) as caught:
+                export_scene(value, allow_empty_body=True)
+            self.assertIn(caught.exception.code, NATIVE_ARTIFACT_ERROR_CODES)
 
     def test_absent_scene(self):
         with self.assertRaises(InfiPlotError):
@@ -130,6 +174,35 @@ class DeliveryTests(unittest.TestCase):
             self.assertTrue(self.adapter.generate_first_artifact(self.handle)["resumed_from_saved_response"])
             launch.assert_not_called()
 
+    def test_native_http_error_is_preserved_redacted_and_not_retried(self):
+        raw = json.dumps({"error": "native rejected fixture-private-key", "api_key": "unknown-provider-key"}).encode()
+        response = error.HTTPError(self.handle["base_url"], 500, "failure", {}, BytesIO(raw))
+        with patch.dict("os.environ", {"TEXT_API_KEY": "fixture-private-key"}), patch.object(self.adapter, "_launch"), patch.object(self.adapter, "_headers", return_value={}), patch("urllib.request.urlopen", side_effect=response) as send:
+            with self.assertRaises(InfiPlotError) as caught:
+                self.adapter.generate_first_artifact(self.handle)
+            self.assertEqual(caught.exception.code, "native_http_error")
+            evidence = json.loads((self.native / "http-error.json").read_text())
+            self.assertEqual(evidence["native_error"]["error"], "native rejected [REDACTED]")
+            self.assertEqual(evidence["native_error"]["api_key"], "[REDACTED]")
+            self.assertTrue(evidence["response_complete"])
+            self.assertEqual(evidence["http_status"], 500)
+            with self.assertRaises(InfiPlotError) as second:
+                self.adapter.generate_first_artifact(self.handle)
+            self.assertEqual(second.exception.code, "delivery_unknown")
+            self.assertEqual(send.call_count, 1)
+
+    def test_native_partial_response_preserves_error_evidence_without_success(self):
+        partial = IncompleteRead(b'{"scene":"\xe4\xb8', 10)
+        with patch.object(self.adapter, "_launch"), patch.object(self.adapter, "_headers", return_value={}), patch("urllib.request.urlopen", side_effect=partial):
+            with self.assertRaises(InfiPlotError) as caught:
+                self.adapter.generate_first_artifact(self.handle)
+        self.assertEqual(caught.exception.code, "delivery_unknown")
+        evidence = json.loads((self.native / "http-error.json").read_text())
+        self.assertFalse(evidence["response_complete"])
+        self.assertEqual(evidence["original_response_bytes"], len(partial.partial))
+        self.assertFalse((self.native / "start-response.json").exists())
+        (self.native / "http-error-response.txt").read_text(encoding="utf-8")
+
     def test_live_disabled(self):
         self.adapter.config["live"] = False
         with self.assertRaises(InfiPlotError) as caught:
@@ -139,6 +212,20 @@ class DeliveryTests(unittest.TestCase):
     def test_missing_bundle_is_preflight_failure(self):
         result = self.adapter.preflight(Path(self.tmp.name))
         self.assertFalse(result["ok"])
+
+
+class RuntimeSourceTests(unittest.TestCase):
+    def test_unexpected_directory_symlink_cannot_escape_source_hash_inventory(self):
+        from native_shims.infiplot.runtime import source_hashes
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "source"
+            root.mkdir()
+            target = Path(tmp) / "other"
+            target.mkdir()
+            (target / "injected.ts").write_text("unexpected source")
+            (root / "extension").symlink_to(target, target_is_directory=True)
+            with self.assertRaisesRegex(ValueError, "directory_symlink"):
+                source_hashes(root)
 
 
 if __name__ == "__main__":

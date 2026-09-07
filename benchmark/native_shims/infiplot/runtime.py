@@ -19,6 +19,8 @@ def source_hashes(root):
     result = {}
     for directory, dirs, files in os.walk(root, followlinks=False):
         dirs[:] = [name for name in dirs if name not in EXCLUDE_DIRS]
+        if any((Path(directory) / name).is_symlink() for name in dirs):
+            raise ValueError("unexpected_source_directory_symlink")
         for name in files:
             if name in {".DS_Store", "tsconfig.tsbuildinfo"} or name.endswith((".pyc", ".log")):
                 continue

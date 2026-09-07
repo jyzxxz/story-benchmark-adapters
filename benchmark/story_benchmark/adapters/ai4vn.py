@@ -16,9 +16,37 @@ import types
 BASELINE = '0faf120244d175866eea3813f053281f5689ab19'
 
 
-class NativeGraphNodeCountError(RuntimeError):
+class AI4VNError(RuntimeError):
+    """An observed failure with an explicit code; messages are not the taxonomy."""
+    def __init__(self, code, message, category='native_error'):
+        self.code = code
+        self.category = category
+        super().__init__(message)
+
+
+class NativeGraphNodeCountError(AI4VNError):
     """A completed native CLI failure, never an ambiguous request delivery."""
     code = 'native_graph_node_count_mismatch'
+
+    def __init__(self, message):
+        super().__init__(self.code, message)
+
+
+def _native_json(path):
+    path = Path(path)
+    if not path.is_file():
+        raise AI4VNError('native_artifact_missing', 'native_artifact_missing:' + path.name)
+    if not path.read_bytes().strip():
+        raise AI4VNError('native_artifact_empty', 'native_artifact_empty:' + path.name)
+    try:
+        value = _read_json(path)
+    except (ValueError, UnicodeError) as error:
+        raise AI4VNError('native_artifact_parse_error', 'native_artifact_parse_error:' + path.name) from error
+    if not isinstance(value, dict):
+        raise AI4VNError('native_artifact_invalid_shape', 'native_artifact_invalid_shape:' + path.name)
+    if not value:
+        raise AI4VNError('native_artifact_empty', 'native_artifact_empty:' + path.name)
+    return value
 
 
 def _read_json(path):
@@ -65,7 +93,7 @@ def _native_parser(repo):
     return sys.modules[package_name + '.data'].StoryParser
 
 
-def extract_first_visible(repo: Path, story_path: Path, design: dict, native_source='native/ai4vn/data/story.txt'):
+def extract_first_visible(repo: Path, story_path: Path, design: dict, native_source='native/ai4vn/data/story.txt', *, allow_empty_body=False):
     """Follow native unconditional jumps, stopping before the first player choice.
 
     Source pointers refer to physical story.txt lines plus native node/line index.
@@ -73,9 +101,15 @@ def extract_first_visible(repo: Path, story_path: Path, design: dict, native_sou
     prose or transitions from a graph, design document, or summary.
     """
     parser = _native_parser(Path(repo))
+    try:
+        story_text = Path(story_path).read_text(encoding='utf-8')
+    except FileNotFoundError as error:
+        raise AI4VNError('native_artifact_missing', 'native_artifact_missing:story.txt') from error
+    except UnicodeError as error:
+        raise AI4VNError('native_artifact_parse_error', 'native_artifact_parse_error:story.txt') from error
     nodes = {}
     current = None
-    for physical, raw in enumerate(Path(story_path).read_text(encoding='utf-8').splitlines(), 1):
+    for physical, raw in enumerate(story_text.splitlines(), 1):
         line = raw.strip()
         if not line or line.startswith('这里为您生成') or line.startswith('=== End'):
             continue
@@ -90,22 +124,30 @@ def extract_first_visible(repo: Path, story_path: Path, design: dict, native_sou
                 nodes[current].append((parsed, physical))
     segments, choices, issues = [], [], []
     if 'root' not in nodes:
-        return {'segments': [], 'choices': [], 'generation_issue_codes': ['missing_entry_node'],
-                'stop_reason': 'missing_entry_node', 'selection_executed': False}
+        issues = ['missing_entry_node', 'native_choice_boundary_missing']
+        if not story_text.strip():
+            issues.append('native_story_empty')
+        return {'segments': [], 'choices': [], 'generation_issue_codes': issues,
+                'stop_reason': 'missing_entry_node', 'selection_executed': False,
+                'export_scope': 'first_unselected_choice', 'first_choice_reached': False,
+                'native_capability_status': 'boundary_not_reached', 'native_step': None,
+                'traversed_node_ids': [], 'automatic_transitions': [], 'prechoice_body_status': 'empty_native'}
     node_id = 'root'
     traversed_nodes = [node_id]
     automatic_transitions = []
     visited_positions = set()
     stop_reason = 'entry_node_end'
     index = 0
+    native_step = None
     while index < len(nodes[node_id]):
         if (node_id, index) in visited_positions:
-            raise RuntimeError(f'native_automatic_jump_cycle:{node_id}:{index}')
+            raise AI4VNError('native_automatic_jump_cycle', f'native_automatic_jump_cycle:{node_id}:{index}')
         visited_positions.add((node_id, index))
         lines = nodes[node_id]
         parsed, physical = lines[index]
         kind = parsed['type']
         pointer = {'node_id': node_id, 'parsed_line_index': index, 'line': physical}
+        native_step = {'native_source': native_source, 'native_pointer': pointer, 'instruction_type': kind}
         if kind in ('if', 'else', 'endif'):
             stop_reason = 'unsupported_condition_boundary'
             issues.append('control_flow_not_executed')
@@ -114,7 +156,7 @@ def extract_first_visible(repo: Path, story_path: Path, design: dict, native_sou
         if kind == 'jump':
             target = parsed['target']
             if target not in nodes:
-                raise RuntimeError(f'native_jump_target_missing:{node_id}:{target}')
+                raise AI4VNError('native_jump_target_missing', f'native_jump_target_missing:{node_id}:{target}')
             automatic_transitions.append({'from': node_id, 'to': target,
                                           'native_source': native_source, 'native_pointer': pointer})
             node_id = target
@@ -145,11 +187,18 @@ def extract_first_visible(repo: Path, story_path: Path, design: dict, native_sou
                              'speaker': speaker, 'text': parsed['text'],
                              'native_source': native_source, 'native_pointer': pointer})
         index += 1
-    if not segments:
+    if not choices:
+        issues.append('native_choice_boundary_missing')
+    if not segments and not (choices and allow_empty_body):
         issues.append('empty_prose')
     return {'segments': segments, 'choices': choices, 'generation_issue_codes': issues, 'stop_reason': stop_reason,
             'traversed_node_ids': traversed_nodes, 'automatic_transitions': automatic_transitions,
-            'first_choice_reached': bool(choices), 'selection_executed': False}
+            'first_choice_reached': bool(choices), 'selection_executed': False,
+            'export_scope': 'first_unselected_choice', 'native_step': native_step,
+            'native_capability_status': ('first_unselected_choice_available' if choices else
+                                         'unsupported_output_boundary' if stop_reason == 'unsupported_condition_boundary' else
+                                         'boundary_not_reached'),
+            'prechoice_body_status': 'present' if segments else 'empty_native'}
 
 
 class AI4VNAdapter:
@@ -180,7 +229,7 @@ class AI4VNAdapter:
                 raise ValueError('payload_mismatch')
             _read_json(bundle_dir / 'case.json')
             payload = _read_json(bundle_dir / 'payloads' / 'ai4vn.json')
-            if not isinstance(payload.get('character_count'), int) or payload['character_count'] < 1:
+            if type(payload.get('character_count')) is not int or payload['character_count'] < 1:
                 raise ValueError('invalid_character_count')
             if not (bundle_dir / 'opening.txt').is_file():
                 raise ValueError('missing_opening')
@@ -249,10 +298,12 @@ class AI4VNAdapter:
         trace_dir = Path(self.config.get('trace_dir') or run_dir / 'trace').resolve()
         trace_dir.mkdir(parents=True, exist_ok=True)
         payload = _read_json(bundle_dir / 'payloads' / 'ai4vn.json')
+        case = _read_json(bundle_dir / 'case.json')
         handle = {'bundle_dir': str(bundle_dir), 'run_dir': str(run_dir), 'native_dir': str(native_dir),
                   'requirements_file': str(requirements), 'trace_dir': str(trace_dir),
                   'shared_task_sha256': hashlib.sha256(shared.encode()).hexdigest(),
                   'character_count': payload['character_count'], 'stages': {}, 'adapter_status': 'prepared',
+                  'output_contract': case.get('output_contract'),
                   'source_dir': str(source_dir), 'source_hashes': hashes, 'source_mode': 'pristine_copy_external_launcher'}
         self._verify_sources(handle, 'prepared')
         _write_json(native_dir / 'adapter-state.json', handle)
@@ -287,7 +338,7 @@ class AI4VNAdapter:
                     'unchanged': not changed, 'changed': changed}
         _write_json(Path(handle['trace_dir']) / ('source-integrity-ai4vn-' + phase + '.json'), evidence)
         if changed:
-            raise RuntimeError('native_source_changed:' + ','.join(changed))
+            raise AI4VNError('native_source_changed', 'native_source_changed:' + ','.join(changed), 'adapter_error')
         return evidence
 
     def _env(self, handle, stage):
@@ -309,47 +360,109 @@ class AI4VNAdapter:
     def _save_state(self, handle):
         _write_json(Path(handle['native_dir']) / 'adapter-state.json', handle)
 
+    def _failure_diagnostic(self, handle, stage, output, returncode):
+        """Describe observed native failure; never repair or replay a candidate."""
+        diagnostic = {'stage': stage, 'native_exit_code': returncode,
+                      'failure_code': 'native_exit', 'automatic_retry': False,
+                      'diagnosis_basis': 'native_cli_process_exit', 'native_log': f'{stage}.stdout.log'}
+        calls = {}
+        for path in Path(handle['trace_dir']).glob('ai4vn-*.jsonl'):
+            for line in path.read_text(encoding='utf-8').splitlines():
+                try:
+                    event = json.loads(line)
+                except ValueError:
+                    continue  # The root trace audit reports malformed records.
+                if (event.get('boundary') == 'http' and event.get('operation_id') == 'ai4vn.' + stage
+                        and event.get('call_id')):
+                    calls.setdefault(event['call_id'], {}).update(event)
+        ordered = sorted(calls.values(), key=lambda call: call.get('start_time', ''))
+        pending = [call['call_id'] for call in ordered if call.get('event') == 'started']
+        diagnostic['incomplete_http_call_ids'] = pending
+        last = ordered[-1] if ordered else None
+        if last:
+            diagnostic.update(last_http_call_id=last['call_id'], last_http_status=last.get('status_code'),
+                              last_finish_reason=last.get('finish_reason'))
+        count_error = re.search(r'^ValueError: story_graph 节点数不匹配，期望 (\d+)，实际 (\d+)\s*$', output, re.M)
+        if stage == 'design' and count_error:
+            diagnostic.update(failure_code='native_graph_node_count_mismatch',
+                              expected_nodes=int(count_error.group(1)), actual_nodes=int(count_error.group(2)),
+                              diagnosis_basis='native_cli_exception_log',
+                              failing_candidate_rejected_before_producer_review=True,
+                              prior_graph_review_observed_in_log='制作人正在审核Step2 story_graph' in output,
+                              native_script_started=bool(handle['stages'].get('script')),
+                              message='Native Designer rejected the node count before returning this graph candidate for Producer review; no output repair was performed.')
+        elif re.search(r'^RuntimeError: benchmark_(?:call|input)_budget_exhausted\s*$', output, re.M):
+            diagnostic.update(failure_code='budget_exhausted', diagnosis_basis='external_budget_exception_log')
+        elif re.search(r'^(?:json\.decoder\.)?JSONDecodeError:', output, re.M):
+            diagnostic.update(failure_code='native_json_parse_error', diagnosis_basis='native_cli_exception_log')
+        elif re.search(r'^ValueError: \w+ Schema 校验失败:', output, re.M):
+            diagnostic.update(failure_code='native_schema_validation_error', diagnosis_basis='native_cli_exception_log')
+        elif last and (last.get('status_code') or 0) >= 400:
+            diagnostic.update(failure_code='native_http_error', diagnosis_basis='http_response_and_native_exit')
+        # Empty output is distinguishable from malformed nonempty JSON only
+        # when the final recorded provider response actually proves it.
+        if last and diagnostic['failure_code'] in ('native_json_parse_error', 'native_exit') and last.get('event') == 'completed':
+            filename = last.get('response_file')
+            if filename and Path(filename).name == filename:
+                try:
+                    response = _read_json(Path(handle['trace_dir']) / filename)
+                    choices = response.get('choices') or []
+                    if choices and choices[0].get('message', {}).get('content') in (None, ''):
+                        diagnostic.update(failure_code='native_empty_model_response', diagnosis_basis='empty_http_content_and_native_exit')
+                except (OSError, ValueError, TypeError):
+                    pass  # Missing response is not proof of empty content.
+        if pending:
+            # The process exited, but an observed send still has no response.
+            diagnostic.update(failure_code='delivery_unknown', diagnosis_basis='unfinished_http_send_and_native_exit')
+        return diagnostic
+
     def _run_stage(self, handle, stage, command):
         previous = handle['stages'].get(stage)
         if previous == 'completed':
             return
+        if previous == 'failed':
+            diagnostic_path = Path(handle['native_dir']) / 'native_failure.json'
+            diagnostic = _read_json(diagnostic_path) if diagnostic_path.is_file() else {}
+            code = diagnostic.get('failure_code', 'native_previous_stage_failed')
+            if code == 'native_graph_node_count_mismatch':
+                raise NativeGraphNodeCountError('native_graph_node_count_mismatch:previous_native_failure_no_resend')
+            raise AI4VNError(code, code + ':previous_native_failure_no_resend')
         if previous:
-            raise RuntimeError('delivery_unknown:inspect_existing_native_artifacts_before_resume')
+            raise AI4VNError('delivery_unknown', 'delivery_unknown:inspect_existing_native_artifacts_before_resume', 'delivery_unknown')
         handle['stages'][stage] = 'running'
         self._save_state(handle)
-        process = subprocess.Popen(command, cwd=handle['source_dir'], env=self._env(handle, stage),
-                                   stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
-                                   encoding='utf-8', errors='replace', start_new_session=True)
+        process = None
         output = ''
         try:
+            try:
+                process = subprocess.Popen(command, cwd=handle['source_dir'], env=self._env(handle, stage),
+                                           stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+                                           encoding='utf-8', errors='replace', start_new_session=True)
+            except OSError as error:
+                handle['stages'][stage] = 'failed'
+                _write_json(Path(handle['native_dir']) / 'native_failure.json',
+                            {'stage': stage, 'failure_code': 'native_process_start_failed', 'automatic_retry': False,
+                             'native_exit_code': None, 'diagnosis_basis': 'subprocess_launch_error', 'exception_type': type(error).__name__})
+                raise AI4VNError('native_process_start_failed', 'native_process_start_failed:' + type(error).__name__, 'adapter_error') from error
             output, _ = process.communicate(timeout=self.config['timeout_seconds'])
             if process.returncode:
                 handle['stages'][stage] = 'failed'
-                diagnostic = {'stage': stage, 'native_exit_code': process.returncode,
-                              'failure_code': 'native_exit', 'automatic_retry': False,
-                              'diagnosis_basis': 'native_cli_process_exit',
-                              'native_log': f'{stage}.stdout.log'}
-                count_error = re.search(r'^ValueError: story_graph 节点数不匹配，期望 (\d+)，实际 (\d+)\s*$', output, re.M)
-                if stage == 'design' and count_error:
-                    diagnostic.update(failure_code='native_graph_node_count_mismatch',
-                                      expected_nodes=int(count_error.group(1)), actual_nodes=int(count_error.group(2)),
-                                      diagnosis_basis='native_cli_exception_log',
-                                      failing_candidate_rejected_before_producer_review=True,
-                                      prior_graph_review_observed_in_log='制作人正在审核Step2 story_graph' in output,
-                                      native_script_started=bool(handle['stages'].get('script')),
-                                      message='Native Designer rejected the node count before returning this graph candidate for Producer review; no output repair was performed.')
+                diagnostic = self._failure_diagnostic(handle, stage, output, process.returncode)
                 _write_json(Path(handle['native_dir']) / 'native_failure.json', diagnostic)
-                if diagnostic['failure_code'] != 'native_exit':
+                if diagnostic['failure_code'] == 'native_graph_node_count_mismatch':
                     raise NativeGraphNodeCountError(f"{diagnostic['failure_code']}:expected={diagnostic['expected_nodes']}:actual={diagnostic['actual_nodes']}:native_exit={process.returncode}")
-                raise RuntimeError(f'native_exit:{stage}:{process.returncode}')
+                if diagnostic['failure_code'] == 'delivery_unknown':
+                    handle['stages'][stage] = 'delivery_unknown'
+                raise AI4VNError(diagnostic['failure_code'], f"{diagnostic['failure_code']}:{stage}:{process.returncode}",
+                                 diagnostic['failure_code'] if diagnostic['failure_code'] in ('delivery_unknown', 'budget_exhausted') else 'native_error')
             handle['stages'][stage] = 'completed'
         except subprocess.TimeoutExpired:
             os.killpg(process.pid, signal.SIGKILL)
             output, _ = process.communicate()
             handle['stages'][stage] = 'delivery_unknown'
-            raise RuntimeError('delivery_unknown:native_timeout')
+            raise AI4VNError('delivery_unknown', 'delivery_unknown:native_timeout', 'delivery_unknown')
         except BaseException:
-            if process.poll() is None:
+            if process is not None and process.poll() is None:
                 os.killpg(process.pid, signal.SIGKILL)
                 output, _ = process.communicate()
                 handle['stages'][stage] = 'delivery_unknown'
@@ -360,20 +473,19 @@ class AI4VNAdapter:
 
     def generate_first_artifact(self, handle: dict) -> dict:
         if not self.config.get('live'):
-            raise RuntimeError('live_generation_not_enabled')
+            raise AI4VNError('live_generation_not_enabled', 'live_generation_not_enabled', 'adapter_error')
         received = Path(handle['requirements_file']).read_bytes()
         if hashlib.sha256(received).hexdigest() != handle['shared_task_sha256']:
-            raise RuntimeError('prepared_input_changed')
+            raise AI4VNError('prepared_input_changed', 'prepared_input_changed', 'adapter_error')
         self._verify_sources(handle, 'before_generation')
         self._run_stage(handle, 'design', [self.python, str(self.launcher), '--native-root', handle['source_dir'], '--', '--mode', 'design',
                                          '--requirements-file', handle['requirements_file'], '--character-count', str(handle['character_count'])])
         native_data = Path(handle['source_dir']) / 'data'
         for name in ('game_design.json', 'story_graph.json'):
-            if not (native_data / name).is_file() or not _read_json(native_data / name):
-                raise RuntimeError('native_artifact_missing_or_empty:' + name)
+            _native_json(native_data / name)
         self._run_stage(handle, 'script', [self.python, str(self.launcher), '--native-root', handle['source_dir'], '--', '--mode', 'script'])
         if not (native_data / 'story.txt').is_file():
-            raise RuntimeError('native_artifact_missing:story.txt')
+            raise AI4VNError('native_artifact_missing', 'native_artifact_missing:story.txt')
         self._verify_sources(handle, 'after_generation')
         handle['adapter_status'] = 'generated'
         self._save_state(handle)
@@ -381,8 +493,11 @@ class AI4VNAdapter:
 
     def export_first_artifact(self, handle: dict) -> dict:
         data = Path(handle['source_dir']) / 'data'
-        return extract_first_visible(Path(handle['source_dir']), data / 'story.txt', _read_json(data / 'game_design.json'),
-                                     str((data / 'story.txt').relative_to(handle['run_dir'])))
+        contract = handle.get('output_contract') or {}
+        allow_empty = (contract.get('version') == '3.0' and contract.get('scope') == 'first_unselected_choice'
+                       and contract.get('allow_empty_body') is True)
+        return extract_first_visible(Path(handle['source_dir']), data / 'story.txt', _native_json(data / 'game_design.json'),
+                                     str((data / 'story.txt').relative_to(handle['run_dir'])), allow_empty_body=allow_empty)
 
     def close(self, handle: dict) -> None:
         # Retain every failed artifact; only sanitize textual diagnostic logs.

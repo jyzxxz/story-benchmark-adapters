@@ -5,7 +5,8 @@ import json
 import os
 from pathlib import Path
 import tempfile
-from threading import Thread
+from threading import Event, Thread
+import time
 import unittest
 from unittest.mock import patch
 from urllib import error, request
@@ -75,6 +76,8 @@ class RelayTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory(prefix="infiplot-relay-fixture-")
         self.sent = []
         self.provider_mode = "normal"
+        self.provider_started = Event()
+        self.provider_release = Event()
         sent = self.sent
         fixture = self
 
@@ -85,9 +88,23 @@ class RelayTests(unittest.TestCase):
             def do_POST(self):
                 body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
                 sent.append(body)
+                if fixture.provider_mode == "stall_headers":
+                    fixture.provider_started.set()
+                    fixture.provider_release.wait(10)
+                    self.close_connection = True
+                    return
                 self.send_response(200)
                 self.send_header("Content-Type", "text/event-stream" if body.get("stream") else "application/json")
                 self.send_header("x-request-id", "provider-fixture-id")
+                if fixture.provider_mode == "stall_body":
+                    self.send_header("Content-Length", "1024")
+                    self.end_headers()
+                    self.wfile.write(b'{"partial":')
+                    self.wfile.flush()
+                    fixture.provider_started.set()
+                    fixture.provider_release.wait(10)
+                    self.close_connection = True
+                    return
                 if fixture.provider_mode.startswith("truncated"):
                     partial = b'{"id":"partial fixture-private-key'
                     if fixture.provider_mode == "truncated_utf8":
@@ -127,6 +144,7 @@ class RelayTests(unittest.TestCase):
         self.url = self.relay.start()
 
     def tearDown(self):
+        self.provider_release.set()
         self.relay.close()
         self.provider.shutdown()
         self.provider.server_close()
@@ -168,7 +186,8 @@ class RelayTests(unittest.TestCase):
         self.assertNotEqual(completed[0]["input_chars"], len(compact(self.sent[0]).encode("utf-16-le")) // 2)
         self.assertNotIn("fixture-private-key", json.dumps(self.events()))
         receipts = [json.loads(file.read_text()) for file in Path(self.tmp.name).glob("received-*.json")]
-        self.assertEqual(len(receipts), 2)
+        # The budget-blocked third SDK request was still actually received.
+        self.assertEqual(len(receipts), 3)
         self.assertTrue(all(row["received_task"] == SHARED and row["boundary"] == "native_sdk_task_block" for row in receipts))
 
     def test_input_limit_is_full_http_payload_after_cap(self):
@@ -177,6 +196,39 @@ class RelayTests(unittest.TestCase):
             self.send(payload())
         self.assertEqual(self.sent, [])
         self.assertTrue(any(row.get("error") == "input_budget_exceeded" for row in self.events()))
+        self.assertEqual(len(list(Path(self.tmp.name).glob("requests/*.before.json"))), 1)
+        self.assertEqual(len(list(Path(self.tmp.name).glob("received-*.json"))), 1)
+
+    def test_close_interrupts_pending_provider_and_freezes_trace(self):
+        for mode in ("stall_headers", "stall_body"):
+            # A new relay per phase; the first one is the setUp-owned instance.
+            if mode == "stall_body":
+                self.provider_started.clear()
+                self.provider_release.clear()
+                self.relay = Relay(self.config, self.handle, SHARED)
+                self.url = self.relay.start()
+            self.provider_mode = mode
+            self.config["timeout_seconds"] = 30
+            failure = []
+            def send_pending():
+                try:
+                    self.send(payload())
+                except Exception as exc:
+                    failure.append(type(exc).__name__)
+            sender = Thread(target=send_pending)
+            sender.start()
+            self.assertTrue(self.provider_started.wait(3))
+            started = time.monotonic()
+            self.relay.close()
+            self.assertLess(time.monotonic() - started, 5)
+            sender.join(3)
+            self.assertFalse(sender.is_alive())
+            self.assertEqual(self.relay.active, 0)
+            saved = {str(p): p.read_bytes() for p in Path(self.tmp.name).rglob("*") if p.is_file()}
+            self.provider_release.set()
+            self.relay.emit({"event": "error", "error": "late callback"})
+            self.assertEqual(saved, {str(p): p.read_bytes() for p in Path(self.tmp.name).rglob("*") if p.is_file()})
+            self.assertTrue(any(row.get("event") == "error" for row in self.events()))
 
     def test_wrong_model_does_not_contact_provider(self):
         original = payload()

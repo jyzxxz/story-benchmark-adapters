@@ -90,6 +90,48 @@ does not invent a condition evaluator or claim complete route replay. Only the
 OpenAI-compatible text provider is enabled for instrumented runs; Google and
 streaming need separate retry/usage coverage before support can be claimed.
 
+For v3 `output_contract.scope=first_unselected_choice` with
+`allow_empty_body=true`, a native first choice with no preceding prose is valid:
+the adapter returns an empty `segments` array and the original option labels,
+without creating a lead-in. Legacy bundles retain the `empty_prose` issue when
+there is no prose. Both versions retain the original `segments`, `choices`,
+`stop_reason`, `first_choice_reached` and `selection_executed` fields. Additional
+observational metadata is:
+
+```json
+{
+  "export_scope": "first_unselected_choice",
+  "native_capability_status": "first_unselected_choice_available",
+  "prechoice_body_status": "present",
+  "native_step": {
+    "native_source": "native/ai4vn/source/data/story.txt",
+    "native_pointer": {"node_id": "decision", "parsed_line_index": 1, "line": 8},
+    "instruction_type": "choice_start"
+  },
+  "traversed_node_ids": ["root", "decision"],
+  "automatic_transitions": [],
+  "selection_executed": false
+}
+```
+
+`native_step` identifies the last actual instruction observed, not a generated
+story stage. `prechoice_body_status` may be `empty_native`.
+`native_capability_status` is `boundary_not_reached` when no native choice is
+reachable through supported automatic jumps, or `unsupported_output_boundary`
+at a conditional instruction. Missing choices always carry
+`native_choice_boundary_missing`; missing root also keeps the legacy
+`missing_entry_node`, and a blank story adds `native_story_empty`.
+An unsupported condition keeps `control_flow_not_executed` and
+`unsupported_native_condition_boundary`. These issues do not become successful
+first-choice returns. A node with no choice does not imply that the whole native
+project has no choice capability.
+
+Later pre-generated node scripts remain internal native artifacts. AI4 does not
+expose them as current-path prose or native option-card previews. The first
+native option group is exported unchanged; this adapter does not limit a story
+graph to two nodes, rename options into C1, or claim semantic equivalence of an
+arbitrary pair of options.
+
 The shared continuation task is read once by native `resolve_design_inputs`.
 The native outline prompt permits a first group to establish an opening, and
 native Producer review includes the full user requirements. The common task must
@@ -106,6 +148,39 @@ and reports `native_graph_node_count_mismatch`. It does not retry, delete nodes,
 relax the count, or move the validation into a new repair loop. Earlier graph
 review, if visible in the native log, is recorded separately from rejection of
 the failing candidate.
+
+Completed failures raise `AI4VNError` (a `RuntimeError` subclass) with a stable
+`.code`; `NativeGraphNodeCountError` remains available for existing callers.
+The root runner may map these codes into its common result status. Classification
+does not alter native retries or make additional model requests:
+
+| Code | Observed condition |
+| --- | --- |
+| `native_graph_node_count_mismatch` | Native Designer's explicit expected/actual count exception. |
+| `native_json_parse_error` | Native CLI JSON decoding exception for a nonempty response. |
+| `native_empty_model_response` | CLI fails and its final successful HTTP response proves null/empty content. |
+| `native_schema_validation_error` | Native CLI reports its schema validation failure. |
+| `native_http_error` | CLI fails after a completed provider HTTP error response. |
+| `native_exit` | Other observed nonzero native process exit, with no unfinished observed HTTP send. |
+| `native_artifact_missing` / `native_artifact_empty` | Required native artifact absent or empty. |
+| `native_artifact_parse_error` / `native_artifact_invalid_shape` | Native artifact is invalid UTF-8/JSON or not a JSON object. |
+| `native_automatic_jump_cycle` / `native_jump_target_missing` | Native automatic path loops or targets an absent script node. |
+| `native_previous_stage_failed` | Refused redispatch of a known failed stage with no retained specific diagnostic. |
+| `budget_exhausted` | External call/input cap exception; no repair or resend. |
+| `delivery_unknown` | Timeout/interruption or an observed HTTP send without a terminal response record. |
+| `native_process_start_failed` | Local subprocess launch failed before a native process ran; adapter error. |
+| `native_source_changed` / `prepared_input_changed` | Source/input integrity failed; adapter error. |
+| `live_generation_not_enabled` | Generation requested with live disabled; adapter configuration error. |
+
+SDK error records distinguish `not_sent`, `completed`, and `delivery_unknown`;
+for SDK-only errors they additionally use `native_sdk_error`. Known previous
+native failures retain their original code when redispatch is refused, rather
+than becoming an invented unknown-delivery state. Native CLI logs and raw HTTP
+responses remain the evidence; absent response files never prove empty content.
+
+In v3 the common task declares the exact cast count including the player, so the
+native `--character-count` mapping follows the common policy. No extra story
+reminder, count repair, or constraint reinjection is added by this adapter.
 
 Offline verification (use the project's installed Python dependencies):
 
@@ -129,3 +204,6 @@ For the common compiled case, set `BENCH_SHARED_BUNDLE` to its existing bundle
 directory and run only `test_ai4vn_native_flow.py`; this executes one native flow
 using that exact shared_task.txt and opening.txt. `AI4VN_TEST_SOURCE_LOCK` may
 explicitly select the final snapshot lock when the source has no nested Git.
+The v3 fixture suite also runs empty and malformed provider-content cases through
+the actual native design CLI, checking known failure codes, retained responses,
+unchanged sources and refused redispatch. These remain synthetic local tests.

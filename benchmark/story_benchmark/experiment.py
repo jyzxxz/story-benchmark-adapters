@@ -38,3 +38,28 @@ def preflight_set(path,bundle):
     reports={system:preflight(system,bundle,config) for system,config in configurations.items()}
     return {'ok':all(r['ok'] for r in reports.values()),'common_conditions_identical':True,
             'native_integration':'not_run','systems':reports}
+
+
+def run_set(path,bundle,out):
+    """Run against already provisioned native runtimes with one frozen config."""
+    from .runner import execute_run
+    from .io import atomic_json
+    configs=load_experiment(path)
+    out=Path(out).resolve()
+    out.mkdir(parents=True,exist_ok=False)
+    results={system:execute_run(system,bundle,configs[system],out/system) for system in ADAPTERS}
+    # Compare observations received by each native entry, not copied digests.
+    received=[]
+    for system in ADAPTERS:
+        for file in (out/system/'trace').rglob('*received*.json'):
+            data=read_json(file)
+            value=data.get('received_task',data.get('shared_task'))
+            if value is not None: received.append((system,value))
+    expected=(Path(bundle)/'shared_task.txt').read_text(encoding='utf-8')
+    equality=set(s for s,_ in received)==set(ADAPTERS) and all(t==expected for _,t in received)
+    result={'schema_version':'3.0','common_conditions_identical':True,
+            'actual_received_inputs_identical':equality,
+            'ok':equality and all(r['outcome']=='completed' for r in results.values()),
+            'adaptation_passed':equality and all(r['adapter_status']=='passed' for r in results.values()),'systems':results}
+    atomic_json(out/'results.json',result)
+    return result

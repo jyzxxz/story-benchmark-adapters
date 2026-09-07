@@ -124,8 +124,7 @@ def _export(run_dir, adapter, handle, manifest):
     preview_valid, preview_issues = validate_source_map(run_dir, previews) if previews else (False, [])
     # A native system may only expose future branch previews. Preserve them as
     # such; they never enter generated.jsonl or satisfy the visible-body contract.
-    if previews:
-        atomic_write(run_dir / 'export/unselected_previews.jsonl', ''.join(json.dumps(s, ensure_ascii=False) + '\n' for s in previews))
+    atomic_write(run_dir / 'export/unselected_previews.jsonl', ''.join(json.dumps(s, ensure_ascii=False) + '\n' for s in previews))
     atomic_write(run_dir / 'export/generated.jsonl', ''.join(json.dumps(s, ensure_ascii=False) + '\n' for s in segments))
     atomic_json(run_dir / 'export/choices.json', choices)
     atomic_json(run_dir / 'export/metadata.json',{k:v for k,v in export.items() if k not in ('segments','choices','unselected_previews')})
@@ -135,6 +134,14 @@ def _export(run_dir, adapter, handle, manifest):
     audit = audit_trace(run_dir, shared, opening, materialize=True)
     from .output_boundary import audit_output_boundary
     case = read_json(run_dir/'case.json') if (run_dir/'case.json').is_file() else {}
+    if 'output_contract' in case:
+        # v3 accepts native choice cards without new pre-choice prose. The
+        # canonical finalizer checks all source pointers and the actual boundary
+        # after cleanup, for both success and failure.
+        atomic_json(run_dir/'audit.json',audit)
+        _state(run_dir,manifest,'EXPORTED',generation_status='generated_unreviewed',
+               adapter_status='pending_result_validation',audit_status='pending_result_validation')
+        return manifest
     boundary = audit_output_boundary(run_dir, case, export)
     atomic_json(run_dir / 'export/boundary_audit.json', boundary)
     preview_only = (not segments and bool(previews) and preview_valid
@@ -174,11 +181,15 @@ def run_once(system, bundle_dir, config, run_dir, adapter=None, mock=False):
     config = dict(config)
     if not re.fullmatch(r'[A-Za-z0-9_.-]+', run_dir.name):
         raise BenchmarkError('invalid_run_id')
+    if run_dir.exists():
+        raise BenchmarkError('run_directory_exists')
     config.update(root_run_id=run_dir.name, trace_dir=str(run_dir / 'trace'))
     if not mock:
         early_errors=validate_config(config)
         if early_errors:
             raise BenchmarkError(json.dumps({'ok':False,'errors':early_errors},ensure_ascii=False))
+    if config.get('timeout_seconds') and (not hasattr(signal,'setitimer') or threading.current_thread() is not threading.main_thread()):
+        raise BenchmarkError('root_timeout_requires_posix_main_thread')
     instance = adapter or adapter_for(system, config)
     if mock:
         if adapter is None or config.get('live'):
@@ -239,8 +250,7 @@ def run_once(system, bundle_dir, config, run_dir, adapter=None, mock=False):
             prefix = str(exc).split(':',1)[0]
             if prefix in ('delivery_unknown','native_exit','native_artifact_missing','native_artifact_missing_or_empty'):
                 explicit_code=prefix
-        uncertain = (explicit_code in ('delivery_unknown','task_timeout') or isinstance(exc,(KeyboardInterrupt,TimeoutError))
-                     or explicit_code is None and manifest['state'] in ('PREPARING','RUNNING'))
+        uncertain = (explicit_code in ('delivery_unknown','task_timeout') or isinstance(exc,(KeyboardInterrupt,TimeoutError)))
         code = explicit_code or ('delivery_unknown' if uncertain else 'adapter_error')
         atomic_write(run_dir / 'errors.jsonl', json.dumps(redact({'code': code, 'exception_type': type(exc).__name__, 'detail': str(exc)}), ensure_ascii=False) + '\n')
         _state(run_dir, manifest, 'INTERRUPTED' if uncertain else 'FAILED', adapter_status='failed',
@@ -262,13 +272,61 @@ def run_once(system, bundle_dir, config, run_dir, adapter=None, mock=False):
                        audit_status='incomplete', native_integration='not_verified')
             else:
                 manifest['cleanup_status']='completed'
+        if 'output_contract' in read_json(run_dir/'case.json'):
+            _finalize_v3(run_dir,manifest)
         seal_evidence(run_dir,manifest)
+
+
+def _finalize_v3(run_dir, manifest):
+    from .result import finalize_result, empty_result
+    try:
+        result=finalize_result(run_dir,manifest)
+    except Exception as exc:
+        # Never lose the common failure envelope when malformed native/export
+        # evidence itself cannot be normalized. Raw files remain in the seal.
+        result=empty_result(manifest['system'],manifest['root_run_id'],read_json(Path(run_dir)/'case.json'))
+        result.update(outcome='adapter_error',adapter_status='failed',native_status='unknown')
+        result['errors']=[{'category':'adapter','code':'result_normalization_failed','message':str(exc)}]
+        for key,path in [('shared_text','shared_task.txt'),('provided_prefix','export/provided_prefix.txt')]:
+            result['input'][key]=(Path(run_dir)/path).read_text(encoding='utf-8')
+        result['input'].update(shared_sha256=sha256(result['input']['shared_text']),opening_sha256=sha256(result['input']['provided_prefix']))
+        atomic_json(Path(run_dir)/'result.json',redact(result))
+        manifest.update(result_schema_version='3.0',result_file='result.json',result_outcome=result['outcome'])
+    manifest['adapter_status']=result['adapter_status']
+    manifest['audit_status']='passed' if result['adapter_status']=='passed' else 'incomplete'
+    manifest['native_integration']='verified' if result['adapter_status']=='passed' and manifest['evidence_kind']=='live' else 'not_verified'
+    return result
+
+
+def execute_run(system,bundle_dir,config,run_dir,adapter=None,mock=False):
+    """v3 public API: identical envelope on success, rejection and native failure."""
+    from .contracts import validate_contracts
+    from .result import empty_result, validate_result
+    run_dir=Path(run_dir).resolve()
+    existed=run_dir.exists()
+    case=None
+    try:
+        verify_bundle(bundle_dir)
+        case=read_json(Path(bundle_dir)/'case.json')
+        validate_contracts(case,required=True)
+        run_once(system,bundle_dir,config,run_dir,adapter,mock)
+    except (Exception,RootRunTimeout,KeyboardInterrupt) as exc:
+        if not existed and (run_dir/'result.json').is_file():
+            return validate_result(read_json(run_dir/'result.json'))
+        result=empty_result(system,run_dir.name,case)
+        result['errors']=[{'category':'input','code':'run_directory_exists' if existed else 'input_rejected','message':redact(str(exc))}]
+        # Rejection is returned directly; an existing evidence directory is never touched.
+        return validate_result(result)
+    return validate_result(read_json(run_dir/'result.json'))
 
 
 def resume_export(run_dir, adapter=None):
     """Resume only a saved artifact; ambiguous delivery never silently regenerates."""
     run_dir = Path(run_dir).resolve()
     manifest = verify_saved_run(run_dir)
+    if manifest.get('result_schema_version')=='3.0':
+        from .result import validate_result
+        return validate_result(read_json(run_dir/'result.json'))
     if manifest['state'] == 'EXPORTED':
         return manifest
     if manifest['state'] not in ('ARTIFACT_SAVED', 'FAILED') or not (run_dir / 'operation_result.json').exists():

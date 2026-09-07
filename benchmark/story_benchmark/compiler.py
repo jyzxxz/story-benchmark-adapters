@@ -2,13 +2,14 @@
 import json
 from pathlib import Path
 from .io import BenchmarkError, atomic_json, atomic_write, read_json, safe_child, sha256
+from .contracts import validate_contracts, canonical_case_hash
 
 MARKERS = ('<<<SHARED_TASK_V2_BEGIN>>>', '<<<SHARED_TASK_V2_END>>>',
            '<<<BRIEF_BEGIN>>>', '<<<BRIEF_END>>>', '<<<OPENING_BEGIN>>>', '<<<OPENING_END>>>')
 REQUIRED = {'case_id', 'case_version', 'review_status', 'title', 'language', 'player_name',
             'character_names', 'visual_style', 'brief_file', 'opening_file', 'prefix_file',
             'profile', 'scope_map', 'decisions', 'provenance'}
-OPTIONAL = {'review_file', 'target_new_visible_chars', 'output_boundary'}
+OPTIONAL = {'review_file', 'target_new_visible_chars', 'output_boundary', 'input_contract', 'output_contract'}
 PROFILES = {'TEXT_CONTINUATION_DEV', 'TEXT_BRANCHING', 'FULL_VN'}
 
 
@@ -84,6 +85,7 @@ def load_case(case_file, allow_pilot=False):
     if len(set(ids)) != 2:
         raise BenchmarkError('duplicate_decision_id')
     validate_output_boundary(case)
+    validate_contracts(case)
     provenance = case['provenance']
     if not isinstance(provenance, dict) or not isinstance(provenance.get('source_sha256'), dict):
         raise BenchmarkError('source_hashes_required')
@@ -115,12 +117,15 @@ def load_case(case_file, allow_pilot=False):
 
 def render(case, texts):
     boundary = validate_output_boundary(case)
-    scope = '\n\n'.join(k + '：\n' + v for k, v in case['scope_map'].items())
+    v3 = validate_contracts(case)
+    scope_items = sorted(case['scope_map'].items()) if v3 else case['scope_map'].items()
+    scope = '\n\n'.join(k + '：\n' + v for k, v in scope_items)
     parameters = '\n'.join([
         '【公共参数】', '标题：' + case['title'], '语言：简体中文',
         '玩家角色：' + case['player_name'] + '。',
         '第二人称“你”或第一人称“我”均指' + case['player_name'] + '。允许沿用原生叙事视角，不另加一个新玩家角色。',
-        '已有核心人物：' + '、'.join(case['character_names']) + '，共' + str(len(case['character_names'])) + '名。',
+        ('本任务故事角色总名单（含玩家，不另增故事角色）：' if v3 else '已有核心人物：')
+        + '、'.join(case['character_names']) + '，共' + str(len(case['character_names'])) + '名。',
         '视听风格：' + case['visual_style']])
     if case['profile'] == 'TEXT_CONTINUATION_DEV':
         execution = '【开发任务范围】\n本次用于文本续写接入调试。保留原生文字规划、人物、记忆、审核和脚本步骤；保留原题视听氛围，不请求真实图片、配音或音乐。'
@@ -134,9 +139,15 @@ def render(case, texts):
         execution += ('\n本轮玩家可见输出边界：第一次选择 ' + boundary['decision_id']
                       + '，包含该选择的两个选项，然后停止；不执行任一选项。'
                       + '\n该边界不禁止原生内部规划、审核或预生成后续脚本；后续产物独立保存，不拼入当前可见路径。')
+    if v3:
+        execution += ('\n统一返回范围：从固定开头之后，到第一次选择 '
+                      + case['output_contract']['decision_id'] + ' 的未选择状态。'
+                      + '\n固定开头已经停在选择处时，可直接给出原生选项，不强制另写过渡正文。'
+                      + '\n选项可以使用原生标题、标识或候选卡片；原生附带的选择后预览单列为未发生内容，不执行选择。'
+                      + '\n内部规划、审核和后续分支预生成照原生流程进行；返回格式由外部程序统一，不要求模型改用公共JSON格式。')
     return '\n\n'.join([MARKERS[0], texts['prefix'], parameters, execution,
         '<<<BRIEF_BEGIN>>>\n' + texts['brief'] + '\n<<<BRIEF_END>>>',
-        ('【共同语义解释】\n' if boundary else '【共同时间解释】\n') + scope,
+        ('【共同语义解释】\n' if boundary or v3 else '【共同时间解释】\n') + scope,
         '<<<OPENING_BEGIN>>>\n' + texts['opening'] + '\n<<<OPENING_END>>>',
         '【续写说明】\n固定开头中的事件已经发生。正文从最后的情境继续，保持人物知识与物品状态；不要重新开局，不要替玩家提前执行尚未选择的关键行动。使用原生输出格式。', MARKERS[1]])
 
@@ -162,6 +173,10 @@ def compile_case(case_file, out, allow_pilot=False):
     for name, value in native.items():
         atomic_json(out / 'payloads' / (name + '.json'), value)
     atomic_write(out / 'payloads/requirements.txt', shared)
+    v3 = validate_contracts(case)
+    if v3:
+        for name in ('brief', 'opening', 'prefix'):
+            atomic_write(out/'sources'/(name+'.txt'), safe_child(Path(case_file).resolve().parent.parent,case[name+'_file']).read_bytes())
     files = {str(p.relative_to(out)): sha256(p.read_bytes()) for p in out.rglob('*') if p.is_file()}
     manifest = {'schema_version': '2.1', 'case_id': case['case_id'], 'case_sha256': sha256(Path(case_file).read_bytes()),
                 'profile': case['profile'], 'review_status': case['review_status'], 'source_sha256': hashes,
@@ -169,6 +184,9 @@ def compile_case(case_file, out, allow_pilot=False):
                 'files': files, 'payload_check': 'passed', 'native_integration': 'not_run'}
     if case.get('output_boundary'):
         manifest['output_boundary'] = case['output_boundary']
+    if v3:
+        manifest.update(input_contract=case['input_contract'], output_contract=case['output_contract'],
+                        canonical_case_sha256=canonical_case_hash(case))
     atomic_json(out / 'manifest.json', manifest)
     return verify_bundle(out)
 
@@ -192,6 +210,22 @@ def verify_bundle(out):
     if any(value != shared for value in values):
         raise BenchmarkError('payload_mismatch')
     case = read_json(out / 'case.json')
+    if validate_contracts(case):
+        if (manifest.get('input_contract') != case['input_contract']
+                or manifest.get('output_contract') != case['output_contract']
+                or manifest.get('canonical_case_sha256') != canonical_case_hash(case)):
+            raise BenchmarkError('bundle_contract_or_case_mismatch')
+        actual_files = {str(p.relative_to(out)) for p in out.rglob('*') if p.is_file() and p != out/'manifest.json'}
+        if actual_files != set(manifest['files']):
+            raise BenchmarkError('bundle_file_set_mismatch')
+        texts = {}
+        for name in ('brief', 'opening', 'prefix'):
+            source = out/'sources'/(name+'.txt')
+            if 'sources/'+name+'.txt' not in manifest['files'] or sha256(source.read_bytes()) != manifest['source_sha256'][name]:
+                raise BenchmarkError('bundle_source_bytes_mismatch:'+name)
+            texts[name] = _clean_source(source.read_text(encoding='utf-8'))
+        if render(case, texts) != shared or texts['opening'] != (out/'opening.txt').read_text(encoding='utf-8'):
+            raise BenchmarkError('bundle_rendered_task_mismatch')
     boundary = validate_output_boundary(case)
     if manifest.get('output_boundary') != boundary:
         raise BenchmarkError('bundle_output_boundary_mismatch')

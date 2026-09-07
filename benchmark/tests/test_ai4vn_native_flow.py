@@ -12,7 +12,7 @@ from unittest.mock import patch
 from test_ai4vn import ADAPTER, BENCH, NATIVE_PYTHON, REPO, REPO_CONFIG
 from story_benchmark.audit import audit_trace, validate_source_map
 from story_benchmark.compiler import compile_case
-from story_benchmark.runner import run_once, resume_export, verify_saved_run
+from story_benchmark.runner import execute_run, run_once, resume_export, verify_saved_run
 
 
 def fixture_reply(request, fixture):
@@ -20,6 +20,8 @@ def fixture_reply(request, fixture):
     user = request['messages'][-1]['content']
     if '资深的 Visual Novel' in system and '制作人' not in system:
         if 'Step1 设计文档' in user:
+            if 'outline_response' in fixture:
+                return fixture['outline_response']
             return json.dumps({'title': fixture['marker'], 'background': 'Synthetic engineering fixture only.',
                 'art_style': 'fixture', 'story_outline': {'groups': [{'group_id': 'group1', 'group_outline': 'synthetic 12-node graph'}]},
                 'characters': [{'id': name, 'name': name, 'gender': '', 'is_protagonist': index == 0,
@@ -81,6 +83,75 @@ def start_fixture_server(fixture):
 
 
 class NativeFlowTests(unittest.TestCase):
+    def test_native_cli_empty_and_malformed_responses_keep_known_failures(self):
+        self._native_failure_flow(v3=False)
+
+    def test_v3_execute_native_failures_return_sealed_error_envelopes(self):
+        self._native_failure_flow(v3=True)
+
+    def _native_failure_flow(self, v3):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        root = Path(os.getenv('AI4VN_TEST_ARTIFACT_DIR', temporary.name)).resolve()
+        root.mkdir(parents=True, exist_ok=True)
+        bundle = Path(os.getenv('BENCH_SHARED_BUNDLE', str(BENCH / 'examples/CAMPUS-01-V3'))).resolve()
+        if v3 and 'output_contract' not in json.loads((bundle / 'case.json').read_text()):
+            bundle = BENCH / 'examples/CAMPUS-01-V3'
+        if not bundle.is_dir():
+            bundle = root / 'failure-bundle'
+            compile_case(BENCH / 'cases/CAMPUS-01.json', bundle, allow_pilot=True)
+        summaries = []
+        for response, expected in [('', 'native_empty_model_response'), ('invalid native JSON', 'native_json_parse_error')]:
+            fixture = {'marker': 'FIXED_FAILURE', 'lock': threading.Lock(), 'actor_requested': False,
+                       'actor_calls': 0, 'calls': [], 'errors': [], 'outline_response': response}
+            server = start_fixture_server(fixture)
+            self.addCleanup(server.server_close)
+            self.addCleanup(server.shutdown)
+            run = root / ('v3-' + expected if v3 else expected)
+            config = {**REPO_CONFIG, 'python_executable': NATIVE_PYTHON, 'live': True,
+                       'model': 'fixture-model', 'text_provider': 'openai', 'api_key_env': 'AI4VN_FIXTURE_API_KEY',
+                       'model_base_url': f'http://127.0.0.1:{server.server_port}/v1', 'max_calls': 5,
+                       'model_parameters': {'thinking': {'type':'disabled'}},
+                       'max_output_tokens': 8192, 'max_input_chars': 200000, 'timeout_seconds': 45}
+            adapter = ADAPTER.AI4VNAdapter(config)
+            with patch.dict(os.environ, {'AI4VN_FIXTURE_API_KEY': 'synthetic-local-only-key'}):
+                if v3:
+                    result = execute_run('ai4visualnovel', bundle, {**config, 'live':False}, run, adapter=adapter, mock=True)
+                    self.assertEqual(result['outcome'], 'native_error', result)
+                    self.assertEqual(result['errors'][0]['code'], expected)
+                    self.assertEqual(result['native_status'], 'failed')
+                    self.assertEqual(result['adapter_status'], 'passed')
+                    self.assertIs(result['input']['received_equal'], True)
+                    self.assertEqual(result['usage']['http_calls'], 1)
+                    self.assertEqual(result['content'], {'body':[],'choices':[],'previews':[],'quality_status':'not_evaluated'})
+                    handle = json.loads((run / 'native/ai4vn/adapter-state.json').read_text())
+                    before_resume = {str(p.relative_to(run)):hashlib.sha256(p.read_bytes()).hexdigest() for p in run.rglob('*') if p.is_file()}
+                    self.assertEqual(resume_export(run, adapter), result)
+                    self.assertEqual(before_resume, {str(p.relative_to(run)):hashlib.sha256(p.read_bytes()).hexdigest() for p in run.rglob('*') if p.is_file()})
+                    self.assertEqual(verify_saved_run(run)['result_outcome'], 'native_error')
+                else:
+                    handle = adapter.prepare(bundle, run)
+                    with self.assertRaises(ADAPTER.AI4VNError) as raised:
+                        adapter.generate_first_artifact(handle)
+                    self.assertEqual(raised.exception.code, expected)
+                    calls_before = len(fixture['calls'])
+                    with self.assertRaises(ADAPTER.AI4VNError) as resumed:
+                        adapter.generate_first_artifact(handle)
+                    self.assertEqual(resumed.exception.code, expected)
+                    self.assertEqual(calls_before, len(fixture['calls']))
+                    adapter.close(handle)
+                self.assertEqual(handle['stages'], {'design':'failed'})
+            diagnostic = json.loads((run / 'native/ai4vn/native_failure.json').read_text())
+            self.assertEqual(diagnostic['failure_code'], expected)
+            self.assertEqual(diagnostic['last_http_status'], 200)
+            self.assertEqual(diagnostic['incomplete_http_call_ids'], [])
+            self.assertEqual(len(fixture['calls']), 1)
+            self.assertFalse((Path(handle['source_dir']) / 'data/story.txt').exists())
+            self.assertTrue(all(json.loads(path.read_text())['unchanged'] for path in Path(handle['trace_dir']).glob('source-integrity-ai4vn-*.json')))
+            summaries.append({'evidence_kind':'mock','failure_code':expected,'calls':1,'automatic_retry':False,
+                              'native_stages':handle['stages'],'run':str(run),'source_unchanged':True})
+        (root / ('native-failure-v3-report.json' if v3 else 'native-failure-report.json')).write_text(json.dumps(summaries, ensure_ascii=False, indent=2))
+
     def test_real_cli_runs_with_local_fixed_sdk_responses(self):
         fixture = {'marker': 'MOCK_A', 'lock': threading.Lock(), 'actor_requested': False, 'actor_calls': 0, 'calls': [], 'errors': []}
         server = start_fixture_server(fixture)
@@ -134,6 +205,9 @@ class NativeFlowTests(unittest.TestCase):
             self.assertFalse((Path(handle['source_dir']) / 'sitecustomize.py').exists())
             self.assertEqual(exported['segments'][0]['text'], marker + '生成正文。')
             self.assertEqual(len(exported['choices']), 2)
+            self.assertEqual(exported['export_scope'], 'first_unselected_choice')
+            self.assertIs(exported['selection_executed'], False)
+            self.assertIsNotNone(exported['native_step'])
             trace_dir = Path(handle['trace_dir'])
             receipt_files = list(trace_dir.glob('received-ai4vn-*.json'))
             self.assertEqual(len(receipt_files), 1)
@@ -174,7 +248,13 @@ class NativeFlowTests(unittest.TestCase):
         (root / 'native-flow-report.json').write_text(json.dumps(all_results, ensure_ascii=False, indent=2))
 
     def test_root_runner_seals_native_cli_and_resumes_without_dispatch(self):
-        marker = 'ROOT_RUNNER_CAMPUS_01_MOCK'
+        self._root_runner_flow(v3=False)
+
+    def test_v3_execute_run_seals_native_cli_result_and_resumes_without_dispatch(self):
+        self._root_runner_flow(v3=True)
+
+    def _root_runner_flow(self, v3):
+        marker = 'ROOT_RUNNER_CAMPUS_01_V3_MOCK' if v3 else 'ROOT_RUNNER_CAMPUS_01_MOCK'
         fixture = {'marker': marker, 'lock': threading.Lock(), 'actor_requested': False,
                    'actor_calls': 0, 'calls': [], 'errors': []}
         server = start_fixture_server(fixture)
@@ -187,8 +267,13 @@ class NativeFlowTests(unittest.TestCase):
         if os.getenv('BENCH_SHARED_BUNDLE'):
             bundle = Path(os.environ['BENCH_SHARED_BUNDLE']).resolve()
         else:
-            bundle = root / 'root-runner-bundle'
-            compile_case(BENCH / 'cases/CAMPUS-01.json', bundle, allow_pilot=True)
+            bundle = None
+        if bundle is None or ('output_contract' in json.loads((bundle / 'case.json').read_text())) != v3:
+            if v3:
+                bundle = BENCH / 'examples/CAMPUS-01-V3'
+            else:
+                bundle = root / 'root-runner-bundle'
+                compile_case(BENCH / 'cases/CAMPUS-01.json', bundle, allow_pilot=True)
         run = root / marker
         shared = (bundle / 'shared_task.txt').read_text(encoding='utf-8')
         opening = (bundle / 'opening.txt').read_text(encoding='utf-8')
@@ -208,12 +293,31 @@ class NativeFlowTests(unittest.TestCase):
         before_source = {relative: hashlib.sha256((REPO / relative).read_bytes()).hexdigest()
                          for relative in adapter._source_files()}
         with patch.dict(os.environ, {'AI4VN_FIXTURE_API_KEY': 'synthetic-local-only-key'}):
-            manifest = run_once('ai4visualnovel', bundle, {**common_config, 'live': False},
-                                run, adapter=adapter, mock=True)
+            if v3:
+                result = execute_run('ai4visualnovel', bundle, {**common_config, 'live': False},
+                                     run, adapter=adapter, mock=True)
+                from story_benchmark.result import validate_result
+                self.assertEqual(validate_result(result), result)
+                self.assertEqual(result['schema_version'], '3.0')
+                self.assertEqual(result['outcome'], 'completed', result)
+                self.assertEqual(result['scope']['status'], 'reached')
+                self.assertIs(result['scope']['selection_executed'], False)
+                self.assertEqual(len(result['content']['choices']), 2)
+                self.assertEqual(result['content']['body'][0]['text'], marker + '生成正文。')
+                self.assertEqual(result['content']['previews'], [])
+                self.assertEqual(result['errors'], [])
+                self.assertEqual(result['input']['shared_text'], shared)
+                self.assertEqual(result['input']['provided_prefix'], opening)
+                self.assertEqual(result['provenance']['evidence_kind'], 'mock')
+                manifest = json.loads((run / 'manifest.json').read_text())
+                self.assertEqual(json.loads((run / 'result.json').read_text()), result)
+            else:
+                manifest = run_once('ai4visualnovel', bundle, {**common_config, 'live': False},
+                                    run, adapter=adapter, mock=True)
         self.assertEqual(manifest['state'], 'EXPORTED')
         self.assertEqual(manifest['evidence_kind'], 'mock')
-        self.assertEqual(manifest['native_integration'], 'verified_with_fixture_provider')
-        self.assertEqual(manifest['adapter_status'], 'completed')
+        self.assertEqual(manifest['native_integration'], 'not_verified' if v3 else 'verified_with_fixture_provider')
+        self.assertEqual(manifest['adapter_status'], 'passed' if v3 else 'completed')
         self.assertEqual(manifest['audit_status'], 'passed')
         self.assertEqual(manifest['cleanup_status'], 'completed')
         self.assertFalse(json.loads((run / 'config.json').read_text())['live'])
@@ -272,13 +376,13 @@ class NativeFlowTests(unittest.TestCase):
              patch.object(adapter, 'generate_first_artifact', side_effect=AssertionError('unexpected generation')), \
              patch.object(adapter, 'export_first_artifact', side_effect=AssertionError('unexpected export')), \
              patch.object(adapter, 'close', side_effect=AssertionError('unexpected close')):
-            self.assertEqual(resume_export(run, adapter), manifest)
+            self.assertEqual(resume_export(run, adapter), result if v3 else manifest)
         self.assertEqual(len(fixture['calls']), calls_before_resume)
         self.assertEqual(before_resume, {str(path.relative_to(run)): hashlib.sha256(path.read_bytes()).hexdigest()
                                         for path in run.rglob('*') if path.is_file()})
         self.assertEqual(verify_saved_run(run), manifest)
         report = {'evidence_kind': 'mock', 'implementation': 'external_launcher_pristine_source',
-                  'entrypoint': 'root_run_once_injected_adapter', 'run': marker,
+                  'entrypoint': 'root_execute_run_injected_adapter' if v3 else 'root_run_once_injected_adapter', 'run': marker,
                   'native_cli_stages': state['stages'], 'observed_http_calls': len(fixture['calls']),
                   'native_source_files_unchanged': len(before_source), 'source_lock': REPO_CONFIG.get('source_lock'),
                   'shared_task_file': str(bundle / 'shared_task.txt'),
@@ -287,7 +391,9 @@ class NativeFlowTests(unittest.TestCase):
                   'audit_status': manifest['audit_status'], 'native_integration': manifest['native_integration'],
                   'cleanup_status': manifest['cleanup_status'], 'sealed_resume_no_dispatch': True,
                   'sealed_evidence_unchanged_after_resume': True, 'external_paid_generation': False}
-        (root / 'root-runner-report.json').write_text(json.dumps(report, ensure_ascii=False, indent=2))
+        if v3:
+            report.update(result_outcome=result['outcome'], result_schema_version=result['schema_version'])
+        (root / ('root-runner-v3-report.json' if v3 else 'root-runner-report.json')).write_text(json.dumps(report, ensure_ascii=False, indent=2))
 
 
 if __name__ == '__main__':

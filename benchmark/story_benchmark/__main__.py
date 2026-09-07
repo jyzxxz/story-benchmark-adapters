@@ -3,12 +3,12 @@ import json
 from pathlib import Path
 from .compiler import compile_case, verify_bundle
 from .io import read_json
-from .runner import preflight, run_once, resume_export, RootRunTimeout, verify_saved_run
+from .runner import preflight, run_once, execute_run, resume_export, RootRunTimeout, verify_saved_run
 from .audit import audit_trace
 
 
 def main():
-    parser = argparse.ArgumentParser(description='v2.1 first-artifact native integration; no scoring or branch player')
+    parser = argparse.ArgumentParser(description='Shared-input native adapters; v3 unified first-unselected-choice results')
     sub = parser.add_subparsers(dest='command', required=True)
     compile_cmd = sub.add_parser('compile')
     compile_cmd.add_argument('--case', required=True)
@@ -19,6 +19,10 @@ def main():
     group=sub.add_parser('preflight-set')
     group.add_argument('--experiment',required=True)
     group.add_argument('--bundle',required=True)
+    group=sub.add_parser('run-set')
+    group.add_argument('--experiment',required=True)
+    group.add_argument('--bundle',required=True)
+    group.add_argument('--out',required=True)
     for command in ('preflight', 'run-first'):
         child = sub.add_parser(command)
         child.add_argument('--system', required=True, choices=('ai4visualnovel','infiplot','if_line'))
@@ -37,13 +41,17 @@ def main():
         elif args.command == 'preflight-set':
             from .experiment import preflight_set
             result=preflight_set(args.experiment,args.bundle)
+        elif args.command == 'run-set':
+            from .experiment import run_set
+            result=run_set(args.experiment,args.bundle,args.out)
         elif args.command in ('preflight', 'run-first'):
             if args.experiment:
                 from .experiment import load_experiment
                 config = load_experiment(args.experiment)[args.system]
             else:
                 config = read_json(args.config)
-            result = (preflight(args.system,args.bundle,config) if args.command == 'preflight' else run_once(args.system,args.bundle,config,args.run_dir))
+            v3='output_contract' in read_json(Path(args.bundle)/'case.json')
+            result = (preflight(args.system,args.bundle,config) if args.command == 'preflight' else (execute_run if v3 else run_once)(args.system,args.bundle,config,args.run_dir))
         elif args.command == 'resume-export': result = resume_export(args.run_dir)
         else:
             root = Path(args.run_dir)
@@ -52,7 +60,7 @@ def main():
         print(json.dumps(result, ensure_ascii=False, indent=2))
         failed = result.get('ok') is False or result.get('adapter_status') == 'failed'
         if args.command in ('run-first', 'resume-export'):
-            failed = failed or result.get('audit_status') != 'passed' or result.get('generation_status') in ('failed','budget_exhausted','delivery_unknown')
+            failed = failed or (result.get('outcome')!='completed' if result.get('schema_version')=='3.0' else result.get('audit_status') != 'passed' or result.get('generation_status') in ('failed','budget_exhausted','delivery_unknown'))
         return 1 if failed else 0
     except (ValueError, OSError, RuntimeError, RootRunTimeout) as exc:
         from .io import redact

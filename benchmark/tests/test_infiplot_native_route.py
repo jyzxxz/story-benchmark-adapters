@@ -117,6 +117,7 @@ class NativeRouteTests(unittest.TestCase):
                        "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "local-fixture-publishable-key", "TEXT_API_KEY": "local-fixture-text-key", "INFIPLOT_COOKIE": cookie}
                 config = {"repo_path": str(repo), "expected_commit": commit, "base_url": f"http://127.0.0.1:{port}",
                           "model_base_url": f"http://127.0.0.1:{model_server.server_port}", "model": "local-fixture-model",
+                          "model_parameters": {"thinking": {"type": "disabled"}},
                           "live": True, "max_calls": 3, "max_output_tokens": 1000, "max_input_chars": 100000,
                           "timeout_seconds": 120, "root_run_id": "local-fixture-only"}
                 if os.environ.get("INFIPLOT_SOURCE_LOCK"):
@@ -139,11 +140,17 @@ class NativeRouteTests(unittest.TestCase):
                     self.assertEqual(len(model_calls), 2)
                     self.assertTrue(auth_calls)
                     self.assertTrue(all(row["model"] == config["model"] and row["max_tokens"] == 1000 for row in model_calls))
+                    self.assertTrue(all(row["thinking"] == {"type": "disabled"} for row in model_calls))
                     self.assertEqual(sum(shared in message["content"] for message in model_calls[0]["messages"]), 1)
                     self.assertIn("固定开头已经发生", model_calls[0]["messages"][1]["content"])
                     export = adapter.export_first_artifact(handle)
                     self.assertEqual([row["text"] for row in export["segments"]], prose.split("\n\n"))
                     self.assertEqual(len(export["choices"]), 2)
+                    self.assertIs(export["selection_executed"], False)
+                    self.assertEqual(export["previews"], [])
+                    if (bundle / "case.json").is_file():
+                        contract = json.loads((bundle / "case.json").read_text()).get("output_contract", {})
+                        self.assertEqual(handle["allow_empty_body"], contract.get("version") == "3.0" and contract.get("allow_empty_body") is True)
                     self.assertEqual(export["generation_issue_codes"], [])
                     receipt = json.loads(next(Path(handle["trace_dir"]).glob("received-*.json")).read_text())
                     self.assertEqual(receipt["received_task"], shared)
@@ -159,6 +166,11 @@ class NativeRouteTests(unittest.TestCase):
                     before = writer_calls[0]["native_sdk_request_messages"]
                     self.assertIn("第一幕的冷开场", before[1]["content"])
                     self.assertEqual(sum(shared in row["content"] for row in before), 1)
+                    from native_shims.infiplot.relay import COLD_START, SHARED_START
+                    expected_messages = json.loads(json.dumps(before))
+                    expected_messages[1]["content"] = expected_messages[1]["content"].replace(COLD_START, SHARED_START, 1)
+                    self.assertEqual(model_calls[0]["messages"], expected_messages)
+                    self.assertEqual(export["native_choice_normalization_observation"], "matches_frozen_native_normalization")
                     self.assertEqual(export["native_fallback_observation"], "unknown_without_exhaustive_native_hooks")
                     for path in (folder / "run").rglob("*"):
                         if path.is_file():

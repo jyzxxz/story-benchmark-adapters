@@ -1,0 +1,45 @@
+{
+  "canonical_case_sha256": "32b357a25e8ecbf0f4f704b37b3077a99021ca44e2f4a9b6f6a1cf6710cd1505",
+  "case_id": "CAMPUS-01-V3",
+  "case_sha256": "be75ba86ee2f149c7d28f745e3d0b61c016bacdf61c6791a366933534df5300d",
+  "files": {
+    "case.json": "ff890b028a78f0ff1bc6902695d51b4027e2c92f76b3e31c052d93c206008412",
+    "opening.txt": "196d04a58ba5bce543e93788e496ae42fdd547d1583d185cda42c3b969159c65",
+    "payloads/ai4vn.json": "78ff69122ebd844caa3fcec1b82cff3340d8a7ff3f7c185df055c941ad2765fe",
+    "payloads/if_line.json": "6fd6921f5d3838d97b8c41cdf92c1b23caaac78da5c2a52103cdfe853f1dd133",
+    "payloads/infiplot.json": "cf418bd6b948f1c53f0f6d1929b7444646e5d96e0f4e3d8f4d63dbab07c72e07",
+    "payloads/requirements.txt": "c8741573a37879a743113da4013765d432d0e3dc9cc22f60697d1883030b9335",
+    "shared_task.txt": "c8741573a37879a743113da4013765d432d0e3dc9cc22f60697d1883030b9335",
+    "sources/brief.txt": "810e10baf5259d9961498266a940b82783d660da4047002506f98dfa7f7bbf0a",
+    "sources/opening.txt": "196d04a58ba5bce543e93788e496ae42fdd547d1583d185cda42c3b969159c65",
+    "sources/prefix.txt": "38766a82b5534423ba414763db5158417b1c42fde5a3bd14d05aa5afc0911430"
+  },
+  "input_contract": {
+    "adapter_story_reinjection": "none",
+    "character_policy": "exact_declared_cast",
+    "task_delivery": "verbatim_first_creative_request",
+    "version": "3.0"
+  },
+  "native_integration": "not_run",
+  "output_contract": {
+    "allow_empty_body": true,
+    "choice_count": 2,
+    "decision_id": "C1",
+    "native_choice_previews": "separate",
+    "scope": "first_unselected_choice",
+    "selection_executed": false,
+    "version": "3.0"
+  },
+  "payload_check": "passed",
+  "profile": "TEXT_CONTINUATION_DEV",
+  "review_status": "pilot",
+  "schema_version": "2.1",
+  "shared_bytes": 7137,
+  "shared_chars": 2565,
+  "shared_sha256": "c8741573a37879a743113da4013765d432d0e3dc9cc22f60697d1883030b9335",
+  "source_sha256": {
+    "brief": "810e10baf5259d9961498266a940b82783d660da4047002506f98dfa7f7bbf0a",
+    "opening": "196d04a58ba5bce543e93788e496ae42fdd547d1583d185cda42c3b969159c65",
+    "prefix": "38766a82b5534423ba414763db5158417b1c42fde5a3bd14d05aa5afc0911430"
+  }
+}

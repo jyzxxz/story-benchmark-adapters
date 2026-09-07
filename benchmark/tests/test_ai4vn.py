@@ -29,11 +29,34 @@ NATIVE_PYTHON = os.environ.get('AI4VN_TEST_PYTHON', sys.executable)
 
 
 class ExportTests(unittest.TestCase):
-    def extract(self, text):
+    def extract(self, text, **kwargs):
         with tempfile.TemporaryDirectory() as directory:
             story = Path(directory) / 'story.txt'
             story.write_text(text, encoding='utf-8')
-            return ADAPTER.extract_first_visible(REPO, story, {'characters': [{'id': 'lin', 'name': '林'}]})
+            return ADAPTER.extract_first_visible(REPO, story, {'characters': [{'id': 'lin', 'name': '林'}]}, **kwargs)
+
+    def test_v3_choice_only_is_valid_without_inventing_prose(self):
+        text = ('=== Node: root ===\n<jump target="decision"/>\n=== Node: decision ===\n'
+                '[CHOICE]\n<choice target="a">进入实验楼</choice>\n'
+                '<choice target="b">先保护周遥并检查收音机</choice>')
+        export = self.extract(text, allow_empty_body=True)
+        self.assertEqual(export['segments'], [])
+        self.assertEqual(export['generation_issue_codes'], [])
+        self.assertEqual(export['stop_reason'], 'first_choice')
+        self.assertEqual(export['export_scope'], 'first_unselected_choice')
+        self.assertEqual(export['native_capability_status'], 'first_unselected_choice_available')
+        self.assertEqual(export['native_step']['native_pointer']['node_id'], 'decision')
+        self.assertEqual(export['prechoice_body_status'], 'empty_native')
+        self.assertIs(export['selection_executed'], False)
+        self.assertIn('empty_prose', self.extract(text)['generation_issue_codes'])
+
+    def test_missing_choice_is_explicit_even_when_body_is_allowed_empty(self):
+        for text in ('', '=== Node: root ===\n<content id="旁白">故事停在节点结尾。</content>'):
+            with self.subTest(text=text):
+                export = self.extract(text, allow_empty_body=True)
+                self.assertIn('native_choice_boundary_missing', export['generation_issue_codes'])
+                self.assertEqual(export['native_capability_status'], 'boundary_not_reached')
+                self.assertFalse(export['first_choice_reached'])
 
     def test_first_choice_no_other_branch(self):
         result = self.extract('''=== Node: root ===
@@ -97,6 +120,14 @@ class ExportTests(unittest.TestCase):
         ):
             with self.subTest(code=code), self.assertRaisesRegex(RuntimeError, code):
                 self.extract(text)
+
+    def test_jump_failures_carry_known_native_codes(self):
+        for text, code in (('=== Node: root ===\n<jump target="root"/>', 'native_automatic_jump_cycle'),
+                           ('=== Node: root ===\n<jump target="missing"/>', 'native_jump_target_missing')):
+            with self.subTest(code=code), self.assertRaises(ADAPTER.AI4VNError) as raised:
+                self.extract(text)
+            self.assertEqual(raised.exception.code, code)
+            self.assertEqual(raised.exception.category, 'native_error')
 
     def test_node_end_does_not_infer_transition_from_file_order(self):
         result = self.extract('''=== Node: root ===
@@ -225,9 +256,54 @@ class AdapterTests(unittest.TestCase):
         self.assertIn('ValueError: story_graph 节点数不匹配，期望 12，实际 13',
                       (Path(handle['native_dir']) / 'design.stdout.log').read_text())
         with patch.object(ADAPTER.subprocess, 'Popen') as spawn:
-            with self.assertRaisesRegex(RuntimeError, 'delivery_unknown'):
+            with self.assertRaisesRegex(ADAPTER.NativeGraphNodeCountError, 'previous_native_failure_no_resend'):
                 self.adapter._run_stage(handle, 'design', command)
             spawn.assert_not_called()
+
+    def test_known_parse_schema_and_exit_errors_are_not_delivery_unknown(self):
+        cases = [('import json;json.loads("invalid")', 'native_json_parse_error'),
+                 ('raise ValueError("game_outline Schema 校验失败: fixture")', 'native_schema_validation_error'),
+                 ('raise SystemExit(7)', 'native_exit')]
+        for code, expected in cases:
+            handle = self.adapter.prepare(self.bundle, self.root / expected)
+            self.adapter.config['timeout_seconds'] = 5
+            with patch.object(self.adapter, '_env', return_value=dict(os.environ)), self.assertRaises(ADAPTER.AI4VNError) as raised:
+                self.adapter._run_stage(handle, 'design', [NATIVE_PYTHON, '-c', code])
+            self.assertEqual(raised.exception.code, expected)
+            self.assertEqual(handle['stages']['design'], 'failed')
+            diagnostic = json.loads((Path(handle['native_dir']) / 'native_failure.json').read_text())
+            self.assertEqual(diagnostic['failure_code'], expected)
+            self.assertFalse(diagnostic['automatic_retry'])
+
+    def test_incomplete_http_still_reports_unknown_despite_process_exit(self):
+        handle = self.adapter.prepare(self.bundle, self.root / 'incomplete-send')
+        trace = Path(handle['trace_dir']) / 'ai4vn-fixture.jsonl'
+        trace.write_text(json.dumps({'boundary':'http','call_id':'synthetic','event':'started',
+                                    'operation_id':'ai4vn.design','start_time':'2026-01-01'}) + '\n')
+        self.adapter.config['timeout_seconds'] = 5
+        with patch.object(self.adapter, '_env', return_value=dict(os.environ)), self.assertRaises(ADAPTER.AI4VNError) as raised:
+            self.adapter._run_stage(handle, 'design', [NATIVE_PYTHON, '-c', 'raise SystemExit(3)'])
+        self.assertEqual(raised.exception.code, 'delivery_unknown')
+        self.assertEqual(handle['stages']['design'], 'delivery_unknown')
+
+    def test_native_artifact_errors_and_v3_handle_export(self):
+        handle = self.adapter.prepare(self.bundle, self.root / 'artifact-errors')
+        data = Path(handle['source_dir']) / 'data'
+        data.mkdir()
+        design = data / 'game_design.json'
+        for content, expected in [('', 'native_artifact_empty'), ('{bad', 'native_artifact_parse_error'),
+                                  ('[]', 'native_artifact_invalid_shape')]:
+            design.write_text(content)
+            with self.subTest(expected=expected), self.assertRaises(ADAPTER.AI4VNError) as raised:
+                self.adapter.export_first_artifact(handle)
+            self.assertEqual(raised.exception.code, expected)
+        design.write_text('{"characters":[]}')
+        (data / 'story.txt').write_text('=== Node: root ===\n<choice target="a">A</choice>\n<choice target="b">B</choice>')
+        handle['output_contract'] = {'version':'3.0','scope':'first_unselected_choice','allow_empty_body':True}
+        exported = self.adapter.export_first_artifact(handle)
+        self.assertEqual(exported['generation_issue_codes'], [])
+        self.assertEqual(exported['segments'], [])
+        self.assertEqual(len(exported['choices']), 2)
 
     def test_root_classifies_native_node_count_failure_as_known_failed_exit(self):
         from story_benchmark.compiler import compile_case
@@ -368,6 +444,9 @@ http=[r for r in records if r['boundary']=='http' and r['event']=='started']
 assert len(http)==2 and [r['attempt'] for r in http]==[1,2]
 assert all(r['usage'] is None for r in records)
 assert all('offline-test-key' not in json.dumps(r) for r in records)
+sdk_errors=[r for r in records if r['boundary']=='sdk' and r['event']=='error']
+assert sdk_errors and all(r['failure_code']=='budget_exhausted' for r in sdk_errors)
+assert all(r['delivery_status']=='not_sent' for r in sdk_errors)
 server.shutdown()
 ''', {'AI4VN_RUN_DIR': directory, 'TEXT_PROVIDER': 'openai', 'BENCH_TRACE_DIR': str(Path(directory)/'trace'),
                    'BENCH_RUN_ID': 'synthetic', 'BENCH_MAX_CALLS': '2', 'BENCH_MAX_OUTPUT_TOKENS': '128',

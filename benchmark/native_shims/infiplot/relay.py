@@ -8,12 +8,13 @@ from __future__ import annotations
 from copy import deepcopy
 from datetime import datetime, timezone
 import hashlib
-from http.client import IncompleteRead
+from http.client import HTTPConnection, HTTPSConnection, IncompleteRead
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import os
 from pathlib import Path
 import re
+import socket
 from threading import Condition, Lock, Thread
 import time
 from urllib import error, request
@@ -112,6 +113,9 @@ class Relay:
         self.lock = Lock()
         self.condition = Condition(self.lock)
         self.active = 0
+        self.connections = set()
+        self.closing = False
+        self.evidence_closed = False
         self.endpoint = upstream_endpoint(config["model_base_url"])
         self.api_key = os.environ["TEXT_API_KEY"]
         self.secret_values = [v for k, v in os.environ.items() if re.search(r"KEY|TOKEN|PASSWORD|COOKIE|SECRET", k, re.I) and len(v) >= 8]
@@ -136,14 +140,19 @@ class Relay:
     def emit(self, value):
         row = {"root_run_id": self.handle["root_run_id"], "system": "infiplot", "boundary": "http", **value}
         with self.lock:
+            if self.evidence_closed:
+                return
             with (self.trace / f"calls-{os.getpid()}.jsonl").open("a") as file:
                 file.write(compact(self.safe(row)) + "\n")
 
     def save(self, path, value):
         target = self.trace / path
-        target.parent.mkdir(parents=True, exist_ok=True)
-        with target.open("x", encoding="utf-8") as file:
-            file.write(self.safe(value) if isinstance(value, str) else json.dumps(self.safe(value), ensure_ascii=False, indent=2))
+        with self.lock:
+            if self.evidence_closed:
+                return
+            target.parent.mkdir(parents=True, exist_ok=True)
+            with target.open("x", encoding="utf-8") as file:
+                file.write(self.safe(value) if isinstance(value, str) else json.dumps(self.safe(value), ensure_ascii=False, indent=2))
 
     def save_partial(self, path, raw):
         """Retain incomplete wire bytes, redacting secrets before binary storage."""
@@ -151,9 +160,11 @@ class Relay:
         for secret in self.secret_values:
             stored = stored.replace(secret.encode("utf-8"), b"[REDACTED]")
         target = self.trace / path
-        target.parent.mkdir(parents=True, exist_ok=True)
-        with target.open("xb") as file:
-            file.write(stored)
+        with self.lock:
+            if not self.evidence_closed:
+                target.parent.mkdir(parents=True, exist_ok=True)
+                with target.open("xb") as file:
+                    file.write(stored)
         return {"partial_response_bytes_observed": len(raw),
                 "partial_response_sha256": digest(raw),
                 "partial_response_saved_sha256": digest(stored),
@@ -191,11 +202,75 @@ class Relay:
                 self.condition.wait(remaining)
 
     def close(self):
+        with self.condition:
+            self.closing = True
+            connections = list(self.connections)
+        for connection in connections:
+            self._interrupt_connection(connection)
         if self.server:
             self.server.shutdown()
             self.server.server_close()
         if self.thread:
             self.thread.join(10)
+        deadline = time.monotonic() + 10
+        with self.condition:
+            while self.active and time.monotonic() < deadline:
+                self.condition.wait(max(0, deadline - time.monotonic()))
+            # Even an abnormal stuck connection may never append to a sealed
+            # run. The runner records cleanup failure instead of claiming that
+            # such a connection was fully reconciled.
+            self.evidence_closed = True
+            if self.active:
+                raise RuntimeError("relay_cleanup_incomplete: active provider handlers did not stop")
+
+    @staticmethod
+    def _interrupt_connection(connection):
+        # urllib closes its connection socket after handing HTTPResponse to the
+        # caller. The response's buffered reader still owns that same fd.
+        sock = getattr(connection, "_benchmark_socket", None) or getattr(connection, "sock", None)
+        if sock is not None:
+            try:
+                sock.shutdown(socket.SHUT_RDWR)
+            except OSError:
+                pass
+        connection.close()
+
+    def _connection_type(self, base):
+        relay = self
+
+        class ObservedConnection(base):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                with relay.condition:
+                    if relay.closing:
+                        raise ValueError("relay_closing")
+                    relay.connections.add(self)
+
+            def connect(self):
+                super().connect()
+                self._benchmark_socket = self.sock
+                with relay.condition:
+                    closing = relay.closing
+                if closing:
+                    relay._interrupt_connection(self)
+                    raise ValueError("relay_closing")
+
+        return ObservedConnection
+
+    def _opener(self):
+        http_type = self._connection_type(HTTPConnection)
+        https_type = self._connection_type(HTTPSConnection)
+
+        class ObservedHTTP(request.HTTPHandler):
+            def http_open(self, req):
+                return self.do_open(http_type, req)
+
+        class ObservedHTTPS(request.HTTPSHandler):
+            def https_open(self, req):
+                return self.do_open(https_type, req, context=self._context,
+                                    check_hostname=self._check_hostname)
+
+        return request.build_opener(NoRedirect, ObservedHTTP, ObservedHTTPS)
 
     def handle_request(self, handler):
         common = None
@@ -214,7 +289,10 @@ class Relay:
                 raise ValueError("invalid_or_excessive_request_size")
             raw = handler.rfile.read(length)
             before = json.loads(raw)
+            self.save(f"requests/{call_id}.before.json", before)
             after, replacements, receipt, stage = adapt_messages(before, self.shared, self.config.get("shared_opening", True))
+            if receipt:
+                self.save(f"received-{call_id}.json", {"root_run_id": self.handle["root_run_id"], "system": "infiplot", "call_id": call_id, **receipt})
             if before.get("model") != self.config["model"]:
                 raise ValueError("native_request_model_mismatch")
             after_prompt_hash = digest(compact(after))
@@ -230,6 +308,7 @@ class Relay:
                 raise ValueError("invalid_native_output_cap")
             after[cap_key] = min(native_cap or self.config["max_output_tokens"], self.config["max_output_tokens"])
             serialized = compact(after)
+            self.save(f"requests/{call_id}.after.json", after)
             if len(serialized) > self.config["max_input_chars"]:
                 raise ValueError("input_budget_exceeded")
             with self.lock:
@@ -240,10 +319,6 @@ class Relay:
                 operation = "start:" + op_hash
                 self.op_attempts[operation] = self.op_attempts.get(operation, 0) + 1
                 attempt = self.op_attempts[operation]
-            if receipt:
-                self.save(f"received-{call_id}.json", {"root_run_id": self.handle["root_run_id"], "system": "infiplot", "call_id": call_id, **receipt})
-            self.save(f"requests/{call_id}.before.json", before)
-            self.save(f"requests/{call_id}.after.json", after)
             common = {"call_id": call_id, "operation_id": operation, "attempt": attempt, "stage": stage,
                       "requested_model": before["model"], "actual_model": None,
                       "request_messages": after["messages"], "native_sdk_request_messages": before["messages"],
@@ -262,7 +337,7 @@ class Relay:
             self.emit({**common, "event": "started"})
             upstream = request.Request(self.endpoint, data=serialized.encode(), method="POST", headers={
                 "Content-Type": "application/json", "Accept": "text/event-stream" if after.get("stream") else "application/json", "Authorization": "Bearer " + self.api_key})
-            opener = request.build_opener(NoRedirect)
+            opener = self._opener()
             try:
                 response = opener.open(upstream, timeout=float(self.config.get("timeout_seconds", 180)))
             except error.HTTPError as exc:
@@ -332,7 +407,7 @@ class Relay:
                                          "provider_request_id": provider_id, "usage_complete": False})
                 if isinstance(exc, IncompleteRead):
                     partial_evidence["read_error_expected_additional_bytes"] = exc.expected
-            self.emit({**(common or {}), "event": "error" if common else "blocked", "error": issue,
+            self.emit({"call_id": call_id, **(common or {}), "event": "error" if common else "blocked", "error": issue,
                        "generation_issue_code": issue, "delivery_status": "delivery_unknown" if common else "not_sent",
                        **partial_evidence})
             if not sent_headers:

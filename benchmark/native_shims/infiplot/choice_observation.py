@@ -62,7 +62,9 @@ def _writer_text(raw: str, streaming: bool) -> str:
         data_lines.clear()
         if data.strip() == "[DONE]":
             return
-        for choice in json.loads(data).get("choices", []):
+        # Frozen ai-client/chat.ts reads chunk.choices[0] only. Other provider
+        # candidates are not concatenated into the accepted Writer evidence.
+        for choice in json.loads(data).get("choices", [])[:1]:
             content = choice.get("delta", {}).get("content")
             if isinstance(content, str):
                 parts.append(content)

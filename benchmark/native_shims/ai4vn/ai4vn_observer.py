@@ -180,6 +180,31 @@ def execution_arguments(arguments):
     return capped
 
 
+def sdk_error_metadata(error, call_id):
+    """Classify observed delivery separately from a native/SDK exception."""
+    calls = {}
+    trace = _directory() / f'ai4vn-{os.getpid()}.jsonl'
+    if trace.is_file():
+        for line in trace.read_text(encoding='utf-8').splitlines():
+            try:
+                event = json.loads(line)
+            except ValueError:
+                continue
+            if event.get('boundary') == 'http' and event.get('parent_call_id') == call_id:
+                calls.setdefault(event['call_id'], {}).update(event)
+    if any(event.get('event') == 'started' for event in calls.values()):
+        return {'delivery_status': 'delivery_unknown', 'failure_code': 'delivery_unknown'}
+    cause = error
+    seen = set()
+    while cause is not None and id(cause) not in seen:
+        seen.add(id(cause))
+        if isinstance(cause, RuntimeError) and str(cause) in ('benchmark_call_budget_exhausted', 'benchmark_input_budget_exhausted'):
+            return {'delivery_status': 'completed' if calls else 'not_sent', 'failure_code': 'budget_exhausted'}
+        cause = cause.__cause__ or cause.__context__
+    return {'delivery_status': 'completed' if calls else 'not_sent',
+            'failure_code': 'native_http_error' if getattr(error, 'status_code', None) else 'native_sdk_error'}
+
+
 def sdk_call(provider, function, arguments):
     if not enabled():
         return function(**arguments)
@@ -212,7 +237,8 @@ def sdk_call(provider, function, arguments):
                'usage_coverage_complete': False})
         return result
     except Exception as error:
-        _emit({**record, 'event': 'error', 'end_time': _now(), 'error': {'type': type(error).__name__, 'message': str(error)}, 'delivery_status': 'delivery_unknown'})
+        _emit({**record, 'event': 'error', 'end_time': _now(), 'error': {'type': type(error).__name__, 'message': str(error)},
+               **sdk_error_metadata(error, record['call_id'])})
         raise
     finally:
         _current.reset(token)

@@ -19,7 +19,7 @@ class PrefixCheckpointRequest(BaseModel):
 
 
 def install_routes(app, config):
-    if config.get("entry_mode", "first_chapter") != "provided_prefix_candidates":
+    if config.get("entry_mode", "first_chapter") not in {"provided_prefix_candidates", "shared_first_choice"}:
         return
     from app.application.authoring_resource_service import require_owned_path_chapter
     from app.application.branch_service import _snapshot

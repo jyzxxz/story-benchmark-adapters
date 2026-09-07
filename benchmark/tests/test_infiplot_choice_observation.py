@@ -85,6 +85,16 @@ class ChoiceTraceTests(unittest.TestCase):
         self.save_writer("<story>正文</story>")
         self.assertEqual(observe_choices(self.trace, self.choices)["status"], "unknown_choices_tag_not_unique")
 
+    def test_sse_uses_only_first_provider_candidate_like_native_sdk(self):
+        self.save_writer("placeholder", streaming=True)
+        accepted = "<choices>" + json.dumps(self.choices, ensure_ascii=False) + "</choices>"
+        raw = "data: " + json.dumps({"choices": [
+            {"index": 0, "delta": {"content": accepted}},
+            {"index": 1, "delta": {"content": "<choices>[]</choices>"}},
+        ]}, ensure_ascii=False) + "\n\ndata: [DONE]\n\n"
+        (self.trace / "responses/writer.sse").write_text(raw)
+        self.assertEqual(observe_choices(self.trace, self.choices)["status"], "matches_frozen_native_normalization")
+
     def test_adapter_saves_sidecar_without_editing_native_response_or_choices(self):
         self.save_writer("<story>仍停在门外。</story><choices>" + json.dumps(self.choices, ensure_ascii=False) + "</choices>", streaming=True)
         native = self.trace / "native"

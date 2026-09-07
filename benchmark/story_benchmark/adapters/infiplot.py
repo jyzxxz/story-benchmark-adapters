@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import json
+import hashlib
+from http.client import IncompleteRead
 import os
 from pathlib import Path
 import socket
@@ -13,6 +15,15 @@ from urllib import error, request
 from urllib.parse import urlsplit
 
 BASE_COMMIT = "a60e18bc663caaa134d9323a2b89159b7cc9bd05"
+
+# Native artifacts remain saved even when they cannot be exported. These are
+# native shape/graph failures, not bugs in the adapter or corrective prompts.
+NATIVE_ARTIFACT_ERROR_CODES = frozenset({
+    "missing_scene", "invalid_beat", "duplicate_beat_id", "beat_cycle",
+    "missing_beat", "invalid_prose", "invalid_next", "invalid_choices",
+    "invalid_choice", "missing_entry", "invalid_response",
+})
+NATIVE_DELIVERY_ERROR_CODES = frozenset({"native_http_error", "auth_failed", "delivery_unknown"})
 
 
 class InfiPlotError(RuntimeError):
@@ -27,20 +38,24 @@ def _save(path: Path, value: Any) -> None:
         json.dump(value, stream, ensure_ascii=False, indent=2)
 
 
-def export_scene(response: dict, source: str = "native/start-response.json") -> dict:
+def export_scene(response: dict, source: str = "native/start-response.json", *, allow_empty_body: bool = False) -> dict:
     """Follow native continue edges only; never select or flatten other branches."""
+    if not isinstance(response, dict):
+        raise InfiPlotError("invalid_response", "Native response is not an object")
     scene = response.get("scene")
     if not isinstance(scene, dict) or not isinstance(scene.get("beats"), list):
         raise InfiPlotError("missing_scene", "Native response has no scene/beat graph")
     beats = scene["beats"]
     index: dict[str, tuple[int, dict]] = {}
     for pos, beat in enumerate(beats):
-        if not isinstance(beat, dict) or not isinstance(beat.get("id"), str):
+        if not isinstance(beat, dict) or not isinstance(beat.get("id"), str) or not beat["id"]:
             raise InfiPlotError("invalid_beat", "Beat has no valid id")
         if beat["id"] in index:
             raise InfiPlotError("duplicate_beat_id", "Native beat ids are not unique")
         index[beat["id"]] = (pos, beat)
     current = scene.get("entryBeatId")
+    if not isinstance(current, str) or not current:
+        raise InfiPlotError("missing_entry", "Native scene has no valid entry beat id")
     segments, choices, visited, issues = [], [], [], []
     while current:
         if current in visited:
@@ -49,6 +64,8 @@ def export_scene(response: dict, source: str = "native/start-response.json") -> 
             raise InfiPlotError("missing_beat", "Continue edge points to a missing beat")
         pos, beat = index[current]
         visited.append(current)
+        if beat.get("speaker") is not None and not isinstance(beat["speaker"], str):
+            raise InfiPlotError("invalid_prose", "Native speaker is not a string")
         for field, kind in (("narration", "narration"), ("line", "dialogue")):
             # PlayCanvas renders line as its body only when a speaker exists.
             if field == "line" and not beat.get("speaker"):
@@ -73,23 +90,24 @@ def export_scene(response: dict, source: str = "native/start-response.json") -> 
             if not isinstance(options, list):
                 raise InfiPlotError("invalid_choices", "Native choice boundary is malformed")
             for i, choice in enumerate(options):
-                if not isinstance(choice, dict) or not isinstance(choice.get("label"), str):
+                if not isinstance(choice, dict) or not isinstance(choice.get("label"), str) or not choice["label"].strip():
                     raise InfiPlotError("invalid_choice", "Native choice has no label")
                 choices.append({**choice, "native_source": source,
                                 "native_pointer": f"/scene/beats/{pos}/next/choices/{i}"})
             if not options:
                 issues.append("empty_choice_boundary")
             break
-        if next_step.get("type") != "continue" or not next_step.get("nextBeatId"):
+        if next_step.get("type") != "continue" or not isinstance(next_step.get("nextBeatId"), str) or not next_step["nextBeatId"]:
             raise InfiPlotError("invalid_next", "Unsupported or empty continue edge")
         current = next_step["nextBeatId"]
     if not visited:
         raise InfiPlotError("missing_entry", "Native scene has no entry beat")
-    if not segments:
+    if not segments and not (allow_empty_body and choices):
         issues.append("empty_prose")
     return {"segments": segments, "choices": choices, "generation_issue_codes": issues,
             "visited_beat_ids": visited, "source_mapping_valid": True,
-            "export_scope": "entry_to_first_choice", "selection_executed": False}
+            "export_scope": "entry_to_first_choice", "selection_executed": False,
+            "previews": []}
 
 
 class InfiPlotAdapter:
@@ -170,6 +188,9 @@ class InfiPlotAdapter:
         handle = {"bundle_dir": str(bundle_dir), "run_dir": str(run_dir), "native_dir": str(native_dir),
                   "trace_dir": str(trace_dir), "base_url": self.config.get("base_url", "http://127.0.0.1:3217"),
                   "root_run_id": self.config.get("root_run_id") or run_dir.name}
+        case_file = bundle_dir / "case.json"
+        contract = json.loads(case_file.read_text(encoding="utf-8")).get("output_contract", {}) if case_file.is_file() else {}
+        handle["allow_empty_body"] = contract.get("version") == "3.0" and contract.get("allow_empty_body") is True
         from native_shims.infiplot.runtime import source_hashes
         hashes = source_hashes(Path(self.config["repo_path"]).resolve())
         _save(native_dir / "source-before.json", hashes)
@@ -238,6 +259,31 @@ class InfiPlotAdapter:
             raise InfiPlotError("missing_auth", "Native authentication cookie is required")
         return {"Content-Type": "application/json", "Accept": "application/json", "Cookie": cookie}
 
+    def _save_response_error(self, native_dir: Path, raw: bytes, *, complete: bool, http_status=None) -> str:
+        """Preserve native failure text safely without persisting auth headers."""
+        from ..io import redact
+        # Error evidence is explicitly UTF-8 text with replacement for invalid
+        # bytes. Keep the original byte hash/count to distinguish that encoding
+        # conversion (and redaction) from an exact wire-byte copy.
+        decoded = raw.decode("utf-8", errors="replace")
+        try:
+            native_error = redact(json.loads(decoded))
+            stored = json.dumps(native_error, ensure_ascii=False, indent=2)
+        except ValueError:
+            native_error = None
+            stored = redact(decoded)
+        body_path = native_dir / "http-error-response.txt"
+        with body_path.open("x", encoding="utf-8") as stream:
+            stream.write(stored)
+        _save(native_dir / "http-error.json", {
+            "http_status": http_status, "response_complete": complete,
+            "response_file": "native/http-error-response.txt", "native_error": native_error,
+            "original_response_bytes": len(raw), "original_response_sha256": hashlib.sha256(raw).hexdigest(),
+            "stored_response_sha256": hashlib.sha256(stored.encode("utf-8")).hexdigest(),
+            "storage_encoding": "utf8_redacted_with_invalid_bytes_replaced",
+        })
+        return stored
+
     def generate_first_artifact(self, handle: dict) -> dict:
         native_dir = Path(handle["native_dir"])
         response_file = native_dir / "start-response.json"
@@ -246,7 +292,7 @@ class InfiPlotAdapter:
                 saved = json.loads(response_file.read_text(encoding="utf-8"))
                 if not isinstance(saved, dict) or not saved.get("sessionId"):
                     raise ValueError("missing session")
-                export_scene(saved)
+                export_scene(saved, allow_empty_body=handle.get("allow_empty_body", False))
             except (ValueError, OSError):
                 raise InfiPlotError("invalid_response", "Saved response is invalid; refusing automatic resend") from None
             return {"response_file": str(response_file), "resumed_from_saved_response": True}
@@ -269,13 +315,23 @@ class InfiPlotAdapter:
             result = json.loads(raw)
             if not isinstance(result, dict) or not result.get("sessionId"):
                 raise InfiPlotError("invalid_response", "Native response lacks a session id")
-            export_scene(result)
+            export_scene(result, allow_empty_body=handle.get("allow_empty_body", False))
             return {"response_file": str(response_file), "native_project_id": result["sessionId"]}
         except error.HTTPError as exc:
-            # Do not log headers, cookies, or provider exception bodies.
-            _save(native_dir / "http-error.json", {"http_status": exc.code})
+            try:
+                with exc:
+                    failure = exc.read()
+                complete = True
+            except IncompleteRead as partial:
+                failure, complete = partial.partial, False
+            except (error.URLError, TimeoutError, ConnectionError, OSError):
+                failure, complete = b"", False
+            detail = self._save_response_error(native_dir, failure, complete=complete, http_status=exc.code)
             code = "auth_failed" if exc.code in (401, 403) else "native_http_error"
-            raise InfiPlotError(code, f"Native start returned HTTP {exc.code}; not retried") from None
+            raise InfiPlotError(code, f"Native start returned HTTP {exc.code}; not retried. Native error: {detail}") from None
+        except IncompleteRead as exc:
+            self._save_response_error(native_dir, exc.partial, complete=False)
+            raise InfiPlotError("delivery_unknown", "Native start response was incomplete; not retried") from None
         except (error.URLError, TimeoutError, ConnectionError, OSError):
             raise InfiPlotError("delivery_unknown", "Native start response was lost or timed out; not retried") from None
         except (ValueError, UnicodeDecodeError):
@@ -284,7 +340,7 @@ class InfiPlotAdapter:
     def export_first_artifact(self, handle: dict) -> dict:
         native_dir = Path(handle["native_dir"])
         response = json.loads((native_dir / "start-response.json").read_text(encoding="utf-8"))
-        result = export_scene(response)
+        result = export_scene(response, allow_empty_body=handle.get("allow_empty_body", False))
         trace_files = list(Path(handle["trace_dir"]).glob("calls-*.jsonl"))
         trace_files += list(Path(handle["trace_dir"]).glob("native-observations.jsonl"))
         for path in trace_files:
@@ -308,20 +364,39 @@ class InfiPlotAdapter:
         return result
 
     def close(self, handle: dict) -> None:
-        if self.process is not None and self.process.poll() is None:
-            import signal
-            os.killpg(self.process.pid, signal.SIGTERM)
+        cleanup_errors = []
+        process, self.process = self.process, None
+        if process is not None:
             try:
-                self.process.wait(timeout=10)
-            except subprocess.TimeoutExpired:
-                os.killpg(self.process.pid, signal.SIGKILL)
-                self.process.wait(timeout=5)
-        if self.console_thread:
-            self.console_thread.join(10)
-        if self.process is not None and self.process.stdout is not None:
-            self.process.stdout.close()
-        if self.relay:
-            self.relay.close()
+                import signal
+                # The pnpm parent may have exited while its Next child remains.
+                # Terminate the owned group even when poll() is already set.
+                try:
+                    os.killpg(process.pid, signal.SIGTERM)
+                except ProcessLookupError:
+                    pass
+                try:
+                    process.wait(timeout=10)
+                except subprocess.TimeoutExpired:
+                    os.killpg(process.pid, signal.SIGKILL)
+                    process.wait(timeout=5)
+                if self.console_thread:
+                    self.console_thread.join(10)
+                    if self.console_thread.is_alive():
+                        os.killpg(process.pid, signal.SIGKILL)
+                        self.console_thread.join(5)
+                    if self.console_thread.is_alive():
+                        raise InfiPlotError("cleanup_failed", "Native console process did not stop")
+                if process.stdout is not None:
+                    process.stdout.close()
+            except (OSError, RuntimeError, subprocess.TimeoutExpired) as exc:
+                cleanup_errors.append(exc)
+        relay, self.relay = self.relay, None
+        if relay:
+            try:
+                relay.close()
+            except (OSError, RuntimeError) as exc:
+                cleanup_errors.append(exc)
         from native_shims.infiplot.runtime import GENERATED_FILES, source_hashes
         native_dir = Path(handle["native_dir"])
         before_file = native_dir / "source-before.json"
@@ -338,7 +413,9 @@ class InfiPlotAdapter:
                   "runtime_source_unchanged_except_native_generated_files": not non_generated,
                   "runtime_generated_file_changes": sorted(set(changed) & GENERATED_FILES),
                   "runtime_unexpected_source_changes": non_generated, "source_files": len(before)})
-            if not self.config.get("keep_runtime") and runtime.exists() and not non_generated:
+            if not self.config.get("keep_runtime") and runtime.exists() and not non_generated and not cleanup_errors:
                 shutil.rmtree(runtime)
             if before != after or non_generated:
                 raise InfiPlotError("source_drift", "Source hash attestation detected unexpected changes")
+        if cleanup_errors:
+            raise InfiPlotError("cleanup_failed", "; ".join(str(exc) for exc in cleanup_errors))

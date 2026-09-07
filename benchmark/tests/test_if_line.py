@@ -3,7 +3,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
-from story_benchmark.adapters.if_line import IFLineAdapter, IFLineError, export_script_ir, candidate_input_mapping, export_candidate_previews
+from story_benchmark.adapters.if_line import IFLineAdapter, IFLineError, export_script_ir, candidate_input_mapping, export_candidate_previews, first_choice_input_contract, export_first_choice
 
 REPO = Path(__file__).resolve().parents[2] / 'if_line'
 
@@ -164,5 +164,53 @@ class IFLineTests(unittest.TestCase):
         for key,value in [('generation_task_id','generated'),('state_json',{'knows':True}),('choice_decision_count',1)]:
             with self.assertRaisesRegex(IFLineError,'provided_prefix_initialization_mismatch'):
                 self.adapter._verify_prefix_receipt({**receipt,key:value},'r','固定开头')
+
+    def v3_case(self):
+        return {'input_contract':{'version':'3.0','task_delivery':'verbatim_first_creative_request',
+            'character_policy':'exact_declared_cast','adapter_story_reinjection':'none'},
+            'output_contract':{'version':'3.0','scope':'first_unselected_choice','decision_id':'C1','choice_count':2,
+            'selection_executed':False,'allow_empty_body':True,'native_choice_previews':'separate'},
+            'decisions':[{'id':'C1','options':[{'text':'开门'},{'text':'等候'}]}],
+            'scope_map':{'第一次选择的行动顺序':'本轮只展示选项，不写其行动结果。'}}
+
+    def test_v3_maps_only_count_without_story_reinjection(self):
+        (self.bundle/'case.json').write_text(json.dumps(self.v3_case()))
+        mapped=first_choice_input_contract(self.bundle)
+        self.assertIsNone(mapped['instructions'])
+        self.assertEqual(mapped['instructions_policy'],'omitted')
+        self.assertEqual(mapped['candidate_count'],2)
+        self.assertEqual(mapped['sources'],[{'target':'/candidate_count','source_pointer':'/output_contract/choice_count','value':2}])
+        self.assertNotIn('开门',json.dumps(mapped,ensure_ascii=False))
+        self.assertNotIn('不写其行动结果',json.dumps(mapped,ensure_ascii=False))
+
+    def test_v3_preflight_rejects_legacy_entry_modes(self):
+        (self.bundle/'case.json').write_text(json.dumps(self.v3_case()))
+        for mode in ('first_chapter','provided_prefix_candidates'):
+            self.adapter.config['entry_mode']=mode
+            self.assertIn('v3_requires_shared_first_choice',self.adapter.preflight(self.bundle)['errors'])
+        self.adapter.config['entry_mode']='shared_first_choice'
+        self.assertTrue(self.adapter.preflight(self.bundle)['ok'])
+
+    def test_v3_native_key_labels_and_previews_have_separate_exact_pointers(self):
+        rows=[{'id':'a','option_key':'enter','preview_text':'门开了。','state_delta':{'open':True}},
+              {'id':'b','option_key':'wait','preview_text':'仍在等候。','state_delta':{}}]
+        exported=export_first_choice(rows,{'candidate_count':2,'decision_id':'C1'},
+                                     {'semantic_consistency':'not_evaluated'})
+        self.assertEqual(exported['segments'],[])
+        self.assertEqual([c['label'] for c in exported['choices']],['enter','wait'])
+        self.assertEqual([c['native_pointer'] for c in exported['choices']],['/0/option_key','/1/option_key'])
+        self.assertEqual([p['choice_id'] for p in exported['unselected_previews']],['a','b'])
+        self.assertEqual([p['native_pointer'] for p in exported['unselected_previews']],['/0/preview_text','/1/preview_text'])
+        self.assertEqual(exported['stop_reason'],'first_choice')
+        self.assertFalse(exported['selection_executed'])
+        self.assertEqual(exported['native_context']['semantic_consistency'],'not_evaluated')
+        self.assertEqual(exported['generation_issue_codes'],[])
+
+    def test_v3_does_not_accept_an_executed_choice_contract(self):
+        case=self.v3_case()
+        case['output_contract']['selection_executed']=True
+        (self.bundle/'case.json').write_text(json.dumps(case))
+        with self.assertRaisesRegex(IFLineError,'unsupported_v3_first_choice_contract'):
+            first_choice_input_contract(self.bundle)
 
 if __name__=='__main__': unittest.main()

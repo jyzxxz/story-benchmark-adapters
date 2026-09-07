@@ -92,6 +92,27 @@ def candidate_input_mapping(bundle):
                         {"target": "/scope", "source_pointer": "/scope_map/第一次选择的行动顺序", "value": scope}]}
 
 
+def first_choice_input_contract(bundle):
+    """V3 maps only an output count; never re-injects story instructions."""
+    case = _read(Path(bundle) / "case.json")
+    contract = case.get("output_contract", {})
+    if not isinstance(contract, dict):
+        raise IFLineError("unsupported_v3_first_choice_contract")
+    count = contract.get("choice_count")
+    if (case.get("input_contract") != {"version": "3.0", "task_delivery": "verbatim_first_creative_request",
+            "character_policy": "exact_declared_cast", "adapter_story_reinjection": "none"}
+            or contract.get("version") != "3.0" or contract.get("scope") != "first_unselected_choice"
+            or contract.get("selection_executed") is not False or contract.get("allow_empty_body") is not True
+            or contract.get("native_choice_previews") != "separate" or not contract.get("decision_id")
+            or isinstance(count, bool) or not isinstance(count, int) or not 2 <= count <= 4
+            or "output_boundary" in case):
+        raise IFLineError("unsupported_v3_first_choice_contract")
+    return {"candidate_count": count, "decision_id": contract["decision_id"], "instructions": None,
+            "mapping_kind": "common_contract_count_only", "instructions_policy": "omitted",
+            "source_file": "case.json", "source_sha256": hashlib.sha256((Path(bundle)/"case.json").read_bytes()).hexdigest(),
+            "sources": [{"target": "/candidate_count", "source_pointer": "/output_contract/choice_count", "value": count}]}
+
+
 def export_candidate_previews(candidates):
     if not isinstance(candidates, list) or len(candidates) != 2:
         raise IFLineError("invalid_native_candidate_count")
@@ -115,6 +136,31 @@ def export_candidate_previews(candidates):
             "boundary": "provided_prefix_candidates", "choice_support": "native_unselected_previews_without_action_labels"}
 
 
+def export_first_choice(candidates, contract, native_context):
+    count = contract["candidate_count"]
+    if not isinstance(candidates, list) or len(candidates) != count:
+        raise IFLineError("invalid_native_candidate_count")
+    previews, choices = [], []
+    for i, row in enumerate(candidates):
+        if (not row.get("id") or not isinstance(row.get("preview_text"), str)
+                or not row["preview_text"] or not isinstance(row.get("state_delta"), dict)
+                or not isinstance(row.get("option_key"), str) or not row["option_key"]):
+            raise IFLineError("invalid_native_candidate")
+        previews.append({"segment_id": row["id"], "choice_id": row["id"], "kind": "branch_preview", "speaker": None,
+                         "text": row["preview_text"], "native_source": "native/candidate_previews.json",
+                         "native_pointer": f"/{i}/preview_text"})
+        choices.append({"choice_id": row["id"], "option_key": row["option_key"], "label": row["option_key"],
+                        "state_delta": row["state_delta"], "selected": False,
+                        "native_source": "native/candidate_previews.json", "native_pointer": f"/{i}/option_key"})
+    if len({row["id"] for row in candidates}) != count or len({row["option_key"] for row in candidates}) != count:
+        raise IFLineError("duplicate_native_candidate_identity")
+    return {"segments": [], "choices": choices, "unselected_previews": previews,
+            "generation_issue_codes": [], "native_capability_status": "supported",
+            "selection_executed": False, "stop_reason": "first_choice", "decision_id": contract["decision_id"],
+            "boundary": "first_unselected_choice", "choice_support": "native_option_keys_with_separate_previews",
+            "native_context": native_context}
+
+
 class IFLineAdapter:
     def __init__(self, config):
         self.config = dict(config)
@@ -131,7 +177,7 @@ class IFLineAdapter:
         bundle = Path(bundle_dir)
         errors, checks = [], []
         entry_mode = self.config.get("entry_mode", "first_chapter")
-        if entry_mode not in {"first_chapter", "provided_prefix_candidates"}:
+        if entry_mode not in {"first_chapter", "provided_prefix_candidates", "shared_first_choice"}:
             errors.append("unsupported_entry_mode")
         try:
             shared = (bundle / "shared_task.txt").read_text(encoding="utf-8")
@@ -145,12 +191,16 @@ class IFLineAdapter:
             if not (bundle / "opening.txt").is_file():
                 errors.append("missing_opening")
             checks.append("shared_payload_checked")
-            if entry_mode == "provided_prefix_candidates":
-                mapping = candidate_input_mapping(bundle)
+            case = _read(bundle / "case.json") if (bundle/"case.json").exists() else {}
+            if any(isinstance(case.get(key), dict) and case[key].get("version") == "3.0"
+                   for key in ("input_contract", "output_contract")) and entry_mode != "shared_first_choice":
+                errors.append("v3_requires_shared_first_choice")
+            if entry_mode in {"provided_prefix_candidates", "shared_first_choice"}:
+                mapping = first_choice_input_contract(bundle) if entry_mode == "shared_first_choice" else candidate_input_mapping(bundle)
                 opening = (bundle / "opening.txt").read_text(encoding="utf-8")
                 if not opening or len(opening) > 8000:
                     errors.append("opening_exceeds_native_candidate_tail")
-                if len(mapping["instructions"]) > 12000:
+                if len(mapping["instructions"] or "") > 12000:
                     errors.append("candidate_instructions_exceed_native_contract")
                 checks.append("candidate_input_contract_checked")
         except (KeyError, TypeError, IndexError, IFLineError):
@@ -451,7 +501,7 @@ class IFLineAdapter:
         first = min(chapters, key=lambda x: x["display_index"])
         if not any(c.get("story_path_chapter_id") == first["id"] for c in outline_obj.get("chapters", [])):
             raise IFLineError("outline_chapter_mismatch")
-        if handle.get("entry_mode") == "provided_prefix_candidates":
+        if handle.get("entry_mode") in {"provided_prefix_candidates", "shared_first_choice"}:
             return self._generate_prefix_candidates(handle, pid, root, first)
         chapter_id, _ = self._generate(handle, "chapter", f'/path-chapters/{first["id"]}/generations',
             {"bible_revision_id": bible, "outline_revision_id": outline}, "chapter_revision_id")
@@ -495,25 +545,28 @@ class IFLineAdapter:
                                   checkpoint_body, idempotent=True)
         self._verify_prefix_receipt(receipt, chapter_id, opening)
         _write(native/"provided_prefix_import.json", receipt)
-        mapping = candidate_input_mapping(bundle)
+        v3 = handle.get("entry_mode") == "shared_first_choice"
+        mapping = first_choice_input_contract(bundle) if v3 else candidate_input_mapping(bundle)
         _write(native/"candidate_input_mapping.json", mapping)
         checkpoint_id = receipt["checkpoint"]["id"]
+        body = {"chapter_revision_id": chapter_id, "state_snapshot_id": receipt["state_snapshot_id"],
+                "candidate_count": mapping["candidate_count"]}
+        if not v3:
+            body["instructions"] = mapping["instructions"]
         candidate_revision, task = self._generate(handle, "candidates",
             f'/story-paths/{root}/checkpoints/{checkpoint_id}/candidate-set-generations',
-            {"chapter_revision_id": chapter_id, "state_snapshot_id": receipt["state_snapshot_id"],
-             "candidate_count": 2, "instructions": mapping["instructions"]}, "candidate_set_revision_id")
+            body, "candidate_set_revision_id")
         source = task.get("source_refs", {}).get("candidate_set_source", {})
         provider_input = source.get("provider_input", {})
         if (provider_input.get("chapter_tail") != opening or provider_input.get("state") != {}
-                or provider_input.get("instructions") != mapping["instructions"]):
+                or provider_input.get("instructions") != (mapping["instructions"] or "")):
             raise IFLineError("candidate_source_input_mismatch")
         self._get_revision(handle, f'/story-paths/{root}/checkpoints/{checkpoint_id}/candidate-set-revisions',
                            candidate_revision, "candidate_set_revision.json")
         candidates = self._request("GET", f'{self.prefix}/candidate-set-revisions/{candidate_revision}/candidates')
-        if (len(candidates) != 2 or {c.get("id") for c in candidates} != set(task["result_refs"]["candidate_ids"])
+        if (len(candidates) != mapping["candidate_count"] or {c.get("id") for c in candidates} != set(task["result_refs"]["candidate_ids"])
                 or any(c.get("candidate_set_revision_id") != candidate_revision for c in candidates)):
             raise IFLineError("candidate_result_refs_mismatch")
-        export_candidate_previews(candidates)
         _write(native/"candidate_previews.json", candidates)
         # Re-read the structural receipt after generation. This proves that
         # generation did not promote a path, apply a choice, or mutate the state.
@@ -523,13 +576,46 @@ class IFLineAdapter:
         if after != receipt:
             raise IFLineError("candidate_generation_changed_current_state")
         _write(native/"provided_prefix_after_candidates.json", after)
+        if v3:
+            context = self._preserve_native_context(handle, root, first, receipt, task, candidate_revision)
+            export_first_choice(candidates, mapping, context)
+        else:
+            export_candidate_previews(candidates)
         return {"adapter_status": "completed", "generation_status": "unselected_candidates_generated",
-                "native_capability_status": "unsupported_output_boundary", "stop_reason": "unselected_candidates",
+                "native_capability_status": "supported" if v3 else "unsupported_output_boundary",
+                "stop_reason": "first_choice" if v3 else "unselected_candidates",
                 "native_project_id": pid, "root_story_path_id": root, "provided_prefix_revision_id": chapter_id,
-                "candidate_set_revision_id": candidate_revision, "candidate_count": 2,
+                "candidate_set_revision_id": candidate_revision, "candidate_count": mapping["candidate_count"],
                 "external_initialization": "provided_prefix_checkpoint_empty_state", "choice_executed": False,
                 "simulated": handle["simulated"],
                 "execution_environment": handle.get("execution_environment", "native_service")}
+
+    def _preserve_native_context(self, handle, root, first, receipt, task, candidate_revision):
+        """Retain native planning dependencies without asserting story agreement."""
+        native = Path(handle["run_dir"])/"native"
+        bible = _read(native/"bible_revision.json")
+        outline = _read(native/"outline_revision.json")
+        index = next(i for i, row in enumerate(outline["chapters"]) if row.get("story_path_chapter_id") == first["id"])
+        context = {"system": "if_line", "story_path_id": root, "path_chapter_id": first["id"],
+            "semantic_consistency": "not_evaluated", "adapter_semantic_rewriting": False,
+            "native_planning_retained": True, "source_integrity": "checked_by_native_services",
+            "dependency_note": "Native manual chapter import and candidates require an existing Bible and Outline; native outline generation does not read imported chapter prose.",
+            "generation_order": [
+                {"stage": "bible.generate", "origin": "native_generated", "revision_id": bible["id"],
+                 "task_id": _read(native/"bible_task.json")["id"], "native_source": "native/bible_revision.json", "native_pointer": "/content_json"},
+                {"stage": "outline.generate", "origin": "native_generated", "revision_id": outline["id"],
+                 "task_id": _read(native/"outline_task.json")["id"], "native_source": "native/outline_revision.json", "native_pointer": f"/chapters/{index}"},
+                {"stage": "manual_prefix_import", "origin": "provided_prefix", "revision_id": receipt["chapter_revision_id"],
+                 "task_id": None, "native_source": "native/provided_prefix_revision.json", "native_pointer": "/content"},
+                {"stage": "structural_checkpoint_initialization", "origin": "external_input_structure", "checkpoint_id": receipt["checkpoint"]["id"],
+                 "state_snapshot_id": receipt["state_snapshot_id"], "native_source": "native/provided_prefix_import.json", "native_pointer": "/checkpoint"},
+                {"stage": "branch.candidates.generate", "origin": "native_generated", "revision_id": candidate_revision,
+                 "task_id": task["id"], "native_source": "native/candidates_task.json", "native_pointer": "/source_refs/candidate_set_source/provider_input"}],
+            "empty_state_source": {"native_source": "native/provided_prefix_import.json", "native_pointer": "/state_json"},
+            "full_outline_source": {"native_source": "native/outline_revision.json", "native_pointer": "/chapters"},
+            "content_assessment": "Native planning deviations or conflicts with the provided prefix remain original model outputs for evaluation; no automatic story correction is applied."}
+        _write(native/"native_context.json", context)
+        return context
 
     @staticmethod
     def _verify_prefix_receipt(receipt, chapter_id, opening):
@@ -543,8 +629,11 @@ class IFLineAdapter:
 
     def export_first_artifact(self, handle):
         native = Path(handle["run_dir"]) / "native"
-        if handle.get("entry_mode") == "provided_prefix_candidates":
+        if handle.get("entry_mode") in {"provided_prefix_candidates", "shared_first_choice"}:
             try:
+                if handle.get("entry_mode") == "shared_first_choice":
+                    return export_first_choice(_read(native/"candidate_previews.json"),
+                        first_choice_input_contract(Path(handle["bundle_dir"])), _read(native/"native_context.json"))
                 return export_candidate_previews(_read(native/"candidate_previews.json"))
             except (OSError, ValueError):
                 raise IFLineError("missing_candidate_artifact") from None
