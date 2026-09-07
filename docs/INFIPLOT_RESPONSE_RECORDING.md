@@ -46,3 +46,7 @@ python -m unittest discover -s tests -p test_infiplot_response_capture.py -v
 ```
 
 `test_infiplot_batch.py` 继续验证原生 Next/React、小图生成、预取和实际选择。所有测试只使用本地固定响应，不等价于真实模型生成或质量评审。
+
+## 修复后的真实重测
+
+同一公共任务真实生成 4021 字、75 对画面和 3 次实际选择，达到共同窗口；75/75 段实际正文均能精确关联 Writer 操作。窗口结束时关闭的 3 个未完成预取响应仍标记缺失，全局响应审计为 incomplete，不能因正文来源完整而改写该状态。所有已收到响应头的 7 个操作的响应证据完整。一次上游 Writer 中断的未知用量也保留。详见 [本轮并行重测](PARALLEL_RECHECK_20260907.md)。

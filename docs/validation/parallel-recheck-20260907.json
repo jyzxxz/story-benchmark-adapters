@@ -1,0 +1,629 @@
+{
+  "schema_version": "parallel-validation-summary.1",
+  "executed_code_commit": "dfe81070aceb75e9a46ecd824f004cd92e6e1de9",
+  "created_at": "2026-09-07T11:36:48.594714+00:00",
+  "case_id": "CAMPUS-01-V4",
+  "shared_task_sha256": "d2fb88452de72a51743f18cae9b62ef1e21a70c4f28d74a8a7ba1a0f2f3e5ce5",
+  "source_patch_sha256": "76e44a1d6ee1044620fc65b2bfb6a7b93c4eed2b7ebc44d5305d4087ebc5c79d",
+  "quality_scored": false,
+  "comparison": {
+    "actual_received_inputs_identical": true,
+    "integrity_valid": true,
+    "comparison_ready": true,
+    "all_attempts_included": true,
+    "generation_conditions_identical": true,
+    "quality_ranking": null
+  },
+  "all_three_native_worker_intervals_overlapped": true,
+  "all_plans_match_current_executable_inventory": true,
+  "all_three_reached_common_window": false,
+  "runs": [
+    {
+      "system": "if_line",
+      "root_run_id": "if_line-00001-b6962540d61e",
+      "stop_reason": "reading_window",
+      "scope_reached": true,
+      "visible_chars": 4015,
+      "segments": 104,
+      "frames": 104,
+      "executed_choices": 2,
+      "body_segments_with_source_calls": 104,
+      "source_verification": {
+        "after_ok": true,
+        "before_ok": true,
+        "frozen_identity_unchanged": true
+      },
+      "adapter_unchanged_during_run": true,
+      "native_text_source_audit": "passed",
+      "verification": {
+        "ok": true,
+        "files_verified": 3020,
+        "metrics_recomputed": true
+      },
+      "eight_metric_evidence_link_check": "passed",
+      "calls_by_role": {
+        "text": 47,
+        "image": 25,
+        "vision": 9
+      },
+      "http_statuses": {
+        "200": 80,
+        "None": 1
+      },
+      "calls_with_known_usage": 80,
+      "metrics": {
+        "M1": {
+          "evidence_status": "available",
+          "score": null,
+          "status": "not_evaluated"
+        },
+        "M2": {
+          "evidence_status": "available",
+          "score": null,
+          "status": "not_evaluated"
+        },
+        "M3": {
+          "evidence_status": "candidate_sequence_available",
+          "score": null,
+          "status": "not_evaluated"
+        },
+        "M4": {
+          "backend_first_frame_seconds": 1373.625862958,
+          "backend_first_text_seconds": 185.598319292,
+          "backend_total_seconds": 1810.538981583,
+          "choice_response_seconds": [
+            {
+              "frame_seconds": 1304.673871791,
+              "interaction_id": "b259cfc5965d46ffb9e7b15cc27d8193",
+              "text_seconds": 1304.668578375
+            },
+            {
+              "frame_seconds": 419.157879667,
+              "interaction_id": "c62556a94ffa4d6b9560d08c643332bb",
+              "text_seconds": 419.153062167
+            }
+          ],
+          "first_frame_presented_seconds": null,
+          "first_text_presented_seconds": null,
+          "offscreen_dom_first_frame_seconds": null,
+          "offscreen_dom_first_text_seconds": null,
+          "offscreen_player_first_frame_seconds": null,
+          "presentation_status": "not_measured",
+          "source": "same_observer_monotonic_events"
+        },
+        "M5": {
+          "evidence_status": "available",
+          "score": null,
+          "status": "not_evaluated"
+        },
+        "M6": {
+          "evidence_status": "available",
+          "score": null,
+          "status": "not_evaluated"
+        },
+        "M7": {
+          "details_are_not_additive": true,
+          "evaluation_attempts": 0,
+          "generation_attempts": 81,
+          "normalization_version": "provider_usage_v1",
+          "roles": {
+            "evaluation": {
+              "actual_cost": null,
+              "attempts": 0,
+              "complete": false,
+              "cost_status": "unavailable",
+              "coverage": null,
+              "input_tokens": null,
+              "known_input_tokens_subtotal": 0,
+              "known_output_tokens_subtotal": 0,
+              "known_total_tokens_subtotal": 0,
+              "known_usage_attempts": 0,
+              "output_tokens": null,
+              "total_tokens": null
+            },
+            "image": {
+              "actual_cost": null,
+              "attempts": 25,
+              "complete": true,
+              "cost_status": "unavailable",
+              "coverage": 1.0,
+              "input_tokens": 5314,
+              "known_input_tokens_subtotal": 5314,
+              "known_output_tokens_subtotal": 26046,
+              "known_total_tokens_subtotal": 31360,
+              "known_usage_attempts": 25,
+              "output_tokens": 26046,
+              "total_tokens": 31360
+            },
+            "text": {
+              "actual_cost": null,
+              "attempts": 47,
+              "complete": false,
+              "cost_status": "unavailable",
+              "coverage": 0.9787234042553191,
+              "input_tokens": null,
+              "known_input_tokens_subtotal": 112198,
+              "known_output_tokens_subtotal": 42202,
+              "known_total_tokens_subtotal": 154400,
+              "known_usage_attempts": 46,
+              "output_tokens": null,
+              "total_tokens": null
+            },
+            "vision": {
+              "actual_cost": null,
+              "attempts": 9,
+              "complete": true,
+              "cost_status": "unavailable",
+              "coverage": 1.0,
+              "input_tokens": 21374,
+              "known_input_tokens_subtotal": 21374,
+              "known_output_tokens_subtotal": 1295,
+              "known_total_tokens_subtotal": 22669,
+              "known_usage_attempts": 9,
+              "output_tokens": 1295,
+              "total_tokens": 22669
+            }
+          },
+          "started_without_terminal_record": []
+        },
+        "M8": {
+          "assets_by_origin": {
+            "derived": 11,
+            "generated": 25
+          },
+          "candidate_count_complete": true,
+          "candidate_pixel_hash_coverage": 25,
+          "composite_frames": 104,
+          "generated_asset_candidate_link_coverage": 1.0,
+          "image_request_attempts": 25,
+          "independent_asset_file_contents": 36,
+          "independent_asset_pixel_contents": 36,
+          "independent_saved_candidate_file_contents": 25,
+          "independent_saved_candidate_pixel_contents": 25,
+          "known_returned_candidates_subtotal": 25,
+          "local_assets": 36,
+          "media_scope": "enabled",
+          "non_placeholder_frames": 104,
+          "pixel_hash_coverage": 36,
+          "returned_candidates": 25,
+          "saved_candidate_files": 25,
+          "segments_with_valid_frame": 104,
+          "total_segments": 104,
+          "used_assets": 14
+        }
+      },
+      "native_source_variant": {
+        "native_variant": "if_line_html_script_conversion_fix_v1",
+        "source_modified": true,
+        "source_patch_manifest_sha256": "c5461382a16c0e823f95c1c3c4f168744bc1a31fae2866626b708630a35b09f4",
+        "source_patch_sha256": "76e44a1d6ee1044620fc65b2bfb6a7b93c4eed2b7ebc44d5305d4087ebc5c79d",
+        "source_tree_sha256": "23e85df402f79a2b0eef3bd92e17e22d0889d0307e047d210e4eb29a86189a9d"
+      },
+      "error_codes": [
+        "delivery_unknown"
+      ],
+      "text_call_lineage_granularity": "Native script-task text calls, including retries and visual direction; no per-segment winning-call claim. Independent chapter/script source/result binding audit retained."
+    },
+    {
+      "system": "ai4visualnovel",
+      "root_run_id": "ai4visualnovel-00001-55776aebdd30",
+      "stop_reason": "native_error",
+      "scope_reached": false,
+      "visible_chars": 0,
+      "segments": 0,
+      "frames": 0,
+      "executed_choices": 0,
+      "body_segments_with_source_calls": 0,
+      "source_verification": {
+        "after_ok": true,
+        "before_ok": true,
+        "frozen_identity_unchanged": true
+      },
+      "adapter_unchanged_during_run": true,
+      "native_text_source_audit": "not_applicable_no_body",
+      "verification": {
+        "ok": true,
+        "files_verified": 94,
+        "metrics_recomputed": true
+      },
+      "eight_metric_evidence_link_check": "passed",
+      "calls_by_role": {
+        "text": 8
+      },
+      "http_statuses": {
+        "200": 8
+      },
+      "calls_with_known_usage": 8,
+      "metrics": {
+        "M1": {
+          "evidence_status": "missing_body",
+          "score": null,
+          "status": "not_evaluated"
+        },
+        "M2": {
+          "evidence_status": "missing_body",
+          "score": null,
+          "status": "not_evaluated"
+        },
+        "M3": {
+          "evidence_status": "insufficient_comparable_appearances",
+          "score": null,
+          "status": "not_evaluated"
+        },
+        "M4": {
+          "backend_first_frame_seconds": null,
+          "backend_first_text_seconds": null,
+          "backend_total_seconds": 81.536096167,
+          "choice_response_seconds": [],
+          "first_frame_presented_seconds": null,
+          "first_text_presented_seconds": null,
+          "offscreen_dom_first_frame_seconds": null,
+          "offscreen_dom_first_text_seconds": null,
+          "offscreen_player_first_frame_seconds": null,
+          "presentation_status": "not_measured",
+          "source": "same_observer_monotonic_events"
+        },
+        "M5": {
+          "evidence_status": "missing_body",
+          "score": null,
+          "status": "not_evaluated"
+        },
+        "M6": {
+          "evidence_status": "missing_frames",
+          "score": null,
+          "status": "not_evaluated"
+        },
+        "M7": {
+          "details_are_not_additive": true,
+          "evaluation_attempts": 0,
+          "generation_attempts": 8,
+          "normalization_version": "provider_usage_v1",
+          "roles": {
+            "evaluation": {
+              "actual_cost": null,
+              "attempts": 0,
+              "complete": false,
+              "cost_status": "unavailable",
+              "coverage": null,
+              "input_tokens": null,
+              "known_input_tokens_subtotal": 0,
+              "known_output_tokens_subtotal": 0,
+              "known_total_tokens_subtotal": 0,
+              "known_usage_attempts": 0,
+              "output_tokens": null,
+              "total_tokens": null
+            },
+            "image": {
+              "actual_cost": null,
+              "attempts": 0,
+              "complete": false,
+              "cost_status": "unavailable",
+              "coverage": null,
+              "input_tokens": null,
+              "known_input_tokens_subtotal": 0,
+              "known_output_tokens_subtotal": 0,
+              "known_total_tokens_subtotal": 0,
+              "known_usage_attempts": 0,
+              "output_tokens": null,
+              "total_tokens": null
+            },
+            "text": {
+              "actual_cost": null,
+              "attempts": 8,
+              "complete": true,
+              "cost_status": "unavailable",
+              "coverage": 1.0,
+              "input_tokens": 30069,
+              "known_input_tokens_subtotal": 30069,
+              "known_output_tokens_subtotal": 9823,
+              "known_total_tokens_subtotal": 39892,
+              "known_usage_attempts": 8,
+              "output_tokens": 9823,
+              "total_tokens": 39892
+            },
+            "vision": {
+              "actual_cost": null,
+              "attempts": 0,
+              "complete": false,
+              "cost_status": "unavailable",
+              "coverage": null,
+              "input_tokens": null,
+              "known_input_tokens_subtotal": 0,
+              "known_output_tokens_subtotal": 0,
+              "known_total_tokens_subtotal": 0,
+              "known_usage_attempts": 0,
+              "output_tokens": null,
+              "total_tokens": null
+            }
+          },
+          "started_without_terminal_record": []
+        },
+        "M8": {
+          "assets_by_origin": {},
+          "candidate_count_complete": true,
+          "candidate_pixel_hash_coverage": 0,
+          "composite_frames": 0,
+          "generated_asset_candidate_link_coverage": null,
+          "image_request_attempts": 0,
+          "independent_asset_file_contents": 0,
+          "independent_asset_pixel_contents": 0,
+          "independent_saved_candidate_file_contents": 0,
+          "independent_saved_candidate_pixel_contents": null,
+          "known_returned_candidates_subtotal": 0,
+          "local_assets": 0,
+          "media_scope": "enabled",
+          "non_placeholder_frames": 0,
+          "pixel_hash_coverage": 0,
+          "returned_candidates": 0,
+          "saved_candidate_files": 0,
+          "segments_with_valid_frame": 0,
+          "total_segments": 0,
+          "used_assets": 0
+        }
+      },
+      "native_source_variant": {
+        "native_variant": "pristine",
+        "source_modified": false,
+        "source_patch_manifest_sha256": null,
+        "source_patch_sha256": null,
+        "source_tree_sha256": "0886ca9babbcdc7cc398c9016ccbc992ed3cd2c0d4cc98175dc1d17b6dc61a95"
+      },
+      "error_codes": [
+        "native_exit"
+      ]
+    },
+    {
+      "system": "infiplot",
+      "root_run_id": "infiplot-00001-39dc003417a7",
+      "stop_reason": "reading_window",
+      "scope_reached": true,
+      "visible_chars": 4021,
+      "segments": 75,
+      "frames": 75,
+      "executed_choices": 3,
+      "body_segments_with_source_calls": 75,
+      "source_verification": {
+        "after_ok": true,
+        "before_ok": true,
+        "frozen_identity_unchanged": true
+      },
+      "adapter_unchanged_during_run": true,
+      "native_text_source_audit": "passed",
+      "verification": {
+        "ok": true,
+        "files_verified": 869,
+        "metrics_recomputed": true
+      },
+      "eight_metric_evidence_link_check": "passed",
+      "calls_by_role": {
+        "text": 21,
+        "image": 11
+      },
+      "http_statuses": {
+        "200": 31,
+        "None": 1
+      },
+      "calls_with_known_usage": 31,
+      "metrics": {
+        "M1": {
+          "evidence_status": "available",
+          "score": null,
+          "status": "not_evaluated"
+        },
+        "M2": {
+          "evidence_status": "available",
+          "score": null,
+          "status": "not_evaluated"
+        },
+        "M3": {
+          "evidence_status": "candidate_sequence_available",
+          "score": null,
+          "status": "not_evaluated"
+        },
+        "M4": {
+          "backend_first_frame_seconds": 144.470637167,
+          "backend_first_text_seconds": 143.887219917,
+          "backend_total_seconds": 542.935708625,
+          "choice_response_seconds": [
+            {
+              "frame_seconds": 57.700472666,
+              "interaction_id": "choice-1",
+              "text_seconds": 57.138689583
+            },
+            {
+              "frame_seconds": 6.027491084,
+              "interaction_id": "choice-2",
+              "text_seconds": 5.449677125
+            },
+            {
+              "frame_seconds": 5.02272025,
+              "interaction_id": "choice-3",
+              "text_seconds": 4.422610458
+            }
+          ],
+          "first_frame_presented_seconds": null,
+          "first_text_presented_seconds": null,
+          "offscreen_dom_first_frame_seconds": 141.161917833,
+          "offscreen_dom_first_text_seconds": 141.162758667,
+          "offscreen_player_first_frame_seconds": null,
+          "presentation_status": "not_measured",
+          "source": "same_observer_monotonic_events"
+        },
+        "M5": {
+          "evidence_status": "available",
+          "score": null,
+          "status": "not_evaluated"
+        },
+        "M6": {
+          "evidence_status": "available",
+          "score": null,
+          "status": "not_evaluated"
+        },
+        "M7": {
+          "details_are_not_additive": true,
+          "evaluation_attempts": 0,
+          "generation_attempts": 32,
+          "normalization_version": "provider_usage_v1",
+          "roles": {
+            "evaluation": {
+              "actual_cost": null,
+              "attempts": 0,
+              "complete": false,
+              "cost_status": "unavailable",
+              "coverage": null,
+              "input_tokens": null,
+              "known_input_tokens_subtotal": 0,
+              "known_output_tokens_subtotal": 0,
+              "known_total_tokens_subtotal": 0,
+              "known_usage_attempts": 0,
+              "output_tokens": null,
+              "total_tokens": null
+            },
+            "image": {
+              "actual_cost": null,
+              "attempts": 11,
+              "complete": true,
+              "cost_status": "unavailable",
+              "coverage": 1.0,
+              "input_tokens": 26684,
+              "known_input_tokens_subtotal": 26684,
+              "known_output_tokens_subtotal": 17329,
+              "known_total_tokens_subtotal": 44013,
+              "known_usage_attempts": 11,
+              "output_tokens": 17329,
+              "total_tokens": 44013
+            },
+            "text": {
+              "actual_cost": null,
+              "attempts": 21,
+              "complete": false,
+              "cost_status": "unavailable",
+              "coverage": 0.9523809523809523,
+              "input_tokens": null,
+              "known_input_tokens_subtotal": 91930,
+              "known_output_tokens_subtotal": 14121,
+              "known_total_tokens_subtotal": 106051,
+              "known_usage_attempts": 20,
+              "output_tokens": null,
+              "total_tokens": null
+            },
+            "vision": {
+              "actual_cost": null,
+              "attempts": 0,
+              "complete": false,
+              "cost_status": "unavailable",
+              "coverage": null,
+              "input_tokens": null,
+              "known_input_tokens_subtotal": 0,
+              "known_output_tokens_subtotal": 0,
+              "known_total_tokens_subtotal": 0,
+              "known_usage_attempts": 0,
+              "output_tokens": null,
+              "total_tokens": null
+            }
+          },
+          "started_without_terminal_record": []
+        },
+        "M8": {
+          "assets_by_origin": {
+            "generated": 5
+          },
+          "candidate_count_complete": true,
+          "candidate_pixel_hash_coverage": 11,
+          "composite_frames": 75,
+          "generated_asset_candidate_link_coverage": 1.0,
+          "image_request_attempts": 11,
+          "independent_asset_file_contents": 5,
+          "independent_asset_pixel_contents": 5,
+          "independent_saved_candidate_file_contents": 11,
+          "independent_saved_candidate_pixel_contents": 11,
+          "known_returned_candidates_subtotal": 11,
+          "local_assets": 5,
+          "media_scope": "enabled",
+          "non_placeholder_frames": 75,
+          "pixel_hash_coverage": 5,
+          "returned_candidates": 11,
+          "saved_candidate_files": 11,
+          "segments_with_valid_frame": 75,
+          "total_segments": 75,
+          "used_assets": 4
+        }
+      },
+      "native_source_variant": {
+        "native_variant": "pristine",
+        "source_modified": false,
+        "source_patch_manifest_sha256": null,
+        "source_patch_sha256": null,
+        "source_tree_sha256": "fe8a5d11e1ed188200f67d42f1a9b841c5718f79012a4af488f9943f3dec4fbc"
+      },
+      "error_codes": [
+        "delivery_unknown",
+        "native_response_capture_incomplete"
+      ],
+      "server_response_capture": {
+        "status": "incomplete",
+        "verified_response_operation_count": 7,
+        "browser_header_operation_count": 7,
+        "missing_browser_header_operations": [],
+        "incomplete_prefetch_response_count": 3,
+        "capture_errors": {
+          "8554216f-0974-46dc-971d-f20947e33641.json": "incomplete_response_capture:['native_response_closed_before_finish', 'safe_retention_unavailable:ValueError']",
+          "ac5264c2-d5e6-4db6-8153-6d6bf3ab2d3b.json": "incomplete_response_capture:['native_response_closed_before_finish', 'safe_retention_unavailable:ValueError']",
+          "c1038e2b-0119-4c50-ad16-a4899f46033a.json": "incomplete_response_capture:['native_response_closed_before_finish', 'safe_retention_unavailable:ValueError']"
+        },
+        "note": "Three unfinished prefetch responses were closed at the reading window. Their metadata default status is not proof of HTTP response delivery."
+      },
+      "text_call_lineage": {
+        "status": "complete",
+        "displayed_segments": 75,
+        "missing_segment_ids": [],
+        "conflicting_lineages": [],
+        "accepted_response_among_attempts": "not_inferred"
+      }
+    }
+  ],
+  "archives": [
+    {
+      "system": "if_line",
+      "file": "if_line.evidence.tar.gz",
+      "bytes": 892644775,
+      "sha256": "37ed6ccdc06a02cc37619044bc722b228b9635dd25cabee30f313904cb778bae",
+      "root_recording_verification": {
+        "ok": true,
+        "files_verified": 3020,
+        "metrics_recomputed": true
+      },
+      "known_provider_credential_hits": 0,
+      "textual_files_scanned": 2482,
+      "note": "Original failed or partial samples retained unchanged. Source paths in the frozen plan refer to the generating machine."
+    },
+    {
+      "system": "ai4visualnovel",
+      "file": "ai4visualnovel.evidence.tar.gz",
+      "bytes": 22271381,
+      "sha256": "b4837e95980fe6854c954c05dfbd0da2d6efb76137b118a99625242c6b89141a",
+      "root_recording_verification": {
+        "ok": true,
+        "files_verified": 94,
+        "metrics_recomputed": true
+      },
+      "known_provider_credential_hits": 0,
+      "textual_files_scanned": 109,
+      "note": "Original failed or partial samples retained unchanged. Source paths in the frozen plan refer to the generating machine."
+    },
+    {
+      "system": "infiplot",
+      "file": "infiplot.evidence.tar.gz",
+      "bytes": 1255713886,
+      "sha256": "d05abd28f5be9b2a53fc9060a064bde1dfad40849cf96d61d5089073a23d9ebe",
+      "root_recording_verification": {
+        "ok": true,
+        "files_verified": 869,
+        "metrics_recomputed": true
+      },
+      "known_provider_credential_hits": 0,
+      "textual_files_scanned": 567,
+      "note": "Original failed or partial samples retained unchanged. Source paths in the frozen plan refer to the generating machine."
+    }
+  ]
+}
