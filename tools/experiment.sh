@@ -22,6 +22,12 @@ case "$MODE" in
   preview)
     exec python3 tools/eval30.py "$@"
     ;;
+  list)
+    exec python3 tools/eval30.py --list "$@"
+    ;;
+  run)
+    exec python3 tools/experiment.py --preset pilot --run "$@"
+    ;;
   quick|genres|pilot|full)
     exec python3 tools/experiment.py --preset "$MODE" --run "$@"
     ;;
@@ -37,14 +43,20 @@ case "$MODE" in
   help|-h|--help)
     cat <<'EOF'
 One-command story experiments (Ubuntu/WSL2). No command silently buys model calls.
-  bash tools/experiment.sh setup                         # install + local credential wizard; no models
-  bash tools/experiment.sh preview                       # export all 30 full prompts; no config/key needed
-  bash tools/experiment.sh quick --allow-pilot            # 1 case x 1 repeat x 3 systems; asks RUN
-  bash tools/experiment.sh genres --allow-pilot           # 6 genres x 1 repeat x 3 systems; asks RUN
-  bash tools/experiment.sh pilot --allow-pilot            # 30 cases x 1 repeat x 3 systems; asks RUN
-  bash tools/experiment.sh full --allow-pilot             # 30 cases x 3 repeats x 3 systems; asks RUN
-  bash tools/experiment.sh resume --out work/experiments/NAME   # queued-only; asks RUN
-  bash tools/experiment.sh verify --out work/experiments/NAME   # no credentials/models
+The root alias `bash experiment.sh` accepts the same commands.
+  bash experiment.sh setup                              # install + local credential wizard; no models
+  bash experiment.sh preview                            # export all 30 full prompts; no config/key needed
+  bash experiment.sh list                               # show case IDs and titles
+  bash experiment.sh quick --allow-pilot                # 1 case x 1 repeat x 3 systems; asks RUN
+  bash experiment.sh run --allow-pilot --count 12 --concurrency 2
+                                                       # 12 attempts/system, 36 total; sequential systems
+  bash experiment.sh run --allow-pilot --genres SCI-FI --count 7 --systems if_line
+  bash experiment.sh genres --allow-pilot               # 6 genres x 1 repeat x 3 systems; asks RUN
+  bash experiment.sh pilot --allow-pilot                # 30 cases x 1 repeat x 3 systems; asks RUN
+  bash experiment.sh full --allow-pilot                 # 30 cases x 3 repeats x 3 systems; asks RUN
+  bash experiment.sh resume --out work/experiments/NAME # queued-only; asks RUN
+  bash experiment.sh verify --out work/experiments/NAME # no credentials/models
+--count is per-system TOTAL attempts; --repeat is repetitions PER CASE. Do not combine.
 Use --yes only to explicitly authorize paid calls without a terminal confirmation.
 Content review: tools/approve_eval30.py. Complete guide: docs/EXPERIMENTS.md.
 EOF

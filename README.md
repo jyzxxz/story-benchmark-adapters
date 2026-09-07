@@ -2,12 +2,14 @@
 
 同一份故事设定、固定开头和续写要求，原样交给 IF Line、AI4VisualNovel、InfiPlot，由三个项目各自的原生流程生成图文故事，并保存八项评测需要的证据。
 
+**实验原则：同题创作、统一评判，不是同一剧情的三次改写。** 允许跨系统行动含义与剧情发展不同；只统一公开任务、运行条件和评判标准。不增加语义匹配器或外部 AI 自动评分。
+
 ## 一键开始生成与实验
 
 **已经加入 30 题公共测试输入、使用说明和统一实验入口。** 首次在普通 Ubuntu 24.04 用户或 WSL2 Ubuntu 24.04 中安装依赖并填写自己的供应商和密钥：
 
 ```bash
-bash tools/experiment.sh setup
+bash experiment.sh setup
 ```
 
 向导显示各模型请求将发送的地址，逐项输入 `USE` 确认；密钥输入不回显，只保存在 `work/secrets.env`。安装和配置不调用付费模型。没有密钥、模型权限或原生依赖时不能直接真实生成。
@@ -15,18 +17,28 @@ bash tools/experiment.sh setup
 环境配置完成后，一条命令让三个系统开始最小真实试验：
 
 ```bash
-bash tools/experiment.sh quick --allow-pilot
+bash experiment.sh quick --allow-pilot
 ```
 
-查看尝试数后输入 `RUN`，或明确添加 `--yes` 用于自动化。常用规模：
+查看尝试数后输入 `RUN`，或明确添加 `--yes` 用于自动化。根目录入口仅转发到已有的 `tools/experiment.sh`，两种路径继续可用；没有第二套生成流程。不提供 macOS 或 Windows 原生适配。
+
+**由使用者决定生成数量、题材和并发，不必一次跑完整题库：**
 
 ```bash
-# 六类题材各一题，每个系统各尝试一次，共 18 次
-bash tools/experiment.sh genres --allow-pilot --yes
+# 每个系统总尝试 12 次，三个系统共 36 次，每个活跃系统并发 2
+bash experiment.sh run --allow-pilot --count 12 --concurrency 2
 
-# 30 题，每题每系统重复 3 次，共 270 次尝试
-bash tools/experiment.sh full --allow-pilot --yes --out work/experiments/eval30-round1
+# 只运行 IF Line 的科幻题，共尝试 7 次，并发 2
+bash experiment.sh run --allow-pilot --systems if_line --genres SCI-FI --count 7 --concurrency 2
+
+# 两题、每题每系统重复 2 次，共 12 次尝试
+bash experiment.sh run --allow-pilot --case-ids CAMPUS-01 SCI-FI-01 --repeat 2 --concurrency 2
+
+# 可选完整规模，不是默认要求：30 题 × 3 次 × 3 系统 = 270 次
+bash experiment.sh full --allow-pilot --out work/experiments/eval30-round1
 ```
+
+**`--count` 是每系统总尝试数，`--repeat` 是每题每系统重复次数，二者互斥。** 任意正整数都可使用，不必是题目数量的整数倍。每题计划次数和未运行题目会显示并写入 `experiment.json`。详见 [数量、题材与并发说明](docs/EXPERIMENT_CONTROLS.md)。
 
 默认三个系统依次运行、各自并发 1；`--concurrency 2` 调整单系统并发。数量是尝试数，不保证成功故事数。**没有适配器总费用、token 或时长上限；先检查最小试验，再扩大规模。** 所有系统预检并建立不可变原生计划后才开始付费生成，失败不自动补跑。
 
@@ -63,8 +75,8 @@ EXPERIMENT_REPORT.md                 可读汇总
 八项维度为固定事实与要求、连贯性、人物视觉一致性、等待时间、阅读体验、图文匹配、token、图片数量。M1/M2/M3/M5/M6 仅准备证据，须独立内容评审；M4/M7/M8 使用实际记录和用量，缺失保持未知。不要把 `sealed`、程序退出码或 `comparison_ready` 当作故事质量通过。详细字段见 [八维记录对照](docs/BATCH_RECORDING.md)。
 
 ```bash
-bash tools/experiment.sh resume --out work/experiments/eval30-round1 --yes
-bash tools/experiment.sh verify --out work/experiments/eval30-round1
+bash experiment.sh resume --out work/experiments/eval30-round1 --yes
+bash experiment.sh verify --out work/experiments/eval30-round1
 ```
 
 恢复只启动从未开始的排队项，不重发失败或送达未知的尝试。新代码、题目或模型条件不能覆盖旧实验。保留完整 `runs/`，不要只交付正文和图片文件夹。
@@ -91,7 +103,7 @@ v4 观察固定开头之后的一条实际访问路径，当前题库窗口为 *
 | 从零部署和底层单系统命令 | [QUICKSTART](docs/QUICKSTART.md)、[WSL2](docs/WINDOWS_WSL2.md)、[批量运行](docs/BATCH_RUNNING.md) |
 | 项目专用环境和已知风险 | [IF Line](docs/projects/IF_LINE.md)、[AI4VisualNovel](docs/projects/AI4VISUALNOVEL.md)、[InfiPlot](docs/projects/INFIPLOT.md) |
 | 30 题来源和内容边界 | [题库](benchmark/suites/eval30/README.md)、[内容审核说明](benchmark/suites/eval30/CONTENT_REVIEW_NOTES.md) |
-| 此次新增入口测试范围 | [离线验证记录](docs/EVAL30_VALIDATION.md) |
+| 此次新增入口测试范围 | [原入口离线验证](docs/EVAL30_VALIDATION.md)、[数量控制整合复验](docs/EXPERIMENT_CONTROLS_VALIDATION.md) |
 | 既有原生/Linux 验证 | [交接验证](docs/HANDOFF_VALIDATION_20260907.md)、[整体复查](docs/ADAPTER_AUDIT_20260907.md)、[并行复验](docs/PARALLEL_RECHECK_20260907.md) |
 | 历史 v3 文本合同与验证 | [v3 合同](docs/V3_CONTRACT.md)、[运行](docs/RUNNING.md)、[无预算验证](docs/UNLIMITED_VALIDATION.md) |
 | 维护和项目结构 | [项目说明](docs/PROJECT_GUIDE.md) |
@@ -99,7 +111,7 @@ v4 观察固定开头之后的一条实际访问路径，当前题库窗口为 *
 新增入口的免费回归检查：
 
 ```bash
-bash tools/experiment.sh test
+bash experiment.sh test
 python3 tools/verify_sources.py
 ```
 

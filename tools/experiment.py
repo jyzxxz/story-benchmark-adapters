@@ -44,8 +44,31 @@ def selection(preset: str, requested: list[str] | None, repeat: int | None, rows
     return ids, repeat if repeat is not None else default_repeat
 
 
+def attempt_schedule(ids: list[str], repeat: int, count: int | None = None) -> dict:
+    """Mirror native round-robin allocation; count is per system, not successes."""
+    if not ids or len(set(ids)) != len(ids):
+        raise ValueError('Select nonempty, unique case IDs')
+    for value in (repeat,) + (() if count is None else (count,)):
+        if type(value) is not int or value < 1:
+            raise ValueError('Count/repeat must be positive integers')
+    total = count if count is not None else len(ids) * repeat
+    rounds, extra = divmod(total, len(ids))
+    return {'count_mode': 'total_per_system' if count is not None else 'repeat_per_case',
+            'repeat': repeat if count is None else None,
+            'attempts_per_system': total,
+            'attempts_by_case': {ident: rounds + (index < extra) for index, ident in enumerate(ids)}}
+
+
+def requested_genres(rows: list[dict], genres: list[str]) -> list[str]:
+    available = {row['genre'] for row in rows}
+    if not genres or len(set(genres)) != len(genres) or not set(genres).issubset(available):
+        raise ValueError('Unknown/duplicate genres; use CAMPUS SCI-FI MYSTERY FANTASY HISTORY EMOTION')
+    return [row['source_prompt_id'] for row in rows if row['genre'] in genres]
+
+
 def code_inventory() -> dict[str, str]:
-    paths = [ROOT/'tools'/name for name in ('experiment.py','eval30.py','run_batch.py')]
+    paths = [ROOT/'tools'/name for name in ('experiment.py','eval30.py','run_batch.py','experiment.sh')]
+    paths += [ROOT/'experiment.sh']
     paths += sorted((ROOT/'benchmark/story_benchmark').rglob('*.py'))
     return {str(p.relative_to(ROOT)): digest(p.read_bytes()) for p in paths if p.is_file()}
 
@@ -59,7 +82,16 @@ def prepare(args: argparse.Namespace) -> tuple[Path, dict]:
         catalog = read_json(args.suite_root/'suite_manifest.json')
     else:
         catalog, _, _ = catalog_sources()
-    ids, repeat = selection(args.preset, args.case_ids, args.repeat, catalog['cases'])
+    case_ids = args.case_ids
+    if getattr(args, 'genres', None):
+        if case_ids:
+            raise ValueError('Choose --case-ids or --genres, not both')
+        case_ids = requested_genres(catalog['cases'], args.genres)
+    count = getattr(args, 'count', None)
+    if count is not None and args.repeat is not None:
+        raise ValueError('--count and --repeat are mutually exclusive')
+    ids, repeat = selection(args.preset, case_ids, args.repeat, catalog['cases'])
+    allocation = attempt_schedule(ids, repeat, count)
     config = read_json(args.config)
     if config.get('schema_version') != 'batch.1' or config.get('evidence_kind') != 'live':
         raise ValueError('Use a live batch.1 common config, never fixture data')
@@ -105,8 +137,9 @@ def prepare(args: argparse.Namespace) -> tuple[Path, dict]:
     config.update(bundles=[str(p) for p in bundles], choice_indices=args.choices, allow_pilot=pilot)
     atomic_json(out/'config.json', config)
     plan = {'schema_version':'experiment.1', 'root':str(out), 'created_at':datetime.now(timezone.utc).isoformat(),
-            'systems':list(args.systems), 'case_ids':ids, 'repeat':repeat,
-            'attempts_per_system':len(ids)*repeat, 'total_attempts':len(ids)*repeat*len(args.systems),
+            'systems':list(args.systems), 'case_ids':ids, **allocation,
+            'total_attempts':allocation['attempts_per_system']*len(args.systems),
+            'experimental_principle':'same_task_common_rubric_independent_narratives',
             'choice_indices':args.choices, 'choice_semantics':'zero-based native menu indices; repeat last index; not semantic C1/C2 routing',
             'review_status':'pilot' if pilot else 'approved', 'config_sha256':digest((out/'config.json').read_bytes()),
             'input_inventory':input_inventory(out), 'code_inventory':code_inventory(),
@@ -255,8 +288,12 @@ def execute(out: Path, plan: dict, args: argparse.Namespace) -> int:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--preset',choices=PRESETS,default='quick')
-    parser.add_argument('--case-ids',nargs='+')
-    parser.add_argument('--repeat',type=positive)
+    selected=parser.add_mutually_exclusive_group()
+    selected.add_argument('--case-ids',nargs='+')
+    selected.add_argument('--genres',nargs='+',help='Select all cases of these genres, in catalog order')
+    amount=parser.add_mutually_exclusive_group()
+    amount.add_argument('--repeat',type=positive,help='Attempts per selected case per system')
+    amount.add_argument('--count',type=positive,help='Total attempts per system, cycling selected cases; not a success target')
     parser.add_argument('--systems',nargs='+',choices=SYSTEMS,default=list(SYSTEMS))
     parser.add_argument('--choices',nargs='+',type=int,default=[0,1])
     parser.add_argument('--concurrency',type=positive,default=1)
@@ -273,7 +310,7 @@ def main(argv: list[str] | None = None) -> int:
     modes.add_argument('--preflight',action='store_true',help='Prepare and check native environments, never generate')
     args=parser.parse_args(argv)
     supplied = argv if argv is not None else sys.argv[1:]
-    frozen_flags = {'--preset','--case-ids','--repeat','--systems','--choices','--config','--suite-root','--allow-pilot'}
+    frozen_flags = {'--preset','--case-ids','--genres','--repeat','--count','--systems','--choices','--config','--suite-root','--allow-pilot'}
     if (args.resume or args.verify) and any(a.split('=',1)[0] in frozen_flags for a in supplied):
         parser.error('Resume/verify uses the frozen plan. Only --out, --concurrency, --secrets and --yes may change.')
     if len(set(args.systems)) != len(args.systems) or any(i<0 for i in args.choices):
@@ -285,6 +322,13 @@ def main(argv: list[str] | None = None) -> int:
     else:
         out,plan=prepare(args)
     print(json.dumps({k:plan[k] for k in ('systems','case_ids','repeat','attempts_per_system','total_attempts','review_status')},ensure_ascii=False,indent=2),flush=True)
+    if 'attempts_by_case' in plan:
+        print('Planned attempts per case per system:',json.dumps(plan['attempts_by_case'],ensure_ascii=False),flush=True)
+        unvisited=[ident for ident,number in plan['attempts_by_case'].items() if number==0]
+        if unvisited:
+            print(f'Not visited in this experiment: {len(unvisited)} selected cases (count is smaller than case count).',flush=True)
+    print(f'Systems run sequentially; within-system root concurrency: {args.concurrency}. Native internal calls may overlap.',flush=True)
+    print('Same task and common rubric; independent plots and action meanings. No semantic route matching.',flush=True)
     print('Experiment:',out,flush=True)
     if not any((args.run,args.resume,args.verify,args.preflight)):
         print('Preparation only: zero model calls. Start this saved plan with --resume --out PATH.')
