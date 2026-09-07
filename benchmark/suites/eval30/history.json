@@ -1,0 +1,252 @@
+[
+  {
+    "source_prompt_id": "HISTORY-01",
+    "case_id": "HISTORY-01-V4-SUITE01",
+    "title": "汴河上的无名信",
+    "genre": "HISTORY",
+    "player_name": "沈砚",
+    "character_names": [
+      "沈砚",
+      "柳青",
+      "韩朔"
+    ],
+    "visual_style": "汴河、木船、灰蓝晨雾、远处市声；船舱使用木板与水流的节奏声。",
+    "decisions": [
+      {
+        "id": "C1",
+        "options": [
+          {
+            "id": "C1_A",
+            "text": "提前检查乙七粮船"
+          },
+          {
+            "id": "C1_B",
+            "text": "追查官仓信纸"
+          }
+        ]
+      },
+      {
+        "id": "C2",
+        "options": [
+          {
+            "id": "C2_A",
+            "text": "公开韩朔的船籍漏洞"
+          },
+          {
+            "id": "C2_B",
+            "text": "先保护柳青的父亲"
+          }
+        ]
+      }
+    ],
+    "scope": "柳青父亲掌舵但不会读字，不能写成他亲自读懂无名信。韩朔第一叙事阶段仅见船籍摘要，之后若获知更完整信息仍需实际来源。",
+    "opening": "汴河晨雾里，木船与市声一同醒来。你是漕运文书沈砚，手中的无名信预告一艘粮船将在三日后失踪，编号是“乙七”。信上没有凶手姓名。\n\n柳青的父亲负责掌舵，却不会读字。韩朔目前只能看到船籍摘要，不能凭空说出完整档案的内容。\n\n你还没有登上乙七粮船检查，也没有追查信纸的官仓来源。柳青等着你的回应，河水仍沿船舷流过。",
+    "opening_source": "本次新编写的公共固定开头候选；非原题原文，非用户批准记录",
+    "source_sha256": {
+      "brief": "07e8975ff7a8f4fb23c1a29858cf4aeae0216b4506cecbb3470c2470bbf34589",
+      "opening": "65c8c833317af884ea96c43e28e52fd10586adb6d7f5b5346da6121438b3733b",
+      "prefix": "08eaddd37e0097d8a774173a7b47cfc9b54cfcdd22c8ebd4515bef48a0eda79c"
+    },
+    "shared_sha256": "86c94a71b9237edadfed5afc6e6df2393e3918cac54195ddb27b5dd77c0fae23"
+  },
+  {
+    "source_prompt_id": "HISTORY-02",
+    "case_id": "HISTORY-02-V4-SUITE01",
+    "title": "丝路上的第七枚铃",
+    "genre": "HISTORY",
+    "player_name": "裴宁",
+    "character_names": [
+      "裴宁",
+      "阿史",
+      "梁伯"
+    ],
+    "visual_style": "金色沙漠、驿站木墙、丝绸与铜铃；铃声数量必须与骆驼数量保持一致。",
+    "decisions": [
+      {
+        "id": "C1",
+        "options": [
+          {
+            "id": "C1_A",
+            "text": "寻找失踪的铃"
+          },
+          {
+            "id": "C1_B",
+            "text": "直接离开驿站"
+          }
+        ]
+      },
+      {
+        "id": "C2",
+        "options": [
+          {
+            "id": "C2_A",
+            "text": "相信旧路线能找到水源"
+          },
+          {
+            "id": "C2_B",
+            "text": "跟随官方驿道"
+          }
+        ]
+      }
+    ],
+    "scope": "六匹骆驼与第七枚未挂在骆驼上的铃同时成立，不能为凑铃数增加第七匹骆驼。即使走旧路线，也不能未经证据把已废弃的井写成已确认有水。",
+    "opening": "金色沙漠尽头，商队停在驿站。你是记录员裴宁，确认共有六匹骆驼；失踪的第七枚铃从未挂在它们身上。\n\n阿史能读懂铃内刻字，却不认识最后一个符号。梁伯留在驿站，没有答应与你们一同上路。关于旧路线的说法还不能当成已经验证的水源。\n\n商队尚未离开，你也还没有开始寻找铃铛。你需要先决定是留下找铃，还是继续赶路。",
+    "opening_source": "本次新编写的公共固定开头候选；非原题原文，非用户批准记录",
+    "source_sha256": {
+      "brief": "8e6a847005945ed6b6bcbbeb52640c057f6636236adef2b2e5c836e7edbc1039",
+      "opening": "bb882958d794b029c88ec38424ddf827ff4bee79d493c3c0a8e2bc7c4559f0da",
+      "prefix": "08eaddd37e0097d8a774173a7b47cfc9b54cfcdd22c8ebd4515bef48a0eda79c"
+    },
+    "shared_sha256": "59d5f987c68f94c9d32950164be1f62ff3919e5274ffdb57cb30386b38206316"
+  },
+  {
+    "source_prompt_id": "HISTORY-03",
+    "case_id": "HISTORY-03-V4-SUITE01",
+    "title": "海贸账册",
+    "genre": "HISTORY",
+    "player_name": "林澜",
+    "character_names": [
+      "林澜",
+      "苏禾",
+      "顾准"
+    ],
+    "visual_style": "潮湿港口、木箱、海雾、油灯；账册特写必须保持页面顺序和墨迹颜色一致。",
+    "decisions": [
+      {
+        "id": "C1",
+        "options": [
+          {
+            "id": "C1_A",
+            "text": "公开多出的账页"
+          },
+          {
+            "id": "C1_B",
+            "text": "先寻找暗号含义"
+          }
+        ]
+      },
+      {
+        "id": "C2",
+        "options": [
+          {
+            "id": "C2_A",
+            "text": "等待船只返港"
+          },
+          {
+            "id": "C2_B",
+            "text": "提前进入封存仓库"
+          }
+        ]
+      }
+    ],
+    "scope": "顾准见过清单而未见实物。等待返港与提前入库是不同时间行动；不能让船在没有时间推进的情况下从两天后突然抵达。",
+    "opening": "油灯照着海贸账册。你是账房林澜，多出的那页有海水痕迹，记着一批从未入港的货物，而家族专属暗号的具体含义尚未被你解开。\n\n苏禾的父亲已经失联四个月，船却将在两天后返港。顾准见过货物清单，没有见过实物，不能替你确认箱内有什么。\n\n账页还没有公开，封存仓库也没有被你进入。你看着墨迹，尚未决定先公开这一页，还是先查明暗号。",
+    "opening_source": "本次新编写的公共固定开头候选；非原题原文，非用户批准记录",
+    "source_sha256": {
+      "brief": "a888bfdd80974ee406ed02798701dbea3fd36bf0552af3255a2cc73607d82d77",
+      "opening": "3e8a4fef68e697bdc875a7d4f8ddd5920a3dcb9d5b74e10ebd39d32ef9389e3f",
+      "prefix": "08eaddd37e0097d8a774173a7b47cfc9b54cfcdd22c8ebd4515bef48a0eda79c"
+    },
+    "shared_sha256": "05fcc5eae07893a5aca9c0a3e5b95a929fd7033a380961014a886d8ea1f8dcca"
+  },
+  {
+    "source_prompt_id": "HISTORY-04",
+    "case_id": "HISTORY-04-V4-SUITE01",
+    "title": "报馆的最后一版",
+    "genre": "HISTORY",
+    "player_name": "周衡",
+    "character_names": [
+      "周衡",
+      "叶棠",
+      "老程"
+    ],
+    "visual_style": "铅字、油墨、深夜报馆、窗外巡逻灯；印刷机声应随时间压力逐步加快。",
+    "decisions": [
+      {
+        "id": "C1",
+        "options": [
+          {
+            "id": "C1_A",
+            "text": "直接刊登证词"
+          },
+          {
+            "id": "C1_B",
+            "text": "先验证旧案地名"
+          }
+        ]
+      },
+      {
+        "id": "C2",
+        "options": [
+          {
+            "id": "C2_A",
+            "text": "保护证人身份"
+          },
+          {
+            "id": "C2_B",
+            "text": "公开证词来源以增强可信度"
+          }
+        ]
+      }
+    ],
+    "scope": "叶棠不能透露姓名是原题明确限制。C2 的公开来源不得自动等于公开真实姓名；公开方式仍须遵守该限制。这是保留原文两条要求的共同解释，不预设匿名证词已核实。",
+    "opening": "夜色压在报馆窗外，巡逻灯偶尔扫过墙面。你是编辑周衡，距离凌晨 04:00 的印刷期限还在不断缩短。\n\n匿名证词放在桌上，没有原件照片。叶棠说自己见过证人，但不肯透露姓名。老程坚持要看纸面依据，印刷机旁仍有未排好的铅字。\n\n你尚未决定刊登证词，也没有开始核验其中与旧案相同的地名。今晚要印出的文字，还没有因此成为定稿。",
+    "opening_source": "本次新编写的公共固定开头候选；非原题原文，非用户批准记录",
+    "source_sha256": {
+      "brief": "c0899b90c2b70626bd5db794404960ae5f672388de42dcd33b858ebf522e83e5",
+      "opening": "6c8fbcd71fe7149e5737d8a462c51e290c162f23059f69c7ba2e0f4027779efa",
+      "prefix": "08eaddd37e0097d8a774173a7b47cfc9b54cfcdd22c8ebd4515bef48a0eda79c"
+    },
+    "shared_sha256": "e833bac64e748fc49d27fbaed373f5e68bddcde4c333b84dd0a308b1e096f237"
+  },
+  {
+    "source_prompt_id": "HISTORY-05",
+    "case_id": "HISTORY-05-V4-SUITE01",
+    "title": "山城驿站的三封家书",
+    "genre": "HISTORY",
+    "player_name": "沈平",
+    "character_names": [
+      "沈平",
+      "沈禾",
+      "闻秋"
+    ],
+    "visual_style": "山雾、木驿站、油纸信封、远处钟声；三封信使用不同纸色但同一印章。",
+    "decisions": [
+      {
+        "id": "C1",
+        "options": [
+          {
+            "id": "C1_A",
+            "text": "把三封信交给官府"
+          },
+          {
+            "id": "C1_B",
+            "text": "私下调查笔迹"
+          }
+        ]
+      },
+      {
+        "id": "C2",
+        "options": [
+          {
+            "id": "C2_A",
+            "text": "阻止沈禾上山"
+          },
+          {
+            "id": "C2_B",
+            "text": "沿着信中路线寻找寄信人"
+          }
+        ]
+      }
+    ],
+    "scope": "三封信相同署名不自动证明来自同一时间或同一真实写信人。第三封没有日期，不能因为推测为未来来信就让它出现原本不存在的日期。闻秋第一场不能解释来源。",
+    "opening": "山雾绕着木驿站。你是驿卒沈平，三封家书已经摆在桌上，署名相同，笔迹却逐渐改变，第三封没有日期。\n\n第一封写到已经发生的山洪，第二封要求沈禾不要上山。沈禾还没有因为你的决定改变行程，闻秋也没有在此刻解释未来信件的来历。\n\n你既没有把信交给官府，也没有开始私下比对笔迹。三封信保持原样，等待你选择如何处理。",
+    "opening_source": "本次新编写的公共固定开头候选；非原题原文，非用户批准记录",
+    "source_sha256": {
+      "brief": "6b13e2b517b553f923f21473d2abb68d3cc27377c7b6d743ba59ca3547ba5fdc",
+      "opening": "5d49f9333ee93be7c43c7ed285f44fc2aeb553aac5069ce995c58fa3de704a66",
+      "prefix": "08eaddd37e0097d8a774173a7b47cfc9b54cfcdd22c8ebd4515bef48a0eda79c"
+    },
+    "shared_sha256": "aa094e5ec64f55378f6fbccae41dcc9083d89f03b4ad8826a5fc0856aa241ca0"
+  }
+]

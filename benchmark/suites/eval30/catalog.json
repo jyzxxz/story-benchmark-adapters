@@ -1,0 +1,52 @@
+{
+  "schema_version": "eval30.1",
+  "suite_version": "v4-30-pilot.1",
+  "source_file": "benchmark/source/if_line_eval_prompts_30.v1.md",
+  "source_sha256": "5404e070e2e4c692e8c003ecb3578d52fc035daddef3073a1ec5a4abf11206b0",
+  "adapter_commit_inspected": "3421000736f2b7ba0a9252afa7285bc65a59cdb7",
+  "prefix_file": "prefix.txt",
+  "prefix_sha256": "08eaddd37e0097d8a774173a7b47cfc9b54cfcdd22c8ebd4515bef48a0eda79c",
+  "common_case": {
+    "case_version": "4.0-pilot.1",
+    "review_status": "pilot",
+    "language": "zh-CN",
+    "profile": "FULL_VN",
+    "input_contract": {
+      "version": "3.0",
+      "task_delivery": "verbatim_first_creative_request",
+      "character_policy": "exact_declared_cast",
+      "adapter_story_reinjection": "none"
+    },
+    "output_contract": {
+      "version": "4.0",
+      "scope": "readable_window",
+      "window_chars": 4000,
+      "character_metric": "unicode_codepoints_in_new_visible_body",
+      "cut_rule": "first_sentence_boundary_at_or_after_threshold",
+      "media": "images",
+      "native_choice_previews": "separate",
+      "require_story_ending": false
+    }
+  },
+  "common_scope": {
+    "01_章与场的共同候选解释": "原题中的“章”映射为逻辑阶段，不要求系统创建章标题：第一阶段是固定开头至 C1 实际提交前；第二阶段是 C1 提交后至 C2 实际提交前；第三阶段是 C2 提交之后。原题中的“场”仍按实质时空或事件目标转换计数，不用模型请求数、换行数、镜头数或菜单数替代。未到达的阶段不能被当作已经发生。这个映射是本次新增候选解释，不是原题原文。",
+    "02_角色名单与背景对象": "人物总名单采用原题“角色”栏，包括玩家。原题其他段落已提及的亲属、失踪者、证人、群体和未确认声音可以作为关系、资料、被保护对象或被讨论对象保留，不擅改其事实；本版不为名单以外的背景对象另加姓名、直接对白、独立行动视角或新的具身角色设计。确需直接出场时应先修订共同名单并生成新题目版本，不能只替一个系统加角色。本条为适配 exact_declared_cast 的候选呈现边界。",
+    "03_初始知识与实际路径": "固定开头中亲历的观察与对白已经发生。其他作者设定不自动成为各角色全部已知的信息，除非其身份明确包含或后续有合理信息来源。C1/C2 之后的事实只沿实际执行路线更新；原生候选预览不是经历。"
+  },
+  "common_provenance": {
+    "source_attachment": "if_line_eval_prompts_30.md",
+    "source_attachment_sha256": "5404e070e2e4c692e8c003ecb3578d52fc035daddef3073a1ec5a4abf11206b0",
+    "brief_source": "原上传 v1 文件对应 text 代码块；除代码围栏外逐字保留，无结尾附加换行",
+    "scope_source": "本次新编写并显式披露的共同语义解释候选；须与原 brief 分开复核",
+    "prefix_source": "基于上传 v1 任务和仓库 v4 公共前缀新编写；移除全篇结构硬指标和回忆检查",
+    "inspected_adapter_commit": "3421000736f2b7ba0a9252afa7285bc65a59cdb7"
+  },
+  "case_files": [
+    "campus.json",
+    "sci-fi.json",
+    "mystery.json",
+    "fantasy.json",
+    "history.json",
+    "emotion.json"
+  ]
+}

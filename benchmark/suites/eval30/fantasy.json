@@ -1,0 +1,252 @@
+[
+  {
+    "source_prompt_id": "FANTASY-01",
+    "case_id": "FANTASY-01-V4-SUITE01",
+    "title": "名字之城",
+    "genre": "FANTASY",
+    "player_name": "洛祈",
+    "character_names": [
+      "洛祈",
+      "弥尔",
+      "赫森"
+    ],
+    "visual_style": "银色铭文、雾中城墙、蓝紫月光；真名被提及时加入轻微金属共鸣。",
+    "decisions": [
+      {
+        "id": "C1",
+        "options": [
+          {
+            "id": "C1_A",
+            "text": "把弥尔交给守门人"
+          },
+          {
+            "id": "C1_B",
+            "text": "偷偷带她进入城内"
+          }
+        ]
+      },
+      {
+        "id": "C2",
+        "options": [
+          {
+            "id": "C2_A",
+            "text": "寻找白塔"
+          },
+          {
+            "id": "C2_B",
+            "text": "调查洛祈银牌上的缺口"
+          }
+        ]
+      }
+    ],
+    "scope": "开头尚未用掉本夜开门机会。银牌不能伪造；弥尔记得白塔不等于赫森已见过白塔。洛祈第一场只能读取自己的名字。",
+    "opening": "午夜后的城门外，一个女孩没有银牌。你是抄名官洛祈，能读取的仍只有自己的名字，门也尚未在这一夜开启。\n\n女孩说自己叫弥尔，记得一座白塔。赫森从未见过那座塔，仍把没有银牌的人当作危险。他没有从你的沉默里得到任何承诺。\n\n弥尔还在城外。你既没有把她交给赫森，也没有偷偷带她入城。",
+    "opening_source": "本次新编写的公共固定开头候选；非原题原文，非用户批准记录",
+    "source_sha256": {
+      "brief": "e08220fa10508704fdb4ac322f1888afc72955cde14f41df78d02d85706260d3",
+      "opening": "809bbdc1383310815fda52eaa240f94d6e79770e3afa93e8078f607dfaddba98",
+      "prefix": "08eaddd37e0097d8a774173a7b47cfc9b54cfcdd22c8ebd4515bef48a0eda79c"
+    },
+    "shared_sha256": "558ebaa30d8b4cd45724d8753613e978c93a86f58d14e6ac69807220bff519ab"
+  },
+  {
+    "source_prompt_id": "FANTASY-02",
+    "case_id": "FANTASY-02-V4-SUITE01",
+    "title": "龙庭的第三枚印章",
+    "genre": "FANTASY",
+    "player_name": "阿妍",
+    "character_names": [
+      "阿妍",
+      "谢迟",
+      "赫川"
+    ],
+    "visual_style": "黑金王庭、红色火山、鳞片反光；仪式音乐必须随印章数量逐步增加层次。",
+    "decisions": [
+      {
+        "id": "C1",
+        "options": [
+          {
+            "id": "C1_A",
+            "text": "公开寻找第三枚印章"
+          },
+          {
+            "id": "C1_B",
+            "text": "先调查继承记录"
+          }
+        ]
+      },
+      {
+        "id": "C2",
+        "options": [
+          {
+            "id": "C2_A",
+            "text": "接受龙裔的试炼"
+          },
+          {
+            "id": "C2_B",
+            "text": "让阿妍暂时放弃继承资格"
+          }
+        ]
+      }
+    ],
+    "scope": "第三枚印章的触碰资格依放弃王位而定。接受试炼不自动等于放弃王位；不能未经剧情依据解除触碰条件或让赫川离开王庭。",
+    "opening": "黑金色的王庭里，继承仪式仍未完成。你是阿妍，知道第一枚印章在王庭，第二枚在火山寺，第三枚却被认为已经毁掉。\n\n谢迟保管着一份被删改的继承记录，尚未向你展开其中内容。赫川留在王庭，仍拒绝承认你的继承资格。\n\n你没有公开宣布寻找第三枚印章，也没有开始核查那份记录。王位与印章之间的难题，还没有被任何一句话解决。",
+    "opening_source": "本次新编写的公共固定开头候选；非原题原文，非用户批准记录",
+    "source_sha256": {
+      "brief": "4d46705169bdc0b4403fafb808fc905f80b0075dfe06ce86665de3f7fb369c2f",
+      "opening": "5d54f12d8fa17e32281c6d294d935edf2eccde965a1bd647a7d610c67f931e0d",
+      "prefix": "08eaddd37e0097d8a774173a7b47cfc9b54cfcdd22c8ebd4515bef48a0eda79c"
+    },
+    "shared_sha256": "a41b65c926dc084d79dce450c86f031e05ffe69a2cdfec3067281d7c8164fd5b"
+  },
+  {
+    "source_prompt_id": "FANTASY-03",
+    "case_id": "FANTASY-03-V4-SUITE01",
+    "title": "渡河人不收金币",
+    "genre": "FANTASY",
+    "player_name": "宁川",
+    "character_names": [
+      "宁川",
+      "弥音",
+      "乌渡"
+    ],
+    "visual_style": "黑色河水、漂浮灯笼、低声船桨；物品被交出时画面颜色逐渐褪去。",
+    "decisions": [
+      {
+        "id": "C1",
+        "options": [
+          {
+            "id": "C1_A",
+            "text": "交出戒指过河"
+          },
+          {
+            "id": "C1_B",
+            "text": "留在此岸寻找其他道路"
+          }
+        ]
+      },
+      {
+        "id": "C2",
+        "options": [
+          {
+            "id": "C2_A",
+            "text": "替弥音支付代价"
+          },
+          {
+            "id": "C2_B",
+            "text": "让她自己选择失去什么"
+          }
+        ]
+      }
+    ],
+    "scope": "弥音初始没有随身物品。后续若获得物品必须在正文中发生，不能回填成一直携带；渡河的支付规则与最多三次摆渡不因选择不同而消失。",
+    "opening": "黑色河水从船边流过。你是宁川，母亲留下的戒指还在自己手里，弥音身上没有任何随身物品。\n\n乌渡说金币不能换来渡河，只能交出最不愿失去的一件物品。他没有说出真名，你们也还没有用掉他的一次摆渡。\n\n对岸的村庄正在消失。你尚未交出戒指，也没有离开渡口寻找另一条路；弥音没有凭空多出可以支付的东西。",
+    "opening_source": "本次新编写的公共固定开头候选；非原题原文，非用户批准记录",
+    "source_sha256": {
+      "brief": "75b70ae0d051a2a42ab6a7914b43c82361e4ca42255dc5b6b1c016df9d2b2bf3",
+      "opening": "54b0c6307dc4fee9faefecdff78cb1e95739d0bbe386f1ec45d3d385fafa6b0c",
+      "prefix": "08eaddd37e0097d8a774173a7b47cfc9b54cfcdd22c8ebd4515bef48a0eda79c"
+    },
+    "shared_sha256": "c1b4904dc665639a960e12e2cf2eacf81af0673677c9a38767be3e7fb3d0bf47"
+  },
+  {
+    "source_prompt_id": "FANTASY-04",
+    "case_id": "FANTASY-04-V4-SUITE01",
+    "title": "冬女巫的最后一场雪",
+    "genre": "FANTASY",
+    "player_name": "岑野",
+    "character_names": [
+      "岑野",
+      "阿芙",
+      "沈柏"
+    ],
+    "visual_style": "白雪、青灰村庄、冰下红光；记忆场景使用暖金色和远处童谣。",
+    "decisions": [
+      {
+        "id": "C1",
+        "options": [
+          {
+            "id": "C1_A",
+            "text": "接受记忆交换"
+          },
+          {
+            "id": "C1_B",
+            "text": "摧毁地下祭坛"
+          }
+        ]
+      },
+      {
+        "id": "C2",
+        "options": [
+          {
+            "id": "C2_A",
+            "text": "相信女巫"
+          },
+          {
+            "id": "C2_B",
+            "text": "揭露村长隐瞒的祭坛契约"
+          }
+        ]
+      }
+    ],
+    "scope": "交出快乐记忆会影响关系，不会立刻清除技能。摧毁祭坛与接受交换是不同关键行动，不能在玩家只选一项后宣称二者都已完成。阿芙不能进入村庄中心。",
+    "opening": "青灰色的村庄又覆上一层雪。你是岑野，三年的冬天没有结束，阿芙仍停在村庄中心之外。\n\n她提出用一段最快乐的记忆换回春天。你想到妹妹，却没有把那段记忆交出去。村长沈柏没有说明第一场雪的真正原因，那块融化不了的冰仍由他保存。\n\n旧祭坛尚未被你摧毁，交换也没有达成。你站在两个行动的起点，还没有作出承诺。",
+    "opening_source": "本次新编写的公共固定开头候选；非原题原文，非用户批准记录",
+    "source_sha256": {
+      "brief": "10855579ceee7978b8dee9242801f650d36f9c3793e4b5f03c1c8912eda492c2",
+      "opening": "fce12dd140b7ee23944f395db4e82399c1d9187bd15974c7600a537ffa4c0b7b",
+      "prefix": "08eaddd37e0097d8a774173a7b47cfc9b54cfcdd22c8ebd4515bef48a0eda79c"
+    },
+    "shared_sha256": "552c4a08bfbae1b0ea6f078f80e65cdd2c9394a0db8b780343d26c54a53a5539"
+  },
+  {
+    "source_prompt_id": "FANTASY-05",
+    "case_id": "FANTASY-05-V4-SUITE01",
+    "title": "钟表森林",
+    "genre": "FANTASY",
+    "player_name": "叶时",
+    "character_names": [
+      "叶时",
+      "洛恩",
+      "七刻"
+    ],
+    "visual_style": "铜色齿轮、深绿森林、悬浮表盘；每个场景必须保持钟表指针方向连续。",
+    "decisions": [
+      {
+        "id": "C1",
+        "options": [
+          {
+            "id": "C1_A",
+            "text": "寻找蓝色齿轮"
+          },
+          {
+            "id": "C1_B",
+            "text": "先修复洛恩停住的时间"
+          }
+        ]
+      },
+      {
+        "id": "C2",
+        "options": [
+          {
+            "id": "C2_A",
+            "text": "牺牲叶时缺失的七年"
+          },
+          {
+            "id": "C2_B",
+            "text": "让巨钟停摆以保留所有人的时间"
+          }
+        ]
+      }
+    ],
+    "scope": "“少了七年”是既定状态，不能把已缺失时间直接当作完好可用资源。第二组选择中的牺牲机制要由剧情自洽建立，公共开头不预先给出解法或恢复七年。七刻只能说整点时间，不得用普通对白绕过限制。",
+    "opening": "深绿森林里，铜色钟表随树枝轻轻晃动。你是修钟匠叶时，个人时间已经少了七年，却没有因为来到这里就自动补回。\n\n洛恩对应的时间停在 23:30。七刻没有讲述午夜后的事，也没有用不合自身限制的话解释原因。中央巨钟缺少蓝色齿轮，午夜的停摆仍在逼近。\n\n你尚未开始寻找齿轮，也没有动手修复洛恩的时间。两件事都在等待你的选择。",
+    "opening_source": "本次新编写的公共固定开头候选；非原题原文，非用户批准记录",
+    "source_sha256": {
+      "brief": "83f4faeac7dda0c61d86bf6f4b53dd2f3fea158d9b381bff1a8cc79e52687491",
+      "opening": "c6ce1ecfb88593d5cbaf0c17617c70c0eb24b964b7e2a5314131e77446210b25",
+      "prefix": "08eaddd37e0097d8a774173a7b47cfc9b54cfcdd22c8ebd4515bef48a0eda79c"
+    },
+    "shared_sha256": "03091577f4664764104ba830ebafdabc2c9998bdf259ad671157c04ec47e3355"
+  }
+]

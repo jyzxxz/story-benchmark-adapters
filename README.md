@@ -1,94 +1,106 @@
 # 三系统共同输入适配器
 
-同一份故事设定、固定开头和续写要求，原样交给 IF Line、AI4VisualNovel、InfiPlot，由三个项目各自的原生流程处理。
+同一份故事设定、固定开头和续写要求，原样交给 IF Line、AI4VisualNovel、InfiPlot，由三个项目各自的原生流程生成图文故事，并保存八项评测需要的证据。
 
-本仓库采用**冻结基线 + 独立外置适配器**。2026-09-07 起，按用户明确授权，IF Line 增加单独披露的 HTML 正文到脚本转换修复；AI4VisualNovel 和 InfiPlot 原生源码仍与冻结提交逐字节相同。原始 `baseline-lock.json` 保留，IF Line 的源码差异另以补丁和逐文件哈希锁定，详见 [IF Line 源码修复](docs/IFLINE_HTML_PATCH.md)。接入规则、记录器、预算与启动包装位于 `benchmark/`，运行期间禁止再改源文件。
+## 一键开始生成与实验
 
-当前新增 **v4 图文批量程序**：同一份公共任务和开头，三个独立入口可调整生成数与并发数，沿原生实际选择路径读取至共同窗口，保留八项评审所需证据。示例窗口 4000 字符仍是开发候选；不要求全篇结局，因此 InfiPlot 可以按相同片段范围参与。使用方法见 [批量运行说明](docs/BATCH_RUNNING.md)，保存字段见 [八项指标对照](docs/BATCH_RECORDING.md)，当前验证范围见 [并行复验记录](docs/PARALLEL_RECHECK_20260907.md)。补丁前的 [历史批量验收记录](docs/BATCH_VALIDATION.md) 单独保留。
-
-历史 **v3 公共输入与统一返回合同** 保留：返回到第一次尚未选择的原生选项。允许开头后直接显示选项；正文、选项、选项自带的未来预览分栏保存，故事文字可以不同。v3 三个系统的成功与失败仍使用同一个 `result.json` 结构，原生错误如实保留。
-
-v3 接入边界见 [v3 合同](docs/V3_CONTRACT.md)，无预算模式重测见 [无限模式验证](docs/UNLIMITED_VALIDATION.md)；之前有预算上限的 [v3 验证](docs/V3_VALIDATION.md) 保留。v4 当前每个根运行采集一条实际路径，不做 AA/AB/BA/BB 全分支探索、AI 自动评分或论文统计。历史 [C1 重测](docs/CLARIFIED_RETEST.md)、[首轮实测](docs/LIVE_VALIDATION.md) 和 [初始工程验收](docs/ACCEPTANCE.md) 保留，不能代替 v4 图文接入证据。
-
-最新检查：[适配器与三个批量程序整体复查](docs/ADAPTER_AUDIT_20260907.md)。
-
-## 给接收程序的人
-
-部署入口已整理为 **Ubuntu 24.04 服务器 / Windows WSL2 Ubuntu 24.04**。Windows 原生命令行不支持这套原生服务的进程管理；在 WSL2 的 Linux 目录中操作。请先阅读 [从零开始](docs/QUICKSTART.md)，Windows 用户先看 [WSL2 安装](docs/WINDOWS_WSL2.md)。
-
-| 需要做什么 | 文档 |
-|---|---|
-| 安装、配置密钥、无付费检查、第一批生成 | [快速上手](docs/QUICKSTART.md) |
-| IF Line 专用环境与排错 | [IF Line](docs/projects/IF_LINE.md) |
-| AI4VisualNovel 专用环境、原生生成失败 | [AI4VisualNovel](docs/projects/AI4VISUALNOVEL.md) |
-| InfiPlot 缓存、无界面浏览器、64 MiB | [InfiPlot](docs/projects/INFIPLOT.md) |
-| 数量、并发、恢复、输出和比较 | [批量运行](docs/BATCH_RUNNING.md) |
-| 八项评测证据的字段和使用边界 | [记录对照](docs/BATCH_RECORDING.md) |
-| 代码结构、维护、发布与共享 | [项目说明](docs/PROJECT_GUIDE.md) |
-| 本次交接的实际验证范围 | [交接检查](docs/HANDOFF_VALIDATION_20260907.md) |
-
-在已安装依赖、生成配置并填写凭证的仓库根目录：
+**已经加入 30 题公共测试输入、使用说明和统一实验入口。** 首次在普通 Ubuntu 24.04 用户或 WSL2 Ubuntu 24.04 中安装依赖并填写自己的供应商和密钥：
 
 ```bash
-source work/activate.sh
-python3 tools/doctor.py --system all
-python3 tools/run_batch.py --system if_line --preflight
-python3 tools/run_batch.py --system if_line --count 6 --concurrency 2 --out work/results/round1-ifline
+bash tools/experiment.sh setup
 ```
 
-替换 `--system` 为 `ai4visualnovel` 或 `infiplot` 即运行另外两个项目；三个入口共用 `work/config/batch.local.json`。首次安装、填写供应商与密钥后才能真实生成。数量是独立尝试数，AI4VisualNovel 等原生系统可能失败；失败也保留证据，不保证凑齐同等数量的成功故事。
+向导显示各模型请求将发送的地址，逐项输入 `USE` 确认；密钥输入不回显，只保存在 `work/secrets.env`。安装和配置不调用付费模型。没有密钥、模型权限或原生依赖时不能直接真实生成。
 
-仓库包含必需源码、适配器、示例和文档；依赖、浏览器与分割模型由安装脚本下载，API 密钥由使用者自行配置。历史真实生成档案不是运行程序的必要依赖，不作为代码包上传。仓库访问权限沿用 GitHub 当前设置。
+环境配置完成后，一条命令让三个系统开始最小真实试验：
 
-## 目录
+```bash
+bash tools/experiment.sh quick --allow-pilot
+```
+
+查看尝试数后输入 `RUN`，或明确添加 `--yes` 用于自动化。常用规模：
+
+```bash
+# 六类题材各一题，每个系统各尝试一次，共 18 次
+bash tools/experiment.sh genres --allow-pilot --yes
+
+# 30 题，每题每系统重复 3 次，共 270 次尝试
+bash tools/experiment.sh full --allow-pilot --yes --out work/experiments/eval30-round1
+```
+
+默认三个系统依次运行、各自并发 1；`--concurrency 2` 调整单系统并发。数量是尝试数，不保证成功故事数。**没有适配器总费用、token 或时长上限；先检查最小试验，再扩大规模。** 所有系统预检并建立不可变原生计划后才开始付费生成，失败不自动补跑。
+
+[完整一键实验指南](docs/EXPERIMENTS.md) 包含安装、供应商设置、自选题目、次数、路线、恢复、八维数据和正式审核流程。已有原生环境和配置无需重新安装；旧的 `tools/run_batch.py` 单系统入口继续可用。
+
+## 查看提示词，不调用模型
+
+```bash
+python3 tools/eval30.py --list
+python3 tools/eval30.py --out work/eval30-preview
+```
+
+无需原生环境或密钥即可导出 `work/eval30-preview/PROMPTS_30_COMPILED.md`、全部 case 和逐题 `compiled/<case_id>/shared_task.txt`。程序使用本仓库实际编译器，检查 30 题公共输入与提供的 `v4-30-pilot.1` 包逐题一致、三个原生输入封装一致。输出目录已存在时拒绝覆盖。
+
+题目源码与固定开头见 [30 题目录](benchmark/suites/eval30/README.md)，原始 brief 继续保存在 `benchmark/source/if_line_eval_prompts_30.v1.md`。原来的完整多结局前缀和回忆检查是历史材料，不直接用于这轮 v4 生成。
+
+**内置题目仍为 pilot 候选。** 新增开头、章/场解释及角色名单边界须人工确认；上传仓库和编译通过不等于正式内容审批。正式副本由 `tools/approve_eval30.py` 生成与内容哈希绑定的确认记录，见实验指南。`full` 只是规模预设，不等于 approved。
+
+## 结果和八项评测证据
+
+新入口自动完成题库编译、预检、原生批次生成、证据封存、校验和三系统条件比较。未指定目录时，结果保存到 `work/experiments/<UTC时间>-<随机后缀>/`：
 
 ```text
-benchmark/         编译器、接入器、外置启动器、审计、导出、测试
-systems/           原生源码快照，IF Line 含已披露的 HTML 修复
-baseline-lock.json 发布文件哈希、原始提交及省略文件清单
-native-patches/    IF Line 授权源码补丁及独立校验清单
-docs/              公平性、运行说明、来源与验收证据
-tools/             仓库完整性与干净副本验证
+experiment.json / config.json       冻结输入、次数、模型和来源条件
+inputs/                             公共任务、固定前文及编译产物
+if_line/                            IF Line 全部批次和根运行证据
+ai4visualnovel/                      AI4VisualNovel 全部批次和根运行证据
+infiplot/                           InfiPlot 全部批次和根运行证据
+comparison.json                     条件及证据比较，不是质量排名
+experiment_summary.json             范围、停止原因、覆盖与工具状态
+EXPERIMENT_REPORT.md                 可读汇总
 ```
 
-## 快速检查
-
-公共工具不需要模型密钥，Python 3.10+：
+八项维度为固定事实与要求、连贯性、人物视觉一致性、等待时间、阅读体验、图文匹配、token、图片数量。M1/M2/M3/M5/M6 仅准备证据，须独立内容评审；M4/M7/M8 使用实际记录和用量，缺失保持未知。不要把 `sealed`、程序退出码或 `comparison_ready` 当作故事质量通过。详细字段见 [八维记录对照](docs/BATCH_RECORDING.md)。
 
 ```bash
-cd benchmark
-python3 -m story_benchmark compile --case cases/CAMPUS-01-V3.json --out ../work/CAMPUS-01-V3 --allow-pilot
-python3 -m story_benchmark verify --bundle ../work/CAMPUS-01-V3
-python3 -m unittest discover -s tests -p test_core.py
-python3 -m unittest discover -s tests -p test_provenance.py
-cd ..
-python3 tools/verify_sources.py
+bash tools/experiment.sh resume --out work/experiments/eval30-round1 --yes
+bash tools/experiment.sh verify --out work/experiments/eval30-round1
 ```
 
-编译输出明确为 `payload_check=passed, native_integration=not_run`。这不能代替原生接入测试。
+恢复只启动从未开始的排队项，不重发失败或送达未知的尝试。新代码、题目或模型条件不能覆盖旧实验。保留完整 `runs/`，不要只交付正文和图片文件夹。
 
-## 公共输入
+## 共同任务与原生方法边界
 
-图文开发案例为 `benchmark/cases/CAMPUS-01-V4.json`；历史文本案例 `CAMPUS-01-V3.json` 保留。它们明确角色总名单含玩家、行动先后和角色知识。原始 brief 和固定开头逐字保留；旧案例未覆盖。只在编译时统一一次 UTF-8、LF 与外围空白，生成唯一 `shared_task.txt`。IF Line 使用 `extra_requirements`，AI4VisualNovel 使用需求文件，InfiPlot 使用 `worldSetting`；里面的公共字符串完全相同。
+v4 观察固定开头之后的一条实际访问路径，当前题库窗口为 **4000 个新增可见 Unicode 字符**，达到阈值后按统一句界规则停止阅读。不计公共开头、内部规划、菜单和未选预览；不要求全篇结局，因此连续生成的 InfiPlot 可以按相同片段参与。窗口不是成本上限，原生预取、规划、审核及未选分支的消耗仍记录。
 
-开发任务保留人物、固定事实、两组关键选择和续写要求；不叠加六场景、两个结局或路径总字数的硬要求。原始 v1 题库与 v2 前缀保存在 `benchmark/source/`，没有覆盖。
+公共字符串只编译一次：IF Line 接收 `extra_requirements`，AI4VisualNovel 接收需求文件，InfiPlot 接收 `worldSetting`。三个系统共享外部任务，不强制全部 system/user/history 消息相同，也不要求产生同一篇故事。`--choices 0 1` 是原生下标，序列用完重复最后一项；不是语义 C1/C2 自动路由，不做 AA/AB/BA/BB 全分支探索。
 
-目前公共开头及时间解释仍是 `pilot` 候选。使用 `--allow-pilot` 只能用于明确的开发任务；正式运行需要与内容哈希绑定的确认记录。没有为其他 29 题编造开头。
+仓库采用**冻结基线 + 独立外置适配器**。IF Line 使用已单独披露的 HTML 正文到脚本修复变体；AI4VisualNovel 和 InfiPlot 原生源码保持冻结。此次题库与实验入口不改 `systems/`、`baseline-lock.json`、原生补丁、编译器或记录器。详见 [公平性边界](docs/FAIRNESS.md)、[IF Line 修复](docs/IFLINE_HTML_PATCH.md) 和 [来源说明](docs/PROVENANCE.md)。
 
-## 历史 v3 文本入口与配置
-
-三个项目分别使用各自环境，具体安装和启动命令见 [运行说明](docs/RUNNING.md)。`benchmark/configs/experiment.v3.example.json` 将模型、供应商地址和预算放在共同配置中，拒绝某个系统单独覆盖这些条件。模板默认采用 `budget_mode=unlimited`：适配器不限制总生成时间、HTTP 调用次数、输入长度或单次输出 token；原生项目和模型服务的限制仍保留。模板不启用真实生成，未选择模型会在发送前拒绝。
-
-真实生成可通过单系统 `run-first` 或三系统 `run-set` 执行。v3 的 `resume-export` 核验并返回已封存的统一结果，包括原生失败；不自动重发生成。各接入器原生幂等与恢复边界见运行说明。
-
-共享的是外部任务，不要求三个系统的全部 system/user/history 消息相同，也不要求生成同一篇故事。新 IF Line 模式通过原生人工修订接口一次性导入公共开头，补建空状态检查点后调用原生候选分支接口；只做公共字段映射，不提炼剧情记忆、不重写输出。其接入方式与原生默认首章生成不同，必须随版本披露。详见 [公平性边界](docs/FAIRNESS.md)。
-
-## 上游与文件范围
-
-| 项目 | 冻结提交 |
+| 项目 | 原始冻结提交 |
 |---|---|
-| IF Line | `572407fce9b648a4206ac37da6a9f6ed22631da8` + 已披露 HTML 修复 |
+| IF Line | `572407fce9b648a4206ac37da6a9f6ed22631da8`，另有已披露修复 |
 | AI4VisualNovel | `0faf120244d175866eea3813f053281f5689ab19` |
 | InfiPlot | `a60e18bc663caaa134d9323a2b89159b7cc9bd05` |
 
-这是源码快照仓库，不复制三个项目的 Git 历史。IF Line 既有大型生成素材、无关参考书和历史凭证材料未重新分发；每个省略项及原因列在 `baseline-lock.json`。IF Line 新增源码修复独立记录，历史未修改基线的实测结果继续保留。完整上游位置和许可证说明见 [来源说明](docs/PROVENANCE.md)。
+## 文档与验证
+
+| 需求 | 文档 |
+|---|---|
+| 新用户一键实验 | [EXPERIMENTS](docs/EXPERIMENTS.md) |
+| 从零部署和底层单系统命令 | [QUICKSTART](docs/QUICKSTART.md)、[WSL2](docs/WINDOWS_WSL2.md)、[批量运行](docs/BATCH_RUNNING.md) |
+| 项目专用环境和已知风险 | [IF Line](docs/projects/IF_LINE.md)、[AI4VisualNovel](docs/projects/AI4VISUALNOVEL.md)、[InfiPlot](docs/projects/INFIPLOT.md) |
+| 30 题来源和内容边界 | [题库](benchmark/suites/eval30/README.md)、[内容审核说明](benchmark/suites/eval30/CONTENT_REVIEW_NOTES.md) |
+| 此次新增入口测试范围 | [离线验证记录](docs/EVAL30_VALIDATION.md) |
+| 既有原生/Linux 验证 | [交接验证](docs/HANDOFF_VALIDATION_20260907.md)、[整体复查](docs/ADAPTER_AUDIT_20260907.md)、[并行复验](docs/PARALLEL_RECHECK_20260907.md) |
+| 历史 v3 文本合同与验证 | [v3 合同](docs/V3_CONTRACT.md)、[运行](docs/RUNNING.md)、[无预算验证](docs/UNLIMITED_VALIDATION.md) |
+| 维护和项目结构 | [项目说明](docs/PROJECT_GUIDE.md) |
+
+新增入口的免费回归检查：
+
+```bash
+bash tools/experiment.sh test
+python3 tools/verify_sources.py
+```
+
+编译及离线测试不代表真实供应商可用、所有故事成功、或故事质量通过。旧的原生 fixture 检查继续由 `tools/smoke_test.py` 执行；新机器真实模型首次运行仍需使用者完成。Windows 原生命令行不支持此原生进程管理，使用 WSL2 Linux 文件系统。
