@@ -1,0 +1,296 @@
+{
+  "system": "ai4visualnovel",
+  "run_dir": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/clarified-retest-20260907/ai4visualnovel-c1-01",
+  "evidence_kind": "live",
+  "adapter_commit": "c2b4427f46750fdfefbaf8bb2ed8a6a833a541d8",
+  "verdict": "failed_native_node_count_no_story",
+  "story_output_passed": false,
+  "sealed_evidence_valid": true,
+  "manifest_state": {
+    "state": "FAILED",
+    "failure_code": "native_graph_node_count_mismatch",
+    "generation_status": "failed",
+    "adapter_status": "failed",
+    "audit_status": "not_evaluated",
+    "native_integration": "not_run",
+    "cleanup_status": "completed"
+  },
+  "case_id": "CAMPUS-01-C1",
+  "shared_task_sha256": "290f9d773504447f7230750d91d8b7edffd173745478a05cbb5d0b990fd43d15",
+  "opening_sha256": "196d04a58ba5bce543e93788e496ae42fdd547d1583d185cda42c3b969159c65",
+  "shared_file_identical": true,
+  "receipt_files": [
+    "trace/received-ai4vn-54564.json"
+  ],
+  "configuration": {
+    "model": "deepseek-v4-flash",
+    "model_base_url": "https://api.deepseek.com",
+    "model_parameters": {
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "max_calls": 160,
+    "max_output_tokens": 16384,
+    "max_input_chars": 200000,
+    "timeout_seconds": 1800,
+    "live": true
+  },
+  "native_stages": {
+    "design": "failed"
+  },
+  "native_failure_diagnostic": {
+    "stage": "design",
+    "native_exit_code": 1,
+    "failure_code": "native_graph_node_count_mismatch",
+    "automatic_retry": false,
+    "diagnosis_basis": "native_cli_exception_log",
+    "native_log": "design.stdout.log",
+    "expected_nodes": 12,
+    "actual_nodes": 11,
+    "failing_candidate_rejected_before_producer_review": true,
+    "prior_graph_review_observed_in_log": false,
+    "native_script_started": false,
+    "message": "Native Designer rejected the node count before returning this graph candidate for Producer review; no output repair was performed."
+  },
+  "native_source_files_verified": 35,
+  "source_integrity_records": {
+    "source-integrity-ai4vn-prepared.json": {
+      "source_mode": "pristine_copy_external_launcher",
+      "baseline_commit": "0faf120244d175866eea3813f053281f5689ab19",
+      "phase": "prepared",
+      "source_files_verified": 35,
+      "unchanged": true,
+      "changed": []
+    },
+    "source-integrity-ai4vn-before_generation.json": {
+      "source_mode": "pristine_copy_external_launcher",
+      "baseline_commit": "0faf120244d175866eea3813f053281f5689ab19",
+      "phase": "before_generation",
+      "source_files_verified": 35,
+      "unchanged": true,
+      "changed": []
+    },
+    "source-integrity-ai4vn-closed.json": {
+      "source_mode": "pristine_copy_external_launcher",
+      "baseline_commit": "0faf120244d175866eea3813f053281f5689ab19",
+      "phase": "closed",
+      "source_files_verified": 35,
+      "unchanged": true,
+      "changed": []
+    }
+  },
+  "independent_source_hash_changes": [],
+  "request_audit": {
+    "external_input_equal": true,
+    "receiver_observations": 1,
+    "receiver_boundaries": [
+      "native_requirements_reader"
+    ],
+    "direct_native_route_receiver_observed": false,
+    "task_entry_request_contains_shared": true,
+    "task_entry_shared_occurrences": 1,
+    "first_prose_request_observed": false,
+    "native_input_propagation": "cannot_confirm",
+    "usage_coverage_complete": true,
+    "call_context_valid": true,
+    "requested_models": [
+      "deepseek-v4-flash"
+    ],
+    "actual_models": [
+      "deepseek-v4-flash"
+    ],
+    "configured_model_matches_requests": true,
+    "configured_model_parameters_match_requests": true,
+    "configured_model_parameters": {
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "reported_model_matches_requested": true,
+    "missing_response_files": [],
+    "native_issue_codes": [],
+    "observed_http_calls": 3,
+    "trace_parse_errors": [],
+    "actual_cost": null,
+    "cost_status": "unavailable",
+    "delivery_unknown_calls": []
+  },
+  "http_calls": [
+    {
+      "call_id": "f9ccc81fcdbe4970b238c7e0dc59bb3a",
+      "attempt": 1,
+      "stage": "designer_agent.generate_game_outline",
+      "requested_model": "deepseek-v4-flash",
+      "actual_model": "deepseek-v4-flash",
+      "request_schema_and_sampling": {
+        "max_tokens": 16384,
+        "response_format": {
+          "type": "json_object"
+        },
+        "temperature": 0.7,
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 2815,
+        "completion_tokens": 1175,
+        "total_tokens": 3990,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 2815
+      },
+      "provider_request_id": null,
+      "status_code": 200,
+      "start_time": "2026-09-07T00:38:26.640452+00:00",
+      "end_time": "2026-09-07T00:38:36.591064+00:00",
+      "response_file": "trace/response-f9ccc81fcdbe4970b238c7e0dc59bb3a.json",
+      "content_characters": 2563
+    },
+    {
+      "call_id": "196f1343bdb24edea803f5ad41c9a4c3",
+      "attempt": 1,
+      "stage": "producer_agent._run_critique",
+      "requested_model": "deepseek-v4-flash",
+      "actual_model": "deepseek-v4-flash",
+      "request_schema_and_sampling": {
+        "max_tokens": 16384,
+        "response_format": null,
+        "temperature": 0.5,
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 2954,
+        "completion_tokens": 2,
+        "total_tokens": 2956,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 2954
+      },
+      "provider_request_id": null,
+      "status_code": 200,
+      "start_time": "2026-09-07T00:38:36.630792+00:00",
+      "end_time": "2026-09-07T00:38:38.176840+00:00",
+      "response_file": "trace/response-196f1343bdb24edea803f5ad41c9a4c3.json",
+      "content_characters": 4
+    },
+    {
+      "call_id": "a924407258e6497a8b4bd82eac4de9d1",
+      "attempt": 1,
+      "stage": "designer_agent.generate_story_graph_from_outline",
+      "requested_model": "deepseek-v4-flash",
+      "actual_model": "deepseek-v4-flash",
+      "request_schema_and_sampling": {
+        "max_tokens": 16384,
+        "response_format": {
+          "type": "json_object"
+        },
+        "temperature": 0.7,
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 2211,
+        "completion_tokens": 981,
+        "total_tokens": 3192,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 2211
+      },
+      "provider_request_id": null,
+      "status_code": 200,
+      "start_time": "2026-09-07T00:38:38.184016+00:00",
+      "end_time": "2026-09-07T00:38:44.657963+00:00",
+      "response_file": "trace/response-a924407258e6497a8b4bd82eac4de9d1.json",
+      "content_characters": 2361
+    }
+  ],
+  "provider_usage_totals": {
+    "prompt_tokens": 7980,
+    "completion_tokens": 2158,
+    "total_tokens": 10138
+  },
+  "actual_cost": null,
+  "cost_status": "unavailable_not_estimated",
+  "native_graph": {
+    "parsed": true,
+    "expected_nodes": 12,
+    "actual_nodes": 11,
+    "node_ids": [
+      "root",
+      "node1",
+      "node2",
+      "node3",
+      "node4",
+      "node5",
+      "node6",
+      "node7",
+      "node8",
+      "node9",
+      "node10"
+    ],
+    "response_file": "trace/response-a924407258e6497a8b4bd82eac4de9d1.json",
+    "root_choices": [
+      {
+        "from": "root",
+        "to": "node1",
+        "choice_text": "立即进入实验楼"
+      },
+      {
+        "from": "root",
+        "to": "node2",
+        "choice_text": "先保护周遥回宿舍"
+      }
+    ]
+  },
+  "native_writer_calls": 0,
+  "native_actor_calls": 0,
+  "story_txt_exists": false,
+  "generated_export_exists": false,
+  "native_graph_saved_as_accepted": false,
+  "visible_story_text": null,
+  "visible_choice_labels": null,
+  "source_mapping_review": "not_evaluable_no_native_story",
+  "output_boundary_review": "not_satisfied_no_visible_story_or_native_choice_export",
+  "story_opening_consistency_review": "not_evaluable_no_native_story",
+  "planning_only_observations": [
+    {
+      "kind": "not_final_prose",
+      "native_source": "native/ai4vn/source/data/game_design.json",
+      "pointer": "/story_outline/groups/0/group_outline",
+      "observation": "Uses 开场建立核心悬念 and retells the signal/memory setup; later prose never ran, so no final-text continuation conclusion is possible."
+    },
+    {
+      "kind": "planning_fidelity_risk",
+      "native_source": "native/ai4vn/source/data/game_design.json",
+      "pointer": "/story_outline/groups/1/group_outline",
+      "observation": "Says 在楼内或楼外发现收音机 although shared clarification places the target radio inside the old laboratory."
+    },
+    {
+      "kind": "planning_fidelity_risk",
+      "native_source": "trace/response-a924407258e6497a8b4bd82eac4de9d1.json",
+      "pointer": "/choices/0/message/content",
+      "observation": "Graph root option B is 先保护周遥回宿舍; its target summary uses a radio from the dorm rather than explicitly checking the laboratory radio. This is a rejected graph, not an executed player choice or final story."
+    }
+  ],
+  "review_side_effects": {
+    "api_requests_sent": 0,
+    "native_source_modified": false,
+    "run_files_modified": false,
+    "graph_repaired": false,
+    "node_constraint_relaxed": false
+  }
+}

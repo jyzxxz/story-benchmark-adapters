@@ -1,0 +1,8 @@
+{
+  "archive": "all-three-sealed-runs.zip",
+  "sha256": "caa0ff2addf4c7af3aa1998e57009e0bc38c10712cdfd040da4a89c89f634942",
+  "bytes": 22731100,
+  "run_count": 3,
+  "sealed_run_hashes_verified_after_packaging": true,
+  "known_provider_credential_matches": 0
+}

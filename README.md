@@ -4,7 +4,7 @@
 
 本仓库采用**未修改的基线源码 + 独立外置适配器**。`systems/` 中发布的每个文件都与冻结提交逐字节相同；接入规则、记录器、预算与启动包装全部位于 `benchmark/`。文件不改不等于运行时完全不包装：必要的输入渲染与预算适配均公开记录。
 
-当前范围为第一期工程接入：公共输入、首批正文、原生选项、请求和用量证据。没有实现完整分支播放器、AA/AB/BA/BB 探索、AI 评分或论文统计。[最新真实模型验证](docs/LIVE_VALIDATION.md) 中 IF Line、InfiPlot 已产生正文，AI4VisualNovel 仍在原生设计阶段失败，**三系统真实输出未全部通过**。初始本地固定响应测试见 [工程验收记录](docs/ACCEPTANCE.md)。
+当前范围为公共输入、原生首次输出、选项与候选预览、请求和用量证据。没有实现完整分支播放器、AA/AB/BA/BB 探索、AI 评分或论文统计。[澄清提示词后的最新重测](docs/CLARIFIED_RETEST.md) 中，IF Line 已从固定开头生成两个原生分支预览，但缺少独立选项标题；AI4VisualNovel 仍在原生设计阶段失败；InfiPlot 返回正文和两个选项，但 B 选项不符合澄清后的行动要求。**三者均未完整通过共同输出要求。** [上一轮结果](docs/LIVE_VALIDATION.md) 和 [初始工程验收](docs/ACCEPTANCE.md) 保留。
 
 ## 目录
 
@@ -34,7 +34,7 @@ python3 tools/verify_sources.py
 
 ## 公共输入
 
-`benchmark/cases/CAMPUS-01.json` 指向原始 brief、原对话中的固定开头候选和 `TEXT_CONTINUATION_DEV` 前缀。只在编译时统一一次 UTF-8、LF 与外围空白，生成唯一 `shared_task.txt`。IF Line 使用 `extra_requirements`，AI4VisualNovel 使用需求文件，InfiPlot 使用 `worldSetting`；里面的公共字符串完全相同。
+最新开发案例为 `benchmark/cases/CAMPUS-01-C1.json`，澄清行动先后、角色知识、审核范围，并明确导出到第一次选择为止。原始 brief 和固定开头逐字保留；旧 `CAMPUS-01.json` 未覆盖。只在编译时统一一次 UTF-8、LF 与外围空白，生成唯一 `shared_task.txt`。IF Line 使用 `extra_requirements`，AI4VisualNovel 使用需求文件，InfiPlot 使用 `worldSetting`；里面的公共字符串完全相同。
 
 开发任务保留人物、固定事实、两组关键选择和续写要求；不叠加六场景、两个结局或路径总字数的硬要求。原始 v1 题库与 v2 前缀保存在 `benchmark/source/`，没有覆盖。
 
@@ -46,7 +46,7 @@ python3 tools/verify_sources.py
 
 真实生成只通过 `run-first` 执行，失败产物和投递不确定状态均保留；`resume-export` 只恢复已保存产物的导出，不自动重发生成。各接入器原生幂等与恢复边界见运行说明。
 
-共享的是外部任务，不要求三个系统的全部 system/user/history 消息相同，也不要求生成同一篇故事。适配器不补剧情、不注入额外记忆、不重写输出。详见 [公平性边界](docs/FAIRNESS.md)。
+共享的是外部任务，不要求三个系统的全部 system/user/history 消息相同，也不要求生成同一篇故事。新 IF Line 模式通过原生人工修订接口一次性导入公共开头，补建空状态检查点后调用原生候选分支接口；只做公共字段映射，不提炼剧情记忆、不重写输出。其接入方式与原生默认首章生成不同，必须随版本披露。详见 [公平性边界](docs/FAIRNESS.md)。
 
 ## 上游与文件范围
 

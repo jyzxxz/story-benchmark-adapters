@@ -1,0 +1,220 @@
+{
+  "run_dir": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/clarified-retest-20260907/infiplot-c1-01",
+  "review_scope": "read-only first C1 continuation; mechanical evidence and scoped textual review, no comparative score",
+  "adapter_commit": "c2b4427f46750fdfefbaf8bb2ed8a6a833a541d8",
+  "run_manifest_sha256": "2439f10414967b578f7121ebfdfe6da2f4d5abb09ca454a421705ba1e8bc6b1d",
+  "sealed_evidence_verified": true,
+  "sealed_evidence_file_count": 42,
+  "state": "EXPORTED",
+  "generation_status": "generated_unreviewed_fallback_unknown",
+  "audit_status": "passed",
+  "real_writer_prose_present": true,
+  "generated_segments": 21,
+  "generated_visible_unicode_codepoints": 933,
+  "generated_choice_count": 2,
+  "generated_text_all_present_in_writer_story": true,
+  "independent_text_source_map_valid": true,
+  "independent_choice_source_map_valid": true,
+  "shared_task_equals_source_bundle": true,
+  "actual_received_task_equals_common_file": true,
+  "actual_received_task_sha256": "290f9d773504447f7230750d91d8b7edffd173745478a05cbb5d0b990fd43d15",
+  "actual_received_task_codepoints": 2593,
+  "writer_before_shared_occurrences": 1,
+  "writer_after_shared_occurrences": 1,
+  "receipt_boundary": "native_sdk_task_block",
+  "direct_native_route_receiver_observed": false,
+  "calls": [
+    {
+      "call_id": "7f8a429d-401e-4658-a615-873da31b4165",
+      "role": "cinematographer",
+      "model_requested": "deepseek-v4-flash",
+      "model_actual": "deepseek-v4-flash",
+      "thinking_at_actual_wire": {
+        "type": "disabled"
+      },
+      "finish_reason": "stop",
+      "delivery_status": "response_received",
+      "usage": {
+        "prompt_tokens": 1356,
+        "completion_tokens": 146,
+        "total_tokens": 1502,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 1356
+      },
+      "input_chars_match": true,
+      "payload_hash_matches": true
+    },
+    {
+      "call_id": "f403b769-3828-4bd5-94d0-679b91e7ae80",
+      "role": "character_designer",
+      "model_requested": "deepseek-v4-flash",
+      "model_actual": "deepseek-v4-flash",
+      "thinking_at_actual_wire": {
+        "type": "disabled"
+      },
+      "finish_reason": "stop",
+      "delivery_status": "response_received",
+      "usage": {
+        "prompt_tokens": 3160,
+        "completion_tokens": 311,
+        "total_tokens": 3471,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 3160
+      },
+      "input_chars_match": true,
+      "payload_hash_matches": true
+    },
+    {
+      "call_id": "57ed2084-5792-499c-ad42-33641a013511",
+      "role": "writer",
+      "model_requested": "deepseek-v4-flash",
+      "model_actual": "deepseek-v4-flash",
+      "thinking_at_actual_wire": {
+        "type": "disabled"
+      },
+      "finish_reason": "stop",
+      "delivery_status": "response_received",
+      "usage": {
+        "prompt_tokens": 6896,
+        "completion_tokens": 1282,
+        "total_tokens": 8178,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 6896
+      },
+      "input_chars_match": true,
+      "payload_hash_matches": true
+    }
+  ],
+  "all_three_call_roles_completed": true,
+  "all_wire_model_parameters_match": true,
+  "error_events": [],
+  "partial_response_files": [],
+  "usage_coverage_complete": true,
+  "summed_reported_usage": {
+    "prompt_tokens": 11412,
+    "completion_tokens": 1739,
+    "total_tokens": 13151
+  },
+  "monetary_cost": "unavailable",
+  "character_card_matches_successful_provider_output": true,
+  "native_fallback_exhaustively_excluded": false,
+  "native_fallback_observation": "unknown_without_exhaustive_native_hooks",
+  "technical_output_boundary_passed": true,
+  "selection_executed_by_adapter": false,
+  "c1_semantics": {
+    "exactly_two_options": true,
+    "A_equivalent": true,
+    "B_equivalent": false,
+    "all_required_options_semantically_satisfied": false,
+    "no_branch_was_programmatically_selected": true,
+    "no_story_action_before_choice_exhaustively_confirmed": false,
+    "B_verdict_scope": "not accepted as fully equivalent; insufficient spatial/action support rather than a proven relocation of the device"
+  },
+  "choice_provenance": {
+    "status": "matches_frozen_native_normalization",
+    "writer_choice_count": 2,
+    "exported_choice_count": 2,
+    "native_dropped_writer_indexes": [],
+    "raw_writer_choices_equal_export": true,
+    "output_modified": false
+  },
+  "visible_opening_continuity": {
+    "same_outdoor_scene": true,
+    "red_umbrella_still_at_door_tip_threshold_handle_out": true,
+    "no_explicit_touch_of_red_umbrella": true,
+    "no_actual_building_entry": true,
+    "no_actual_radio_or_backup_power_inspection": true,
+    "no_professor_contact": true,
+    "no_claimed_eleven_year_gap": true,
+    "no_character_claim_of_measured_eleven_minute_period": true,
+    "elapsed_signal_period_consistency": "requires_review",
+    "second_decision": "not_reached"
+  },
+  "findings": [
+    {
+      "code": "c1_b_radio_location_and_goal_drift",
+      "classification": "semantic_equivalence_not_established_spatial_and_goal_drift",
+      "scope": "player_choice_label_and_unexecuted_effect",
+      "native_pointer": "/scene/beats/20/next/choices/1",
+      "observed_label": "先护住周遥，带他离开这里，去远处检查那台收音机",
+      "observed_effect": "雨夜，林澈半搀半扶着周遥退到路灯下，设法在不靠近旧楼的地方确认信号来源",
+      "required": "先照顾安顿周遥，再以检查楼内收音机为目标；之后可为检查进入楼内。",
+      "reason": "选项含保护和收音机，但远处/不靠近旧楼的执行方式没有文本支持，effect又将检查设备弱化为确认来源，不能按严格C1要求确认语义等价；不据此断言收音机已被搬走。",
+      "present_in_raw_writer": true
+    },
+    {
+      "code": "possible_protection_action_before_c1",
+      "classification": "possible_partial_action_not_full_branch_execution",
+      "scope": "visible_prose",
+      "segment_ids": [
+        "p0011",
+        "p0012"
+      ],
+      "observed": "你伸手，搭住他的胳膊；先别上去。",
+      "reason": "选择前已实施阻拦/保护姿态，与B的保护步骤重叠；也可视为制止贸然行动。尚未带离、安顿或检查，不能判定B整支已执行。"
+    },
+    {
+      "code": "repeated_three_signal_without_elapsed_interval",
+      "classification": "continuity_concern_missing_time_support",
+      "scope": "visible_prose",
+      "segment_id": "p0014",
+      "observed": "紧接着，又是三次短促的信号——滴，滴，滴。",
+      "reason": "固定开头刚有一组信号，本段是连续短对话且只明确几秒停顿，未交代11分钟流逝；内部plan也写方才/余音未散。不能据此精确测时，但11分钟节律缺少文本支持。"
+    },
+    {
+      "code": "unintroduced_umbrella_holding_in_plan",
+      "classification": "internal_plan_state_unsubstantiated",
+      "scope": "writer_plan_not_visible_prose",
+      "observed": "林澈握着伞柄的指尖发凉",
+      "reason": "固定开头明确未碰门口红伞，可见正文也未拿伞；plan未说明是否另有伞或如何取得，不应当作玩家可见已发生事实。"
+    },
+    {
+      "code": "umbrella_ownership_inflation_in_memory",
+      "classification": "internal_memory_overstates_evidence",
+      "scope": "writer_memory_not_visible_prose",
+      "observed": "楼门口出现一把不属于周遥的红色雨伞",
+      "reason": "可见正文只新增周遥平时使用黑伞，未确认红伞所有者。memory把通常使用习惯提升为确定所有权排除；后续影响未测试。"
+    },
+    {
+      "code": "door_state_differs_between_story_and_plan",
+      "classification": "internal_plan_visible_prose_mismatch",
+      "scope": "writer_plan_and_unexecuted_effect_vs_visible_prose",
+      "observed": "正文p0001为紧闭楼门；plan和A的effect为半掩楼门。",
+      "reason": "本轮正文未展示楼门改变，规划与正文状态不一致；effect尚未执行。"
+    }
+  ],
+  "story_task_compliance_passed": false,
+  "source_attestation": {
+    "upstream_source_unchanged": true,
+    "runtime_source_unchanged_except_native_generated_files": true,
+    "runtime_generated_file_changes": [],
+    "runtime_unexpected_source_changes": [],
+    "source_files": 927
+  },
+  "current_full_source_lock_verified": true,
+  "runtime_removed": true,
+  "ports_closed": {
+    "auth": true,
+    "native": true
+  },
+  "identity_fixture": {
+    "kind": "local_supabase_user_endpoint_fixture",
+    "production_account_authentication_verified": false,
+    "fixture_closed": true,
+    "auth_calls_accepted": 4,
+    "native_auth_source_unchanged": true,
+    "sidecar_manifest_hash_matches": true
+  },
+  "cleanup_status": "completed",
+  "run_modified_by_review": false,
+  "model_requests_sent_by_review": 0
+}

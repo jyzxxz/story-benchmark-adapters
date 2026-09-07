@@ -102,7 +102,26 @@ cp -n "$BENCH_ROOT/benchmark/configs/experiment.example.json" \
 | `ai4visualnovel` | `python_executable` 为 AI4VisualNovel 环境解释器绝对路径；当前仪表化路径为 `text_provider="openai"`，`api_key_env` 默认 `OPENAI_API_KEY`。 |
 | `infiplot` | `base_url` 是适配器自己的本地 Next.js 地址，默认 `http://127.0.0.1:3217`，**不是供应商地址**；`cookie_env` 默认 `INFIPLOT_COOKIE`；保持 `shared_opening=true`。 |
 
-IF Line 的 `chapter_count` 表示整部作品的规划章数，模板采用冻结版本原生界面的默认值 `13`；适配器仍只生成其中第一章。设置为 `1` 会触发原生单章完结规则，不能把它当作“只生成首章”的开关。AI4VisualNovel 仍先生成原生故事图和多节点剧本；InfiPlot 只请求第一幕。详见 [公平性边界](FAIRNESS.md)。
+IF Line 的 `chapter_count` 表示整部作品的规划章数，模板采用冻结版本原生界面的默认值 `13`；旧 `first_chapter` 模式只生成其中第一章。设置为 `1` 会触发原生单章完结规则，不能把它当作“只生成首章”的开关。AI4VisualNovel 仍先生成原生故事图和多节点剧本；InfiPlot 只请求第一幕。详见 [公平性边界](FAIRNESS.md)。
+
+### 使用澄清后的 C1 开发案例
+
+新版案例和旧版分开，不能把旧运行目录的输入或适配器代码直接替换后继续算同一次运行。在 `benchmark/` 目录中使用：
+
+```bash
+"$RUNNER_PYTHON" -m story_benchmark compile \
+  --case cases/CAMPUS-01-C1.json \
+  --out "$BENCH_ROOT/work/compiled/CAMPUS-01-C1" --allow-pilot
+"$RUNNER_PYTHON" -m story_benchmark verify \
+  --bundle "$BENCH_ROOT/work/compiled/CAMPUS-01-C1"
+cp -n configs/experiment.c1.example.json configs/experiment.c1.local.json
+```
+
+按前文配置共同模型、预算和本地依赖。新模板只在 IF Line 专有配置增加 `entry_mode: provided_prefix_candidates`，仍不自带模型凭证或启用真实请求。之后对三者都使用同一个 `--experiment configs/experiment.c1.local.json` 和上述同一个 `--bundle`，每者使用新的独立 `--run-dir`。禁止只给某个项目换任务或增加公共预算。
+
+新 IF Line 模式以原生 API 保存并激活公共开头，在显式外置结构检查点上生成两个未选择候选；已有原生人工修订在响应丢失时可精确查回。生成候选的正文保存在 `export/unselected_previews.jsonl`，不是 `export/generated.jsonl`。原生未提供独立选项标题时，`generation_status=unsupported_output_boundary`，`native_integration=verified_candidate_previews_only` 仅表示真实候选接口已验证，不表示共同玩家可见输出合格。部署与字段细节见 [IF Line 外置说明](../benchmark/native_shims/if_line/README.md)。
+
+`export/boundary_audit.json` 记录技术停止与来源校验；`observed_requires_content_review` 仍需核对选项含义和固定事实。InfiPlot 的 `native/choice-provenance.json` 只比较 Writer 到导出的选项变化；AI4VisualNovel 的原生节点数量失败保留在 `native/ai4vn/native_failure.json`。这些状态都不能被当成自动剧情评分。
 
 例如使用支持相应字段的 DeepSeek 模型时，可在唯一的 `common` 块设置 `"model_parameters": {"thinking": {"type": "disabled"}}`。三个适配器会在实际 HTTP JSON 上应用同一参数，再检查完整请求预算；审计核对每次 HTTP 请求是否匹配。`{}` 不重写原生参数；三个系统使用同一模式。具体支持情况以供应商文档为准。[DeepSeek 模式说明](https://api-docs.deepseek.com/guides/thinking_mode/)
 

@@ -1,0 +1,166 @@
+{
+  "run_id": "if_line-c1-01",
+  "review_mode": "read_only_after_seal",
+  "run_dir": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/clarified-retest-20260907/if_line-c1-01",
+  "adapter_commit": "c2b4427f46750fdfefbaf8bb2ed8a6a833a541d8",
+  "manifest_sha256_before_review": "62714a05a0bf9b9e3426f1fdc70570891c19393ba59aefab73d55bbd95389722",
+  "state": {
+    "state": "EXPORTED",
+    "adapter_status": "completed",
+    "audit_status": "passed",
+    "generation_status": "unsupported_output_boundary",
+    "native_integration": "verified_candidate_previews_only",
+    "output_boundary_status": "unsupported",
+    "cleanup_status": "completed"
+  },
+  "input": {
+    "shared_sha256": "290f9d773504447f7230750d91d8b7edffd173745478a05cbb5d0b990fd43d15",
+    "shared_characters": 2593,
+    "opening_sha256": "196d04a58ba5bce543e93788e496ae42fdd547d1583d185cda42c3b969159c65",
+    "opening_characters": 377
+  },
+  "checks": {
+    "sealed_inventory_valid_before_review": true,
+    "shared_task_sha256_matches_manifest": true,
+    "received_task_exact": true,
+    "first_creative_request_shared_occurrences": 1,
+    "manual_prefix_is_exact_opening": true,
+    "manual_prefix_sha256_valid": true,
+    "manual_prefix_generation_task_is_null": true,
+    "prefix_selected_head": true,
+    "checkpoint_tied_to_prefix": true,
+    "checkpoint_has_only_structural_metadata": true,
+    "state_is_empty": true,
+    "post_generation_state_receipt_identical": true,
+    "one_path_zero_choice_decisions": true,
+    "candidate_task_source_hash_valid": true,
+    "native_task_opening_exact": true,
+    "decoded_http_opening_exact": true,
+    "decoded_http_snapshot_matches_frozen_provider_input": true,
+    "decoded_http_instructions_match_case": true,
+    "instruction_mapping_case_hash_valid": true,
+    "candidate_count_matches_native_result_refs": true,
+    "native_candidate_text_and_deltas_equal_raw_model_response": true,
+    "exported_preview_texts_equal_native_rows": true,
+    "preview_native_pointers_exact": true,
+    "no_current_path_generated_prose": true,
+    "no_labels_synthesized_or_choice_selected": true,
+    "all_requests_use_frozen_model": true,
+    "all_responses_report_frozen_model": true,
+    "all_requests_thinking_disabled": true,
+    "all_request_output_caps_within_common_limit": true,
+    "no_transport_error_or_delivery_unknown": true,
+    "native_sources_unchanged": true,
+    "no_chapter_generation_or_script_generation_or_choice_operation": true,
+    "sealed_inventory_valid_after_review": true
+  },
+  "requests": {
+    "http_call_count": 6,
+    "stages": {
+      "bible.generate": 4,
+      "outline.generate": 1,
+      "branch.candidates.generate": 1
+    },
+    "bible_call_breakdown": "1 story Bible + 3 native canonical-character checks",
+    "model": "deepseek-v4-flash",
+    "endpoint": "https://api.deepseek.com",
+    "model_parameters": {
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "usage": {
+      "prompt_tokens": 12614,
+      "completion_tokens": 6592,
+      "total_tokens": 19206
+    },
+    "actual_cost": null,
+    "delivery_unknown_calls": []
+  },
+  "propagation": {
+    "audit_original_value": "cannot_confirm",
+    "review_value": "verbatim_after_decoding_native_json_snapshot",
+    "candidate_call_id": "58ee4643-0f27-4a27-b2b6-b16c93c4bdf0",
+    "json_pointer_in_decoded_request": "/chapter_tail",
+    "decoded_opening_sha256": "196d04a58ba5bce543e93788e496ae42fdd547d1583d185cda42c3b969159c65",
+    "explanation": "Native branch prompt embeds JSON; line breaks are escaped in the request text. The generic literal-substring audit cannot confirm it. Decoding the native snapshot proves exact equality; sealed audit was not edited."
+  },
+  "native_chain": {
+    "bible_revision_id": "97555584-4d00-465b-b06b-7de2d81e93f8",
+    "outline_revision_id": "0d3f2663-454f-4597-850b-f17bb90f2a8e",
+    "outline_chapter_count": 13,
+    "provided_prefix_revision_id": "43636e88-f292-4e4d-a2fc-a44aee16c4e2",
+    "checkpoint_id": "3f0f7bd7-210d-5ef0-89bd-c20308aef0b3",
+    "state_snapshot_id": "dc40f33e-dbed-4215-a72e-31b1a7169f3a",
+    "candidate_set_revision_id": "696b0671-1274-423c-9e76-8341beac216b",
+    "state_json": {},
+    "choice_executed": false
+  },
+  "export": {
+    "generated_current_path_segments": 0,
+    "unselected_previews": 2,
+    "preview_characters": [
+      132,
+      143
+    ],
+    "native_labels": [
+      null,
+      null
+    ],
+    "source_mapping_valid_for_previews": true,
+    "requested_visible_C1_contract_satisfied": false,
+    "reason": "Native schema supplies post-choice preview prose without an independent action label or newly generated pre-choice current-path prose."
+  },
+  "semantic_review": [
+    {
+      "native_pointer": "/0/preview_text",
+      "option_key": "enter_lab_first",
+      "C1_correspondence": "A: enter the laboratory first",
+      "starts_from_opening_state": true,
+      "assessment": "楼外拍肩后推门入楼，周遥随后进入。没有重开宿舍/图书馆场景；对应优先进楼。失忆人物产生模糊熟悉感是新发生的反应，不等于把之前的失忆否定。"
+    },
+    {
+      "native_pointer": "/1/preview_text",
+      "option_key": "protect_zhou_then_check_radio",
+      "C1_correspondence": "B: stabilize Zhou Yao, then enter to inspect the radio",
+      "starts_from_opening_state": true,
+      "assessment": "先退到屋檐下、递水并等待呼吸平稳，然后明确以检查收音机为目标入楼。体现先保护的优先级，未替换成仅联系教授/仅看红伞；短预览尚未完成设备检查，state_delta.checked_radio=false与此一致。"
+    }
+  ],
+  "findings": [
+    {
+      "code": "signal_continuity_gap",
+      "severity": "medium",
+      "scope": "unselected_preview_B",
+      "native_source": "native/candidate_previews.json",
+      "native_pointer": "/1/preview_text",
+      "evidence": "楼里的信号还在响",
+      "opening_evidence": "声音停下后，雨声重新填满了台阶与门厅之间的空隙。",
+      "assessment": "开头明确短信号已停止，预览没有交代再次响起或11分钟流逝，却说仍在响；存在局部声音状态衔接缺口。"
+    },
+    {
+      "code": "outline_restarts_before_opening",
+      "severity": "medium",
+      "scope": "internal_outline_not_current_path",
+      "native_source": "native/outline_revision.json",
+      "native_pointer": "/chapters/0/summary",
+      "evidence": "林澈在图书馆自习时，突然停电",
+      "assessment": "原生首章大纲仍重新构思楼外相遇并约定翌日调查，与已经完成的楼外开头不一致；本轮没有执行该章，也没有把它导出为已发生正文。候选实际依靠已导入opening继续。"
+    },
+    {
+      "code": "new_prop_introduction_note",
+      "severity": "low",
+      "scope": "unselected_previews",
+      "native_source": "native/candidate_previews.json",
+      "assessment": "手电在使用时才首次出现，属于较弱的道具引入；不能据此认定原文禁止手电。B的背包和水通过拿出、递水动作明确引入，不将其算作凭空违反固定事实。"
+    },
+    {
+      "code": "missing_current_path_prose_and_action_labels",
+      "severity": "capability_limit",
+      "scope": "export/metadata.json",
+      "assessment": "两段预览包含各自选择后的行动，只能作为未选择的内部候选保存。没有独立中文行动标签，也没有固定开头之后的当前路径新正文，因此完整玩家可见C1任务仍未满足。"
+    }
+  ],
+  "summary_zh": "真实原生候选接入和来源验证通过，两个预览基本对应C1的两种行动顺序，未执行选择。B有短信号状态衔接缺口，内部首章大纲仍重开。由于缺少当前路径新正文和独立选项标签，只能认定原生候选生成成功，不能认定玩家可见C1任务完成。",
+  "manifest_unchanged": true
+}
