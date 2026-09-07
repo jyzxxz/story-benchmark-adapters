@@ -52,7 +52,7 @@ def main() -> int:
         path = dst/row['case_file']
         case = json.loads(path.read_text(encoding='utf-8'))
         case['review_status'] = 'approved'
-        case['case_version'] = '4.0-approved.1'
+        case['case_version'] = case['case_version'].replace('-pilot.', '-approved.', 1)
         case['review_file'] = f'reviews/{case["case_id"]}.json'
         case['provenance']['approval_note'] = 'Content review asserted by the named operator through approve_eval30.py; not an automated quality judgment.'
         dump(path, case)
@@ -60,7 +60,7 @@ def main() -> int:
               'reviewed_at':reviewed_at,'source_sha256':case['provenance']['source_sha256'],
               'case_sha256':sha(path), 'notes':'Human reviewed original brief, added opening/scopes, cast, decisions and window. No generation quality certification.'})
         row['review_status']='approved'
-    catalog['suite_version']='v4-30-approved.1'
+    catalog['suite_version']=catalog['suite_version'].replace('-pilot.', '-approved.', 1)
     catalog['reviewed_at']=reviewed_at
     catalog['reviewer']=args.reviewer.strip()
     dump(dst/'suite_manifest.json',catalog)

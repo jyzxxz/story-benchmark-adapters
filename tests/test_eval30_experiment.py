@@ -24,7 +24,7 @@ class SuiteTests(unittest.TestCase):
     def setUpClass(cls):
         cls.work=tempfile.TemporaryDirectory()
         cls.suite=Path(cls.work.name)/'suite'
-        cls.manifest=eval30.expand_suite(cls.suite)
+        cls.manifest=eval30.expand_legacy_suite(cls.suite)
         cls.catalog,cls.briefs,cls.prefix=eval30.catalog_sources()
     @classmethod
     def tearDownClass(cls):

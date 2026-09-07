@@ -2,14 +2,14 @@
 import json
 from pathlib import Path
 from .io import BenchmarkError, atomic_json, atomic_write, read_json, safe_child, sha256
-from .contracts import validate_contracts, canonical_case_hash
+from .contracts import validate_contracts, canonical_case_hash, native_decisions
 
 MARKERS = ('<<<SHARED_TASK_V2_BEGIN>>>', '<<<SHARED_TASK_V2_END>>>',
            '<<<BRIEF_BEGIN>>>', '<<<BRIEF_END>>>', '<<<OPENING_BEGIN>>>', '<<<OPENING_END>>>')
 REQUIRED = {'case_id', 'case_version', 'review_status', 'title', 'language', 'player_name',
             'character_names', 'visual_style', 'brief_file', 'opening_file', 'prefix_file',
             'profile', 'scope_map', 'decisions', 'provenance'}
-OPTIONAL = {'review_file', 'target_new_visible_chars', 'output_boundary', 'input_contract', 'output_contract'}
+OPTIONAL = {'review_file', 'target_new_visible_chars', 'output_boundary', 'input_contract', 'output_contract', 'decision_policy'}
 PROFILES = {'TEXT_CONTINUATION_DEV', 'TEXT_BRANCHING', 'FULL_VN'}
 
 
@@ -67,7 +67,8 @@ def load_case(case_file, allow_pilot=False):
     if not isinstance(scopes, dict) or not scopes or any(not isinstance(k, str) or not isinstance(v, str) or not v.strip() for k, v in scopes.items()):
         raise BenchmarkError('invalid_scope_map')
     decisions = case['decisions']
-    if not isinstance(decisions, list) or len(decisions) != 2:
+    open_actions = native_decisions(case)
+    if not isinstance(decisions, list) or (not open_actions and len(decisions) != 2):
         raise BenchmarkError('two_decisions_required')
     ids = []
     for decision in decisions:
@@ -83,7 +84,7 @@ def load_case(case_file, allow_pilot=False):
             option_ids.append(option['id'])
         if len(set(option_ids)) != 2:
             raise BenchmarkError('duplicate_option_id')
-    if len(set(ids)) != 2:
+    if len(set(ids)) != len(ids):
         raise BenchmarkError('duplicate_decision_id')
     validate_output_boundary(case)
     validate_contracts(case)
@@ -145,7 +146,10 @@ def render(case, texts):
         execution += ('\n本轮生成真实图文，保留原生规划、审核、修订、素材生成、预取与后续脚本预生成。'
                       '\n共同阅读范围：固定开头之后新增可见正文达到 '+str(case['output_contract']['window_chars'])
                       +' 个 Unicode 字符后，外部程序在相同的完整句边界停止阅读。固定开头、内部规划和未选预览不计新增正文。'
-                      '\n不要求全篇结局或收束。观察范围之内仍应呈现题目要求的选择和后果，外部程序按统一策略实际选择原生选项。'
+                      + ('\n不要求全篇结局或收束。不预设关键行动、选项语义、行动顺序或结局；选择由原生流程根据自身剧情设计，外部程序只执行实际生成的选项。'
+                         if native_decisions(case) else
+                         '\n不要求全篇结局或收束。观察范围之内仍应呈现题目要求的选择和后果，外部程序按统一策略实际选择原生选项。')
+                      +
                       '\n只在实际选择后将相应后果作为已发生剧情，互斥分支不拼成同一路线。'
                       '\n生成保持原生格式，外部程序统一保存正文、选择、真实画面与调用记录。')
     elif v3:

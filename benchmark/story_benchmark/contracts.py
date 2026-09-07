@@ -8,6 +8,21 @@ INPUT_CONTRACT = {
 }
 
 
+
+def native_decisions(case):
+    """Explicit v4-only extension. Legacy cases keep their two prescribed choices."""
+    if 'decision_policy' not in case:
+        return False
+    if case['decision_policy'] != 'native_generated':
+        raise BenchmarkError('invalid_decision_policy')
+    output = case.get('output_contract')
+    if (case.get('profile') != 'FULL_VN' or case.get('input_contract') != INPUT_CONTRACT
+            or not isinstance(output, dict) or output.get('version') != '4.0'
+            or 'output_boundary' in case or case.get('decisions') != []):
+        raise BenchmarkError('native_decisions_require_v4_and_empty_prescribed_list')
+    return True
+
+
 def expected_output_contract(case):
     if case.get('output_contract', {}).get('version') == '4.0':
         return {'version':'4.0', 'scope':'readable_window',
@@ -26,6 +41,7 @@ def expected_output_contract(case):
 
 
 def validate_contracts(case, required=False):
+    native_decisions(case)
     present = 'input_contract' in case or 'output_contract' in case
     if not present:
         if required:
