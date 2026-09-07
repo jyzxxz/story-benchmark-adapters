@@ -72,6 +72,49 @@ def export_script_ir(revision, chapter=None, native_source="native/script_revisi
             "boundary": "first_chapter_script_ir", "choice_support": "not_in_script_ir_v3"}
 
 
+def candidate_input_mapping(bundle):
+    """Mechanical native-instructions mapping, without adding story content."""
+    case = _read(Path(bundle) / "case.json")
+    decision = case["decisions"][0]
+    boundary = case.get("output_boundary", {})
+    scope = case["scope_map"]["第一次选择的行动顺序"]
+    if (boundary != {"kind": "first_choice", "decision_id": decision["id"],
+                     "include_options": True, "execute_choice": False}
+            or len(decision["options"]) != 2 or not isinstance(scope, str)):
+        raise IFLineError("unsupported_candidate_input_contract")
+    # All creative strings are copied verbatim; keys only describe their origin.
+    values = {"decision": decision, "scope": scope}
+    instructions = json.dumps(values, ensure_ascii=False, separators=(",", ":"))
+    return {"instructions": instructions, "candidate_count": 2,
+            "mapping_kind": "verbatim_case_field_mapping",
+            "source_file": "case.json", "source_sha256": hashlib.sha256((Path(bundle)/"case.json").read_bytes()).hexdigest(),
+            "sources": [{"target": "/decision", "source_pointer": "/decisions/0", "value": decision},
+                        {"target": "/scope", "source_pointer": "/scope_map/第一次选择的行动顺序", "value": scope}]}
+
+
+def export_candidate_previews(candidates):
+    if not isinstance(candidates, list) or len(candidates) != 2:
+        raise IFLineError("invalid_native_candidate_count")
+    previews, choices = [], []
+    for i, row in enumerate(candidates):
+        if (not row.get("id") or not isinstance(row.get("preview_text"), str)
+                or not row["preview_text"] or not isinstance(row.get("state_delta"), dict)
+                or not row.get("option_key")):
+            raise IFLineError("invalid_native_candidate")
+        previews.append({"segment_id": row["id"], "kind": "branch_preview", "speaker": None,
+                         "text": row["preview_text"], "native_source": "native/candidate_previews.json",
+                         "native_pointer": f"/{i}/preview_text"})
+        choices.append({"choice_id": row["id"], "option_key": row["option_key"], "label": None,
+                        "preview_text": row["preview_text"], "state_delta": row["state_delta"],
+                        "selected": False, "native_source": "native/candidate_previews.json",
+                        "native_pointer": f"/{i}"})
+    return {"segments": [], "choices": choices, "unselected_previews": previews,
+            "generation_issue_codes": ["unsupported_output_boundary", "no_visible_continuation", "missing_choice_labels"],
+            "native_capability_status": "unsupported_output_boundary", "stop_reason": "unselected_candidates",
+            "selection_executed": False,
+            "boundary": "provided_prefix_candidates", "choice_support": "native_unselected_previews_without_action_labels"}
+
+
 class IFLineAdapter:
     def __init__(self, config):
         self.config = dict(config)
@@ -87,6 +130,9 @@ class IFLineAdapter:
     def preflight(self, bundle_dir):
         bundle = Path(bundle_dir)
         errors, checks = [], []
+        entry_mode = self.config.get("entry_mode", "first_chapter")
+        if entry_mode not in {"first_chapter", "provided_prefix_candidates"}:
+            errors.append("unsupported_entry_mode")
         try:
             shared = (bundle / "shared_task.txt").read_text(encoding="utf-8")
             payload = _read(bundle / "payloads/if_line.json")
@@ -99,6 +145,16 @@ class IFLineAdapter:
             if not (bundle / "opening.txt").is_file():
                 errors.append("missing_opening")
             checks.append("shared_payload_checked")
+            if entry_mode == "provided_prefix_candidates":
+                mapping = candidate_input_mapping(bundle)
+                opening = (bundle / "opening.txt").read_text(encoding="utf-8")
+                if not opening or len(opening) > 8000:
+                    errors.append("opening_exceeds_native_candidate_tail")
+                if len(mapping["instructions"]) > 12000:
+                    errors.append("candidate_instructions_exceed_native_contract")
+                checks.append("candidate_input_contract_checked")
+        except (KeyError, TypeError, IndexError, IFLineError):
+            errors.append("invalid_candidate_input_contract")
         except (OSError, ValueError):
             errors.append("missing_or_invalid_bundle")
         repo = self.config.get("repo_path", self.config.get("repo_dir"))
@@ -175,14 +231,16 @@ class IFLineAdapter:
         journal = run / "native/if_line_journal.json"
         if journal.exists():
             handle = _read(journal)
-            if handle["shared_sha256"] != digest or handle["root_run_id"] != self.config["root_run_id"]:
+            if (handle["shared_sha256"] != digest or handle["root_run_id"] != self.config["root_run_id"]
+                    or handle.get("entry_mode", "first_chapter") != self.config.get("entry_mode", "first_chapter")):
                 raise IFLineError("resume_input_conflict")
             if self.config.get("managed_runtime") and self._managed_process is None:
                 raise IFLineError("managed_resume_requires_session_reconciliation")
             return handle
         handle = {"system": "if_line", "bundle_dir": str(bundle), "run_dir": str(run),
             "root_run_id": self.config["root_run_id"], "shared_sha256": digest,
-            "operations": {}, "simulated": self.transport is not None}
+            "operations": {}, "simulated": self.transport is not None,
+            "entry_mode": self.config.get("entry_mode", "first_chapter")}
         self._save_handle(handle)
         if self.config.get("managed_runtime"):
             try:
@@ -205,6 +263,7 @@ class IFLineAdapter:
         # This is the whole outline length. generate_first_artifact still selects
         # only its first chapter. 13 is the frozen native new-project UI default.
         launch_config.update(runtime_dir=str(runtime), port=port, chapter_count=int(self.config.get("chapter_count",13)))
+        launch_config.update(bundle_dir=handle["bundle_dir"], shared_sha256=handle["shared_sha256"])
         launch_config["repo_path"] = str(Path(self.config.get("repo_path",self.config.get("repo_dir"))).resolve())
         if self.config.get("source_lock"):
             launch_config["source_lock"] = str(Path(self.config["source_lock"]).resolve())
@@ -392,6 +451,8 @@ class IFLineAdapter:
         first = min(chapters, key=lambda x: x["display_index"])
         if not any(c.get("story_path_chapter_id") == first["id"] for c in outline_obj.get("chapters", [])):
             raise IFLineError("outline_chapter_mismatch")
+        if handle.get("entry_mode") == "provided_prefix_candidates":
+            return self._generate_prefix_candidates(handle, pid, root, first)
         chapter_id, _ = self._generate(handle, "chapter", f'/path-chapters/{first["id"]}/generations',
             {"bible_revision_id": bible, "outline_revision_id": outline}, "chapter_revision_id")
         chapter = self._request("GET", f"{self.prefix}/chapter-revisions/{chapter_id}")
@@ -408,8 +469,85 @@ class IFLineAdapter:
                 "simulated": handle["simulated"],
                 "execution_environment": handle.get("execution_environment", "native_service")}
 
+    def _generate_prefix_candidates(self, handle, pid, root, first):
+        bundle, native = Path(handle["bundle_dir"]), Path(handle["run_dir"])/"native"
+        opening = (bundle/"opening.txt").read_text(encoding="utf-8")
+        opening_hash = hashlib.sha256(opening.encode()).hexdigest()
+        path = f'{self.prefix}/path-chapters/{first["id"]}/revisions'
+        previous = handle["operations"].get("import_provided_prefix")
+        if previous and previous.get("status") != "completed":
+            matches = [r for r in self._request("GET", path) if r.get("content") == opening
+                       and r.get("content_hash") == opening_hash and r.get("parent_revision_id") is None]
+            if len(matches) != 1:
+                raise IFLineError("delivery_unknown", "manual prefix import requires exact unique revision recovery")
+            previous.update(status="completed", result=matches[0], recovered_via="exact_native_revision_list")
+            self._save_handle(handle)
+        chapter = self._operation(handle, "import_provided_prefix", "POST", path,
+                                  {"content": opening, "parent_revision_id": None})
+        if chapter.get("content") != opening or chapter.get("content_hash") != opening_hash:
+            raise IFLineError("provided_prefix_receipt_mismatch")
+        chapter_id = chapter["id"]
+        _write(native/"provided_prefix_revision.json", chapter)
+        self._activate(handle, "activate_provided_prefix", f'/path-chapters/{first["id"]}/head', chapter_id)
+        checkpoint_path = f'/__benchmark__/path-chapters/{first["id"]}/prefix-checkpoints'
+        checkpoint_body = {"chapter_revision_id": chapter_id, "opening_sha256": opening_hash}
+        receipt = self._operation(handle, "initialize_prefix_checkpoint", "POST", checkpoint_path,
+                                  checkpoint_body, idempotent=True)
+        self._verify_prefix_receipt(receipt, chapter_id, opening)
+        _write(native/"provided_prefix_import.json", receipt)
+        mapping = candidate_input_mapping(bundle)
+        _write(native/"candidate_input_mapping.json", mapping)
+        checkpoint_id = receipt["checkpoint"]["id"]
+        candidate_revision, task = self._generate(handle, "candidates",
+            f'/story-paths/{root}/checkpoints/{checkpoint_id}/candidate-set-generations',
+            {"chapter_revision_id": chapter_id, "state_snapshot_id": receipt["state_snapshot_id"],
+             "candidate_count": 2, "instructions": mapping["instructions"]}, "candidate_set_revision_id")
+        source = task.get("source_refs", {}).get("candidate_set_source", {})
+        provider_input = source.get("provider_input", {})
+        if (provider_input.get("chapter_tail") != opening or provider_input.get("state") != {}
+                or provider_input.get("instructions") != mapping["instructions"]):
+            raise IFLineError("candidate_source_input_mismatch")
+        self._get_revision(handle, f'/story-paths/{root}/checkpoints/{checkpoint_id}/candidate-set-revisions',
+                           candidate_revision, "candidate_set_revision.json")
+        candidates = self._request("GET", f'{self.prefix}/candidate-set-revisions/{candidate_revision}/candidates')
+        if (len(candidates) != 2 or {c.get("id") for c in candidates} != set(task["result_refs"]["candidate_ids"])
+                or any(c.get("candidate_set_revision_id") != candidate_revision for c in candidates)):
+            raise IFLineError("candidate_result_refs_mismatch")
+        export_candidate_previews(candidates)
+        _write(native/"candidate_previews.json", candidates)
+        # Re-read the structural receipt after generation. This proves that
+        # generation did not promote a path, apply a choice, or mutate the state.
+        after = self._request("POST", checkpoint_path, checkpoint_body,
+            {"Idempotency-Key": f'{handle["root_run_id"]}:if_line:initialize_prefix_checkpoint'})
+        self._verify_prefix_receipt(after, chapter_id, opening)
+        if after != receipt:
+            raise IFLineError("candidate_generation_changed_current_state")
+        _write(native/"provided_prefix_after_candidates.json", after)
+        return {"adapter_status": "completed", "generation_status": "unselected_candidates_generated",
+                "native_capability_status": "unsupported_output_boundary", "stop_reason": "unselected_candidates",
+                "native_project_id": pid, "root_story_path_id": root, "provided_prefix_revision_id": chapter_id,
+                "candidate_set_revision_id": candidate_revision, "candidate_count": 2,
+                "external_initialization": "provided_prefix_checkpoint_empty_state", "choice_executed": False,
+                "simulated": handle["simulated"],
+                "execution_environment": handle.get("execution_environment", "native_service")}
+
+    @staticmethod
+    def _verify_prefix_receipt(receipt, chapter_id, opening):
+        if (receipt.get("origin") != "external_provided_prefix_import"
+                or "generation_task_id" not in receipt
+                or receipt.get("generation_task_id") is not None or receipt.get("content") != opening
+                or receipt.get("chapter_revision_id") != chapter_id or receipt.get("current_revision_id") != chapter_id
+                or receipt.get("state_json") != {} or receipt.get("story_path_count") != 1
+                or receipt.get("choice_decision_count") != 0):
+            raise IFLineError("provided_prefix_initialization_mismatch")
+
     def export_first_artifact(self, handle):
         native = Path(handle["run_dir"]) / "native"
+        if handle.get("entry_mode") == "provided_prefix_candidates":
+            try:
+                return export_candidate_previews(_read(native/"candidate_previews.json"))
+            except (OSError, ValueError):
+                raise IFLineError("missing_candidate_artifact") from None
         try:
             revision = _read(native / "script_revision.json")
             chapter = _read(native / "chapter_revision.json")

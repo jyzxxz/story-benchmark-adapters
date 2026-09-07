@@ -26,7 +26,7 @@ def fixture_reply(request, fixture):
                     'personality': 'fixture', 'appearance': 'fixture', 'background': 'fixture'} for index, name in enumerate(['林', '周', '顾'])],
                 'scenes': [{'id': 'classroom', 'name': '教室', 'description': 'fixture'}]}, ensure_ascii=False)
         nodes = ['root'] + ['node' + str(n) for n in range(1, 12)]
-        edges = [('root', 'node1', '追查'), ('root', 'node2', '等待'), ('node1', 'node3', None), ('node2', 'node3', None)]
+        edges = [('root', 'node1', '进入实验楼'), ('root', 'node2', '先保护周遥并检查收音机'), ('node1', 'node3', None), ('node2', 'node3', None)]
         edges += [('node' + str(n), 'node' + str(n+1), None) for n in range(3, 11)]
         return json.dumps({'nodes': {n: {'id': n, 'summary': fixture['marker'] + n, 'type': 'merge' if n == 'node3' else 'normal'} for n in nodes},
                            'edges': [{'from': a, 'to': b, 'choice_text': c} for a, b, c in edges]}, ensure_ascii=False)
@@ -50,7 +50,7 @@ def fixture_reply(request, fixture):
     if '编剧' in system:
         return ('<scene>教室</scene>\n<content id="旁白">' + fixture['marker'] + '生成正文。</content>\n'
                 '<content id="林">请作选择。</content>\n[CHOICE]\n'
-                '<choice target="node1">追查</choice>\n<choice target="node2">等待</choice>')
+                '<choice target="node1">进入实验楼</choice>\n<choice target="node2">先保护周遥并检查收音机</choice>')
     raise AssertionError('Unexpected native stage system prompt: ' + system[:100])
 
 
@@ -241,6 +241,7 @@ class NativeFlowTests(unittest.TestCase):
         self.assertEqual((run / 'export/provided_prefix.txt').read_bytes(), (bundle / 'opening.txt').read_bytes())
         segments = [json.loads(line) for line in (run / 'export/generated.jsonl').read_text().splitlines()]
         choices = json.loads((run / 'export/choices.json').read_text())
+        self.assertIs(json.loads((run / 'export/metadata.json').read_text())['selection_executed'], False)
         self.assertEqual(segments[0]['text'], marker + '生成正文。')
         self.assertEqual(len(choices), 2)
         self.assertTrue(validate_source_map(run, segments)[0])

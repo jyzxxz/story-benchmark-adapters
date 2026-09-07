@@ -89,7 +89,7 @@ def export_scene(response: dict, source: str = "native/start-response.json") -> 
         issues.append("empty_prose")
     return {"segments": segments, "choices": choices, "generation_issue_codes": issues,
             "visited_beat_ids": visited, "source_mapping_valid": True,
-            "export_scope": "entry_to_first_choice"}
+            "export_scope": "entry_to_first_choice", "selection_executed": False}
 
 
 class InfiPlotAdapter:
@@ -298,6 +298,11 @@ class InfiPlotAdapter:
         result["generation_status"] = "native_fallback_observed" if fallback_observed else "generated_unreviewed_fallback_unknown"
         result["direct_native_route_receiver_observed"] = False
         result["task_receiver_observation_boundary"] = "native_sdk_task_block"
+        from native_shims.infiplot.choice_observation import observe_choices
+        choice_observation = observe_choices(Path(handle["trace_dir"]), result["choices"])
+        result["native_choice_normalization_observation"] = choice_observation["status"]
+        if not (native_dir / "choice-provenance.json").exists():
+            _save(native_dir / "choice-provenance.json", choice_observation)
         if not (native_dir / "fallback-observation.json").exists():
             _save(native_dir / "fallback-observation.json", {key: result[key] for key in ("native_fallback_observation", "generation_status", "direct_native_route_receiver_observed", "task_receiver_observation_boundary")})
         return result

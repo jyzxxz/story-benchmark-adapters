@@ -1,0 +1,32 @@
+{
+  "case_id": "CAMPUS-01-C1",
+  "case_sha256": "eb9e36078aafa889fb1f8ee4ed26f48d3d17f92dcdc8103fcee6785584b8dbc4",
+  "files": {
+    "case.json": "c396188ed8577a278a828a81c03045ad2b1e1b295862baaef713e45fdcee13fa",
+    "opening.txt": "196d04a58ba5bce543e93788e496ae42fdd547d1583d185cda42c3b969159c65",
+    "payloads/ai4vn.json": "78ff69122ebd844caa3fcec1b82cff3340d8a7ff3f7c185df055c941ad2765fe",
+    "payloads/if_line.json": "258add6ed43ee64df784f63f55d23da24f3909a65d0e775adc15caf8330ec843",
+    "payloads/infiplot.json": "37d2a0d206118e678991606b93fc411d386f26acb1dd599862b2fd4a066ab5ee",
+    "payloads/requirements.txt": "290f9d773504447f7230750d91d8b7edffd173745478a05cbb5d0b990fd43d15",
+    "shared_task.txt": "290f9d773504447f7230750d91d8b7edffd173745478a05cbb5d0b990fd43d15"
+  },
+  "native_integration": "not_run",
+  "output_boundary": {
+    "decision_id": "C1",
+    "execute_choice": false,
+    "include_options": true,
+    "kind": "first_choice"
+  },
+  "payload_check": "passed",
+  "profile": "TEXT_CONTINUATION_DEV",
+  "review_status": "pilot",
+  "schema_version": "2.1",
+  "shared_bytes": 7167,
+  "shared_chars": 2593,
+  "shared_sha256": "290f9d773504447f7230750d91d8b7edffd173745478a05cbb5d0b990fd43d15",
+  "source_sha256": {
+    "brief": "810e10baf5259d9961498266a940b82783d660da4047002506f98dfa7f7bbf0a",
+    "opening": "196d04a58ba5bce543e93788e496ae42fdd547d1583d185cda42c3b969159c65",
+    "prefix": "e7682155b97fa33d63316525a22fe2dd398a26c51e747d6d69f6dde9ddfa4b74"
+  }
+}

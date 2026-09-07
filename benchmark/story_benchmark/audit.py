@@ -10,7 +10,8 @@ def is_prose_call(record):
     if system in ('ai4vn', 'ai4visualnovel'):
         return stage in ('actor_agent.perform_plot', 'writer_agent.synthesize_script')
     if system == 'if_line':
-        return stage in ('chapter_generation', 'chapter_generate', 'chapter.generate', 'chapter', 'generate_chapter')
+        return stage in ('chapter_generation', 'chapter_generate', 'chapter.generate', 'chapter', 'generate_chapter',
+                         'branch.candidates.generate', 'candidate_set.generate')
     if system == 'infiplot':
         return stage == 'writer' or stage.startswith('writer.') or stage.startswith('writer-')
     # Generic records only occur in explicitly labelled test fixtures.

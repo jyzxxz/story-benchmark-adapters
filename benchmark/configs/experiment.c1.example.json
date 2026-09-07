@@ -1,0 +1,44 @@
+{
+  "schema_version": "2.1",
+  "common": {
+    "live": false,
+    "model": null,
+    "model_base_url": null,
+    "timeout_seconds": null,
+    "max_calls": null,
+    "max_output_tokens": null,
+    "max_input_chars": null,
+    "allow_pilot": true,
+    "model_parameters": {}
+  },
+  "systems": {
+    "if_line": {
+      "repo_path": "../../systems/if_line",
+      "source_lock": "../../baseline-lock.json",
+      "python_executable": null,
+      "managed_runtime": "native_services",
+      "isolated_deployment": true,
+      "database_url_env": "IFLINE_BENCH_DATABASE_URL",
+      "model_api_key_env": "OPENAI_API_KEY",
+      "redis_executable": null,
+      "chapter_count": 13,
+      "entry_mode": "provided_prefix_candidates"
+    },
+    "ai4visualnovel": {
+      "repo_path": "../../systems/AI4VisualNovel",
+      "source_lock": "../../baseline-lock.json",
+      "python_executable": null,
+      "text_provider": "openai",
+      "api_key_env": "OPENAI_API_KEY"
+    },
+    "infiplot": {
+      "repo_path": "../../systems/infiplot",
+      "source_lock": "../../baseline-lock.json",
+      "base_url": "http://127.0.0.1:3217",
+      "cookie_env": "INFIPLOT_COOKIE",
+      "shared_opening": true,
+      "dependency_timeout_seconds": 180,
+      "keep_runtime": false
+    }
+  }
+}

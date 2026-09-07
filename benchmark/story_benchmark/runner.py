@@ -120,32 +120,52 @@ def _export(run_dir, adapter, handle, manifest):
     segments = export.get('segments', [])
     choices = export.get('choices', [])
     valid, issues = validate_source_map(run_dir, segments)
+    previews = export.get('unselected_previews', [])
+    preview_valid, preview_issues = validate_source_map(run_dir, previews) if previews else (False, [])
+    # A native system may only expose future branch previews. Preserve them as
+    # such; they never enter generated.jsonl or satisfy the visible-body contract.
+    if previews:
+        atomic_write(run_dir / 'export/unselected_previews.jsonl', ''.join(json.dumps(s, ensure_ascii=False) + '\n' for s in previews))
     atomic_write(run_dir / 'export/generated.jsonl', ''.join(json.dumps(s, ensure_ascii=False) + '\n' for s in segments))
     atomic_json(run_dir / 'export/choices.json', choices)
-    atomic_json(run_dir / 'export/metadata.json',{k:v for k,v in export.items() if k not in ('segments','choices')})
+    atomic_json(run_dir / 'export/metadata.json',{k:v for k,v in export.items() if k not in ('segments','choices','unselected_previews')})
     atomic_json(run_dir / 'export/source_map.json', [{k: s[k] for k in ('segment_id', 'native_source', 'native_pointer')} for s in segments])
     shared = (run_dir / 'shared_task.txt').read_text()
     opening = (run_dir / 'export/provided_prefix.txt').read_text()
     audit = audit_trace(run_dir, shared, opening, materialize=True)
+    from .output_boundary import audit_output_boundary
+    case = read_json(run_dir/'case.json') if (run_dir/'case.json').is_file() else {}
+    boundary = audit_output_boundary(run_dir, case, export)
+    atomic_json(run_dir / 'export/boundary_audit.json', boundary)
+    preview_only = (not segments and bool(previews) and preview_valid
+                    and export.get('native_capability_status') == 'unsupported_output_boundary')
     issue_codes=sorted(set(export.get('generation_issue_codes', [])+audit.get('native_issue_codes',[])))
     audit.update(source_mapping_valid=valid, source_mapping_issues=issues,
+                 unselected_preview_source_mapping_valid=preview_valid if previews else None,
+                 unselected_preview_source_mapping_issues=preview_issues,
+                 output_boundary=boundary,
                  generation_issue_codes=issue_codes,
                  evidence_kind=manifest['evidence_kind'])
     atomic_json(run_dir / 'audit.json', audit)
     native_proven = (audit['task_entry_request_contains_shared'] is True
                      and audit['external_input_equal'] is True
-                     and audit['first_prose_request_observed'] and valid
+                     and audit['first_prose_request_observed'] and (valid or preview_only)
                      and audit['task_entry_shared_occurrences'] == 1
                      and audit['call_context_valid'] and not audit['delivery_unknown_calls']
                      and audit['configured_model_matches_requests'] is True
                      and audit['configured_model_parameters_match_requests'] is True
                      and not audit['trace_parse_errors'] and not audit['missing_response_files'])
     generation_status = export.get('generation_status', 'generated_unreviewed' if segments else 'empty')
+    if boundary['requested'] and not boundary['technical_boundary_passed']:
+        generation_status = 'unsupported_output_boundary' if preview_only else 'output_boundary_not_satisfied'
     if 'budget_exhausted' in issue_codes: generation_status='budget_exhausted'
     elif any('fallback' in code or 'degraded' in code for code in issue_codes): generation_status='degraded'
-    _state(run_dir, manifest, 'EXPORTED', adapter_status='completed' if valid else 'failed',
+    _state(run_dir, manifest, 'EXPORTED', adapter_status='completed' if valid or preview_only else 'failed',
            generation_status=generation_status, audit_status='passed' if native_proven else 'incomplete',
-           native_integration=('verified' if manifest['evidence_kind'] == 'live' else 'verified_with_fixture_provider') if native_proven else 'not_verified')
+           native_integration=('verified_candidate_previews_only' if preview_only and manifest['evidence_kind'] == 'live'
+                               else 'verified' if manifest['evidence_kind'] == 'live' else 'verified_with_fixture_provider') if native_proven else 'not_verified',
+           output_boundary_status=('observed_requires_content_review' if boundary.get('technical_boundary_passed')
+                                   else 'unsupported' if preview_only else 'not_satisfied') if boundary['requested'] else 'not_requested')
     return manifest
 
 
@@ -175,6 +195,7 @@ def run_once(system, bundle_dir, config, run_dir, adapter=None, mock=False):
         (run_dir / subdir).mkdir()
     shutil.copyfile(bundle_dir / 'shared_task.txt', run_dir / 'shared_task.txt')
     shutil.copyfile(bundle_dir / 'opening.txt', run_dir / 'export/provided_prefix.txt')
+    shutil.copyfile(bundle_dir / 'case.json', run_dir / 'case.json')
     atomic_json(run_dir / 'config.json', redact(config))
     atomic_json(run_dir / 'preflight.json', check)
     atomic_write(run_dir / 'errors.jsonl', '')

@@ -51,11 +51,63 @@ class ExportTests(unittest.TestCase):
         self.assertEqual(len(result['choices']), 2)
         self.assertEqual(result['stop_reason'], 'first_choice')
 
-    def test_condition_and_jump_are_boundaries(self):
-        for control in ('[IF: 林 >= 1]', '<jump target="node1"/>', '[ELSE]', '[ENDIF]'):
+    def test_conditions_remain_explicit_unsupported_boundaries(self):
+        for control in ('[IF: 林 >= 1]', '[ELSE]', '[ENDIF]'):
             result = self.extract(f'=== Node: root ===\n<content id="旁白">之前。</content>\n{control}\n<content id="旁白">之后。</content>')
             self.assertEqual(len(result['segments']), 1)
             self.assertIn('control_flow_not_executed', result['generation_issue_codes'])
+            self.assertIn('unsupported_native_condition_boundary', result['generation_issue_codes'])
+            self.assertEqual(result['stop_reason'], 'unsupported_condition_boundary')
+
+    def test_automatic_jumps_reach_first_choice_with_original_node_pointers(self):
+        result = self.extract('''=== Node: root ===
+<content id="旁白">门外等待。</content>
+<jump target="intro"/>
+<content id="旁白">跳转后不可达。</content>
+=== Node: intro ===
+<scene>门廊</scene>
+<content id="lin">我还没有决定。</content>
+<jump target="decision"/>
+=== Node: decision ===
+<content id="旁白">两条路就在眼前。</content>
+[CHOICE]
+<choice target="left">进入实验楼</choice>
+<choice target="right">保护周遥并检查收音机</choice>
+=== Node: left ===
+<content id="旁白">尚未选择的分支。</content>
+=== Node: orphan ===
+<content id="旁白">文件顺序不是实际路径。</content>''')
+        self.assertEqual([segment['text'] for segment in result['segments']],
+                         ['门外等待。', '我还没有决定。', '两条路就在眼前。'])
+        self.assertEqual([segment['native_pointer']['line'] for segment in result['segments']], [2, 7, 10])
+        self.assertEqual([segment['native_pointer']['node_id'] for segment in result['segments']], ['root', 'intro', 'decision'])
+        self.assertEqual(result['traversed_node_ids'], ['root', 'intro', 'decision'])
+        self.assertEqual([(transition['from'], transition['to']) for transition in result['automatic_transitions']],
+                         [('root', 'intro'), ('intro', 'decision')])
+        self.assertEqual([choice['native_pointer']['line'] for choice in result['choices']], [12, 13])
+        self.assertTrue(result['first_choice_reached'])
+        self.assertIs(result['selection_executed'], False)
+        self.assertEqual(result['stop_reason'], 'first_choice')
+
+    def test_missing_and_cyclic_automatic_jumps_fail_without_guessing_route(self):
+        for text, code in (
+            ('=== Node: root ===\n<jump target="missing"/>', 'native_jump_target_missing'),
+            ('=== Node: root ===\n<jump target="root"/>', 'native_automatic_jump_cycle'),
+            ('=== Node: root ===\n<jump target="next"/>\n=== Node: next ===\n<jump target="root"/>', 'native_automatic_jump_cycle'),
+        ):
+            with self.subTest(code=code), self.assertRaisesRegex(RuntimeError, code):
+                self.extract(text)
+
+    def test_node_end_does_not_infer_transition_from_file_order(self):
+        result = self.extract('''=== Node: root ===
+<content id="旁白">本节点结束。</content>
+=== Node: next ===
+<choice target="a">A</choice>
+<choice target="b">B</choice>''')
+        self.assertEqual(result['traversed_node_ids'], ['root'])
+        self.assertFalse(result['first_choice_reached'])
+        self.assertEqual(result['choices'], [])
+        self.assertEqual(result['stop_reason'], 'entry_node_end')
 
     def test_empty_and_missing_root_do_not_use_summary(self):
         self.assertEqual(self.extract('=== Node: node1 ===\n<content id="旁白">x</content>')['segments'], [])
@@ -153,6 +205,51 @@ class AdapterTests(unittest.TestCase):
         self.assertFalse(report['ok'])
         self.assertIn('model_not_frozen', report['errors'])
         self.assertIn('missing_positive_budget:max_calls', report['errors'])
+
+    def test_native_node_count_failure_retains_exit_and_never_retries(self):
+        handle = self.adapter.prepare(self.bundle, self.root / 'node-count-failure')
+        self.adapter.config['timeout_seconds'] = 5
+        command = [NATIVE_PYTHON, '-c', 'raise ValueError("story_graph 节点数不匹配，期望 12，实际 13")']
+        with patch.object(self.adapter, '_env', return_value=dict(os.environ)):
+            with self.assertRaisesRegex(RuntimeError, 'native_graph_node_count_mismatch:expected=12:actual=13:native_exit=1'):
+                self.adapter._run_stage(handle, 'design', command)
+        diagnostic = json.loads((Path(handle['native_dir']) / 'native_failure.json').read_text())
+        self.assertEqual(diagnostic['native_exit_code'], 1)
+        self.assertEqual(diagnostic['expected_nodes'], 12)
+        self.assertEqual(diagnostic['actual_nodes'], 13)
+        self.assertFalse(diagnostic['automatic_retry'])
+        self.assertTrue(diagnostic['failing_candidate_rejected_before_producer_review'])
+        self.assertFalse(diagnostic['prior_graph_review_observed_in_log'])
+        self.assertFalse(diagnostic['native_script_started'])
+        self.assertEqual(handle['stages'], {'design': 'failed'})
+        self.assertIn('ValueError: story_graph 节点数不匹配，期望 12，实际 13',
+                      (Path(handle['native_dir']) / 'design.stdout.log').read_text())
+        with patch.object(ADAPTER.subprocess, 'Popen') as spawn:
+            with self.assertRaisesRegex(RuntimeError, 'delivery_unknown'):
+                self.adapter._run_stage(handle, 'design', command)
+            spawn.assert_not_called()
+
+    def test_root_classifies_native_node_count_failure_as_known_failed_exit(self):
+        from story_benchmark.compiler import compile_case
+        from story_benchmark.runner import run_once
+        bundle = self.root / 'compiled-bundle'
+        compile_case(BENCH / 'cases/CAMPUS-01.json', bundle, allow_pilot=True)
+        class NativeFailureAdapter(ADAPTER.AI4VNAdapter):
+            def generate_first_artifact(self, handle):
+                with patch.object(self, '_env', return_value=dict(os.environ)):
+                    self._run_stage(handle, 'design', [NATIVE_PYTHON, '-c',
+                        'raise ValueError("story_graph 节点数不匹配，期望 12，实际 13")'])
+        adapter = NativeFailureAdapter({**REPO_CONFIG, 'python_executable': NATIVE_PYTHON, 'timeout_seconds': 5})
+        run = self.root / 'known-native-failure'
+        with self.assertRaises(ADAPTER.NativeGraphNodeCountError):
+            run_once('ai4visualnovel', bundle, {}, run, adapter=adapter, mock=True)
+        manifest = json.loads((run / 'manifest.json').read_text())
+        self.assertEqual(manifest['state'], 'FAILED')
+        self.assertEqual(manifest['failure_code'], 'native_graph_node_count_mismatch')
+        self.assertEqual(manifest['generation_status'], 'failed')
+        self.assertEqual(manifest['cleanup_status'], 'completed')
+        self.assertFalse((run / 'operation_result.json').exists())
+        self.assertFalse(list((run / 'trace').glob('response-*.json')))
 
 
 @unittest.skipUnless(Path(NATIVE_PYTHON).exists(), 'native environment unavailable')

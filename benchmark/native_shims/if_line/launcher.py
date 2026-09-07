@@ -19,6 +19,7 @@ from urllib.parse import urlsplit
 
 from .bootstrap import install, verify_source_unchanged, BASE_COMMIT
 from . import trace
+from .prefix_import import install_routes
 
 
 def configure(config,mode):
@@ -114,6 +115,7 @@ def native_services(config):
             processes.append(subprocess.Popen([sys.executable,'-m','native_shims.if_line.launcher',role,
                 '--config',str(child_config)],stdout=log,stderr=subprocess.STDOUT,env=dict(os.environ)))
         app=create_app()
+        install_routes(app,config)
         @app.get('/__benchmark__/health')
         def health():
             receipt=Path(config['trace_dir'])/'if_line_worker_receipt.json'
@@ -166,14 +168,20 @@ def engineering_server(config):
     from alembic.config import Config
     command.stamp(Config(str(repo/'backend/alembic.ini')), 'head')
     app=create_app()
+    install_routes(app,config)
     stop=threading.Event()
     def work():
         while not stop.wait(0.1):
             with SessionLocal() as db:
                 row=db.query(GenerationTask).filter(GenerationTask.status=='queued').order_by(GenerationTask.created_at).first()
                 task_id=row.id if row else None
+                task_kind=row.kind if row else None
             if task_id:
-                run_generation_task.run(task_id)
+                if task_kind=='branch.candidates.generate':
+                    from app.workers.branch_tasks import run_branch_generation_task
+                    run_branch_generation_task.run(task_id)
+                else:
+                    run_generation_task.run(task_id)
     worker=threading.Thread(target=work,daemon=True)
     worker.start()
     trace.write_worker_receipt()
@@ -244,7 +252,9 @@ def main():
         elif args.mode=='api':
             from app.main import create_app
             import uvicorn
-            uvicorn.run(create_app(),host='127.0.0.1',port=int(config['port']),log_level='warning')
+            app=create_app()
+            install_routes(app,config)
+            uvicorn.run(app,host='127.0.0.1',port=int(config['port']),log_level='warning')
         elif args.mode=='worker':
             sys.argv=['celery','-A','app.workers.celery_app:celery_app','worker','--pool=solo','--concurrency=1',
                       '--queues=text,maintenance','--loglevel=INFO']

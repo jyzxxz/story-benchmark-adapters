@@ -155,3 +155,61 @@ The native Script IR v3 stores linear paragraphs and no player choices. The
 exporter preserves its display text and JSON pointers, checks chapter source
 spans, and exports an empty choice list with that limitation stated. It does
 not invent options or claim verified player-reachable branches.
+## Provided prefix and native candidates
+
+Set the explicit IF Line config `entry_mode: "provided_prefix_candidates"` to
+use the frozen native authoring candidate pipeline. The default remains
+`first_chapter`; this option does not replace the native prompts or algorithms.
+Use the compiled `examples/CAMPUS-01-C1` bundle (or a bundle with the same declared
+first-choice boundary and two first-decision options).
+
+The chain is native Bible generation and activation, native 13-chapter outline
+generation and activation, native manual revision import of exact `opening.txt`
+into the first chapter placement, native head activation, an **external structural
+checkpoint import**, and native candidate generation with count 2. It stops after
+fetching the native candidate records. It does not generate a new chapter, promote
+a candidate, choose an option, publish a release, or apply candidate state changes.
+
+The checkpoint creation route is supplied by the external launcher, not by the
+frozen repository. It requires the normal native session cookie and chapter
+ownership, checks the exact selected manual revision and content hash, and uses
+the native ORM only to register a checkpoint tied to that revision. Its payload
+contains structural IDs and hashes, without a duplicate opening. The existing
+native `_snapshot` service supplies an empty `{}` state. The adapter does not
+infer character knowledge, inventory or other story state. The native candidate
+service then applies all of its normal source/hash/head checks. Idempotent
+checkpoint initialization uses a stable key and a deterministic UUID; a mismatch
+is rejected. A lost manual-import response can only recover a unique exact native
+revision; it cannot blindly create a replacement.
+
+Candidate `instructions` is a JSON serialization of only `case.decisions[0]` and
+the verbatim `scope_map["第一次选择的行动顺序"]`. The input mapping file records the case
+file hash and exact JSON pointers. No new plot is added. The original shared task
+still enters the first creative request once. The native branch context receives
+the provided opening once in `chapter_tail`; openings over the native 8,000-char
+tail limit are rejected.
+
+`native/provided_prefix_revision.json` and `provided_prefix_import.json` identify
+the imported text with `generation_task_id: null`. `native/candidates_task.json`
+preserves the actual frozen candidate source, and `native/candidate_previews.json`
+contains the exact native `option_key`, `preview_text` and `state_delta` records.
+`provided_prefix_after_candidates.json` proves the original head, empty state,
+single root path and zero choice decisions stayed unchanged. A separate branch
+worker observation wrapper records `stage: branch.candidates.generate` and the
+native task ID while retaining its existing source validation, leases and retry
+behavior. HTTP/model/budget rules are unchanged.
+
+The output contract is deliberately explicit: `segments` is empty, the native
+preview text is only in `unselected_previews`, and native choices retain
+`label: null` and `selected: false`. The frozen native schema defines previews as
+post-choice prose and has no independent action label. Consequently this mode
+reports `native_capability_status: unsupported_output_boundary` and
+`stop_reason: unselected_candidates`; generating candidates is not evidence of
+new player-visible pre-choice prose or a complete C1 menu. Neither supplied text
+nor alternative outcomes are counted as newly generated current-path text.
+
+Local verification uses the existing PostgreSQL/Redis/Celery fixture test with
+`IFLINE_ENTRY_MODE=provided_prefix_candidates`; the evidence directory must not
+already exist. The corresponding first-chapter regression uses
+`IFLINE_ENTRY_MODE=first_chapter`. Both are engineering tests with localhost
+fixed responses, not real-model story-quality evidence.

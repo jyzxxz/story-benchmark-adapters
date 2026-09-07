@@ -8,8 +8,21 @@ MARKERS = ('<<<SHARED_TASK_V2_BEGIN>>>', '<<<SHARED_TASK_V2_END>>>',
 REQUIRED = {'case_id', 'case_version', 'review_status', 'title', 'language', 'player_name',
             'character_names', 'visual_style', 'brief_file', 'opening_file', 'prefix_file',
             'profile', 'scope_map', 'decisions', 'provenance'}
-OPTIONAL = {'review_file', 'target_new_visible_chars'}
+OPTIONAL = {'review_file', 'target_new_visible_chars', 'output_boundary'}
 PROFILES = {'TEXT_CONTINUATION_DEV', 'TEXT_BRANCHING', 'FULL_VN'}
+
+
+def validate_output_boundary(case):
+    boundary = case.get('output_boundary')
+    if boundary is None:
+        return None
+    if not isinstance(boundary, dict) or set(boundary) != {'kind', 'decision_id', 'include_options', 'execute_choice'}:
+        raise BenchmarkError('invalid_output_boundary')
+    if (boundary['kind'] != 'first_choice' or boundary['include_options'] is not True
+            or boundary['execute_choice'] is not False
+            or not case.get('decisions') or boundary['decision_id'] != case['decisions'][0]['id']):
+        raise BenchmarkError('unsupported_output_boundary')
+    return boundary
 
 
 def normalize(text):
@@ -70,6 +83,7 @@ def load_case(case_file, allow_pilot=False):
             raise BenchmarkError('duplicate_option_id')
     if len(set(ids)) != 2:
         raise BenchmarkError('duplicate_decision_id')
+    validate_output_boundary(case)
     provenance = case['provenance']
     if not isinstance(provenance, dict) or not isinstance(provenance.get('source_sha256'), dict):
         raise BenchmarkError('source_hashes_required')
@@ -100,6 +114,7 @@ def load_case(case_file, allow_pilot=False):
 
 
 def render(case, texts):
+    boundary = validate_output_boundary(case)
     scope = '\n\n'.join(k + '：\n' + v for k, v in case['scope_map'].items())
     parameters = '\n'.join([
         '【公共参数】', '标题：' + case['title'], '语言：简体中文',
@@ -115,9 +130,13 @@ def render(case, texts):
         execution = '【任务范围】\n' + case['profile']
         if case.get('target_new_visible_chars') is not None:
             execution += '\n新增正文目标：' + str(case['target_new_visible_chars'])
+    if boundary:
+        execution += ('\n本轮玩家可见输出边界：第一次选择 ' + boundary['decision_id']
+                      + '，包含该选择的两个选项，然后停止；不执行任一选项。'
+                      + '\n该边界不禁止原生内部规划、审核或预生成后续脚本；后续产物独立保存，不拼入当前可见路径。')
     return '\n\n'.join([MARKERS[0], texts['prefix'], parameters, execution,
         '<<<BRIEF_BEGIN>>>\n' + texts['brief'] + '\n<<<BRIEF_END>>>',
-        '【共同时间解释】\n' + scope,
+        ('【共同语义解释】\n' if boundary else '【共同时间解释】\n') + scope,
         '<<<OPENING_BEGIN>>>\n' + texts['opening'] + '\n<<<OPENING_END>>>',
         '【续写说明】\n固定开头中的事件已经发生。正文从最后的情境继续，保持人物知识与物品状态；不要重新开局，不要替玩家提前执行尚未选择的关键行动。使用原生输出格式。', MARKERS[1]])
 
@@ -148,6 +167,8 @@ def compile_case(case_file, out, allow_pilot=False):
                 'profile': case['profile'], 'review_status': case['review_status'], 'source_sha256': hashes,
                 'shared_sha256': sha256(shared), 'shared_chars': len(shared), 'shared_bytes': len(shared.encode('utf-8')),
                 'files': files, 'payload_check': 'passed', 'native_integration': 'not_run'}
+    if case.get('output_boundary'):
+        manifest['output_boundary'] = case['output_boundary']
     atomic_json(out / 'manifest.json', manifest)
     return verify_bundle(out)
 
@@ -171,6 +192,9 @@ def verify_bundle(out):
     if any(value != shared for value in values):
         raise BenchmarkError('payload_mismatch')
     case = read_json(out / 'case.json')
+    boundary = validate_output_boundary(case)
+    if manifest.get('output_boundary') != boundary:
+        raise BenchmarkError('bundle_output_boundary_mismatch')
     if any(manifest.get(key) != case.get(key) for key in ('case_id', 'profile', 'review_status')):
         raise BenchmarkError('bundle_case_metadata_mismatch')
     if manifest.get('source_sha256') != case.get('provenance', {}).get('source_sha256'):

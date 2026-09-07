@@ -151,6 +151,24 @@ def install(repo, runtime, config=None):
             trace._context.reset(token)
     generation.execute_generation_task = dispatch
 
+    # Candidate generation has its own Celery task and does not pass through
+    # story_generation_service. Only add observation context around its existing
+    # verified provider call; leave native claim/source/lease/retry logic intact.
+    from app.workers import branch_tasks
+    original_branch_call = branch_tasks._call_provider_with_heartbeat
+    @functools.wraps(original_branch_call)
+    async def branch_call(task_id, **kwargs):
+        with kwargs['session_factory']() as db:
+            task=db.query(branch_tasks.GenerationTask).filter_by(id=task_id).one()
+            context={'native_task_id':task.id,'native_project_id':task.project_id,
+                     'stage':task.kind,'native_attempt':task.attempt}
+        token=trace._context.set(context)
+        try:
+            return await original_branch_call(task_id,**kwargs)
+        finally:
+            trace._context.reset(token)
+    branch_tasks._call_provider_with_heartbeat = branch_call
+
     from celery import signals
     def worker_ready(**_): trace.write_worker_receipt()
     signals.worker_ready.connect(worker_ready,weak=False)
@@ -158,7 +176,7 @@ def install(repo, runtime, config=None):
     receipt={'system':'if_line','runtime_adapter':'external_if_line_v1','source_modified':False,
         'source_before_sha256':before['sha256'],'source_file_count':before['file_count'],
         'pid':os.getpid(),'repo_path':str(repo),'runtime_dir':str(runtime),
-        'rules':['bible_base_input_only','task_trace_context','per_call_output_cap',
+        'rules':['bible_base_input_only','task_trace_context','branch_task_trace_context','per_call_output_cap',
                  'http_observation','runtime_directory_isolation','source_write_guard']}
     (runtime/f'shim-receipt-{os.getpid()}.json').write_text(json.dumps(receipt,indent=2))
     return receipt

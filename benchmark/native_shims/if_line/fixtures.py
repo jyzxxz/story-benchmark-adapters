@@ -23,6 +23,10 @@ class FixedProvider(BaseHTTPRequestHandler):
                     'scenes':[{'scene_key':'s1','title':'门廊','location':'门廊'}]}
         elif '小说作家' in role:
             result={'chapter_index':1,'title':'第一章','content':'雨继续下着。'}
+        elif '互动叙事分支规划器' in role:
+            result={'candidates':[
+                {'option_key':'enter','preview_text':'林澈推开实验楼的门。','state_delta':{'location':'实验楼'}},
+                {'option_key':'protect','preview_text':'林澈先扶稳周遥，再检查收音机。','state_delta':{'priority':'protect'}}]}
         elif 'You are a senior' in role:
             result={'medium':'anime_cel','art_direction':'Clean two dimensional animation with restrained color and consistent visual identity.',
                 'linework':'clean line art with tapered ends','shading':'flat two-level cel shading with subtle rim light',

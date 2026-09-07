@@ -3,7 +3,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
-from story_benchmark.adapters.if_line import IFLineAdapter, IFLineError, export_script_ir
+from story_benchmark.adapters.if_line import IFLineAdapter, IFLineError, export_script_ir, candidate_input_mapping, export_candidate_previews
 
 REPO = Path(__file__).resolve().parents[2] / 'if_line'
 
@@ -127,5 +127,42 @@ class IFLineTests(unittest.TestCase):
         self.assertEqual(outlines[0][2]['chapter_count'],7)
         generated=[c for c in self.native.calls if c[0]=='POST' and c[1].startswith('/api/path-chapters/')]
         self.assertEqual(len(generated),1)
+
+    def test_candidate_mapping_is_exact_case_data(self):
+        decision={'id':'C1','options':[{'id':'left','text':'开门'},{'id':'right','text':'先等候'}]}
+        case={'decisions':[decision],'scope_map':{'第一次选择的行动顺序':'开门前先等候。'},
+              'output_boundary':{'kind':'first_choice','decision_id':'C1','include_options':True,'execute_choice':False}}
+        (self.bundle/'case.json').write_text(json.dumps(case,ensure_ascii=False))
+        mapping=candidate_input_mapping(self.bundle)
+        self.assertEqual(json.loads(mapping['instructions']),{'decision':decision,'scope':'开门前先等候。'})
+        self.assertEqual(mapping['sources'][0]['value'],decision)
+        self.assertEqual(mapping['sources'][1]['value'],case['scope_map']['第一次选择的行动顺序'])
+        case['output_boundary']['execute_choice']=True
+        (self.bundle/'case.json').write_text(json.dumps(case))
+        with self.assertRaisesRegex(IFLineError,'unsupported_candidate_input_contract'):
+            candidate_input_mapping(self.bundle)
+
+    def test_candidate_preview_is_never_visible_prose_or_invented_label(self):
+        rows=[{'id':'a','option_key':'a','preview_text':'门开了。','state_delta':{'open':True}},
+              {'id':'b','option_key':'b','preview_text':'仍在等候。','state_delta':{}}]
+        exported=export_candidate_previews(rows)
+        self.assertEqual(exported['segments'],[])
+        self.assertEqual([p['text'] for p in exported['unselected_previews']],['门开了。','仍在等候。'])
+        self.assertTrue(all(c['label'] is None and c['selected'] is False for c in exported['choices']))
+        self.assertEqual(exported['native_capability_status'],'unsupported_output_boundary')
+        self.assertEqual(exported['unselected_previews'][0]['native_pointer'],'/0/preview_text')
+
+    def test_candidate_entry_mode_requires_declared_boundary(self):
+        self.adapter.config['entry_mode']='provided_prefix_candidates'
+        (self.bundle/'case.json').write_text('{}')
+        self.assertIn('invalid_candidate_input_contract',self.adapter.preflight(self.bundle)['errors'])
+
+    def test_prefix_receipt_rejects_generation_or_choice(self):
+        receipt={'origin':'external_provided_prefix_import','generation_task_id':None,'content':'固定开头',
+                 'chapter_revision_id':'r','current_revision_id':'r','state_json':{},'story_path_count':1,'choice_decision_count':0}
+        self.adapter._verify_prefix_receipt(receipt,'r','固定开头')
+        for key,value in [('generation_task_id','generated'),('state_json',{'knows':True}),('choice_decision_count',1)]:
+            with self.assertRaisesRegex(IFLineError,'provided_prefix_initialization_mismatch'):
+                self.adapter._verify_prefix_receipt({**receipt,key:value},'r','固定开头')
 
 if __name__=='__main__': unittest.main()

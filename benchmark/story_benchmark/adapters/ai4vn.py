@@ -16,6 +16,11 @@ import types
 BASELINE = '0faf120244d175866eea3813f053281f5689ab19'
 
 
+class NativeGraphNodeCountError(RuntimeError):
+    """A completed native CLI failure, never an ambiguous request delivery."""
+    code = 'native_graph_node_count_mismatch'
+
+
 def _read_json(path):
     def unique(pairs):
         result = {}
@@ -61,10 +66,11 @@ def _native_parser(repo):
 
 
 def extract_first_visible(repo: Path, story_path: Path, design: dict, native_source='native/ai4vn/data/story.txt'):
-    """Use native parsed lines; stop before any unimplemented control transfer.
+    """Follow native unconditional jumps, stopping before the first player choice.
 
     Source pointers refer to physical story.txt lines plus native node/line index.
-    We do not reconstruct prose from a graph, design document, or summary.
+    Conditions remain an explicit unsupported boundary. We do not reconstruct
+    prose or transitions from a graph, design document, or summary.
     """
     parser = _native_parser(Path(repo))
     nodes = {}
@@ -84,25 +90,45 @@ def extract_first_visible(repo: Path, story_path: Path, design: dict, native_sou
                 nodes[current].append((parsed, physical))
     segments, choices, issues = [], [], []
     if 'root' not in nodes:
-        return {'segments': [], 'choices': [], 'generation_issue_codes': ['missing_entry_node'], 'stop_reason': 'missing_entry_node'}
-    lines = nodes['root']
+        return {'segments': [], 'choices': [], 'generation_issue_codes': ['missing_entry_node'],
+                'stop_reason': 'missing_entry_node', 'selection_executed': False}
+    node_id = 'root'
+    traversed_nodes = [node_id]
+    automatic_transitions = []
+    visited_positions = set()
     stop_reason = 'entry_node_end'
     index = 0
-    while index < len(lines):
+    while index < len(nodes[node_id]):
+        if (node_id, index) in visited_positions:
+            raise RuntimeError(f'native_automatic_jump_cycle:{node_id}:{index}')
+        visited_positions.add((node_id, index))
+        lines = nodes[node_id]
         parsed, physical = lines[index]
         kind = parsed['type']
-        pointer = {'node_id': 'root', 'parsed_line_index': index, 'line': physical}
-        if kind in ('if', 'else', 'endif', 'jump'):
-            stop_reason = 'control_flow_boundary'
+        pointer = {'node_id': node_id, 'parsed_line_index': index, 'line': physical}
+        if kind in ('if', 'else', 'endif'):
+            stop_reason = 'unsupported_condition_boundary'
             issues.append('control_flow_not_executed')
+            issues.append('unsupported_native_condition_boundary')
             break
+        if kind == 'jump':
+            target = parsed['target']
+            if target not in nodes:
+                raise RuntimeError(f'native_jump_target_missing:{node_id}:{target}')
+            automatic_transitions.append({'from': node_id, 'to': target,
+                                          'native_source': native_source, 'native_pointer': pointer})
+            node_id = target
+            traversed_nodes.append(node_id)
+            index = 0
+            stop_reason = 'native_path_end'
+            continue
         if kind in ('choice_start', 'choice_option'):
             cursor = index + (1 if kind == 'choice_start' else 0)
             while cursor < len(lines) and lines[cursor][0]['type'] == 'choice_option':
                 item, source_line = lines[cursor]
                 choices.append({'choice_id': f'choice-{len(choices)+1:03d}', 'text': item['text'],
                                 'native_target': item['target'], 'native_source': native_source,
-                                'native_pointer': {'node_id': 'root', 'parsed_line_index': cursor, 'line': source_line}})
+                                'native_pointer': {'node_id': node_id, 'parsed_line_index': cursor, 'line': source_line}})
                 cursor += 1
             if choices:
                 stop_reason = 'first_choice'
@@ -121,7 +147,9 @@ def extract_first_visible(repo: Path, story_path: Path, design: dict, native_sou
         index += 1
     if not segments:
         issues.append('empty_prose')
-    return {'segments': segments, 'choices': choices, 'generation_issue_codes': issues, 'stop_reason': stop_reason}
+    return {'segments': segments, 'choices': choices, 'generation_issue_codes': issues, 'stop_reason': stop_reason,
+            'traversed_node_ids': traversed_nodes, 'automatic_transitions': automatic_transitions,
+            'first_choice_reached': bool(choices), 'selection_executed': False}
 
 
 class AI4VNAdapter:
@@ -297,6 +325,22 @@ class AI4VNAdapter:
             output, _ = process.communicate(timeout=self.config['timeout_seconds'])
             if process.returncode:
                 handle['stages'][stage] = 'failed'
+                diagnostic = {'stage': stage, 'native_exit_code': process.returncode,
+                              'failure_code': 'native_exit', 'automatic_retry': False,
+                              'diagnosis_basis': 'native_cli_process_exit',
+                              'native_log': f'{stage}.stdout.log'}
+                count_error = re.search(r'^ValueError: story_graph 节点数不匹配，期望 (\d+)，实际 (\d+)\s*$', output, re.M)
+                if stage == 'design' and count_error:
+                    diagnostic.update(failure_code='native_graph_node_count_mismatch',
+                                      expected_nodes=int(count_error.group(1)), actual_nodes=int(count_error.group(2)),
+                                      diagnosis_basis='native_cli_exception_log',
+                                      failing_candidate_rejected_before_producer_review=True,
+                                      prior_graph_review_observed_in_log='制作人正在审核Step2 story_graph' in output,
+                                      native_script_started=bool(handle['stages'].get('script')),
+                                      message='Native Designer rejected the node count before returning this graph candidate for Producer review; no output repair was performed.')
+                _write_json(Path(handle['native_dir']) / 'native_failure.json', diagnostic)
+                if diagnostic['failure_code'] != 'native_exit':
+                    raise NativeGraphNodeCountError(f"{diagnostic['failure_code']}:expected={diagnostic['expected_nodes']}:actual={diagnostic['actual_nodes']}:native_exit={process.returncode}")
                 raise RuntimeError(f'native_exit:{stage}:{process.returncode}')
             handle['stages'][stage] = 'completed'
         except subprocess.TimeoutExpired:

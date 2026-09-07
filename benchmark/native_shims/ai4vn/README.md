@@ -78,11 +78,34 @@ For a vendor source snapshot, supply `source_lock` instead of depending on a
 nested `.git`. `model_base_url` takes precedence over legacy `base_url`.
 Credentials are read from the named environment variable, never from config JSON.
 
-The exporter uses the native parser and stops at the first choice or a conditional/
-jump boundary. It never concatenates branches or reconstructs prose from a graph.
-This first-phase implementation does not claim complete route replay. Only the
+The exporter uses the native parser and follows only unconditional `<jump>`
+instructions present in `story.txt`, matching `game_engine/scenes.py`'s native
+automatic node transition. It stops before the first player choice and exports
+the complete consecutive option group without choosing an option. It records
+`selection_executed=false`, `traversed_node_ids` and `automatic_transitions`; every prose/choice pointer retains
+the physical source line and the actual node ID. Missing jump targets and cycles
+fail explicitly. File order or story-graph edges never imply a transition.
+Conditional tags remain an explicit `unsupported_condition_boundary`; the adapter
+does not invent a condition evaluator or claim complete route replay. Only the
 OpenAI-compatible text provider is enabled for instrumented runs; Google and
 streaming need separate retry/usage coverage before support can be claimed.
+
+The shared continuation task is read once by native `resolve_design_inputs`.
+The native outline prompt permits a first group to establish an opening, and
+native Producer review includes the full user requirements. The common task must
+therefore distinguish internal planning/review from player-visible prose and
+state that the supplied opening already happened. This adapter does not rewrite
+the native outline/review prompts or replenish the opening in later Writer calls.
+
+Native node-count validation happens inside `Designer.generate_story_graph_from_outline`
+before that candidate reaches the workflow's Producer graph-review loop. A graph
+with 13 nodes when 12 are required still exits natively; no existing CLI recovery
+entry point handles this error. The adapter retains the exit and original logs,
+adds `native/ai4vn/native_failure.json` with the observed expected/actual counts,
+and reports `native_graph_node_count_mismatch`. It does not retry, delete nodes,
+relax the count, or move the validation into a new repair loop. Earlier graph
+review, if visible in the native log, is recorded separately from rejection of
+the failing candidate.
 
 Offline verification (use the project's installed Python dependencies):
 
