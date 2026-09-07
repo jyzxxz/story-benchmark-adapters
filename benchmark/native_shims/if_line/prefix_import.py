@@ -19,7 +19,7 @@ class PrefixCheckpointRequest(BaseModel):
 
 
 def install_routes(app, config):
-    if config.get("entry_mode", "first_chapter") not in {"provided_prefix_candidates", "shared_first_choice"}:
+    if config.get("entry_mode", "first_chapter") not in {"provided_prefix_candidates", "shared_first_choice", "batch_readable_window"}:
         return
     from app.application.authoring_resource_service import require_owned_path_chapter
     from app.application.branch_service import _snapshot
@@ -89,3 +89,60 @@ def install_routes(app, config):
                       StoryNode.project_id == path.project_id).count()}
         db.commit()
         return result
+
+    if config.get('entry_mode') != 'batch_readable_window':
+        return
+
+    @app.get('/__benchmark__/quota-snapshot')
+    def quota_snapshot_route(db=Depends(get_db),user=Depends(get_current_user)):
+        from app.quota import quota_snapshot
+        from app.models_v2 import UsageLedgerEntry
+        return {'quota':quota_snapshot(user),'ledger':[{
+            c.name:getattr(row,c.name) for c in row.__table__.columns}
+            for row in db.query(UsageLedgerEntry).filter_by(user_id=user.id).order_by(UsageLedgerEntry.created_at).all()],
+            'origin':'external_read_only_native_quota_and_ledger_snapshot','provider_currency_amount':None}
+
+    @app.post('/__benchmark__/path-chapters/{path_chapter_id}/selected-checkpoints')
+    def selected_checkpoint(path_chapter_id: str, body: PrefixCheckpointRequest,
+                            idempotency_key: str = Header(alias='Idempotency-Key',min_length=1,max_length=255),
+                            db=Depends(get_db),user=Depends(get_current_user)):
+        """Structural authoring boundary; retain native path state, never infer facts."""
+        from app.models_v2 import StateSnapshot
+        placement=require_owned_path_chapter(db,path_chapter_id=path_chapter_id,user_id=user.id)
+        placement=db.query(StoryPathChapter).filter_by(id=placement.id).with_for_update().one()
+        revision=db.query(ChapterRevision).filter_by(id=body.chapter_revision_id).one_or_none()
+        if (not revision or placement.current_revision_id != revision.id
+                or placement.chapter_slot_id != revision.chapter_slot_id
+                or revision.content_hash != body.opening_sha256
+                or content_hash(revision.content) != revision.content_hash):
+            raise HTTPException(409,'checkpoint requires exact selected native chapter')
+        path=db.query(StoryPath).filter_by(id=placement.story_path_id).one()
+        state=db.query(StateSnapshot).filter_by(id=path.base_state_snapshot_id,project_id=path.project_id).one_or_none()
+        if not state:
+            raise HTTPException(409,'generated path must preserve its native promoted state snapshot')
+        identity=json.dumps([config['root_run_id'],path_chapter_id,idempotency_key],separators=(',',':'))
+        node_id=str(uuid5(UUID('f005b45e-aecd-4ad9-b43e-b26a064741ae'),identity))
+        payload={'origin':'external_selected_chapter_checkpoint','path_chapter_id':placement.id,
+            'chapter_revision_id':revision.id,'content_hash':revision.content_hash}
+        node=db.query(StoryNode).filter_by(id=node_id).one_or_none()
+        if node and (node.payload != payload or node.content_revision_id != revision.id):
+            raise HTTPException(409,'checkpoint identity conflict')
+        if node is None:
+            node=StoryNode(id=node_id,project_id=path.project_id,node_type='checkpoint',
+                checkpoint_key='selected-chapter-'+node_id,content_revision_id=revision.id,payload=payload)
+            db.add(node)
+        db.commit()
+        return {'origin':payload['origin'],'checkpoint':{'id':node.id,'payload':payload},
+            'state_snapshot_id':state.id,'state_json':state.state_json,'state_hash':state.state_hash,
+            'state_source':'native_story_path.base_state_snapshot_id','chapter_revision_id':revision.id}
+
+    @app.get('/__benchmark__/chapter-script-revisions/{script_id}/resource-snapshot')
+    def resource_snapshot(script_id: str,db=Depends(get_db),user=Depends(get_current_user)):
+        from app.application.authoring_resource_service import require_owned_script_revision
+        from app.models_v2 import ScriptResourceSlot,AssetBinding
+        revision=require_owned_script_revision(db,script_revision_id=script_id,user_id=user.id)
+        def row_json(row):
+            return {c.name:getattr(row,c.name) for c in row.__table__.columns}
+        return {'origin':'external_read_only_native_orm_snapshot',
+            'slots':[row_json(r) for r in db.query(ScriptResourceSlot).filter_by(chapter_script_revision_id=revision.id).all()],
+            'bindings':[row_json(r) for r in db.query(AssetBinding).filter_by(project_id=revision.project_id,source_id=revision.id).all()]}

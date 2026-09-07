@@ -9,6 +9,13 @@ INPUT_CONTRACT = {
 
 
 def expected_output_contract(case):
+    if case.get('output_contract', {}).get('version') == '4.0':
+        return {'version':'4.0', 'scope':'readable_window',
+                'window_chars':case['output_contract'].get('window_chars'),
+                'character_metric':'unicode_codepoints_in_new_visible_body',
+                'cut_rule':'first_sentence_boundary_at_or_after_threshold',
+                'media':'images', 'native_choice_previews':'separate',
+                'require_story_ending':False}
     return {
         'version': '3.0', 'scope': 'first_unselected_choice',
         'decision_id': case['decisions'][0]['id'],
@@ -33,6 +40,12 @@ def validate_contracts(case, required=False):
     except (KeyError, IndexError, TypeError):
         raise BenchmarkError('invalid_v3_decision_contract') from None
     value = case.get('output_contract')
+    if isinstance(value,dict) and value.get('version')=='4.0':
+        if (value != expected or type(value.get('window_chars')) is not int
+                or value['window_chars']<=0 or value.get('require_story_ending') is not False
+                or case.get('profile')!='FULL_VN'):
+            raise BenchmarkError('invalid_v4_readable_window_contract')
+        return True
     if (value != expected or type(value.get('choice_count')) is not int
             or value.get('selection_executed') is not False
             or value.get('allow_empty_body') is not True):

@@ -58,7 +58,7 @@ def extract_task(messages):
     return found[0]
 
 
-def adapt_messages(payload, shared, enabled=True):
+def adapt_messages(payload, shared, enabled=True, allow_native_continuation=False):
     result = deepcopy(payload)
     messages = result.get("messages")
     if not isinstance(messages, list):
@@ -75,6 +75,15 @@ def adapt_messages(payload, shared, enabled=True):
         if enabled:
             matches = [(i, m["content"].index(COLD_START)) for i, m in enumerate(messages) if COLD_START in m["content"]]
             occurrences = sum(m["content"].count(COLD_START) for m in messages)
+            # The batch driver follows the original browser's /api/scene path.
+            # Those Writer requests already contain native history and must not
+            # receive another opening instruction. Legacy first-scene behavior
+            # remains strict unless this explicit batch-only mode is enabled.
+            if occurrences == 0 and allow_native_continuation:
+                if not any(m.get("role") == "user" and "承接「玩家在上一场选择了：" in m["content"]
+                           and "无缝续写下一个场景" in m["content"] for m in messages):
+                    raise ValueError("native_continuation_signature_missing")
+                return result, replacements, receipt, "writer"
             if len(matches) != 1 or occurrences != 1:
                 raise ValueError("frozen_cold_start_signature_not_unique")
             index, start = matches[0]
@@ -139,6 +148,9 @@ class Relay:
 
     def emit(self, value):
         row = {"root_run_id": self.handle["root_run_id"], "system": "infiplot", "boundary": "http", **value}
+        if self.config.get("batch_native_continuation"):
+            from story_benchmark.recording import redact_evidence
+            row = redact_evidence(row)
         with self.lock:
             if self.evidence_closed:
                 return
@@ -146,6 +158,9 @@ class Relay:
                 file.write(compact(self.safe(row)) + "\n")
 
     def save(self, path, value):
+        if self.config.get("batch_native_continuation"):
+            from story_benchmark.recording import redact_evidence
+            value = redact_evidence(value)
         target = self.trace / path
         with self.lock:
             if self.evidence_closed:
@@ -159,6 +174,9 @@ class Relay:
         stored = raw
         for secret in self.secret_values:
             stored = stored.replace(secret.encode("utf-8"), b"[REDACTED]")
+        if self.config.get("batch_native_continuation"):
+            from story_benchmark.recording import redact_evidence
+            stored = redact_evidence(stored.decode("utf-8", errors="surrogateescape")).encode("utf-8", errors="surrogateescape")
         target = self.trace / path
         with self.lock:
             if not self.evidence_closed:
@@ -298,7 +316,9 @@ class Relay:
             raw = handler.rfile.read(length)
             before = json.loads(raw)
             self.save(f"requests/{call_id}.before.json", before)
-            after, replacements, receipt, stage = adapt_messages(before, self.shared, self.config.get("shared_opening", True))
+            after, replacements, receipt, stage = adapt_messages(
+                before, self.shared, self.config.get("shared_opening", True),
+                self.config.get("batch_native_continuation", False))
             if receipt:
                 self.save(f"received-{call_id}.json", {"root_run_id": self.handle["root_run_id"], "system": "infiplot", "call_id": call_id, **receipt})
             if before.get("model") != self.config["model"]:
@@ -328,7 +348,7 @@ class Relay:
                     raise ValueError("call_budget_exceeded")
                 self.count += 1
                 op_hash = digest(compact(before.get("messages", [])))[:16]
-                operation = "start:" + op_hash
+                operation = ("native-context:" if self.config.get("batch_native_continuation") else "start:") + op_hash
                 self.op_attempts[operation] = self.op_attempts.get(operation, 0) + 1
                 attempt = self.op_attempts[operation]
             common = {"call_id": call_id, "operation_id": operation, "attempt": attempt, "stage": stage,
@@ -338,6 +358,7 @@ class Relay:
                       "start_time": datetime.now(timezone.utc).isoformat(), "usage": None,
                       "response_file": None, "provider_request_id": None, "finish_reason": None,
                       "native_project_id": None, "native_task_id": None,
+                      "native_operation_id": handler.headers.get("X-Benchmark-Native-Operation-Id") if self.config.get("batch_native_continuation") else None,
                       "sdk_raw_request_sha256": digest(raw), "before_request_sha256": digest(compact(before)),
                       "after_prompt_adaptation_sha256": after_prompt_hash,
                       "after_model_parameters_sha256": after_parameters_hash,
@@ -350,6 +371,11 @@ class Relay:
             self.emit({**common, "event": "started"})
             upstream = request.Request(self.endpoint, data=serialized.encode(), method="POST", headers={
                 "Content-Type": "application/json", "Accept": "text/event-stream" if after.get("stream") else "application/json", "Authorization": "Bearer " + self.api_key})
+            if self.config.get("batch_native_continuation"):
+                upstream.add_header("X-Benchmark-Native-Task-Id", call_id)
+                upstream.add_header("X-Benchmark-Native-Stage", stage)
+                if common["native_operation_id"]:
+                    upstream.add_header("X-Benchmark-Native-Operation-Id", common["native_operation_id"])
             opener = self._opener()
             try:
                 response = opener.open(upstream, timeout=self.generation_timeout())

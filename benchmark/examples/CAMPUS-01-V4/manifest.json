@@ -1,0 +1,46 @@
+{
+  "canonical_case_sha256": "68605cf2fa4763e5ce015f2d6e2119237115ea5e4e919109117607efed626181",
+  "case_id": "CAMPUS-01-V4",
+  "case_sha256": "8d3a751c9e9bd301a271e29e0326b9f9dbabc45ebd79ab7940667f9bc22a882b",
+  "files": {
+    "case.json": "c35df7baccc2a88e82f46f26e61598a7868b095b677d35aedafdb2fe1d6548dc",
+    "opening.txt": "196d04a58ba5bce543e93788e496ae42fdd547d1583d185cda42c3b969159c65",
+    "payloads/ai4vn.json": "78ff69122ebd844caa3fcec1b82cff3340d8a7ff3f7c185df055c941ad2765fe",
+    "payloads/if_line.json": "cf35558b0f62b24774ead14fc7b90ead29fc37edd47dece02954cf5bbc8eecf8",
+    "payloads/infiplot.json": "4f91d9f707629e30e322e6515428014ed536941df09ae728240aa8ce6369eeed",
+    "payloads/requirements.txt": "d2fb88452de72a51743f18cae9b62ef1e21a70c4f28d74a8a7ba1a0f2f3e5ce5",
+    "shared_task.txt": "d2fb88452de72a51743f18cae9b62ef1e21a70c4f28d74a8a7ba1a0f2f3e5ce5",
+    "sources/brief.txt": "810e10baf5259d9961498266a940b82783d660da4047002506f98dfa7f7bbf0a",
+    "sources/opening.txt": "196d04a58ba5bce543e93788e496ae42fdd547d1583d185cda42c3b969159c65",
+    "sources/prefix.txt": "05ff01f847e33ffd35544086ad73a83e3e6959d985697e0df61e2e20352b0426"
+  },
+  "input_contract": {
+    "adapter_story_reinjection": "none",
+    "character_policy": "exact_declared_cast",
+    "task_delivery": "verbatim_first_creative_request",
+    "version": "3.0"
+  },
+  "native_integration": "not_run",
+  "output_contract": {
+    "character_metric": "unicode_codepoints_in_new_visible_body",
+    "cut_rule": "first_sentence_boundary_at_or_after_threshold",
+    "media": "images",
+    "native_choice_previews": "separate",
+    "require_story_ending": false,
+    "scope": "readable_window",
+    "version": "4.0",
+    "window_chars": 4000
+  },
+  "payload_check": "passed",
+  "profile": "FULL_VN",
+  "review_status": "pilot",
+  "schema_version": "2.1",
+  "shared_bytes": 6683,
+  "shared_chars": 2421,
+  "shared_sha256": "d2fb88452de72a51743f18cae9b62ef1e21a70c4f28d74a8a7ba1a0f2f3e5ce5",
+  "source_sha256": {
+    "brief": "810e10baf5259d9961498266a940b82783d660da4047002506f98dfa7f7bbf0a",
+    "opening": "196d04a58ba5bce543e93788e496ae42fdd547d1583d185cda42c3b969159c65",
+    "prefix": "05ff01f847e33ffd35544086ad73a83e3e6959d985697e0df61e2e20352b0426"
+  }
+}

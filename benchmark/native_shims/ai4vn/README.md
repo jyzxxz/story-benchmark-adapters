@@ -1,5 +1,9 @@
 # External AI4VisualNovel adapter
 
+For the separate v4 full native image/text batch driver and actual selected
+trajectory recording, see [BATCH.md](BATCH.md). The first-choice v3 interface
+documented below remains available and unchanged.
+
 Frozen native commit: `0faf120244d175866eea3813f053281f5689ab19`.
 No native source files are changed. The former patched experimental checkout is
 not used by this implementation and must not be included as the native baseline.

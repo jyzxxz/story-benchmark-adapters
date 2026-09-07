@@ -1,5 +1,147 @@
 # IF Line external adapter
 
+## Image-enabled batch driver (v4)
+
+`story_benchmark.batch_native.if_line` implements the common batch driver contract.
+It requires a v4 `readable_window` bundle and explicit unlimited resource policy.
+The common text is delivered once to the first Bible creative request, as in v3.
+No later candidate instructions contain excerpts, reminders or extra story text.
+
+The actual chain is native Bible → native 13-chapter total Outline → exact manual
+opening import → structural empty-state checkpoint → native two-candidate set →
+native candidate-head activation → native candidate-to-StoryPath promotion.
+After each promotion, the native child path receives its own native Outline and
+the next ungenerated chapter. Chapter generation, Script IR segmentation and
+coverage checks, resource planning, portrait/background/keyframe renderers,
+native image review/retries, resource binding, and VNGraph compilation remain
+native. After a generated chapter, an external structural checkpoint identifies
+that exact selected revision and reuses `StoryPath.base_state_snapshot_id`.
+It does not extract facts, invent a memory state, or repair native planning.
+
+The driver selects the configured zero-based native option index, repeating the
+last index when exhausted, then records the successful promotion receipt. This
+is **native authoring path promotion**, not a published-release reading-session
+`choose` request. Choices are offered at the imported opening and each subsequent
+completed chapter while the common reading window remains unmet. The driver
+also executes any choices encountered in the actual compiled native player.
+Authoring promotions and player choices share one cumulative policy index.
+Player options preserve their native array index, text and target; original
+renderer clock/timestamps remain separate from later backend collection time.
+Menu-only/empty-text beats still have frames, and the native “（请选择）” UI
+marker is excluded from prose counts. Native revisits with story text are
+observed again until the common window is reached; no route-count cap is added.
+The driver
+does not invent a semantic mapping from a generated menu to C1/C2. Candidate
+previews remain native option data; they are never appended as current prose.
+Native Outline/content deviations remain outputs to evaluate.
+
+The frozen `VNGraphPlayer.vue`, `VisualNovelStage.vue` and `vnGraphPlayer.ts` are
+read directly and compiled into an external harness. Headless Chromium renders
+the original player, advances actual beats, and captures clean/UI frames. Clean
+capture hides dialogue/controls/debug only; original composition, CSS, image
+layers and native placeholder behavior remain intact. `offscreen_native` is
+explicit; these are not observations of a human's foreground screen. Every
+observed paragraph maps to the actual beat, immutable graph/Script IR/chapter,
+native asset versions, and original image candidate where linkage is known.
+Every paragraph identifies its native Script IR task/revision and that task's
+recorded text HTTP attempts. This is task association, not an assertion about
+which draft/rewrite won. Its availability anchor is the received Script IR
+revision; the earlier chapter-available observation is diagnostic only.
+The common Recorder clips only exported text at the first sentence boundary
+at/after `window_chars`; the native beat/revision and full screenshot remain
+unchanged. No additional native choice is executed after that observed boundary.
+Audio is disabled because this batch scope is text plus images.
+
+Each independent run starts its own temporary PostgreSQL cluster/database,
+Redis process, API, solo Celery worker and beat. Queues are
+`text,image,compile,maintenance`. Source writes remain blocked. Media objects,
+images, logs, bytecode/cache settings and browser artifacts stay outside systems/.
+The driver stops its own services in `finally`, retains PG/native logs, and
+verifies all source hashes before/after. Native SDK/request timeouts and service
+startup/cleanup watchdogs remain; there is no adapter generation/call/token/input
+deadline or cap. Local parallelism runs separate OS processes and databases.
+
+Additional IF configuration:
+
+- `python_executable`: isolated Python with `requirements-media.txt` installed.
+- `node_executable`, `node_modules`: external Node executable and tool modules.
+- `rembg_model_dir`: prepopulated native `u2net.onnx` directory; preflight refuses
+  a missing model, so model downloads do not happen during paid generation.
+- `pg_bin`: directory containing `initdb`, `pg_ctl`, `createdb` (default `/opt/homebrew/bin`).
+- `redis_executable`: isolated Redis executable (default PATH lookup).
+- `image_model`, `vision_model`: common model names; endpoint/key values come
+  exclusively from the run gateway's image/vision/text routes.
+- `chapter_count`: total native planning length (default original UI's 13).
+
+Install Node media tools in a separate folder by copying `renderer-package.json`
+there as `package.json` and running `npm install --prefix <tools-directory>`.
+Use `PLAYWRIGHT_BROWSERS_PATH=<external-browser-cache>` when installing/running
+Chromium; avoid automatic cleanup of a different project's shared browser cache.
+Never run dependency installation inside the frozen system source.
+
+The worker preserves extra `native-image-writes.jsonl` and
+`native-media-results.jsonl` records before asset registration. They link native
+normalization/alpha processing to provider candidate bytes; transformed files
+are `derived` assets, never additional candidates. The gateway retains every
+provider candidate and real attempt, including those discarded by native code.
+Each native image response binds the gateway call ID and the native selected
+`data[0]` candidate. This identity survives the native asyncio/thread boundaries;
+equal pixels from separate candidates are not merged. Explicit native cache hits
+can reuse the prior receipt for that same cache file. A unique-hash fallback is
+labelled and cannot resolve ambiguous equal-pixel candidates. The referenced
+image path's native aiohttp request is observed at the same gateway as SDK calls.
+Gateway accounting is authoritative; shim records use `boundary=gateway_client`
+to avoid counting the same request twice. Native asset credits are native
+application accounting, not measured provider currency charges.
+
+V4 trace responses and, after native services stop, generated JSON/JSONL/log/text
+evidence use the common `recording.redact_evidence` policy. Signed retrieval URL
+queries are removed from saved evidence while the live native downloader gets
+the original response. Image bytes and every frozen-source file are untouched;
+the redaction report lists changed generated files before the run is sealed.
+Legacy v3 tracing does not opt into this media evidence policy.
+
+V4 also removes the disposable application's daily/total quota gate. Upstream
+has no credit-grant service: `usage_service.reserve_usage/reopen_usage` uses
+`User.quota_total/quota_daily` as compatibility counters. Only in the loopback
+`if_line_bench_*` deployment, an external wrapper raises an insufficient counter
+by the exact native request reservation units, then calls the original service.
+It neither uses a huge ceiling nor changes used counters/reservations/settlement.
+`internal-credit-topups.jsonl` records the native amount source, task/user, before
+and after counters, transactional scope, and `provider_currency_amount: null`.
+`native/if_line_quota_final.json` retains the actual committed native quota and
+usage ledger. This is a test deployment quota adjustment, not provider recharge.
+
+Local multimodal verification is opt-in via `IFLINE_BATCH_E2E=1` and
+`test_if_line_batch.py`. Evidence output must be new; old runs are never merged.
+The fixture may use a short reading window to exercise mechanics, so it is not
+reported as a paid common 4000-character story experiment. In live mode bundle
+and policy reading windows must match. Native failures remain failures: for
+example, the current upstream keyframe semantic retry can raise
+`KeyError('validation_results')` after replacing its result; this is retained,
+not patched or bypassed by the driver.
+
+Verified locally on 2026-09-07: IF unittest discovery ran 35 tests (31 passed,
+4 opt-in skips), existing HTTP/trace pytest ran 18 passed (1.68 seconds).
+The additional opt-in boundary suite passed all 6 tests, including the actual
+Vue player performing two native choices with a story revisit, five frame pairs
+(two menu-only) and one cumulative choice-policy index. The final opt-in batch
+suite passed 5 tests including actual isolated PostgreSQL/Redis/Celery/Vue
+workflow in 41.414 seconds. Its finite signed-URL/equal-candidate fixture produced
+19 localhost calls (13 text, 3 image, 3 vision), 6 provider candidates,
+3 original plus 3 derived
+assets, two successful choices `[0,1]`, 3 clean/UI frame pairs and exactly 20
+sample characters. All 1200 source files were unchanged; all calls had native
+task IDs and all recorded assets had an output or parent link. Actual native
+candidate index 0 was retained despite duplicated pixels; saved JSON/JSONL/log/text
+files contained neither fixture URL signing value. Those numbers
+describe engineering fixture evidence only, not a paid 4000-character result.
+
+## Historical v3 text adapter and shared runtime foundation
+
+The following text-only entry points and bounded-mode examples describe v3.
+The v4 batch entry above always uses the common unlimited policy and images.
+
 The source is the immutable upstream revision `572407fce9b648a4206ac37da6a9f6ed22631da8`.
 No native source file is edited. API, worker and beat load the same external bootstrap.
 Python bytecode is disabled, a Python audit hook rejects writes beneath the native

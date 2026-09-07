@@ -60,7 +60,8 @@ def load_case(case_file, allow_pilot=False):
         raise BenchmarkError('player_not_declared')
     if case['review_status'] not in {'pilot', 'approved'}:
         raise BenchmarkError('invalid_review_status')
-    if case['review_status'] != 'approved' and not (allow_pilot and case['profile'] == 'TEXT_CONTINUATION_DEV'):
+    if case['review_status'] != 'approved' and not (allow_pilot and (case['profile'] == 'TEXT_CONTINUATION_DEV'
+            or case['profile']=='FULL_VN' and case.get('output_contract',{}).get('version')=='4.0')):
         raise BenchmarkError('unapproved_case_requires_explicit_dev_mode')
     scopes = case['scope_map']
     if not isinstance(scopes, dict) or not scopes or any(not isinstance(k, str) or not isinstance(v, str) or not v.strip() for k, v in scopes.items()):
@@ -118,6 +119,7 @@ def load_case(case_file, allow_pilot=False):
 def render(case, texts):
     boundary = validate_output_boundary(case)
     v3 = validate_contracts(case)
+    v4 = case.get('output_contract',{}).get('version')=='4.0'
     scope_items = sorted(case['scope_map'].items()) if v3 else case['scope_map'].items()
     scope = '\n\n'.join(k + '：\n' + v for k, v in scope_items)
     parameters = '\n'.join([
@@ -139,7 +141,14 @@ def render(case, texts):
         execution += ('\n本轮玩家可见输出边界：第一次选择 ' + boundary['decision_id']
                       + '，包含该选择的两个选项，然后停止；不执行任一选项。'
                       + '\n该边界不禁止原生内部规划、审核或预生成后续脚本；后续产物独立保存，不拼入当前可见路径。')
-    if v3:
+    if v4:
+        execution += ('\n本轮生成真实图文，保留原生规划、审核、修订、素材生成、预取与后续脚本预生成。'
+                      '\n共同阅读范围：固定开头之后新增可见正文达到 '+str(case['output_contract']['window_chars'])
+                      +' 个 Unicode 字符后，外部程序在相同的完整句边界停止阅读。固定开头、内部规划和未选预览不计新增正文。'
+                      '\n不要求全篇结局或收束。观察范围之内仍应呈现题目要求的选择和后果，外部程序按统一策略实际选择原生选项。'
+                      '\n只在实际选择后将相应后果作为已发生剧情，互斥分支不拼成同一路线。'
+                      '\n生成保持原生格式，外部程序统一保存正文、选择、真实画面与调用记录。')
+    elif v3:
         execution += ('\n统一返回范围：从固定开头之后，到第一次选择 '
                       + case['output_contract']['decision_id'] + ' 的未选择状态。'
                       + '\n固定开头已经停在选择处时，可直接给出原生选项，不强制另写过渡正文。'

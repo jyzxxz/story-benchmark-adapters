@@ -21,10 +21,16 @@ import uuid
 import zlib
 
 _context = ContextVar("benchmark_task", default={})
+_image_receipt = ContextVar('benchmark_image_receipt', default=None)
 _SECRET = re.compile(r"(?i)(authorization|cookie|api[_-]?key|access[_-]?token|secret|password)")
 
 
 def redact(value):
+    if os.getenv('BENCH_MEDIA_MODE') == '1':
+        # Evidence only: never rewrite the response delivered to native image
+        # downloaders, which still require its original signed retrieval URL.
+        from story_benchmark.recording import redact_evidence
+        return redact_evidence(value)
     if isinstance(value, dict):
         return {k: "[REDACTED]" if _SECRET.search(k) else redact(v) for k, v in value.items()}
     if isinstance(value, list):
@@ -130,7 +136,11 @@ def _reserve(body):
 
 def on_request_sync(request):
     body = json.loads(request.content)
-    parameters = json.loads(os.getenv("BENCH_MODEL_PARAMETERS", "{}"))
+    media_mode = os.getenv('BENCH_MEDIA_MODE') == '1'
+    role = 'image' if '/images/' in request.url.path else ('vision' if '/vision/' in request.url.path else 'text')
+    if media_mode and role == 'image' and _image_receipt.get() is not None:
+        _image_receipt.get().clear()
+    parameters = {} if role != 'text' else json.loads(os.getenv("BENCH_MODEL_PARAMETERS", "{}"))
     from story_benchmark.model_parameters import apply_model_parameters
     effective = apply_model_parameters(body, parameters)
     if effective != body:
@@ -144,7 +154,8 @@ def on_request_sync(request):
         request.headers.pop("Transfer-Encoding", None)
     body = effective
     try:
-        if os.getenv("LLM_MODEL") and body.get("model") != os.environ["LLM_MODEL"]:
+        expected_model = os.getenv({'text':'LLM_MODEL','image':'AI_IMAGE_MODEL','vision':'BG_VISION_MODEL'}[role])
+        if expected_model and body.get("model") != expected_model:
             raise RuntimeError("requested model differs from frozen common model")
         ordinal, attempt = _reserve(body)
     except RuntimeError as exc:
@@ -157,8 +168,11 @@ def on_request_sync(request):
         sys.stderr.write("[benchmark] request blocked before provider send: " + str(exc) + "\n")
         raise
     context = _context.get()
+    if media_mode:
+        if context.get('native_task_id'): request.headers['X-Benchmark-Native-Task-Id']=str(context['native_task_id'])
+        if context.get('stage'): request.headers['X-Benchmark-Native-Stage']=str(context['stage'])
     event = {"event": "started", "root_run_id": os.environ["BENCH_RUN_ID"],
-        "system": "if_line", "boundary": "http", "call_id": str(uuid.uuid4()),
+        "system": "if_line", "boundary": "gateway_client" if media_mode else "http", "call_id": str(uuid.uuid4()),
         "operation_id": context.get("native_task_id") or os.getenv("BENCH_OPERATION_ID"),
         "attempt": attempt,
         "http_call_ordinal": ordinal, "stage": "unclassified", **context,
@@ -218,6 +232,7 @@ def _finish(event, response, chunks, error=None):
 
 async def on_response(response):
     import httpx
+    observe_image_receipt(response.request.url, response.headers, response.status_code)
     event = response.request.extensions.get("benchmark_event")
     if event is None:
         raise RuntimeError("benchmark response missing request correlation")
@@ -255,6 +270,7 @@ async def on_response(response):
 
 def on_response_sync(response):
     import httpx
+    observe_image_receipt(response.request.url, response.headers, response.status_code)
     event = response.request.extensions.get("benchmark_event")
     if event is None:
         raise RuntimeError("benchmark response missing request correlation")
@@ -284,6 +300,18 @@ def on_response_sync(response):
                     self.done = True
                     _finish(event, response, self.chunks, {"code":"stream_closed_early"})
     response.stream = ObservedStream(response.stream)
+
+
+def observe_image_receipt(url, headers, status):
+    """Share observation through native asyncio/to_thread context copies."""
+    if os.getenv('BENCH_MEDIA_MODE') != '1' or '/images/' not in str(url):
+        return
+    holder = _image_receipt.get()
+    if holder is not None:
+        holder.clear()
+        if 200 <= status < 300 and headers.get('x-benchmark-call-id'):
+            holder.update(call_id=headers['x-benchmark-call-id'], candidate_index=0,
+                          selection_source='native_response.data[0]')
 
 
 def instrument_client_kwargs(kwargs, *, sync=False):
@@ -367,6 +395,8 @@ def apply_output_budget(kwargs, path):
     if not enabled():
         return kwargs
     if path != ("chat", "completions"):
+        if os.getenv('BENCH_MEDIA_MODE') == '1' and path in {('images',),('images','generations'),('images','edits')}:
+            return kwargs
         raise RuntimeError("text benchmark forbids media provider calls")
     if budget_mode() == "unlimited":
         return kwargs

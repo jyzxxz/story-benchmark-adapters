@@ -1,5 +1,6 @@
 """A shared configuration prevents per-system model and budget overrides."""
 from pathlib import Path
+import os
 from urllib.parse import urlsplit
 from .io import BenchmarkError, read_json
 from .runner import ADAPTERS, preflight
@@ -32,7 +33,7 @@ def load_experiment(path):
         config={**common,**specific}
         for key in PATH_FIELDS:
             if config.get(key) and not Path(config[key]).is_absolute():
-                config[key]=str((path.parent/config[key]).resolve())
+                config[key]=os.path.abspath(path.parent/Path(config[key]).expanduser())
         configurations[system]=config
     return configurations
 

@@ -1,0 +1,83 @@
+{
+  "brief_file": "cases/CAMPUS-01.brief.txt",
+  "case_id": "CAMPUS-01-V4",
+  "case_version": "4.0-dev.1",
+  "character_names": [
+    "林澈",
+    "周遥",
+    "沈教授"
+  ],
+  "decisions": [
+    {
+      "id": "C1",
+      "options": [
+        {
+          "id": "ENTER_LAB",
+          "text": "进入实验楼"
+        },
+        {
+          "id": "PROTECT_AND_INSPECT",
+          "text": "先保护周遥并检查收音机"
+        }
+      ]
+    },
+    {
+      "id": "C2",
+      "options": [
+        {
+          "id": "TRUST_PROFESSOR",
+          "text": "相信沈教授的解释"
+        },
+        {
+          "id": "INVESTIGATE_ACCIDENT",
+          "text": "独立调查十年前的事故"
+        }
+      ]
+    }
+  ],
+  "input_contract": {
+    "adapter_story_reinjection": "none",
+    "character_policy": "exact_declared_cast",
+    "task_delivery": "verbatim_first_creative_request",
+    "version": "3.0"
+  },
+  "language": "zh-CN",
+  "opening_file": "cases/CAMPUS-01.opening.txt",
+  "output_contract": {
+    "character_metric": "unicode_codepoints_in_new_visible_body",
+    "cut_rule": "first_sentence_boundary_at_or_after_threshold",
+    "media": "images",
+    "native_choice_previews": "separate",
+    "require_story_ending": false,
+    "scope": "readable_window",
+    "version": "4.0",
+    "window_chars": 4000
+  },
+  "player_name": "林澈",
+  "prefix_file": "profiles/shared_readable_window_v4.txt",
+  "profile": "FULL_VN",
+  "provenance": {
+    "brief_and_opening_unchanged": true,
+    "brief_source": "original attached v1 file; verbatim code block",
+    "clarification_authorization": "User requested clarification of common-task ambiguities and integration gaps followed by retest on 2026-09-07.",
+    "compiler_origin": "v2 archive not yet available; newly implemented to v2.1 contract; not claimed as reuse of original 30 tested units",
+    "contract_revision_reason": "User approved image-enabled bounded reading observation, configurable batch/concurrency, unchanged native methods and unlimited adapter resource policy.",
+    "opening_source": "v2 answer public opening candidate; verbatim code block; not approved",
+    "previous_case_version": "3.0-dev.1",
+    "scope_source": "v2 answer candidate time explanation; verbatim code block; not approved",
+    "source_conversation": "6a9ce129-78f4-83ea-964f-329b9e56fe0d",
+    "source_sha256": {
+      "brief": "810e10baf5259d9961498266a940b82783d660da4047002506f98dfa7f7bbf0a",
+      "opening": "196d04a58ba5bce543e93788e496ae42fdd547d1583d185cda42c3b969159c65",
+      "prefix": "05ff01f847e33ffd35544086ad73a83e3e6959d985697e0df61e2e20352b0426"
+    }
+  },
+  "review_status": "pilot",
+  "scope_map": {
+    "初始角色知识": "角色保留其身份、关系和固定开头中亲历的事实。此刻两人只听到了开头展示的一组短促信号，没有通过本次观察测定11分钟周期，也没有检查收音机或地下室备用电源。brief中的周期、备用电源和事故真相是作者设定，不自动成为角色已经确认的知识；后续需要实际证据或有交代的既往经历才能获知。沈教授尚未收到关于周遥失忆细节的消息。",
+    "第一场与第二场": "第一场：\n固定开头所在的楼外相遇及紧随其后的同一连续事件。\n公共开头中的周遥台词已满足该事件要求。\n\n第二场之前：\n上述第一场尚未结束时。\n第二场以实质时空或事件目标转换为边界，\n不以换行、镜头变化或一次API请求结束为边界。\n\n沈教授在此边界之前不得知道失忆细节；\n边界之后也仍然需要通过实际事件获知，不能自动变成已知。",
+    "第一次选择的行动顺序": "两个选项区分行动优先级：A‘进入实验楼’是优先立即进楼调查；B‘先保护周遥并检查收音机’是先确认、照顾并安顿周遥，再以检查楼内收音机为目标行动。B并不要求在楼外完成设备检查，之后可以为检查而进入楼内；这不抹去先保护周遥的顺序差异。B不能改成仅联系沈教授、仅查看红伞或完全放弃检查收音机。"
+  },
+  "title": "雨夜信号",
+  "visual_style": "暴雨、冷蓝校园灯光、红色雨伞作为唯一高饱和物件；收音机使用断续电流声，地下室使用低频嗡鸣。"
+}

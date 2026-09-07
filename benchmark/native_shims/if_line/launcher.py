@@ -59,6 +59,15 @@ def configure(config,mode):
         OPENAI_BASE_URL=config['model_base_url'],APP_ENV='test' if mode.startswith('engineering') else 'development',
         CHECK_DEPENDENCIES_ON_STARTUP='false',DATABASE_URL='sqlite:///'+str(runtime/'native.sqlite3'))
     os.environ['BENCH_MODEL_PARAMETERS']=json.dumps(config.get('model_parameters',{}),ensure_ascii=False,separators=(',',':'))
+    os.environ['BENCH_MEDIA_MODE']='1' if config.get('batch_media') else '0'
+    if config.get('batch_media'):
+        if budget_mode != 'unlimited': raise ValueError('batch media requires unlimited policy')
+        for role in ('image','vision'):
+            if not config.get(role+'_base_url') or not config.get(role+'_model'):
+                raise ValueError('missing batch '+role+' endpoint/model')
+        os.environ.update(AI_IMAGE_BASE_URL=config['image_base_url'],AI_IMAGE_MODEL=config['image_model'],
+            KEYFRAME_IMAGE_MODEL=config['image_model'],BG_VISION_BASE_URL=config['vision_base_url'],
+            BG_VISION_MODEL=config['vision_model'],VISION_MODEL=config['vision_model'],IMAGE_GENERATION_ENABLED='true')
     # Both are native text settings used by the Script IR resource planner.
     os.environ.update(PROMPT_REWRITER_MODEL=config['model'],STYLE_CLASSIFIER_MODEL=config['model'],
         STYLE_CLASSIFIER_BASE_URL=config['model_base_url'])
@@ -78,6 +87,9 @@ def configure(config,mode):
         os.environ['OPENAI_API_KEYS']=''
         os.environ['STYLE_CLASSIFIER_API_KEY']=key
         os.environ['STYLE_CLASSIFIER_API_KEYS']=''
+        if config.get('batch_media'):
+            os.environ.update(AI_IMAGE_API_KEY=key,AI_IMAGE_API_KEYS='',BG_VISION_API_KEY=key,
+                BG_VISION_API_KEYS='',DASHSCOPE_API_KEY='')
     return repo,runtime
 
 
@@ -270,7 +282,7 @@ def main():
             uvicorn.run(app,host='127.0.0.1',port=int(config['port']),log_level='warning')
         elif args.mode=='worker':
             sys.argv=['celery','-A','app.workers.celery_app:celery_app','worker','--pool=solo','--concurrency=1',
-                      '--queues=text,maintenance','--loglevel=INFO']
+                      '--queues='+('text,image,compile,maintenance' if config.get('batch_media') else 'text,maintenance'),'--loglevel=INFO']
             runpy.run_module('celery',run_name='__main__')
         else:
             sys.argv=['celery','-A','app.workers.celery_app:celery_app','beat','--loglevel=INFO',

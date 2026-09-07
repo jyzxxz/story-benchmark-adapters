@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "dependencies": {
+    "vue": "3.4.21",
+    "@vue/compiler-sfc": "3.4.21",
+    "esbuild": "0.25.10",
+    "playwright": "1.55.1"
+  }
+}

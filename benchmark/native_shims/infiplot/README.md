@@ -1,5 +1,7 @@
 # InfiPlot external input adapter
 
+This page documents the v3 first-choice/text-only entry. The full-image readable-window batch driver, original browser scheduling and its disclosed entry/auth compatibility rules are documented in [BATCH.md](BATCH.md).
+
 Upstream: `https://github.com/zonghaoyuan/infiplot`, frozen at `a60e18bc663caaa134d9323a2b89159b7cc9bd05`.
 
 The original source files are not edited. `story_benchmark.adapters.infiplot.InfiPlotAdapter` creates an independent runtime copy, installs the frozen pnpm lockfile offline, and starts the original Next.js server there. The adapter uses the original authenticated JSON `POST /api/start`. No frontend, authentication guard, history, story state, or story-generation code is replaced.

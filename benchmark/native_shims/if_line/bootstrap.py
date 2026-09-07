@@ -82,7 +82,7 @@ def install(repo, runtime, config=None):
     os.chdir(runtime)
     os.environ.update(STATIC_DIR=str(runtime/'static'),AUTH_RATELIMIT_BACKEND='memory',
         TTS_ENABLED='false',TTS_FALLBACK_ENABLED='false',TTS_OUTPUT_DIR=str(runtime/'static/tts_cache'),
-        IMAGE_OUTPUT_DIR=str(runtime/'static/assets'))
+        IMAGE_OUTPUT_DIR=str(runtime/'static/assets'),MEDIA_STORAGE_ROOT=str(runtime/'storage/objects'))
     # Native defaults derive log/cache paths from __file__. Redirect only paths.
     from app.utils import logging as xlog
     original_setup = xlog.setup_logger
@@ -99,7 +99,10 @@ def install(repo, runtime, config=None):
         old_new = cls._new_client
         def new_client(self,api_key,*,base_url_override=None,_old=old_new,_sync=sync):
             endpoint=base_url_override or self._client_kwargs.get('base_url') or os.environ['OPENAI_BASE_URL']
-            if str(endpoint).rstrip('/') != os.environ['OPENAI_BASE_URL'].rstrip('/'):
+            allowed=[os.environ['OPENAI_BASE_URL']]
+            if config.get('batch_media'):
+                allowed.extend([config['image_base_url'],config['vision_base_url']])
+            if str(endpoint).rstrip('/') not in [x.rstrip('/') for x in allowed]:
                 raise RuntimeError('native text endpoint differs from frozen common endpoint')
             shadow=copy.copy(self)
             shadow._client_kwargs=trace.instrument_client_kwargs(self._client_kwargs,sync=_sync)
@@ -168,6 +171,83 @@ def install(repo, runtime, config=None):
         finally:
             trace._context.reset(token)
     branch_tasks._call_provider_with_heartbeat = branch_call
+    if config.get('batch_media'):
+        from .quota import install as install_quota
+        install_quota(config,runtime)
+        from app.workers import asset_tasks
+        original_asset_execute=asset_tasks.execute_asset_task
+        @functools.wraps(original_asset_execute)
+        def observed_asset_execute(task_id,**kwargs):
+            token=trace._context.set({'native_task_id':task_id,'stage':'asset.render'})
+            receipt_token=trace._image_receipt.set({})
+            try: return original_asset_execute(task_id,**kwargs)
+            finally:
+                trace._image_receipt.reset(receipt_token)
+                trace._context.reset(token)
+        asset_tasks.execute_asset_task=observed_asset_execute
+        image_service=asset_tasks.image_generation_service
+        # The native referenced-image path uses aiohttp rather than the SDK.
+        # Observe only the configured local image gateway; preserve its body.
+        import aiohttp
+        original_aiohttp_request=aiohttp.ClientSession._request
+        async def observed_aiohttp_request(self,method,url,**kwargs):
+            observed=str(url).startswith(config['image_base_url'].rstrip('/')+'/images/')
+            if observed:
+                holder=trace._image_receipt.get()
+                if holder is not None: holder.clear()
+                context=trace._context.get()
+                headers=dict(kwargs.get('headers') or {})
+                if context.get('native_task_id'): headers['X-Benchmark-Native-Task-Id']=str(context['native_task_id'])
+                if context.get('stage'): headers['X-Benchmark-Native-Stage']=str(context['stage'])
+                kwargs={**kwargs,'headers':headers}
+            response=await original_aiohttp_request(self,method,url,**kwargs)
+            if observed: trace.observe_image_receipt(url,response.headers,response.status)
+            return response
+        aiohttp.ClientSession._request=observed_aiohttp_request
+        for method_name in ('_call_openai_compatible_image_api','_call_openai_image_edit_api'):
+            original_provider=getattr(image_service,method_name)
+            async def observed_provider(*args,_old=original_provider,_method=method_name,**kwargs):
+                result=await _old(*args,**kwargs)
+                if isinstance(result,bytes):
+                    raw_hash=hashlib.sha256(result).hexdigest()
+                    raw_dir=runtime/'native-image-originals';raw_dir.mkdir(exist_ok=True)
+                    raw_file=raw_dir/(raw_hash+'.bin');raw_file.write_bytes(result)
+                    record={'raw_file':str(raw_file),'raw_file_sha256':raw_hash,
+                        'native_method':_method,**trace._context.get(),**(trace._image_receipt.get() or {})}
+                    with (runtime/'native-image-provider-bytes.jsonl').open('a') as stream:
+                        stream.write(json.dumps(trace.redact(record),ensure_ascii=False)+'\n')
+                return result
+            setattr(image_service,method_name,observed_provider)
+        original_write=image_service._write_valid_image_bytes
+        def observed_image_write(image_path,image_data):
+            result=original_write(image_path,image_data)
+            raw_hash=hashlib.sha256(image_data).hexdigest()
+            raw_dir=runtime/'native-image-originals'
+            raw_dir.mkdir(exist_ok=True)
+            (raw_dir/(raw_hash+'.bin')).write_bytes(image_data)
+            with (runtime/'native-image-writes.jsonl').open('a') as stream:
+                stream.write(json.dumps({'native_path':str(Path(image_path).resolve()),'raw_file_sha256':raw_hash,
+                    'raw_file':str(raw_dir/(raw_hash+'.bin')),**trace._context.get(),
+                    **(trace._image_receipt.get() or {})})+'\n')
+            return result
+        image_service._write_valid_image_bytes=observed_image_write
+        original_persist=asset_tasks._persist_provider_output
+        def observed_persist(asset_type,result):
+            with (runtime/'native-media-results.jsonl').open('a') as stream:
+                stream.write(json.dumps(trace.redact({'asset_type':asset_type,'native_result':result,
+                    **trace._context.get(),**(trace._image_receipt.get() or {})}),ensure_ascii=False,default=str)+'\n')
+            return original_persist(asset_type,result)
+        asset_tasks._persist_provider_output=observed_persist
+        for renderer in (asset_tasks.PortraitTaskRenderer,asset_tasks.BackgroundTaskRenderer,asset_tasks.KeyframeTaskRenderer):
+            original_render=renderer.render
+            @functools.wraps(original_render)
+            def observed_render(self,parameters,_old=original_render):
+                context={**trace._context.get(),'stage':'asset.render','native_asset_id':parameters.get('asset_id'),
+                    'native_asset_type':parameters.get('asset_type')}
+                token=trace._context.set(context)
+                try: return _old(self,parameters)
+                finally: trace._context.reset(token)
+            renderer.render=observed_render
 
     from celery import signals
     def worker_ready(**_): trace.write_worker_receipt()

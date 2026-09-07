@@ -4,9 +4,11 @@
 
 本仓库采用**未修改的基线源码 + 独立外置适配器**。`systems/` 中发布的每个文件都与冻结提交逐字节相同；接入规则、记录器、预算与启动包装全部位于 `benchmark/`。文件不改不等于运行时完全不包装：必要的输入渲染与预算适配均公开记录。
 
-当前版本采用 **v3 公共输入与统一返回合同**：同一份任务原文和固定开头，返回到第一次尚未选择的原生选项。允许开头后直接显示选项；正文、选项、选项自带的未来预览分栏保存，故事文字可以不同。三个系统的成功与失败都使用同一个 `result.json` 结构，原生错误如实保留。
+当前新增 **v4 图文批量程序**：同一份公共任务和开头，三个独立入口可调整生成数与并发数，沿原生实际选择路径读取至共同窗口，保留八项评审所需证据。示例窗口 4000 字符仍是开发候选；不要求全篇结局，因此 InfiPlot 可以按相同片段范围参与。使用方法见 [批量运行说明](docs/BATCH_RUNNING.md)，保存字段见 [八项指标对照](docs/BATCH_RECORDING.md)，验证范围见 [批量验收记录](docs/BATCH_VALIDATION.md)。
 
-已修复的接入与验收边界见 [v3 合同](docs/V3_CONTRACT.md)，当前无预算模式及重测见 [无限模式验证](docs/UNLIMITED_VALIDATION.md)；之前有预算上限的 [v3 验证](docs/V3_VALIDATION.md) 保留。本阶段不包含完整分支播放器、AA/AB/BA/BB 探索、AI 评分或论文统计。历史 [C1 重测](docs/CLARIFIED_RETEST.md)、[首轮实测](docs/LIVE_VALIDATION.md) 和 [初始工程验收](docs/ACCEPTANCE.md) 保留，其旧输出判断不适用于 v3。
+历史 **v3 公共输入与统一返回合同** 保留：返回到第一次尚未选择的原生选项。允许开头后直接显示选项；正文、选项、选项自带的未来预览分栏保存，故事文字可以不同。v3 三个系统的成功与失败仍使用同一个 `result.json` 结构，原生错误如实保留。
+
+v3 接入边界见 [v3 合同](docs/V3_CONTRACT.md)，无预算模式重测见 [无限模式验证](docs/UNLIMITED_VALIDATION.md)；之前有预算上限的 [v3 验证](docs/V3_VALIDATION.md) 保留。v4 当前每个根运行采集一条实际路径，不做 AA/AB/BA/BB 全分支探索、AI 自动评分或论文统计。历史 [C1 重测](docs/CLARIFIED_RETEST.md)、[首轮实测](docs/LIVE_VALIDATION.md) 和 [初始工程验收](docs/ACCEPTANCE.md) 保留，不能代替 v4 图文接入证据。
 
 ## 目录
 
@@ -36,7 +38,7 @@ python3 tools/verify_sources.py
 
 ## 公共输入
 
-最新开发案例为 `benchmark/cases/CAMPUS-01-V3.json`，明确角色总名单含玩家、行动先后、角色知识，以及第一次未选择选项的返回范围。原始 brief 和固定开头逐字保留；旧 `CAMPUS-01.json` 未覆盖。只在编译时统一一次 UTF-8、LF 与外围空白，生成唯一 `shared_task.txt`。IF Line 使用 `extra_requirements`，AI4VisualNovel 使用需求文件，InfiPlot 使用 `worldSetting`；里面的公共字符串完全相同。
+图文开发案例为 `benchmark/cases/CAMPUS-01-V4.json`；历史文本案例 `CAMPUS-01-V3.json` 保留。它们明确角色总名单含玩家、行动先后和角色知识。原始 brief 和固定开头逐字保留；旧案例未覆盖。只在编译时统一一次 UTF-8、LF 与外围空白，生成唯一 `shared_task.txt`。IF Line 使用 `extra_requirements`，AI4VisualNovel 使用需求文件，InfiPlot 使用 `worldSetting`；里面的公共字符串完全相同。
 
 开发任务保留人物、固定事实、两组关键选择和续写要求；不叠加六场景、两个结局或路径总字数的硬要求。原始 v1 题库与 v2 前缀保存在 `benchmark/source/`，没有覆盖。
 
