@@ -1,0 +1,41 @@
+{
+  "if_line": {
+    "ok": true,
+    "checks": [
+      {
+        "source_lock": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-unlimited/baseline-lock.json",
+        "base_commit": "572407fce9b648a4206ac37da6a9f6ed22631da8",
+        "adapted_commit": "572407fce9b648a4206ac37da6a9f6ed22631da8",
+        "source_files_verified": 1200,
+        "source_lock_sha256": "b796e5c6c5b6e3867876b12872e718324edf94a9bdd7121044adc6d0e1db99e4"
+      }
+    ],
+    "errors": []
+  },
+  "AI4VisualNovel": {
+    "ok": true,
+    "checks": [
+      {
+        "source_lock": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-unlimited/baseline-lock.json",
+        "base_commit": "0faf120244d175866eea3813f053281f5689ab19",
+        "adapted_commit": "0faf120244d175866eea3813f053281f5689ab19",
+        "source_files_verified": 35,
+        "source_lock_sha256": "b796e5c6c5b6e3867876b12872e718324edf94a9bdd7121044adc6d0e1db99e4"
+      }
+    ],
+    "errors": []
+  },
+  "infiplot": {
+    "ok": true,
+    "checks": [
+      {
+        "source_lock": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-unlimited/baseline-lock.json",
+        "base_commit": "a60e18bc663caaa134d9323a2b89159b7cc9bd05",
+        "adapted_commit": "a60e18bc663caaa134d9323a2b89159b7cc9bd05",
+        "source_files_verified": 927,
+        "source_lock_sha256": "b796e5c6c5b6e3867876b12872e718324edf94a9bdd7121044adc6d0e1db99e4"
+      }
+    ],
+    "errors": []
+  }
+}

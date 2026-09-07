@@ -1,0 +1,232 @@
+{
+  "review_time_utc": "2026-09-07T03:33:25.634358+00:00",
+  "run_dir": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-unlimited-live/ai4visualnovel-unlimited-01",
+  "run_id": "ai4visualnovel-unlimited-01",
+  "evidence_kind": "live",
+  "review_mode": "read_only_no_additional_provider_calls",
+  "parent_manifest_sha256": "c37e41f286e9cf3f6ac86f6a3e89148a5d34378fcb31a8ae686bfb377503bb03",
+  "sealed_evidence_files_verified": 101,
+  "seal_hash_mismatches": [],
+  "outcome": "native_error",
+  "adapter_status": "passed",
+  "native_status": "failed",
+  "failure_code": "native_graph_node_count_mismatch",
+  "expected_nodes": 12,
+  "actual_nodes": 11,
+  "http_sequence": [
+    {
+      "ordinal": 1,
+      "stage": "designer_agent.generate_game_outline",
+      "call_id": "11fe75aa5cab4576936c8a82ce57e5e9",
+      "response_file": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-unlimited-live/ai4visualnovel-unlimited-01/trace/response-11fe75aa5cab4576936c8a82ce57e5e9.json",
+      "finish_reason": "stop",
+      "actual_model": "deepseek-v4-flash"
+    },
+    {
+      "ordinal": 2,
+      "stage": "producer_agent._run_critique",
+      "call_id": "a62fb1ebccaa4bc8a2ff4cb003773de7",
+      "response_file": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-unlimited-live/ai4visualnovel-unlimited-01/trace/response-a62fb1ebccaa4bc8a2ff4cb003773de7.json",
+      "finish_reason": "stop",
+      "actual_model": "deepseek-v4-flash"
+    },
+    {
+      "ordinal": 3,
+      "stage": "designer_agent.generate_story_graph_from_outline",
+      "call_id": "a4cfe2b06d2343009b925f9f73694bc2",
+      "response_file": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-unlimited-live/ai4visualnovel-unlimited-01/trace/response-a4cfe2b06d2343009b925f9f73694bc2.json",
+      "finish_reason": "stop",
+      "actual_model": "deepseek-v4-flash",
+      "node_count": 12,
+      "node_ids": [
+        "root",
+        "node1",
+        "node2",
+        "node3",
+        "node4",
+        "node5",
+        "node6",
+        "node7",
+        "node8",
+        "node9",
+        "node10",
+        "node11"
+      ]
+    },
+    {
+      "ordinal": 4,
+      "stage": "producer_agent._react_story_graph_critique",
+      "call_id": "8328c873988f49e7a3fc33990159a444",
+      "response_file": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-unlimited-live/ai4visualnovel-unlimited-01/trace/response-8328c873988f49e7a3fc33990159a444.json",
+      "finish_reason": "stop",
+      "actual_model": "deepseek-v4-flash",
+      "action": "graph_validate",
+      "final_decision": null,
+      "final_feedback": null
+    },
+    {
+      "ordinal": 5,
+      "stage": "producer_agent._react_story_graph_critique",
+      "call_id": "d5199568fadb441886b27fd03d682daa",
+      "response_file": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-unlimited-live/ai4visualnovel-unlimited-01/trace/response-d5199568fadb441886b27fd03d682daa.json",
+      "finish_reason": "stop",
+      "actual_model": "deepseek-v4-flash",
+      "action": "graph_validate",
+      "final_decision": null,
+      "final_feedback": ""
+    },
+    {
+      "ordinal": 6,
+      "stage": "producer_agent._run_critique",
+      "call_id": "6a6c211050774c83b7a5fc9df51eaf1a",
+      "response_file": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-unlimited-live/ai4visualnovel-unlimited-01/trace/response-6a6c211050774c83b7a5fc9df51eaf1a.json",
+      "finish_reason": "stop",
+      "actual_model": "deepseek-v4-flash"
+    },
+    {
+      "ordinal": 7,
+      "stage": "designer_agent.generate_story_graph_from_outline",
+      "call_id": "60677f017cae42c0ad85def853a16b9f",
+      "response_file": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-unlimited-live/ai4visualnovel-unlimited-01/trace/response-60677f017cae42c0ad85def853a16b9f.json",
+      "finish_reason": "stop",
+      "actual_model": "deepseek-v4-flash",
+      "node_count": 12,
+      "node_ids": [
+        "root",
+        "node1",
+        "node2",
+        "node3",
+        "node4",
+        "node5",
+        "node6",
+        "node7",
+        "node8",
+        "node9",
+        "node10",
+        "node11"
+      ]
+    },
+    {
+      "ordinal": 8,
+      "stage": "producer_agent._react_story_graph_critique",
+      "call_id": "381d822a3d594a5996bbcdcc0e881316",
+      "response_file": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-unlimited-live/ai4visualnovel-unlimited-01/trace/response-381d822a3d594a5996bbcdcc0e881316.json",
+      "finish_reason": "stop",
+      "actual_model": "deepseek-v4-flash",
+      "action": "graph_validate",
+      "final_decision": null,
+      "final_feedback": null
+    },
+    {
+      "ordinal": 9,
+      "stage": "producer_agent._react_story_graph_critique",
+      "call_id": "d2fbbb86de024f13b15c62e824a02692",
+      "response_file": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-unlimited-live/ai4visualnovel-unlimited-01/trace/response-d2fbbb86de024f13b15c62e824a02692.json",
+      "finish_reason": "stop",
+      "actual_model": "deepseek-v4-flash",
+      "action": "graph_validate",
+      "final_decision": null,
+      "final_feedback": ""
+    },
+    {
+      "ordinal": 10,
+      "stage": "producer_agent._run_critique",
+      "call_id": "dba6070d8fc94b068f4a57cea1a61e36",
+      "response_file": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-unlimited-live/ai4visualnovel-unlimited-01/trace/response-dba6070d8fc94b068f4a57cea1a61e36.json",
+      "finish_reason": "stop",
+      "actual_model": "deepseek-v4-flash"
+    },
+    {
+      "ordinal": 11,
+      "stage": "designer_agent.generate_story_graph_from_outline",
+      "call_id": "e9edffdac4f441e5bf5d6533a579d61c",
+      "response_file": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-unlimited-live/ai4visualnovel-unlimited-01/trace/response-e9edffdac4f441e5bf5d6533a579d61c.json",
+      "finish_reason": "stop",
+      "actual_model": "deepseek-v4-flash",
+      "node_count": 11,
+      "node_ids": [
+        "root",
+        "node1",
+        "node2",
+        "node3",
+        "node4",
+        "node5",
+        "node6",
+        "node7",
+        "node8",
+        "node9",
+        "node10"
+      ]
+    }
+  ],
+  "native_stop_chain": [
+    "Step1 outline generated and Producer passed.",
+    "Initial Step2 graph has 12 nodes and passes Designer count check.",
+    "First graph review: ReAct schema fails twice, native fallback ordinary review returns FAIL; first revision returns 12 nodes.",
+    "Second graph review: ReAct schema fails twice, native fallback ordinary review returns FAIL; feedback requests deleting node11 and adding a transition node to retain 12.",
+    "Second revision contains root plus node1..node10 (11). Designer immediately raises; revise_fn does not return to save/review; design CLI exits 1; script CLI never starts."
+  ],
+  "stored_artifact_state": {
+    "game_design_has_story_graph": false,
+    "game_design_status": "Step1 intermediate outline only",
+    "story_graph_file_nodes": 12,
+    "story_graph_file_status": "Prior 12-node revision, not approved final design",
+    "rejected_11_node_candidate": "trace/response-e9edffdac4f441e5bf5d6533a579d61c.json",
+    "story_txt_exists": false
+  },
+  "budget_verification": {
+    "budget_mode": "unlimited",
+    "four_limits_explicit_null": true,
+    "observed_http_calls": 11,
+    "all_11_http_completed": true,
+    "all_finish_stop": true,
+    "no_injected_output_caps": true,
+    "unknown_call_ids": [],
+    "native_issue_codes": [],
+    "budget_failure_observed": false
+  },
+  "input_and_model_verification": {
+    "shared_sha256": "c8741573a37879a743113da4013765d432d0e3dc9cc22f60697d1883030b9335",
+    "received_equal": true,
+    "first_creative_shared_occurrences": 1,
+    "requested_model_verified": true,
+    "common_model_parameters_verified": true,
+    "all_actual_models": [
+      "deepseek-v4-flash"
+    ],
+    "model_parameters": {
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "first_prose_request_observed": false,
+    "source_files_verified": 35,
+    "source_unchanged": true
+  },
+  "usage": {
+    "actual_cost": null,
+    "complete": true,
+    "completion_tokens": 5702,
+    "http_calls": 11,
+    "prompt_tokens": 29733,
+    "total_tokens": 35435
+  },
+  "causal_assessment": {
+    "confirmed": "Native revision returned 11 despite native 12-node prompt and Producer feedback requiring a replacement transition; Designer count validation terminated workflow.",
+    "native_review_schema_issue": "ReAct action graph_validate outputs null optional finalize fields, while native schema requires strings when supplied; native one-retry fallback ran as designed.",
+    "not_supported": "No evidence that adapter budget, lost/duplicated shared input, common thinking parameter injection, or export caused this stop. Shared first-choice scope expressly permits complete internal planning/review; no direct 12-node conflict.",
+    "limits": "This single run cannot prove model internal reasoning or all prompt effects. Story quality not evaluated; stored outline/graph are internal artifacts, not player prose."
+  },
+  "source_references": {
+    "native_total_nodes_default": "systems/AI4VisualNovel/agents/config.py:56",
+    "native_graph_total_constraint": "systems/AI4VisualNovel/agents/config.py:193",
+    "count_raise": "systems/AI4VisualNovel/agents/designer_agent.py:115",
+    "revision_call_before_save": "systems/AI4VisualNovel/workflow.py:167",
+    "graph_review_and_revision": "systems/AI4VisualNovel/workflow.py:257",
+    "final_game_design_merge_not_reached": "systems/AI4VisualNovel/workflow.py:279",
+    "react_native_fallback": "systems/AI4VisualNovel/agents/producer_agent.py:159",
+    "schema_retry_once": "systems/AI4VisualNovel/agents/base_agent.py:49",
+    "react_string_schema": "systems/AI4VisualNovel/agents/schemas.py:136"
+  },
+  "review_added_paid_calls": 0
+}

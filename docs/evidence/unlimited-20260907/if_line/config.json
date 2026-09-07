@@ -1,0 +1,28 @@
+{
+  "allow_pilot": true,
+  "budget_mode": "unlimited",
+  "chapter_count": 13,
+  "database_url_env": "IFLINE_BENCH_DATABASE_URL",
+  "entry_mode": "shared_first_choice",
+  "isolated_deployment": true,
+  "live": true,
+  "managed_runtime": "native_services",
+  "max_calls": null,
+  "max_input_chars": null,
+  "max_output_tokens": null,
+  "model": "deepseek-v4-flash",
+  "model_api_key_env": "OPENAI_API_KEY",
+  "model_base_url": "https://api.deepseek.com",
+  "model_parameters": {
+    "thinking": {
+      "type": "disabled"
+    }
+  },
+  "python_executable": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/experiment/if_line/.venv/bin/python",
+  "redis_executable": "/opt/homebrew/bin/redis-server",
+  "repo_path": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-unlimited/systems/if_line",
+  "root_run_id": "if_line-unlimited-01",
+  "source_lock": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-unlimited/baseline-lock.json",
+  "timeout_seconds": null,
+  "trace_dir": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-unlimited-live/if_line-unlimited-01/trace"
+}

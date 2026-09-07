@@ -1,0 +1,23 @@
+{
+  "allow_pilot": true,
+  "api_key_env": "OPENAI_API_KEY",
+  "budget_mode": "unlimited",
+  "live": true,
+  "max_calls": null,
+  "max_input_chars": null,
+  "max_output_tokens": null,
+  "model": "deepseek-v4-flash",
+  "model_base_url": "https://api.deepseek.com",
+  "model_parameters": {
+    "thinking": {
+      "type": "disabled"
+    }
+  },
+  "python_executable": "/Users/jyzxxz/Documents/Codex/2026-09-05/ban/AI4VisualNovel/.conda/bin/python",
+  "repo_path": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-unlimited/systems/AI4VisualNovel",
+  "root_run_id": "ai4visualnovel-unlimited-01",
+  "source_lock": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-unlimited/baseline-lock.json",
+  "text_provider": "openai",
+  "timeout_seconds": null,
+  "trace_dir": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-unlimited-live/ai4visualnovel-unlimited-01/trace"
+}

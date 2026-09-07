@@ -6,7 +6,7 @@
 
 当前版本采用 **v3 公共输入与统一返回合同**：同一份任务原文和固定开头，返回到第一次尚未选择的原生选项。允许开头后直接显示选项；正文、选项、选项自带的未来预览分栏保存，故事文字可以不同。三个系统的成功与失败都使用同一个 `result.json` 结构，原生错误如实保留。
 
-已修复的接入与验收边界见 [v3 合同](docs/V3_CONTRACT.md)，最新实测见 [v3 验证](docs/V3_VALIDATION.md)。本阶段不包含完整分支播放器、AA/AB/BA/BB 探索、AI 评分或论文统计。历史 [C1 重测](docs/CLARIFIED_RETEST.md)、[首轮实测](docs/LIVE_VALIDATION.md) 和 [初始工程验收](docs/ACCEPTANCE.md) 保留，其旧输出判断不适用于 v3。
+已修复的接入与验收边界见 [v3 合同](docs/V3_CONTRACT.md)，当前无预算模式及重测见 [无限模式验证](docs/UNLIMITED_VALIDATION.md)；之前有预算上限的 [v3 验证](docs/V3_VALIDATION.md) 保留。本阶段不包含完整分支播放器、AA/AB/BA/BB 探索、AI 评分或论文统计。历史 [C1 重测](docs/CLARIFIED_RETEST.md)、[首轮实测](docs/LIVE_VALIDATION.md) 和 [初始工程验收](docs/ACCEPTANCE.md) 保留，其旧输出判断不适用于 v3。
 
 ## 目录
 

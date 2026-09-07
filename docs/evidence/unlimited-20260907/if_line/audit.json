@@ -1,0 +1,60 @@
+{
+  "actual_cost": null,
+  "actual_models": [
+    "deepseek-v4-flash"
+  ],
+  "call_context_valid": true,
+  "configured_model_matches_requests": true,
+  "configured_model_parameters": {
+    "thinking": {
+      "type": "disabled"
+    }
+  },
+  "configured_model_parameters_match_requests": true,
+  "cost_status": "unavailable",
+  "delivery_unknown_calls": [],
+  "direct_native_route_receiver_observed": false,
+  "external_input_equal": true,
+  "first_prose_request_observed": true,
+  "missing_response_files": [],
+  "native_input_propagation": "cannot_confirm",
+  "native_issue_codes": [],
+  "observed_http_calls": 6,
+  "receiver_boundaries": [
+    "native_task_snapshot"
+  ],
+  "receiver_observations": 1,
+  "reported_model_matches_requested": true,
+  "requested_models": [
+    "deepseek-v4-flash"
+  ],
+  "source_mapping_valid": true,
+  "structured_opening_observations": [
+    {
+      "call_id": "1e748e74-5c13-4537-9cbe-36f0caa0560b",
+      "field": "chapter_tail",
+      "instructions_empty": true,
+      "opening_equal": true
+    }
+  ],
+  "task_entry_request_contains_shared": true,
+  "task_entry_shared_occurrences": 1,
+  "trace_parse_errors": [],
+  "usage_coverage_complete": true,
+  "v3_output_scope": {
+    "body_optional": true,
+    "choice_count": 2,
+    "contract": {
+      "allow_empty_body": true,
+      "choice_count": 2,
+      "decision_id": "C1",
+      "native_choice_previews": "separate",
+      "scope": "first_unselected_choice",
+      "selection_executed": false,
+      "version": "3.0"
+    },
+    "issues": [],
+    "selection_executed": false,
+    "status": "reached"
+  }
+}

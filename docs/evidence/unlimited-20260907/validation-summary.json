@@ -1,0 +1,154 @@
+{
+  "schema_version": "3.0",
+  "executable_commit": "d16bdea317da242d38ab24adb3d229b24722a65a",
+  "adapter_inventory_sha256": "43fb325a63313cd445ee5b7e330679c851ceb45814cb0c1029578462b674e553",
+  "case_id": "CAMPUS-01-V3",
+  "shared_chars": 2565,
+  "shared_sha256": "c8741573a37879a743113da4013765d432d0e3dc9cc22f60697d1883030b9335",
+  "opening_sha256": "196d04a58ba5bce543e93788e496ae42fdd547d1583d185cda42c3b969159c65",
+  "common": {
+    "live": true,
+    "model": "deepseek-v4-flash",
+    "model_base_url": "https://api.deepseek.com",
+    "timeout_seconds": null,
+    "max_calls": null,
+    "max_output_tokens": null,
+    "max_input_chars": null,
+    "allow_pilot": true,
+    "model_parameters": {
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "budget_mode": "unlimited"
+  },
+  "common_conditions_identical": true,
+  "actual_received_inputs_identical": true,
+  "adaptation_passed": true,
+  "all_native_runs_completed": false,
+  "systems": {
+    "if_line": {
+      "run_id": "if_line-unlimited-01",
+      "executable_commit": "d16bdea317da242d38ab24adb3d229b24722a65a",
+      "outcome": "completed",
+      "adapter_status": "passed",
+      "errors": [],
+      "body_segments": 0,
+      "body_chars": 0,
+      "choices": 2,
+      "previews": 2,
+      "preview_chars": 249,
+      "usage": {
+        "actual_cost": null,
+        "complete": true,
+        "completion_tokens": 6020,
+        "http_calls": 6,
+        "prompt_tokens": 12757,
+        "total_tokens": 18777
+      },
+      "verified_files": 66,
+      "manifest_sha256": "50e1b8072f26b3ac809ba78826adfb79248ceeef77d1d4cad36b41bb76bd41fa",
+      "received_equal": true,
+      "first_request_occurrences": 1,
+      "wire_output_caps": [
+        {
+          "max_tokens": 16000
+        },
+        {},
+        {},
+        {},
+        {
+          "max_tokens": 16000
+        },
+        {
+          "max_tokens": 6000
+        }
+      ],
+      "budget_exhaustion_observed": false,
+      "sealed_and_resumed_without_requests": true,
+      "schema_passed": true
+    },
+    "ai4visualnovel": {
+      "run_id": "ai4visualnovel-unlimited-01",
+      "executable_commit": "d16bdea317da242d38ab24adb3d229b24722a65a",
+      "outcome": "native_error",
+      "adapter_status": "passed",
+      "errors": [
+        {
+          "category": "native",
+          "code": "native_graph_node_count_mismatch",
+          "message": "native_graph_node_count_mismatch:expected=12:actual=11:native_exit=1"
+        }
+      ],
+      "body_segments": 0,
+      "body_chars": 0,
+      "choices": 0,
+      "previews": 0,
+      "preview_chars": 0,
+      "usage": {
+        "actual_cost": null,
+        "complete": true,
+        "completion_tokens": 5702,
+        "http_calls": 11,
+        "prompt_tokens": 29733,
+        "total_tokens": 35435
+      },
+      "verified_files": 101,
+      "manifest_sha256": "c37e41f286e9cf3f6ac86f6a3e89148a5d34378fcb31a8ae686bfb377503bb03",
+      "received_equal": true,
+      "first_request_occurrences": 1,
+      "wire_output_caps": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ],
+      "budget_exhaustion_observed": false,
+      "sealed_and_resumed_without_requests": true,
+      "schema_passed": true
+    },
+    "infiplot": {
+      "run_id": "infiplot-unlimited-01",
+      "executable_commit": "d16bdea317da242d38ab24adb3d229b24722a65a",
+      "outcome": "completed",
+      "adapter_status": "passed",
+      "errors": [],
+      "body_segments": 16,
+      "body_chars": 850,
+      "choices": 2,
+      "previews": 0,
+      "preview_chars": 0,
+      "usage": {
+        "actual_cost": null,
+        "complete": true,
+        "completion_tokens": 1564,
+        "http_calls": 3,
+        "prompt_tokens": 11365,
+        "total_tokens": 12929
+      },
+      "verified_files": 43,
+      "manifest_sha256": "f6cb7c7378e425280fc485f11a8531fc2aabb95264d53e83e2cd99865e6980be",
+      "received_equal": true,
+      "first_request_occurrences": 1,
+      "wire_output_caps": [
+        {},
+        {},
+        {}
+      ],
+      "budget_exhaustion_observed": false,
+      "sealed_and_resumed_without_requests": true,
+      "schema_passed": true
+    }
+  },
+  "scope": "first_unselected_choice",
+  "quality_status": "not_evaluated",
+  "infiplot_auth": "isolated_local_identity_fixture",
+  "retest_policy": "one new run per system; no retries to select success; no previous artifacts changed"
+}
