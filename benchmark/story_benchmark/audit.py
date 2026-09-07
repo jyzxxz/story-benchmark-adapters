@@ -60,6 +60,8 @@ def audit_trace(run_dir, shared, opening, materialize=False):
             error_text = json.dumps(record.get('error'),ensure_ascii=False).lower()
             if record.get('generation_issue_code'):
                 native_issues.append(record['generation_issue_code'])
+            if record.get('failure_code') == 'budget_exhausted':
+                native_issues.append('budget_exhausted')
             if 'budget' in error_text and any(s in error_text for s in ('exhaust','exceed','limit')):
                 native_issues.append('budget_exhausted')
             if not is_http_attempt_record(record):
