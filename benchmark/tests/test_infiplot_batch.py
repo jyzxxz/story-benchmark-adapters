@@ -17,6 +17,44 @@ from native_shims.infiplot.relay import COLD_START, SHARED_START, adapt_messages
 
 
 class BatchContractTests(unittest.TestCase):
+    def test_isolated_identity_evidence_keeps_boolean_without_exposing_credentials(self):
+        from contextlib import ExitStack
+        from urllib.error import HTTPError
+        from urllib.request import Request, urlopen
+        from native_shims.infiplot.batch_runtime import LocalIdentity
+        from story_benchmark.recording import Recorder
+
+        with tempfile.TemporaryDirectory() as directory:
+            with ExitStack() as cleanup:
+                first = LocalIdentity()
+                cleanup.callback(first.close)
+                second = LocalIdentity()
+                cleanup.callback(second.close)
+                self.assertNotEqual(first.server.server_port, second.server.server_port)
+                self.assertFalse(first.token == second.token)
+                self.assertFalse(first.cookie == second.cookie)
+                for own, other in ((first, second), (second, first)):
+                    endpoint = f"http://127.0.0.1:{own.server.server_port}/auth/v1/user"
+                    with urlopen(Request(endpoint, headers={"Authorization": "Bearer " + own.token}), timeout=5) as response:
+                        self.assertEqual(response.status, 200)
+                    with self.assertRaises(HTTPError) as rejected:
+                        urlopen(Request(endpoint, headers={"Authorization": "Bearer " + other.token}), timeout=5)
+                    self.assertEqual(rejected.exception.code, 401)
+                    rejected.exception.close()
+
+            recorder = Recorder(Path(directory) / "recording", "identity-evidence", 20)
+            for number, identity in enumerate((first, second)):
+                filename = f"native/auth-provenance-{number}.json"
+                recorder.save_json(filename, identity.provenance())
+                raw = (recorder.root / filename).read_text()
+                saved = json.loads(raw)
+                self.assertIs(saved["session_isolated_per_run"], True)
+                self.assertIs(saved["listener_closed"], True)
+                self.assertIs(saved["production_account_authentication_verified"], False)
+                self.assertNotIn("cookie_isolated_per_run", saved)
+                self.assertEqual([item["accepted"] for item in saved["requests"]], [True, False])
+                self.assertFalse(any(secret in raw for secret in (first.token, first.cookie, second.token, second.cookie)))
+
     def test_lineage_uses_exact_operation_not_same_prose_or_prefetch(self):
         responses = {"r1": {"request_id": "r1", "native_operation_id": "selected-op", "data": {"scene": {"id": "selected"}}}}
         calls = [{"call_id": "a", "native_operation_id": "prefetch-op", "native_stage": "writer"},
@@ -162,7 +200,10 @@ class NativeBrowserFixture(unittest.TestCase):
             self.assertTrue(attestation["runtime_source_unchanged_except_native_generated_files"])
             self.assertEqual(attestation["source_files"], 927)
             self.assertFalse((rec.root / "native/runtime").exists())
-            self.assertFalse(json.loads((rec.root / "native/auth-provenance.json").read_text())["production_account_authentication_verified"])
+            auth = json.loads((rec.root / "native/auth-provenance.json").read_text())
+            self.assertIs(auth["production_account_authentication_verified"], False)
+            self.assertIs(auth["session_isolated_per_run"], True)
+            self.assertIs(auth["listener_closed"], True)
         finally:
             server.shutdown(); server.server_close(); thread.join(5)
 

@@ -83,7 +83,7 @@ class LocalIdentity:
 
     def provenance(self):
         return {"mode": "local_identity_fixture", "production_account_authentication_verified": False,
-                "native_auth_source_unchanged": True, "cookie_isolated_per_run": True,
+                "native_auth_source_unchanged": True, "session_isolated_per_run": True,
                 "requests": self.requests, "listener_port": self.server.server_port,
                 "listener_closed": not self.thread.is_alive()}
 

@@ -26,6 +26,8 @@
 
 当前身份为每次独立端口、随机 cookie/token 的本地 Supabase 身份 fixture；原鉴权代码实际执行并调用该服务。`native/auth-provenance.json` 明确 `production_account_authentication_verified=false`。不会使用别次运行的会话。暂不支持批量入口的生产账号模式。
 
+会话隔离元数据使用布尔字段 `session_isolated_per_run`，并记录独立监听端口及关闭状态。旧字段 `cookie_isolated_per_run` 会被通用密钥脱敏规则替换为 `[REDACTED]`；旧档案保持原样，该字符串不能作为布尔隔离证明。新记录不保存真实会话凭证，脱敏规则不放宽。更新适配器后须新建批次，不能继续原代码清单冻结的旧队列。
+
 冻结原生 Painter 将 `timeout: undefined` 显式传给 OpenAI 6.42 SDK；本地媒体路径观察到 SDK 在发送前拒绝该参数。外置启动器通过原生已有 `IMAGE_TIMEOUT_MS` 环境配置恢复**安装的冻结 SDK 自身** `OpenAI.DEFAULT_TIMEOUT`，当前值 600000 ms（`node_modules/openai/client.js` 的 `OpenAI.DEFAULT_TIMEOUT = 600000; // 10 minutes`）。实际读取值和原因保存在 `native/native-image-settings.json`。这是原 SDK 每请求期限，非额外生成总预算。可显式配置 `native_image_timeout_ms`，其值必须披露；`native_image_hedge_ms` 亦通过原生设置记录。默认不从操作员 shell 继承这两项调参。原生 SDK retries、Painter 参考图失败降级等保持原实现。
 
 ## 图像、调用与时间证据

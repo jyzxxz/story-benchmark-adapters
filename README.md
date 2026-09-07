@@ -10,6 +10,8 @@
 
 v3 接入边界见 [v3 合同](docs/V3_CONTRACT.md)，无预算模式重测见 [无限模式验证](docs/UNLIMITED_VALIDATION.md)；之前有预算上限的 [v3 验证](docs/V3_VALIDATION.md) 保留。v4 当前每个根运行采集一条实际路径，不做 AA/AB/BA/BB 全分支探索、AI 自动评分或论文统计。历史 [C1 重测](docs/CLARIFIED_RETEST.md)、[首轮实测](docs/LIVE_VALIDATION.md) 和 [初始工程验收](docs/ACCEPTANCE.md) 保留，不能代替 v4 图文接入证据。
 
+最新检查：[适配器与三个批量程序整体复查](docs/ADAPTER_AUDIT_20260907.md)。
+
 ## 目录
 
 ```text
