@@ -193,13 +193,20 @@ class Relay:
         return f"http://127.0.0.1:{self.server.server_port}"
 
     def wait_for_idle(self):
-        deadline = time.monotonic() + float(self.config.get("timeout_seconds", 180))
+        timeout = self.generation_timeout()
+        deadline = None if timeout is None else time.monotonic() + timeout
         with self.condition:
             while self.active:
+                if deadline is None:
+                    self.condition.wait()
+                    continue
                 remaining = deadline - time.monotonic()
                 if remaining <= 0:
                     raise TimeoutError("relay_response_capture_timeout")
                 self.condition.wait(remaining)
+
+    def generation_timeout(self):
+        return None if self.config.get("budget_mode", "bounded") == "unlimited" else float(self.config.get("timeout_seconds", 180))
 
     def close(self):
         with self.condition:
@@ -285,7 +292,8 @@ class Relay:
             if handler.path != "/v1/chat/completions":
                 raise ValueError("unsupported_native_endpoint")
             length = int(handler.headers.get("Content-Length", "0"))
-            if length <= 0 or length > self.config["max_input_chars"] * 8:
+            unlimited = self.config.get("budget_mode", "bounded") == "unlimited"
+            if length <= 0 or (not unlimited and length > self.config["max_input_chars"] * 8):
                 raise ValueError("invalid_or_excessive_request_size")
             raw = handler.rfile.read(length)
             before = json.loads(raw)
@@ -304,15 +312,19 @@ class Relay:
             after_parameters_hash = digest(compact(after))
             cap_key = "max_completion_tokens" if "max_completion_tokens" in after else "max_tokens"
             native_cap = after.get(cap_key)
-            if native_cap is not None and (not isinstance(native_cap, int) or isinstance(native_cap, bool) or native_cap <= 0):
-                raise ValueError("invalid_native_output_cap")
-            after[cap_key] = min(native_cap or self.config["max_output_tokens"], self.config["max_output_tokens"])
+            sampling_changes = []
+            if not unlimited:
+                if native_cap is not None and (not isinstance(native_cap, int) or isinstance(native_cap, bool) or native_cap <= 0):
+                    raise ValueError("invalid_native_output_cap")
+                after[cap_key] = min(native_cap or self.config["max_output_tokens"], self.config["max_output_tokens"])
+                if native_cap != after[cap_key]:
+                    sampling_changes = [{"field": cap_key, "before": native_cap, "after": after[cap_key]}]
             serialized = compact(after)
             self.save(f"requests/{call_id}.after.json", after)
-            if len(serialized) > self.config["max_input_chars"]:
+            if not unlimited and len(serialized) > self.config["max_input_chars"]:
                 raise ValueError("input_budget_exceeded")
             with self.lock:
-                if self.count >= self.config["max_calls"]:
+                if not unlimited and self.count >= self.config["max_calls"]:
                     raise ValueError("call_budget_exceeded")
                 self.count += 1
                 op_hash = digest(compact(before.get("messages", [])))[:16]
@@ -332,14 +344,15 @@ class Relay:
                       "after_request_sha256": digest(serialized),
                       "model_parameters": parameters, "model_parameter_changes": parameter_changes,
                       "prompt_replacements": replacements,
-                      "sampling_changes": [{"field": cap_key, "before": native_cap, "after": after[cap_key]}] if native_cap != after[cap_key] else [],
-                      "input_chars": len(serialized), "input_character_metric": "compact_http_json_unicode_codepoints_after_cap"}
+                      "budget_mode": "unlimited" if unlimited else "bounded",
+                      "sampling_changes": sampling_changes,
+                      "input_chars": len(serialized), "input_character_metric": "compact_http_json_unicode_codepoints_after_model_parameters" if unlimited else "compact_http_json_unicode_codepoints_after_cap"}
             self.emit({**common, "event": "started"})
             upstream = request.Request(self.endpoint, data=serialized.encode(), method="POST", headers={
                 "Content-Type": "application/json", "Accept": "text/event-stream" if after.get("stream") else "application/json", "Authorization": "Bearer " + self.api_key})
             opener = self._opener()
             try:
-                response = opener.open(upstream, timeout=float(self.config.get("timeout_seconds", 180)))
+                response = opener.open(upstream, timeout=self.generation_timeout())
             except error.HTTPError as exc:
                 response = exc
             disconnected = False

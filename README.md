@@ -44,7 +44,7 @@ python3 tools/verify_sources.py
 
 ## 运行与配置
 
-三个项目分别使用各自环境，具体安装和启动命令见 [运行说明](docs/RUNNING.md)。`benchmark/configs/experiment.v3.example.json` 将模型、供应商地址和预算放在共同配置中，拒绝某个系统单独覆盖这些条件。模板默认不启用真实生成，未选择模型或未设置预算会在发送模型请求前拒绝。
+三个项目分别使用各自环境，具体安装和启动命令见 [运行说明](docs/RUNNING.md)。`benchmark/configs/experiment.v3.example.json` 将模型、供应商地址和预算放在共同配置中，拒绝某个系统单独覆盖这些条件。模板默认采用 `budget_mode=unlimited`：适配器不限制总生成时间、HTTP 调用次数、输入长度或单次输出 token；原生项目和模型服务的限制仍保留。模板不启用真实生成，未选择模型会在发送前拒绝。
 
 真实生成可通过单系统 `run-first` 或三系统 `run-set` 执行。v3 的 `resume-export` 核验并返回已封存的统一结果，包括原生失败；不自动重发生成。各接入器原生幂等与恢复边界见运行说明。
 

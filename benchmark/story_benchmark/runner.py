@@ -1,5 +1,6 @@
 import importlib
 import json
+import math
 import os
 import re
 import shutil
@@ -10,6 +11,7 @@ from urllib.parse import urlsplit
 from pathlib import Path
 from .audit import audit_trace, validate_source_map
 from .compiler import verify_bundle
+from .budget import is_unlimited, validate_budget_policy, describe_budget_policy
 from .io import BenchmarkError, atomic_json, atomic_write, read_json, redact, sha256, safe_child
 
 ADAPTERS = {'ai4visualnovel': ('ai4vn', 'AI4VNAdapter'), 'infiplot': ('infiplot', 'InfiPlotAdapter'), 'if_line': ('if_line', 'IFLineAdapter')}
@@ -60,18 +62,19 @@ def adapter_for(system, config):
 
 
 def validate_config(config):
-    errors = []
+    errors = validate_budget_policy(config)
     from .model_parameters import validate_model_parameters
     try:
         validate_model_parameters(config.get('model_parameters', {}))
     except BenchmarkError as exc:
         errors.append(str(exc))
-    for field in ('timeout_seconds', 'max_calls', 'max_output_tokens', 'max_input_chars'):
-        if type(config.get(field)) not in (int, float) or config[field] <= 0:
-            errors.append('missing_positive_limit: ' + field)
-    for field in ('max_calls', 'max_output_tokens', 'max_input_chars'):
-        if field in config and type(config[field]) is not int:
-            errors.append('integer_limit_required: ' + field)
+    if not is_unlimited(config):
+        for field in ('timeout_seconds', 'max_calls', 'max_output_tokens', 'max_input_chars'):
+            if type(config.get(field)) not in (int, float) or config[field] <= 0 or not math.isfinite(config[field]):
+                errors.append('missing_positive_limit: ' + field)
+        for field in ('max_calls', 'max_output_tokens', 'max_input_chars'):
+            if field in config and type(config[field]) is not int:
+                errors.append('integer_limit_required: ' + field)
     if config.get('live') is not True:
         errors.append('live_run_not_configured')
     if config.get('managed_runtime') == 'engineering_fixed_response' or config.get('transport') is not None:
@@ -215,7 +218,8 @@ def run_once(system, bundle_dir, config, run_dir, adapter=None, mock=False):
                 'generation_status': 'not_run', 'audit_status': 'not_run', 'native_integration': 'not_run',
                 'shared_sha256': sha256((bundle_dir / 'shared_task.txt').read_bytes()),
                 'bundle_dir': str(bundle_dir), 'config_sha256': sha256(json.dumps(redact(config), sort_keys=True)),
-                'budget_policy': 'root HTTP call cap; per-call output cap; compact complete JSON Unicode codepoint cap; no monetary equality claim',
+                'budget_mode':config.get('budget_mode','bounded'),
+                'budget_policy':describe_budget_policy(config),
                 'adapter_source_sha256':adapter_source_inventory(),
                 'native_source_modified':False}
     _state(run_dir, manifest, 'VALIDATED')

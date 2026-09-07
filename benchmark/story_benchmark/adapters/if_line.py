@@ -166,7 +166,11 @@ class IFLineAdapter:
         self.config = dict(config)
         self.base = str(config.get("base_url", "http://127.0.0.1:18081")).rstrip("/")
         self.prefix = str(config.get("api_prefix", "/api"))
-        self.timeout = float(config.get("timeout_seconds", 900))
+        self.budget_mode = config.get("budget_mode", "bounded")
+        self.timeout = None if self.budget_mode == "unlimited" else float(config.get("timeout_seconds", 900))
+        # Service I/O and readiness watchdogs are independent of generation time.
+        self.api_timeout = 60 if self.timeout is None else min(60, self.timeout)
+        self.startup_timeout = 60 if self.timeout is None else min(60, self.timeout)
         self.transport = config.get("transport")  # Tests only; never merged into real evidence.
         self._managed_process = None
         self._managed_log = None
@@ -215,9 +219,12 @@ class IFLineAdapter:
             checks.extend(provenance["checks"])
         else:
             errors.append("missing_repo_dir")
-        for field in ("max_calls", "max_output_tokens", "max_input_chars"):
-            if not isinstance(self.config.get(field), int) or self.config[field] <= 0:
-                errors.append("missing_" + field)
+        from story_benchmark.budget import validate_budget_policy
+        errors.extend(validate_budget_policy({**self.config, "timeout_seconds": self.config.get("timeout_seconds", 900)}))
+        if self.budget_mode == "bounded":
+            for field in ("max_calls", "max_output_tokens", "max_input_chars"):
+                if type(self.config.get(field)) is not int or self.config[field] <= 0:
+                    errors.append("missing_" + field)
         if self.config.get("live"):
             if self.transport:
                 errors.append("mock_transport_forbidden_in_live_run")
@@ -259,7 +266,7 @@ class IFLineAdapter:
             headers={"Content-Type": "application/json", "Cookie": "sid=" + token,
                      **(headers or {})}, method=method)
         try:
-            with self._opener.open(request, timeout=min(60, self.timeout)) as response:
+            with self._opener.open(request, timeout=self.api_timeout) as response:
                 raw = response.read()
                 return json.loads(raw) if raw else None
         except urllib.error.HTTPError as exc:
@@ -327,7 +334,7 @@ class IFLineAdapter:
             "native_shims.if_line.launcher", "engineering-server" if self.config["managed_runtime"]=="engineering_fixed_response" else "native-services",
             "--config", str(cfg)],
             cwd=runtime, env=env, stdout=self._managed_log, stderr=subprocess.STDOUT)
-        deadline = time.monotonic() + min(60,self.timeout)
+        deadline = time.monotonic() + self.startup_timeout
         while True:
             if self._managed_process.poll() is not None:
                 raise IFLineError("managed_runtime_exited", str(self._managed_process.returncode))
@@ -404,7 +411,7 @@ class IFLineAdapter:
                 return task
             if task.get("status") in {"failed", "cancelled", "partial"}:
                 raise IFLineError("native_task_failed", task.get("error_code") or task["status"])
-            if time.monotonic() - started >= self.timeout:
+            if self.timeout is not None and time.monotonic() - started >= self.timeout:
                 raise IFLineError("task_timeout", task_id)
             time.sleep(min(float(self.config.get("poll_seconds", 1)), 5))
 
@@ -453,7 +460,8 @@ class IFLineAdapter:
                     "trace_dir": str(Path(self.config["trace_dir"]).resolve()),
                     "max_calls": self.config["max_calls"], "max_output_tokens": self.config["max_output_tokens"],
                     "max_input_chars": self.config["max_input_chars"], "role": "worker",
-                    "model": self.config["model"]}
+                    "budget_mode": self.budget_mode,
+                    "timeout_seconds": self.timeout, "model": self.config["model"]}
         endpoint_key = "requested_model_base_url" if self.config.get("managed_runtime")=="engineering_fixed_response" else "model_base_url"
         expected[endpoint_key] = self.config["model_base_url"]
         expected["model_parameters"] = self.config.get("model_parameters", {})

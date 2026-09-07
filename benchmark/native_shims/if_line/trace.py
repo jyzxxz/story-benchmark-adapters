@@ -1,8 +1,9 @@
 """Opt-in experiment tracing at the actual HTTP boundary, including SDK retries.
 
 Only serial, dedicated experiment deployments may set BENCH_RUN_ID. The API and
-worker must share BENCH_TRACE_DIR. Output budget uses conservative reservations;
-missing usage never becomes zero and never releases a reservation.
+worker must share BENCH_TRACE_DIR. Bounded mode uses conservative reservations;
+unlimited mode counts requests without imposing caps or changing native limits.
+Missing usage never becomes zero.
 """
 from __future__ import annotations
 
@@ -41,6 +42,13 @@ def redact(value):
 
 def enabled():
     return bool(os.getenv("BENCH_RUN_ID"))
+
+
+def budget_mode():
+    mode = os.getenv("BENCH_BUDGET_MODE", "bounded")
+    if mode not in {"bounded", "unlimited"}:
+        raise RuntimeError("unknown benchmark budget mode")
+    return mode
 
 
 def validate_shared_input(request, instructions, mode):
@@ -82,29 +90,34 @@ def _emit(event):
 
 def _reserve(body):
     """Cross-process reservation before send; no request/model parameter changes."""
-    calls = int(os.environ["BENCH_MAX_CALLS"])
-    per_call_output = int(os.environ["BENCH_MAX_OUTPUT_TOKENS"])
-    output = calls * per_call_output
-    max_input = int(os.environ["BENCH_MAX_INPUT_CHARS"])
+    mode = budget_mode()
+    unlimited = mode == "unlimited"
+    calls = None if unlimited else int(os.environ["BENCH_MAX_CALLS"])
+    per_call_output = None if unlimited else int(os.environ["BENCH_MAX_OUTPUT_TOKENS"])
+    output = None if unlimited else calls * per_call_output
+    max_input = None if unlimited else int(os.environ["BENCH_MAX_INPUT_CHARS"])
     requested = body.get("max_completion_tokens", body.get("max_tokens"))
-    if not isinstance(requested, int) or requested <= 0:
+    if not unlimited and (not isinstance(requested, int) or requested <= 0):
         raise RuntimeError("benchmark requires explicit positive native max_tokens")
-    if requested > per_call_output:
+    if not unlimited and requested > per_call_output:
         raise RuntimeError("native max_tokens exceeds benchmark per-call output limit")
-    if len(json.dumps(body, ensure_ascii=False, separators=(",", ":"))) > max_input:
+    if not unlimited and len(json.dumps(body, ensure_ascii=False, separators=(",", ":"))) > max_input:
         raise RuntimeError("benchmark input character budget exhausted")
     root = _root()
     with (root / "budget.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         path = root / "budget.json"
         state = json.loads(path.read_text()) if path.exists() else {
-            "root_run_id": os.environ["BENCH_RUN_ID"], "calls": 0, "reserved_output_tokens": 0}
+            "root_run_id": os.environ["BENCH_RUN_ID"], "budget_mode": mode,
+            "calls": 0, "reserved_output_tokens": None if unlimited else 0}
         if state["root_run_id"] != os.environ["BENCH_RUN_ID"]:
             raise RuntimeError("trace directory belongs to another root run")
-        if state["calls"] + 1 > calls or state["reserved_output_tokens"] + requested > output:
+        if state.get("budget_mode", "bounded") != mode:
+            raise RuntimeError("trace directory budget mode differs from run")
+        if not unlimited and (state["calls"] + 1 > calls or state["reserved_output_tokens"] + requested > output):
             raise RuntimeError("benchmark call/output budget exhausted")
         state["calls"] += 1
-        state["reserved_output_tokens"] += requested
+        if not unlimited: state["reserved_output_tokens"] += requested
         signature = hashlib.sha256(json.dumps([_context.get().get("native_task_id"), body],
             sort_keys=True, ensure_ascii=False).encode()).hexdigest()
         attempts = state.setdefault("request_attempts", {})
@@ -153,10 +166,11 @@ def on_request_sync(request):
         "request_schema_and_sampling": {k: v for k, v in body.items() if k != "messages"},
         "provider_request_id": None, "response_file": None, "finish_reason": None,
         "usage": None, "usage_complete": False, "start_time": _now(), "end_time": None,
-        "error": None, "budget_policy": "clamp_native_output_cap_and_root_http_call_cap",
+        "error": None, "budget_mode": budget_mode(),
+        "budget_policy": "observe_only_native_limits_unchanged" if budget_mode()=="unlimited" else "clamp_native_output_cap_and_root_http_call_cap",
         "model_parameters": parameters,
         "async_transport_keepalive_connections": 0,
-        "budget_output_cap": int(os.environ["BENCH_MAX_OUTPUT_TOKENS"])}
+        "budget_output_cap": None if budget_mode()=="unlimited" else int(os.environ["BENCH_MAX_OUTPUT_TOKENS"])}
     request.extensions["benchmark_event"] = event
     _emit(event)
 
@@ -354,6 +368,8 @@ def apply_output_budget(kwargs, path):
         return kwargs
     if path != ("chat", "completions"):
         raise RuntimeError("text benchmark forbids media provider calls")
+    if budget_mode() == "unlimited":
+        return kwargs
     result = dict(kwargs)
     cap = int(os.environ["BENCH_MAX_OUTPUT_TOKENS"])
     key = "max_completion_tokens" if "max_completion_tokens" in result else "max_tokens"
@@ -365,14 +381,22 @@ def apply_output_budget(kwargs, path):
 def write_worker_receipt():
     if not enabled():
         return
+    task_timeout = None if budget_mode()=="unlimited" else float(os.getenv("BENCH_TIMEOUT_SECONDS", "900"))
     receipt = {"role": "worker", "system": "if_line", "pid": os.getpid(),
         "root_run_id": os.environ["BENCH_RUN_ID"], "trace_dir": str(_root()),
-        "max_calls": int(os.environ["BENCH_MAX_CALLS"]),
-        "max_output_tokens": int(os.environ["BENCH_MAX_OUTPUT_TOKENS"]),
-        "max_input_chars": int(os.environ["BENCH_MAX_INPUT_CHARS"]),
+        "budget_mode": budget_mode(),
+        "max_calls": None if budget_mode()=="unlimited" else int(os.environ["BENCH_MAX_CALLS"]),
+        "max_output_tokens": None if budget_mode()=="unlimited" else int(os.environ["BENCH_MAX_OUTPUT_TOKENS"]),
+        "max_input_chars": None if budget_mode()=="unlimited" else int(os.environ["BENCH_MAX_INPUT_CHARS"]),
+        "timeout_seconds": task_timeout,
         "model": os.environ["LLM_MODEL"], "model_base_url": os.environ["OPENAI_BASE_URL"], "created_at": _now()}
     receipt.update(model_parameters=json.loads(os.getenv("BENCH_MODEL_PARAMETERS", "{}")),
-                   async_transport_keepalive_connections=0)
+                   async_transport_keepalive_connections=0,
+                   native_request_timeouts="unchanged",
+                   active_adapter_budget_env=sorted(k for k in os.environ if k.startswith("BENCH_MAX_") or k=="BENCH_TIMEOUT_SECONDS"),
+                   service_watchdogs={"api_request_seconds":60 if task_timeout is None else min(60,task_timeout),
+                                      "startup_seconds":60 if task_timeout is None else min(60,task_timeout),
+                                      "cleanup_parent_seconds":40,"cleanup_child_seconds":10,"cleanup_kill_wait_seconds":5})
     (_root() / "if_line_worker_receipt.json").write_text(json.dumps(receipt), encoding="utf-8")
 
 

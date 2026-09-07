@@ -29,6 +29,12 @@ API headers are omitted and known credential values are redacted.
 
 Execution budgets are explicit adapter settings, separate from observation:
 
+The default `budget_mode="bounded"` retains the following limits. An explicit
+`budget_mode="unlimited"` instead requires all four values (`max_calls`,
+`max_output_tokens`, `max_input_chars`, `timeout_seconds`) to be present and JSON
+`null`. Missing mode never silently enables unlimited behavior, and a large
+numeric sentinel is not accepted as unlimited configuration.
+
 - `max_calls`: flock-protected total HTTP attempts for this root run, including
   SDK retries, shared by the native design/script subprocesses.
 - `max_output_tokens`: add OpenAI `max_tokens` if absent; preserve any lower
@@ -39,6 +45,18 @@ Execution budgets are explicit adapter settings, separate from observation:
   preserve evidence and mark delivery unknown. The shared runner also enforces
   this limit over the whole root run, including preparation and both CLI stages.
   Do not automatically resend.
+
+In unlimited mode the external adapter adds no call-count limit, output-token
+cap, full-input length limit, or CLI stage deadline. The subprocess wait uses
+`timeout=None`. The child receives `BENCH_BUDGET_MODE=unlimited` and no
+`BENCH_MAX_*` values; a parent environment's old limits are not inherited.
+The HTTP observer checks the explicit mode before parsing any limit values, so
+legacy values cannot accidentally re-enable a cap or cause `int('None')`.
+The locked HTTP counter, every attempt/response record, raw output and provider
+usage still remain recorded. Unlimited mode never injects a missing
+`max_tokens`/`max_completion_tokens`; any limit already present in native SDK
+arguments is preserved. Original SDK retries, SDK timeouts and provider-side
+context/output/service limits remain in force.
 
 The shared experiment may also set `common.model_parameters`, for example
 `{"thinking":{"type":"disabled"}}` for the selected DeepSeek provider.
@@ -77,6 +95,19 @@ The shared runner requires explicit live configuration before it sends requests.
 For a vendor source snapshot, supply `source_lock` instead of depending on a
 nested `.git`. `model_base_url` takes precedence over legacy `base_url`.
 Credentials are read from the named environment variable, never from config JSON.
+
+Explicit unlimited fields (combine with the selected model, endpoint and source
+configuration above):
+
+```json
+{
+  "budget_mode": "unlimited",
+  "max_calls": null,
+  "max_output_tokens": null,
+  "max_input_chars": null,
+  "timeout_seconds": null
+}
+```
 
 The exporter uses the native parser and follows only unconditional `<jump>`
 instructions present in `story.txt`, matching `game_engine/scenes.py`'s native
@@ -171,6 +202,7 @@ does not alter native retries or make additional model requests:
 | `native_process_start_failed` | Local subprocess launch failed before a native process ran; adapter error. |
 | `native_source_changed` / `prepared_input_changed` | Source/input integrity failed; adapter error. |
 | `live_generation_not_enabled` | Generation requested with live disabled; adapter configuration error. |
+| `invalid_budget_policy` | Unlimited configuration omits a required null limit or supplies a numeric limit; adapter configuration error. |
 
 SDK error records distinguish `not_sent`, `completed`, and `delivery_unknown`;
 for SDK-only errors they additionally use `native_sdk_error`. Known previous
@@ -207,3 +239,8 @@ explicitly select the final snapshot lock when the source has no nested Git.
 The v3 fixture suite also runs empty and malformed provider-content cases through
 the actual native design CLI, checking known failure codes, retained responses,
 unchanged sources and refused redispatch. These remain synthetic local tests.
+Unlimited tests additionally send 161 actual localhost HTTP requests despite
+legacy cap environment values, verify output-cap absence and native-cap
+preservation, and exercise complete native design/script generation and cleanup
+with null limits. These are engineering checks with fixed responses, not paid
+story generation or evidence of unrestricted provider capacity.

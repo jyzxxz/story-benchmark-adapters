@@ -120,6 +120,9 @@ class NativeRouteTests(unittest.TestCase):
                           "model_parameters": {"thinking": {"type": "disabled"}},
                           "live": True, "max_calls": 3, "max_output_tokens": 1000, "max_input_chars": 100000,
                           "timeout_seconds": 120, "root_run_id": "local-fixture-only"}
+                if os.environ.get("INFIPLOT_TEST_BUDGET_MODE") == "unlimited":
+                    config.update(budget_mode="unlimited", max_calls=None, max_output_tokens=None,
+                                  max_input_chars=None, timeout_seconds=None)
                 if os.environ.get("INFIPLOT_SOURCE_LOCK"):
                     config["source_lock"] = os.environ["INFIPLOT_SOURCE_LOCK"]
                 with patch.dict(os.environ, env):
@@ -139,7 +142,9 @@ class NativeRouteTests(unittest.TestCase):
                     self.assertEqual(media_calls, [])
                     self.assertEqual(len(model_calls), 2)
                     self.assertTrue(auth_calls)
-                    self.assertTrue(all(row["model"] == config["model"] and row["max_tokens"] == 1000 for row in model_calls))
+                    self.assertTrue(all(row["model"] == config["model"] for row in model_calls))
+                    if config.get("budget_mode") != "unlimited":
+                        self.assertTrue(all(row["max_tokens"] == 1000 for row in model_calls))
                     self.assertTrue(all(row["thinking"] == {"type": "disabled"} for row in model_calls))
                     self.assertEqual(sum(shared in message["content"] for message in model_calls[0]["messages"]), 1)
                     self.assertIn("固定开头已经发生", model_calls[0]["messages"][1]["content"])
@@ -159,6 +164,15 @@ class NativeRouteTests(unittest.TestCase):
                     events = [json.loads(line) for file in Path(handle["trace_dir"]).glob("*.jsonl") for line in file.read_text().splitlines()]
                     completed = [row for row in events if row["event"] == "completed"]
                     self.assertEqual(len(completed), 2)
+                    if config.get("budget_mode") == "unlimited":
+                        for event in completed:
+                            before_path = Path(handle["trace_dir"]) / "requests" / (event["call_id"] + ".before.json")
+                            native_request = json.loads(before_path.read_text())
+                            for cap in ("max_tokens", "max_completion_tokens"):
+                                self.assertEqual(native_request.get(cap), event["request_schema_and_sampling"].get(cap))
+                                self.assertEqual(cap in native_request, cap in event["request_schema_and_sampling"])
+                            self.assertEqual(event["sampling_changes"], [])
+                            self.assertEqual(event["budget_mode"], "unlimited")
                     self.assertEqual(completed[0]["boundary"], "http")
                     self.assertTrue(any(row["usage"] is None for row in completed))
                     writer_calls = [row for row in completed if row["stage"] == "writer"]
@@ -200,6 +214,7 @@ class NativeRouteTests(unittest.TestCase):
                             "shared_task_sha256_from_native_sdk": hashlib.sha256(receipt["received_task"].encode()).hexdigest(),
                             "direct_native_route_receiver_observed": False, "receipt_boundary": receipt["boundary"],
                             "native_calls_observed": len(completed), "usage_values_are_provider_fixtures": True,
+                            "budget_mode": config.get("budget_mode", "bounded"),
                             "source_attestation": attestation, "fallback_observation": export["native_fallback_observation"],
                         }, ensure_ascii=False, indent=2))
         finally:

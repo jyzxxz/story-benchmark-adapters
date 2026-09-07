@@ -7,7 +7,7 @@ from native_shims.if_line import trace
 
 @pytest.fixture
 def env(monkeypatch, tmp_path):
-    for k, v in {'BENCH_RUN_ID':'test-root','BENCH_TRACE_DIR':str(tmp_path),'BENCH_MAX_CALLS':'10',
+    for k, v in {'BENCH_RUN_ID':'test-root','BENCH_TRACE_DIR':str(tmp_path),'BENCH_BUDGET_MODE':'bounded','BENCH_MAX_CALLS':'10',
                  'BENCH_MAX_OUTPUT_TOKENS':'100','BENCH_MAX_INPUT_CHARS':'10000'}.items():
         monkeypatch.setenv(k,v)
     monkeypatch.delenv('LLM_MODEL',raising=False)
@@ -112,6 +112,51 @@ def test_output_budget_clamps_only_sampling(env):
     assert effective['messages'] is message
     assert native['max_tokens']==200
     assert trace.apply_output_budget({'messages':message},('chat','completions'))['max_tokens']==100
+
+
+def test_unlimited_output_parameters_unchanged_or_absent(env,monkeypatch):
+    monkeypatch.setenv('BENCH_BUDGET_MODE','unlimited')
+    for native in ({'messages':[]},{'messages':[],'max_tokens':6000},{'messages':[],'max_completion_tokens':12000}):
+        assert trace.apply_output_budget(native,('chat','completions')) is native
+    with pytest.raises(RuntimeError,match='media'):
+        trace.apply_output_budget({},('images','generate'))
+
+
+@pytest.mark.asyncio
+async def test_unlimited_wire_ignores_stale_caps_and_preserves_native_bytes(env,monkeypatch):
+    monkeypatch.setenv('BENCH_BUDGET_MODE','unlimited')
+    for key in ('BENCH_MAX_CALLS','BENCH_MAX_INPUT_CHARS','BENCH_MAX_OUTPUT_TOKENS'):
+        monkeypatch.setenv(key,'1')
+    sent=[]
+    async def respond(request):
+        sent.append(request.content)
+        return httpx.Response(200,json={'model':'native-model','choices':[],
+            'usage':{'prompt_tokens':2,'completion_tokens':3,'total_tokens':5}})
+    client=httpx.AsyncClient(transport=httpx.MockTransport(respond))
+    trace.instrument_client_kwargs({'http_client':client})
+    payloads=[b'{ "model":"native-model", "messages":[] }',
+              json.dumps({'model':'native-model','messages':[{'role':'user','content':'长输入'*10000}],'max_tokens':6000}).encode()]
+    for raw in payloads:
+        await client.post('https://example.test',content=raw)
+    assert sent==payloads
+    state=json.loads((env/'budget.json').read_text())
+    assert state['calls']==2 and state['reserved_output_tokens'] is None and state['budget_mode']=='unlimited'
+    records=events(env)
+    assert len([r for r in records if r['event']=='completed'])==2
+    assert all(r['budget_output_cap'] is None and r['budget_mode']=='unlimited' for r in records)
+    assert records[-1]['usage']['total_tokens']==5
+    await client.aclose()
+
+
+def test_unlimited_worker_receipt_has_null_limits(env,monkeypatch):
+    monkeypatch.setenv('BENCH_BUDGET_MODE','unlimited')
+    monkeypatch.setenv('LLM_MODEL','fixture')
+    monkeypatch.setenv('OPENAI_BASE_URL','http://127.0.0.1:9/v1')
+    trace.write_worker_receipt()
+    receipt=json.loads((env/'if_line_worker_receipt.json').read_text())
+    assert receipt['budget_mode']=='unlimited'
+    assert all(receipt[k] is None for k in ('max_calls','max_output_tokens','max_input_chars','timeout_seconds'))
+    assert receipt['native_request_timeouts']=='unchanged'
 
 
 def test_unknown_actual_model_is_null(env):

@@ -162,6 +162,45 @@ class RelayTests(unittest.TestCase):
     def events(self):
         return [json.loads(line) for file in Path(self.tmp.name).glob("calls-*.jsonl") for line in file.read_text().splitlines()]
 
+    def unlimited(self):
+        self.config.update(budget_mode="unlimited", max_calls=None,
+                           max_input_chars=None, max_output_tokens=None, timeout_seconds=None)
+
+    def test_unlimited_sends_more_than_previous_160_call_budget(self):
+        self.unlimited()
+        body = {"model": "fixture-model", "messages": [{"role": "user", "content": "原生辅助请求"}]}
+        for _ in range(161):
+            self.send(body)
+        self.assertEqual(len(self.sent), 161)
+        self.assertEqual(self.relay.count, 161)
+        events = self.events()
+        self.assertEqual(sum(row["event"] == "started" for row in events), 161)
+        self.assertFalse(any(row["event"] in ("blocked", "error") for row in events))
+        self.assertTrue(all("max_tokens" not in row and "max_completion_tokens" not in row for row in self.sent))
+
+    def test_unlimited_preserves_native_cap_and_large_input_without_injection(self):
+        self.unlimited()
+        self.config["model_parameters"] = {"thinking": {"type": "disabled"}}
+        for cap in ({}, {"max_tokens": 32768}, {"max_completion_tokens": 65536}, {"max_tokens": 17}):
+            original = payload()
+            original.update(cap)
+            original["messages"][1]["content"] += "界" * 200001
+            expected, _, _, _ = adapt_messages(original, SHARED)
+            expected["thinking"] = {"type": "disabled"}
+            self.send(original)
+            self.assertEqual(self.sent[-1], expected)
+        completed = [row for row in self.events() if row["event"] == "completed"]
+        self.assertTrue(all(row["input_chars"] > 200000 and row["budget_mode"] == "unlimited" for row in completed))
+        self.assertTrue(all(row["sampling_changes"] == [] for row in completed))
+
+    def test_unlimited_provider_transport_has_no_180_second_fallback(self):
+        self.unlimited()
+        opener = self.relay._opener()
+        with patch.object(opener, "open", wraps=opener.open) as send, patch.object(self.relay, "_opener", return_value=opener):
+            self.send(payload())
+        self.assertIsNone(send.call_args.kwargs["timeout"])
+        self.assertIsNone(self.relay.generation_timeout())
+
     def test_json_sse_usage_budget_receipt_and_hashes(self):
         first = payload()
         first["max_tokens"] = 7

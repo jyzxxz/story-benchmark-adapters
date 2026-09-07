@@ -209,12 +209,53 @@ class DeliveryTests(unittest.TestCase):
             self.adapter.generate_first_artifact(self.handle)
         self.assertEqual(caught.exception.code, "live_disabled")
 
+    def test_unlimited_native_start_has_no_adapter_generation_timeout(self):
+        self.adapter.config.update(budget_mode="unlimited", max_calls=None, max_output_tokens=None,
+                                   max_input_chars=None, timeout_seconds=None)
+        with patch.object(self.adapter, "_launch"), patch.object(self.adapter, "_headers", return_value={}), patch("urllib.request.urlopen", return_value=BytesIO(json.dumps(fixture()).encode())) as send:
+            result = self.adapter.generate_first_artifact(self.handle)
+        self.assertIsNone(send.call_args.kwargs["timeout"])
+        self.assertEqual(result["native_project_id"], "fixture")
+
     def test_missing_bundle_is_preflight_failure(self):
         result = self.adapter.preflight(Path(self.tmp.name))
         self.assertFalse(result["ok"])
 
 
 class RuntimeSourceTests(unittest.TestCase):
+    def test_preflight_reuses_common_policy_and_retains_bounded_numeric_checks(self):
+        from native_shims.infiplot.relay import COLD_START
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            bundle, source = root / "bundle", root / "source"
+            (bundle / "payloads").mkdir(parents=True)
+            shared = "共同任务"
+            (bundle / "shared_task.txt").write_text(shared)
+            (bundle / "opening.txt").write_text("固定开头")
+            (bundle / "payloads/infiplot.json").write_text(json.dumps({"worldSetting": shared, "styleGuide": "fixture"}))
+            (source / "lib/engine/context").mkdir(parents=True)
+            (source / "lib/engine/context/index.ts").write_text(COLD_START)
+            common = {"repo_path": str(source), "live": False, "max_calls": 2,
+                      "max_output_tokens": 100, "max_input_chars": 10000, "timeout_seconds": 120}
+            unlimited = {**common, "budget_mode": "unlimited", "max_calls": None,
+                         "max_output_tokens": None, "max_input_chars": None, "timeout_seconds": None}
+            cases = [
+                (common, []),
+                (unlimited, []),
+                ({**common, "budget_mode": "unknown"}, ["invalid_budget_mode"]),
+                ({**unlimited, "max_output_tokens": 100}, ["unlimited_requires_explicit_null_limit:max_output_tokens"]),
+                ({k: v for k, v in unlimited.items() if k != "timeout_seconds"}, ["unlimited_requires_explicit_null_limit:timeout_seconds"]),
+                ({**common, "max_calls": 0}, ["Positive max_calls budget is required"]),
+            ]
+            # Only source provenance is stubbed; this exercises the adapter's
+            # actual shared-policy integration without launching native code.
+            with patch("story_benchmark.provenance.verify_repository", return_value={"ok": True, "checks": [], "errors": []}):
+                for config, expected in cases:
+                    with self.subTest(config=config):
+                        result = InfiPlotAdapter(config).preflight(bundle)
+                        self.assertEqual(result["errors"], expected)
+                        self.assertEqual(result["ok"], not expected)
+
     def test_unexpected_directory_symlink_cannot_escape_source_hash_inventory(self):
         from native_shims.infiplot.runtime import source_hashes
         with tempfile.TemporaryDirectory() as tmp:

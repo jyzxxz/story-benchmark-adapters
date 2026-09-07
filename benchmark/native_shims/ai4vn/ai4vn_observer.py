@@ -26,6 +26,13 @@ def enabled():
     return bool(os.getenv('BENCH_TRACE_DIR'))
 
 
+def budget_mode():
+    mode = os.getenv('BENCH_BUDGET_MODE', 'bounded')
+    if mode not in ('bounded', 'unlimited'):
+        raise RuntimeError('benchmark_budget_mode_invalid')
+    return mode
+
+
 def _now():
     return datetime.now(timezone.utc).isoformat()
 
@@ -80,12 +87,12 @@ def _reserve_http_attempt():
     """A shared locked counter counts every actual send, including SDK retries."""
     if fcntl is None:
         raise RuntimeError('benchmark_platform_lock_unsupported')
-    limit = int(os.environ['BENCH_MAX_CALLS'])
+    limit = None if budget_mode() == 'unlimited' else int(os.environ['BENCH_MAX_CALLS'])
     with _lock, (_directory() / 'ai4vn-call-count').open('a+', encoding='utf-8') as stream:
         fcntl.flock(stream, fcntl.LOCK_EX)
         stream.seek(0)
         count = int(stream.read() or 0)
-        if count >= limit:
+        if limit is not None and count >= limit:
             raise RuntimeError('benchmark_call_budget_exhausted')
         stream.seek(0)
         stream.truncate()
@@ -115,7 +122,7 @@ def http_request(request):
         request.headers['Content-Length'] = str(len(wire))
     payload = configured_payload
     serialized = json.dumps(payload, ensure_ascii=False, separators=(',', ':'))
-    if len(serialized) > int(os.environ['BENCH_MAX_INPUT_CHARS']):
+    if budget_mode() != 'unlimited' and len(serialized) > int(os.environ['BENCH_MAX_INPUT_CHARS']):
         raise RuntimeError('benchmark_input_budget_exhausted')
     _reserve_http_attempt()
     record = {**context, 'event': 'started', 'boundary': 'http',
@@ -159,7 +166,7 @@ def openai_client_kwargs():
 
 
 def output_cap(native_limit=None):
-    if not enabled():
+    if not enabled() or budget_mode() == 'unlimited':
         return {} if native_limit is None else {'max_tokens': native_limit}
     cap = int(os.environ['BENCH_MAX_OUTPUT_TOKENS'])
     return {'max_tokens': cap if native_limit is None else min(native_limit, cap)}
@@ -167,7 +174,7 @@ def output_cap(native_limit=None):
 
 def execution_arguments(arguments):
     """Explicit experimental execution cap, separate from the observer hooks."""
-    if not enabled():
+    if not enabled() or budget_mode() == 'unlimited':
         return arguments
     capped = dict(arguments)
     cap = int(os.environ['BENCH_MAX_OUTPUT_TOKENS'])

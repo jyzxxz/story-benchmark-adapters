@@ -9,7 +9,8 @@
     "max_output_tokens": null,
     "max_input_chars": null,
     "allow_pilot": true,
-    "model_parameters": {}
+    "model_parameters": {},
+    "budget_mode": "unlimited"
   },
   "systems": {
     "if_line": {

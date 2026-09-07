@@ -176,7 +176,9 @@ def install(repo, runtime, config=None):
     receipt={'system':'if_line','runtime_adapter':'external_if_line_v1','source_modified':False,
         'source_before_sha256':before['sha256'],'source_file_count':before['file_count'],
         'pid':os.getpid(),'repo_path':str(repo),'runtime_dir':str(runtime),
-        'rules':['bible_base_input_only','task_trace_context','branch_task_trace_context','per_call_output_cap',
+        'budget_mode':trace.budget_mode(),
+        'rules':['bible_base_input_only','task_trace_context','branch_task_trace_context',
+                 'native_output_limits_unchanged' if trace.budget_mode()=='unlimited' else 'per_call_output_cap',
                  'http_observation','runtime_directory_isolation','source_write_guard']}
     (runtime/f'shim-receipt-{os.getpid()}.json').write_text(json.dumps(receipt,indent=2))
     return receipt

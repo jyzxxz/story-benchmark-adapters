@@ -93,6 +93,12 @@ IF Line 的实际顺序是：
 
 `native/native_context.json` 保留各阶段生成顺序、task/revision ID、完整大纲、实际候选请求、开头和空 state 的来源。它明确标记 `semantic_consistency: "not_evaluated"` 与 `adapter_semantic_rewriting: false`。哈希能核对使用了哪份材料，不能证明这些材料在故事内容上相互一致。
 
+## 当前预算模式
+
+同一共同配置默认使用 `budget_mode: "unlimited"`，`timeout_seconds/max_calls/max_output_tokens/max_input_chars` 必须全部显式为 null。适配器不设置生成总时长、HTTP 次数、输入长度和输出 token 上限；原生停止规则、原生 token 参数和模型服务限制仍保留。用量继续记录，不要求三者消耗相等。基础设施启动、安装与清理采用独立超时，不限制生成过程。
+
+`bounded` 模式继续用于复现旧结果；未指定模式时仍按旧规则要求正数限额，不能将漏填配置当作无限。旧的 160 次调用实测封存保留，不因更换模式重新标记为通过。
+
 ## 本地验证范围与证据
 
 以下是实现阶段完成的 IF Line 本地检查；统一 result、封存回归和后续真实模型重测单独记在 [v3 验证报告](V3_VALIDATION.md)，与固定响应证据分开。

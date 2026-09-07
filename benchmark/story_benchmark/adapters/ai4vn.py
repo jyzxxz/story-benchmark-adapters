@@ -258,12 +258,25 @@ class AI4VNAdapter:
                 checks.append('native_python_dependencies_present')
         except (OSError, ValueError, subprocess.SubprocessError) as error:
             errors.append('python_unavailable:' + str(error))
+        mode = self.config.get('budget_mode', 'bounded')
+        if mode == 'unlimited':
+            try:
+                from story_benchmark.budget import validate_budget_policy
+                policy_errors = validate_budget_policy(self.config)
+                errors.extend(policy_errors)
+                if not policy_errors:
+                    checks.append('unlimited_budget_policy_explicit_null_limits')
+            except (TypeError, ValueError) as error:
+                errors.append('invalid_budget_policy:' + str(error))
+        elif mode != 'bounded':
+            errors.append('invalid_budget_mode:' + str(mode))
         if self.config.get('live'):
-            for name in ('max_calls', 'max_output_tokens', 'max_input_chars', 'timeout_seconds'):
-                if type(self.config.get(name)) not in (int, float) or self.config[name] <= 0:
-                    errors.append('missing_positive_budget:' + name)
-                elif name != 'timeout_seconds' and type(self.config[name]) is not int:
-                    errors.append('integer_budget_required:' + name)
+            if mode != 'unlimited':
+                for name in ('max_calls', 'max_output_tokens', 'max_input_chars', 'timeout_seconds'):
+                    if type(self.config.get(name)) not in (int, float) or self.config[name] <= 0:
+                        errors.append('missing_positive_budget:' + name)
+                    elif name != 'timeout_seconds' and type(self.config[name]) is not int:
+                        errors.append('integer_budget_required:' + name)
             if self.config.get('text_provider', 'openai') != 'openai':
                 errors.append('provider_http_budget_unsupported')
             if not self.config.get('model'):
@@ -344,6 +357,12 @@ class AI4VNAdapter:
     def _env(self, handle, stage):
         retained = ('PATH', 'HOME', 'TMPDIR', 'LANG', 'LC_ALL', 'SSL_CERT_FILE', 'SSL_CERT_DIR', 'REQUESTS_CA_BUNDLE')
         environment = {name: os.environ[name] for name in retained if name in os.environ}
+        mode = self.config.get('budget_mode', 'bounded')
+        if mode == 'unlimited':
+            from story_benchmark.budget import validate_budget_policy
+            policy_errors = validate_budget_policy(self.config)
+            if policy_errors:
+                raise AI4VNError('invalid_budget_policy', 'invalid_budget_policy:' + ','.join(policy_errors), 'adapter_error')
         environment.update({'PYTHONDONTWRITEBYTECODE': '1', 'PYTHONUNBUFFERED': '1',
                             'BENCH_NATIVE_ROOT': handle['source_dir'],
                             'TEXT_PROVIDER': self.config.get('text_provider', 'openai'),
@@ -351,10 +370,13 @@ class AI4VNAdapter:
                             'OPENAI_BASE_URL': self.config.get('model_base_url', self.config.get('base_url', 'https://api.openai.com/v1')),
                             'BENCH_RUN_ID': str(self.config.get('root_run_id') or Path(handle['run_dir']).name),
                             'BENCH_TRACE_DIR': handle['trace_dir'], 'BENCH_OPERATION_ID': 'ai4vn.' + stage,
-                            'BENCH_MAX_CALLS': str(self.config['max_calls']),
+                            'BENCH_BUDGET_MODE': mode,
                             'BENCH_MODEL_PARAMETERS': json.dumps(self.config.get('model_parameters', {}), ensure_ascii=False),
-                            'BENCH_MAX_OUTPUT_TOKENS': str(self.config['max_output_tokens']),
-                            'BENCH_MAX_INPUT_CHARS': str(self.config['max_input_chars']), 'BENCH_ALLOW_LIVE': '1'})
+                            'BENCH_ALLOW_LIVE': '1'})
+        if mode != 'unlimited':
+            environment.update({'BENCH_MAX_CALLS': str(self.config['max_calls']),
+                                'BENCH_MAX_OUTPUT_TOKENS': str(self.config['max_output_tokens']),
+                                'BENCH_MAX_INPUT_CHARS': str(self.config['max_input_chars'])})
         return environment
 
     def _save_state(self, handle):
@@ -444,7 +466,9 @@ class AI4VNAdapter:
                             {'stage': stage, 'failure_code': 'native_process_start_failed', 'automatic_retry': False,
                              'native_exit_code': None, 'diagnosis_basis': 'subprocess_launch_error', 'exception_type': type(error).__name__})
                 raise AI4VNError('native_process_start_failed', 'native_process_start_failed:' + type(error).__name__, 'adapter_error') from error
-            output, _ = process.communicate(timeout=self.config['timeout_seconds'])
+            # None is a real unbounded subprocess wait, never a large sentinel.
+            stage_timeout = None if self.config.get('budget_mode') == 'unlimited' else self.config['timeout_seconds']
+            output, _ = process.communicate(timeout=stage_timeout)
             if process.returncode:
                 handle['stages'][stage] = 'failed'
                 diagnostic = self._failure_diagnostic(handle, stage, output, process.returncode)

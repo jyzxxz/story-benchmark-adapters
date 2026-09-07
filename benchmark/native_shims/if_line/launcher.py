@@ -34,15 +34,28 @@ def configure(config,mode):
     runtime.mkdir(parents=True,exist_ok=True)
     if repo in runtime.parents or repo == runtime:
         raise ValueError('runtime must be outside source')
-    required=('root_run_id','trace_dir','max_calls','max_output_tokens','max_input_chars','model','model_base_url')
+    from story_benchmark.budget import validate_budget_policy
+    errors=validate_budget_policy(config)
+    if errors: raise ValueError('; '.join(errors))
+    budget_mode=config.get('budget_mode','bounded')
+    required=('root_run_id','trace_dir','model','model_base_url')
     for key in required:
         if not config.get(key): raise ValueError('missing configuration: '+key)
     provider=urlsplit(config['model_base_url'])
     if provider.scheme not in ('http','https') or not provider.hostname or provider.username or provider.password or provider.query:
         raise ValueError('model_base_url must be a credential-free http(s) endpoint')
+    # Never inherit caps from another experiment, including obsolete total caps.
+    for key in list(os.environ):
+        if key.startswith('BENCH_MAX_') or key=='BENCH_TIMEOUT_SECONDS': os.environ.pop(key)
+    os.environ['BENCH_BUDGET_MODE']=budget_mode
+    if budget_mode=='bounded':
+        for field,env_name in (('max_calls','BENCH_MAX_CALLS'),('max_output_tokens','BENCH_MAX_OUTPUT_TOKENS'),
+                               ('max_input_chars','BENCH_MAX_INPUT_CHARS')):
+            if type(config.get(field)) is not int or config[field]<=0: raise ValueError('invalid '+field)
+            os.environ[env_name]=str(config[field])
+        os.environ['BENCH_TIMEOUT_SECONDS']=str(config.get('timeout_seconds',900))
     os.environ.update(BENCH_RUN_ID=config['root_run_id'],BENCH_TRACE_DIR=str(Path(config['trace_dir']).resolve()),
-        BENCH_MAX_CALLS=str(config['max_calls']),BENCH_MAX_OUTPUT_TOKENS=str(config['max_output_tokens']),
-        BENCH_MAX_INPUT_CHARS=str(config['max_input_chars']),LLM_MODEL=config['model'],
+        LLM_MODEL=config['model'],
         OPENAI_BASE_URL=config['model_base_url'],APP_ENV='test' if mode.startswith('engineering') else 'development',
         CHECK_DEPENDENCIES_ON_STARTUP='false',DATABASE_URL='sqlite:///'+str(runtime/'native.sqlite3'))
     os.environ['BENCH_MODEL_PARAMETERS']=json.dumps(config.get('model_parameters',{}),ensure_ascii=False,separators=(',',':'))

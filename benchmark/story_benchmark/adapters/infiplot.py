@@ -153,10 +153,13 @@ class InfiPlotAdapter:
             checks.append("pristine_source_external_relay_only")
         except (OSError, ValueError, subprocess.CalledProcessError):
             errors.append("InfiPlot repo must be the pristine frozen baseline; adapters live outside it")
-        for key in ("max_calls", "max_output_tokens", "max_input_chars"):
-            value = self.config.get(key)
-            if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
-                errors.append(f"Positive {key} budget is required")
+        from ..budget import is_unlimited, validate_budget_policy
+        errors.extend(validate_budget_policy(self.config))
+        if not is_unlimited(self.config):
+            for key in ("max_calls", "max_output_tokens", "max_input_chars"):
+                value = self.config.get(key)
+                if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
+                    errors.append(f"Positive {key} budget is required")
         if self.config.get("live"):
             for key in ("TEXT_API_KEY", "NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", self.config.get("cookie_env", "INFIPLOT_COOKIE")):
                 if not os.environ.get(key):
@@ -233,7 +236,10 @@ class InfiPlotAdapter:
                                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
                                         start_new_session=True)
         self.console_thread = observe_console(self.process, handle["trace_dir"], handle["root_run_id"])
-        deadline = time.monotonic() + min(float(self.config.get("timeout_seconds", 180)), 120)
+        startup_timeout = float(self.config.get("startup_timeout_seconds", 120))
+        if self.config.get("budget_mode", "bounded") != "unlimited":
+            startup_timeout = min(float(self.config.get("timeout_seconds", 180)), startup_timeout)
+        deadline = time.monotonic() + startup_timeout
         while time.monotonic() < deadline:
             if self.process.poll() is not None:
                 raise InfiPlotError("server_exited", "Native deployment exited during startup")
@@ -305,7 +311,8 @@ class InfiPlotAdapter:
         _save(native_dir / "delivery-started.json", {"time": time.time(), "operation": "POST /api/start"})
         req = request.Request(handle["base_url"] + "/api/start", data=body, headers=self._headers(), method="POST")
         try:
-            with request.urlopen(req, timeout=float(self.config.get("timeout_seconds", 180))) as response:
+            timeout = None if self.config.get("budget_mode", "bounded") == "unlimited" else float(self.config.get("timeout_seconds", 180))
+            with request.urlopen(req, timeout=timeout) as response:
                 raw = response.read()
             if self.relay:
                 self.relay.wait_for_idle()

@@ -26,9 +26,25 @@ The public task itself, its original system-message position, all other message 
 
 The common `model_parameters` object is applied to every native text request after the exact message adaptation. For the v2 non-reasoning validation, the shared setting is `{"thinking":{"type":"disabled"}}`; the relay places this at the HTTP payload's top level, including auxiliary character and cinematography calls. It does not modify `messages`. An empty `{}` leaves native model settings untouched. The shared helper validates supported parameters before sending; systems cannot override this common condition independently.
 
-The independent budget policy sets an absent output cap to `max_output_tokens`, preserving any lower native cap. `max_calls` limits actual provider sends for one root run. `max_input_chars` measures Unicode codepoints of the complete compact JSON HTTP payload **after** message adaptation, common model parameter injection, and the output cap. It does not claim equal monetary cost. Request logs disclose the prompt replacement, common parameter changes, and output-cap changes separately.
+The default `budget_mode="bounded"` policy sets an absent output cap to `max_output_tokens`, preserving any lower native cap. `max_calls` limits actual provider sends for one root run. `max_input_chars` measures Unicode codepoints of the complete compact JSON HTTP payload **after** message adaptation, common model parameter injection, and the output cap. It does not claim equal monetary cost. Request logs disclose the prompt replacement, common parameter changes, and output-cap changes separately.
 
-`MOCK_IMAGE=true` uses the native image placeholders. Empty server TTS configuration and `clientTts=true` disable server TTS. Image/vision configuration points at a disabled loopback endpoint; failures are not used as a substitute for disabling media. Native text calls by character and cinematography translators still consume the same call budget.
+For a shared experiment with no adapter budget, use these exact common values:
+
+```json
+{
+  "budget_mode": "unlimited",
+  "max_calls": null,
+  "max_output_tokens": null,
+  "max_input_chars": null,
+  "timeout_seconds": null
+}
+```
+
+Unlimited mode does not inject or lower `max_tokens`/`max_completion_tokens`, does not reject input or calls by an adapter threshold, and does not create a total generation deadline. Existing native cap fields pass through unchanged; an absent native cap stays absent. The relay's provider transport and the original `/api/start` request explicitly use `timeout=None`; response capture waits without a generation deadline. There is no hidden 180-second transport fallback or large numeric substitute for null. Calls, usage, complete-payload character counts and before/after hashes remain recorded.
+
+Native SDK, project and provider limits remain in force; unlimited does not modify their code or guarantee unbounded provider output. Startup (default 120 seconds), dependency installation (180 seconds) and cleanup (10-second graceful/handler waits, followed by the existing process termination procedure) are infrastructure limits, not generation budgets. Readiness probes have a 5-second timeout and never generate a story. User interruption still closes active relay connections and preserves incomplete evidence; it does not add a retry.
+
+`MOCK_IMAGE=true` uses the native image placeholders. Empty server TTS configuration and `clientTts=true` disable server TTS. Image/vision configuration points at a disabled loopback endpoint; failures are not used as a substitute for disabling media. Native text calls by character and cinematography translators are still observed under the same shared budget mode.
 
 ## Configuration
 
@@ -46,9 +62,10 @@ Alongside the runner's common settings:
 | `cookie_env` | Environment variable holding the native Supabase session cookie; default `INFIPLOT_COOKIE`. |
 | `shared_opening` | Whether to apply the exact transition adaptation; default true in this dedicated adapter. |
 | `dependency_timeout_seconds` | Frozen offline installation timeout, default 180. |
+| `startup_timeout_seconds` | Native readiness ceiling, default 120. In bounded mode the smaller generation timeout also applies during startup. |
 | `keep_runtime` | Retain the temporary source/build directory for diagnostics; default false. |
 
-Real generation requires `live=true`, explicit budgets, `TEXT_API_KEY`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, and the session cookie environment variable. The adapter does not disable or bypass authentication. Provider keys and cookies stay in process memory/environment and are omitted or redacted from evidence.
+Real generation requires `live=true`, an explicit shared budget policy, `TEXT_API_KEY`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, and the session cookie environment variable. Unlimited mode requires all four budget fields present and null. The adapter does not disable or bypass authentication. Provider keys and cookies stay in process memory/environment and are omitted or redacted from evidence.
 
 Use Node >=22 and pnpm 9.12.0. Runtime installation runs `pnpm install --frozen-lockfile --offline`; populate the dependency cache in a separate disposable directory if necessary. The native startup command is `pnpm dev --hostname 127.0.0.1 --port <port>` inside the temporary runtime copy.
 
@@ -100,6 +117,8 @@ python3 -m unittest discover -s tests -p 'test_infiplot*.py' -v
 ```
 
 This covers exact/default-off adaptation, untouched auxiliary messages/schema, shared non-reasoning parameters on real local HTTP sends, empty-parameter defaults, full-payload budget accounting, rejected signature/input drift, JSON/SSE forwarding, partial chunked/Content-Length response evidence, usage, missing usage, budgets, model mismatch, native graph/visibility export, and ambiguous-delivery no-resend behavior. The expensive native route fixture is opt-in. These tests use local providers only and do not establish real-vendor v2 results.
+
+Unlimited regressions send 161 actual loopback provider requests, preserve native caps above 16,384, pass inputs above 200,000 characters and verify both transport timeout arguments are `None`. They use local fixed responses only. To run the original authenticated native-route fixture in this mode, add `INFIPLOT_TEST_BUDGET_MODE=unlimited` to the command below; omit it for the existing bounded fixture.
 
 To test the actual original route with only local auth/provider fixtures, a published no-Git source snapshot, and the shared compiled case:
 

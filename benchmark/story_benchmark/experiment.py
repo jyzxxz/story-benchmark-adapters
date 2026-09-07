@@ -4,7 +4,7 @@ from urllib.parse import urlsplit
 from .io import BenchmarkError, read_json
 from .runner import ADAPTERS, preflight
 
-COMMON_FIELDS = {'live','model','model_base_url','timeout_seconds','max_calls','max_output_tokens','max_input_chars','allow_pilot','model_parameters'}
+COMMON_FIELDS = {'live','model','model_base_url','timeout_seconds','max_calls','max_output_tokens','max_input_chars','allow_pilot','model_parameters','budget_mode'}
 PATH_FIELDS = {'repo_path','repo_dir','source_lock','python_executable','redis_executable','worker_receipt','run_dir','runtime_root'}
 
 
@@ -14,13 +14,17 @@ def load_experiment(path):
     if set(raw) - {'schema_version','common','systems'} or raw.get('schema_version')!='2.1':
         raise BenchmarkError('invalid_experiment_schema')
     common=raw.get('common',{})
-    if set(common) - COMMON_FIELDS or (COMMON_FIELDS - {'model_parameters'}) - set(common):
+    if set(common) - COMMON_FIELDS or (COMMON_FIELDS - {'model_parameters','budget_mode'}) - set(common):
         raise BenchmarkError('common_configuration_fields_mismatch')
     if set(raw.get('systems',{})) != set(ADAPTERS):
         raise BenchmarkError('three_system_configurations_required')
     common={**common,'model_parameters':common.get('model_parameters',{})}
     from .model_parameters import validate_model_parameters
     validate_model_parameters(common['model_parameters'])
+    from .budget import validate_budget_policy
+    errors=validate_budget_policy(common)
+    if errors:
+        raise BenchmarkError(';'.join(errors))
     configurations={}
     for system, specific in raw['systems'].items():
         if set(specific) & COMMON_FIELDS:

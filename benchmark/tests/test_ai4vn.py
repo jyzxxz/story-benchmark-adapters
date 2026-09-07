@@ -237,6 +237,44 @@ class AdapterTests(unittest.TestCase):
         self.assertIn('model_not_frozen', report['errors'])
         self.assertIn('missing_positive_budget:max_calls', report['errors'])
 
+    def test_unlimited_requires_explicit_null_limits_and_clears_parent_caps(self):
+        self.adapter.config.update(budget_mode='unlimited', max_calls=None, max_output_tokens=None,
+                                   max_input_chars=None, timeout_seconds=None, model='fixture',
+                                   api_key_env='AI4VN_UNLIMITED_TEST_KEY')
+        self.assertTrue(self.adapter.preflight(self.bundle)['ok'])
+        handle = self.adapter.prepare(self.bundle, self.root / 'unlimited-config')
+        with patch.dict(os.environ, {'AI4VN_UNLIMITED_TEST_KEY':'offline-test-key', 'BENCH_MAX_CALLS':'160',
+                                     'BENCH_MAX_OUTPUT_TOKENS':'16384', 'BENCH_MAX_INPUT_CHARS':'1',
+                                     'BENCH_BUDGET_MODE':'bounded'}):
+            env = self.adapter._env(handle, 'design')
+        self.assertEqual(env['BENCH_BUDGET_MODE'], 'unlimited')
+        self.assertTrue(all(key not in env for key in ('BENCH_MAX_CALLS','BENCH_MAX_OUTPUT_TOKENS','BENCH_MAX_INPUT_CHARS')))
+        self.adapter.config.pop('max_calls')
+        self.assertFalse(self.adapter.preflight(self.bundle)['ok'])
+        self.adapter.config['max_calls'] = 999999999
+        self.assertFalse(self.adapter.preflight(self.bundle)['ok'])
+
+    def test_unlimited_cli_has_no_stage_timeout_and_keeps_failure_cleanup(self):
+        original_communicate = ADAPTER.subprocess.Popen.communicate
+        self.adapter.config.update(budget_mode='unlimited', max_calls=None, max_output_tokens=None,
+                                   max_input_chars=None, timeout_seconds=None)
+        for marker, code in [('success','import time;time.sleep(0.2);print("native finished")'),
+                             ('failure','raise SystemExit(9)')]:
+            handle = self.adapter.prepare(self.bundle, self.root / ('unlimited-' + marker))
+            with patch.object(self.adapter, '_env', return_value=dict(os.environ)), \
+                 patch.object(ADAPTER.subprocess.Popen, 'communicate', autospec=True,
+                              side_effect=lambda process, *args, **kwargs: original_communicate(process, *args, **kwargs)) as communicate:
+                if marker == 'failure':
+                    with self.assertRaises(ADAPTER.AI4VNError) as raised:
+                        self.adapter._run_stage(handle, 'design', [NATIVE_PYTHON, '-c', code])
+                    self.assertEqual(raised.exception.code, 'native_exit')
+                else:
+                    self.adapter._run_stage(handle, 'design', [NATIVE_PYTHON, '-c', code])
+                self.assertIs(communicate.call_args.kwargs['timeout'], None)
+            self.adapter.close(handle)
+            self.assertTrue(json.loads((Path(handle['trace_dir'])/'source-integrity-ai4vn-closed.json').read_text())['unchanged'])
+            self.assertTrue((Path(handle['native_dir'])/'design.stdout.log').exists())
+
     def test_native_node_count_failure_retains_exit_and_never_retries(self):
         handle = self.adapter.prepare(self.bundle, self.root / 'node-count-failure')
         self.adapter.config['timeout_seconds'] = 5
@@ -389,6 +427,61 @@ else:raise AssertionError('input cap missing')
 assert (Path(os.environ['BENCH_TRACE_DIR'])/'ai4vn-call-count').read_text()=='1'
 """, {'AI4VN_RUN_DIR': directory, 'BENCH_TRACE_DIR': str(Path(directory)/'trace'),
              'BENCH_MAX_CALLS': '2', 'BENCH_MAX_OUTPUT_TOKENS': '128', 'BENCH_ALLOW_LIVE': '1'})
+
+    def test_unlimited_exceeds_160_real_http_calls_without_injecting_output_cap(self):
+        with tempfile.TemporaryDirectory() as directory:
+            self.run_native('''
+import json,os,threading
+from http.server import BaseHTTPRequestHandler,HTTPServer
+from pathlib import Path
+import ai4vn_observer as trace
+requests=[]
+class Handler(BaseHTTPRequestHandler):
+ def do_POST(self):
+  requests.append(json.loads(self.rfile.read(int(self.headers['Content-Length']))))
+  payload={'id':'fixture','model':'fixture-model','choices':[{'index':0,'message':{'role':'assistant','content':'fixture text'},'finish_reason':'stop'}],
+           'usage':{'prompt_tokens':1,'completion_tokens':2,'total_tokens':3}}
+  body=json.dumps(payload).encode()
+  self.send_response(200);self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(body)));self.end_headers();self.wfile.write(body)
+ def log_message(self,*args):pass
+server=HTTPServer(('127.0.0.1',0),Handler)
+threading.Thread(target=server.serve_forever,daemon=True).start()
+from agents.llm_client import LLMClient
+client=LLMClient(api_key='offline-test-key',base_url=f'http://127.0.0.1:{server.server_port}/v1')
+messages=[{'role':'user','content':'公共任务原文：不增加故事提醒。'}]
+for index in range(160):
+ assert client._chat_openai(messages,0.7,False)=='fixture text'
+# An explicit native output limit is preserved on request 161.
+client.client.chat.completions.create(model='fixture-model',messages=messages,max_tokens=37)
+assert len(requests)==161
+assert all('max_tokens' not in r and 'max_completion_tokens' not in r for r in requests[:160])
+assert requests[160]['max_tokens']==37
+assert all(r['messages']==messages for r in requests)
+args={'model':'fixture','max_completion_tokens':43}
+assert trace.execution_arguments(args) is args and args['max_completion_tokens']==43
+assert trace.output_cap()=={} and trace.output_cap(29)=={'max_tokens':29}
+directory=Path(os.environ['BENCH_TRACE_DIR'])
+assert (directory/'ai4vn-call-count').read_text()=='161'
+records=[json.loads(line) for p in directory.glob('*.jsonl') for line in p.read_text().splitlines()]
+starts=[r for r in records if r.get('boundary')=='http' and r.get('event')=='started']
+completed=[r for r in records if r.get('boundary')=='http' and r.get('event')=='completed']
+assert len(starts)==len(completed)==161
+assert all(r['usage']['total_tokens']==3 and r['response_file'] for r in completed)
+assert all(r.get('failure_code')!='budget_exhausted' for r in records)
+server.shutdown()
+''', {'TEXT_PROVIDER':'openai','MODEL':'fixture-model','BENCH_TRACE_DIR':str(Path(directory)/'trace'),
+      'BENCH_BUDGET_MODE':'unlimited','BENCH_MAX_CALLS':'160','BENCH_MAX_OUTPUT_TOKENS':'None',
+      'BENCH_MAX_INPUT_CHARS':'1','BENCH_ALLOW_LIVE':'1','BENCH_RUN_ID':'unlimited-local-fixture',
+      'BENCH_OPERATION_ID':'fixture'})
+            if os.getenv('AI4VN_TEST_ARTIFACT_DIR'):
+                evidence = Path(os.environ['AI4VN_TEST_ARTIFACT_DIR'])
+                evidence.mkdir(parents=True, exist_ok=True)
+                shutil.copytree(Path(directory)/'trace', evidence/'over-160-http-trace')
+                (evidence/'over-160-report.json').write_text(json.dumps({
+                    'evidence_kind':'mock','budget_mode':'unlimited','observed_http_calls':161,
+                    'injected_output_cap':False,'existing_native_max_tokens_preserved':37,
+                    'legacy_environment_limits_ignored':True,'native_source_unchanged':True,
+                    'external_paid_generation':False}, indent=2))
 
     def test_both_paths_failed_json_and_input_receipt(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -153,6 +153,12 @@ class NativeFlowTests(unittest.TestCase):
         (root / ('native-failure-v3-report.json' if v3 else 'native-failure-report.json')).write_text(json.dumps(summaries, ensure_ascii=False, indent=2))
 
     def test_real_cli_runs_with_local_fixed_sdk_responses(self):
+        self._direct_cli_flow(unlimited=False)
+
+    def test_unlimited_real_cli_keeps_observation_and_source_cleanup(self):
+        self._direct_cli_flow(unlimited=True)
+
+    def _direct_cli_flow(self, unlimited):
         fixture = {'marker': 'MOCK_A', 'lock': threading.Lock(), 'actor_requested': False, 'actor_calls': 0, 'calls': [], 'errors': []}
         server = start_fixture_server(fixture)
         self.addCleanup(server.server_close)
@@ -164,6 +170,8 @@ class NativeFlowTests(unittest.TestCase):
         all_results = []
         shared_bundle = os.getenv('BENCH_SHARED_BUNDLE')
         markers = ('CAMPUS_01_NATIVE_MOCK',) if shared_bundle else ('MOCK_A', 'MOCK_B')
+        if unlimited:
+            markers = tuple('UNLIMITED_' + marker for marker in markers)
         for marker in markers:
             fixture.update(marker=marker, actor_requested=False)
             if shared_bundle:
@@ -184,6 +192,8 @@ class NativeFlowTests(unittest.TestCase):
                       'model': 'fixture-model', 'text_provider': 'openai', 'api_key_env': 'AI4VN_FIXTURE_API_KEY',
                       'model_base_url': f'http://127.0.0.1:{server.server_port}/v1', 'max_calls': 150,
                       'max_output_tokens': 8192, 'max_input_chars': 200000, 'timeout_seconds': 45}
+            if unlimited:
+                config.update(budget_mode='unlimited',max_calls=None,max_output_tokens=None,max_input_chars=None,timeout_seconds=None)
             adapter = ADAPTER.AI4VNAdapter(config)
             with patch.dict(os.environ, {'AI4VN_FIXTURE_API_KEY': 'synthetic-local-only-key'}):
                 handle = adapter.prepare(bundle, root / marker)
@@ -222,7 +232,10 @@ class NativeFlowTests(unittest.TestCase):
             self.assertTrue(all(r['usage'] == {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30} for r in completed))
             self.assertEqual(starts[0]['request_messages'][1]['content'].count(shared), 1)
             self.assertEqual(int((trace_dir / 'ai4vn-call-count').read_text()), len(starts))
-            self.assertTrue(all(r['request_schema_and_sampling']['max_tokens'] == 8192 for r in starts))
+            if unlimited:
+                self.assertTrue(all('max_tokens' not in r['request_schema_and_sampling'] and 'max_completion_tokens' not in r['request_schema_and_sampling'] for r in starts))
+            else:
+                self.assertTrue(all(r['request_schema_and_sampling']['max_tokens'] == 8192 for r in starts))
             self.assertFalse(fixture['errors'], fixture['errors'])
             # Raw source text is retained and source pointers identify it exactly.
             for segment in exported['segments']:
@@ -238,6 +251,7 @@ class NativeFlowTests(unittest.TestCase):
             self.assertTrue(validate_source_map(root / marker, exported['segments'])[0])
             (root / marker / 'audit.json').write_text(json.dumps({**audit, 'evidence_kind': 'mock'}, indent=2))
             all_results.append({'evidence_kind': 'mock', 'implementation': 'external_launcher_pristine_source', 'run': marker, 'sdk_http_calls': len(starts),
+                                'budget_mode':'unlimited' if unlimited else 'bounded',
                                 'native_stages': sorted(set(r['stage'] for r in starts)),
                                 'segments': len(exported['segments']), 'choices': len(exported['choices']),
                                 'shared_task_file': str(bundle / 'shared_task.txt'),
@@ -245,7 +259,7 @@ class NativeFlowTests(unittest.TestCase):
                                 'opening_sha256': hashlib.sha256(opening.encode()).hexdigest(),
                                 'external_paid_generation': False})
         self.assertEqual(fixture['actor_calls'], len(markers))
-        (root / 'native-flow-report.json').write_text(json.dumps(all_results, ensure_ascii=False, indent=2))
+        (root / ('native-flow-unlimited-report.json' if unlimited else 'native-flow-report.json')).write_text(json.dumps(all_results, ensure_ascii=False, indent=2))
 
     def test_root_runner_seals_native_cli_and_resumes_without_dispatch(self):
         self._root_runner_flow(v3=False)

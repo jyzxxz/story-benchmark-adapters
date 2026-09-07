@@ -22,7 +22,21 @@ cp -n configs/experiment.v3.example.json configs/experiment.v3.local.json
 
 也可直接验证并使用已编译的 `examples/CAMPUS-01-V3`。只编译一次，三个适配器使用同一个 bundle；编译目录必须全新。`pilot` 表示开发接入材料，不能冒充正式题库审批或其余 29 道题覆盖。
 
-编辑唯一 `common` 块的模型、endpoint、时间/HTTP次/单请求输出/输入预算和 model_parameters；准备真实生成时设置 live=true。模板不含默认模型、预算或凭证。三个专有块不能覆盖这些条件，路径相对配置文件解析。
+编辑唯一 `common` 块的模型、endpoint 和 model_parameters；准备真实生成时设置 live=true。模板默认采用无适配器预算上限，配置必须写明：
+
+```json
+{
+  "budget_mode": "unlimited",
+  "timeout_seconds": null,
+  "max_calls": null,
+  "max_output_tokens": null,
+  "max_input_chars": null
+}
+```
+
+四个限额字段必须显式为 null，不能遗漏或混入数字。三个专有块不能覆盖模式或限额。保留 `bounded` 模式供复现历史实验；省略 budget_mode 仍按旧 bounded 规则检查，四个正数必填。模板不含默认模型或凭证，路径相对配置文件解析。
+
+无限模式取消适配器的根生成计时器、原生生成任务等待期限、HTTP 调用上限、输入长度拒绝和输出 token 注入或压低。调用次数与可得用量继续记录。原生循环停止规则、原生已指定的 token 参数、SDK/服务商请求限制继续保留；基础设施启动、依赖安装和关闭服务的独立超时不作为总生成期限。
 
 IF Line 必须设置 `entry_mode="shared_first_choice"`，原生规划章数仍为 13；v3 会拒绝旧入口。解释器分别填各自独立环境。角色参数使用公共名单的**总人数，包含玩家**。
 
@@ -32,7 +46,7 @@ IF Line 必须设置 `entry_mode="shared_first_choice"`，原生规划章数仍�
 python3 -m story_benchmark preflight-set --experiment configs/experiment.v3.local.json --bundle ../work/CAMPUS-01-V3
 ```
 
-预检不发送生成请求。实际请求保留原生规划、审核、重试、schema、采样参数和更低输出上限；共同预算政策不表示实际消耗或金额相等。
+预检不发送生成请求。实际请求保留原生规划、审核、重试、schema、采样参数和原生输出上限；共同预算政策不表示实际消耗或金额相等。
 
 ## 运行
 
