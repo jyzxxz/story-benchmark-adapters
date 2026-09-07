@@ -12,6 +12,34 @@ v3 接入边界见 [v3 合同](docs/V3_CONTRACT.md)，无预算模式重测见 [
 
 最新检查：[适配器与三个批量程序整体复查](docs/ADAPTER_AUDIT_20260907.md)。
 
+## 给接收程序的人
+
+部署入口已整理为 **Ubuntu 24.04 服务器 / Windows WSL2 Ubuntu 24.04**。Windows 原生命令行不支持这套原生服务的进程管理；在 WSL2 的 Linux 目录中操作。请先阅读 [从零开始](docs/QUICKSTART.md)，Windows 用户先看 [WSL2 安装](docs/WINDOWS_WSL2.md)。
+
+| 需要做什么 | 文档 |
+|---|---|
+| 安装、配置密钥、无付费检查、第一批生成 | [快速上手](docs/QUICKSTART.md) |
+| IF Line 专用环境与排错 | [IF Line](docs/projects/IF_LINE.md) |
+| AI4VisualNovel 专用环境、原生生成失败 | [AI4VisualNovel](docs/projects/AI4VISUALNOVEL.md) |
+| InfiPlot 缓存、无界面浏览器、64 MiB | [InfiPlot](docs/projects/INFIPLOT.md) |
+| 数量、并发、恢复、输出和比较 | [批量运行](docs/BATCH_RUNNING.md) |
+| 八项评测证据的字段和使用边界 | [记录对照](docs/BATCH_RECORDING.md) |
+| 代码结构、维护、发布与共享 | [项目说明](docs/PROJECT_GUIDE.md) |
+| 本次交接的实际验证范围 | [交接检查](docs/HANDOFF_VALIDATION_20260907.md) |
+
+在已安装依赖、生成配置并填写凭证的仓库根目录：
+
+```bash
+source work/activate.sh
+python3 tools/doctor.py --system all
+python3 tools/run_batch.py --system if_line --preflight
+python3 tools/run_batch.py --system if_line --count 6 --concurrency 2 --out work/results/round1-ifline
+```
+
+替换 `--system` 为 `ai4visualnovel` 或 `infiplot` 即运行另外两个项目；三个入口共用 `work/config/batch.local.json`。首次安装、填写供应商与密钥后才能真实生成。数量是独立尝试数，AI4VisualNovel 等原生系统可能失败；失败也保留证据，不保证凑齐同等数量的成功故事。
+
+仓库包含必需源码、适配器、示例和文档；依赖、浏览器与分割模型由安装脚本下载，API 密钥由使用者自行配置。历史真实生成档案不是运行程序的必要依赖，不作为代码包上传。仓库访问权限沿用 GitHub 当前设置。
+
 ## 目录
 
 ```text
@@ -47,7 +75,7 @@ python3 tools/verify_sources.py
 
 目前公共开头及时间解释仍是 `pilot` 候选。使用 `--allow-pilot` 只能用于明确的开发任务；正式运行需要与内容哈希绑定的确认记录。没有为其他 29 题编造开头。
 
-## 运行与配置
+## 历史 v3 文本入口与配置
 
 三个项目分别使用各自环境，具体安装和启动命令见 [运行说明](docs/RUNNING.md)。`benchmark/configs/experiment.v3.example.json` 将模型、供应商地址和预算放在共同配置中，拒绝某个系统单独覆盖这些条件。模板默认采用 `budget_mode=unlimited`：适配器不限制总生成时间、HTTP 调用次数、输入长度或单次输出 token；原生项目和模型服务的限制仍保留。模板不启用真实生成，未选择模型会在发送前拒绝。
 

@@ -1,0 +1,98 @@
+{
+  "schema_version": "handoff-check.1",
+  "date": "2026-09-07",
+  "base_commit": "add6263d3abeffa04e07f0edbee9550408628f44",
+  "target": "Ubuntu 24.04 x86_64 Python 3.12",
+  "execution_environment": "Linux container on Docker Desktop; not physical Windows or WSL2 verification",
+  "paid_model_calls": 0,
+  "native_source_edits_this_delivery": false,
+  "source_lock_sha256": "b796e5c6c5b6e3867876b12872e718324edf94a9bdd7121044adc6d0e1db99e4",
+  "project_smoke": {
+    "if_line": {
+      "ok": true,
+      "junit": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "visible_chars": 20,
+      "frames": 3,
+      "choices_executed": 2,
+      "fixture_http_attempts": 19
+    },
+    "ai4visualnovel": {
+      "ok": true,
+      "junit": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "visible_chars": 96,
+      "frames": 7,
+      "choices_executed": 1,
+      "fixture_http_attempts": 86
+    },
+    "infiplot": {
+      "ok": true,
+      "junit": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "visible_chars": 74,
+      "frames": 4,
+      "choices_executed": 1,
+      "fixture_http_attempts": 17
+    }
+  },
+  "limitations": [
+    "No live model calls in this delivery.",
+    "AI4 native node validation and case-sensitive portrait lookup remain unchanged.",
+    "Single-root fixture windows are engineering tests, not fair story quality samples.",
+    "Physical WSL2 not tested."
+  ],
+  "doctor": {
+    "if_line": {
+      "ok": true,
+      "checks": 14
+    },
+    "ai4visualnovel": {
+      "ok": true,
+      "checks": 8
+    },
+    "infiplot": {
+      "ok": true,
+      "checks": 7
+    }
+  },
+  "linux_parallel": {
+    "evidence_kind": "fixture",
+    "native_worker_pids": [
+      [
+        3132
+      ],
+      [
+        3133
+      ]
+    ],
+    "roots": [
+      "ai4visualnovel-00001-bc872d0b8d8d",
+      "ai4visualnovel-00002-bc872d0b8d8d"
+    ],
+    "http_attempts": 170,
+    "resume_additional_calls": 0,
+    "paid_calls": 0,
+    "rembg_dependency": "deterministic_test_double",
+    "source_files_verified_per_root": 35
+  },
+  "regression_on_original_host": {
+    "tests": 297,
+    "passed": 289,
+    "skipped": 8,
+    "failures": 0,
+    "errors": 0
+  }
+}

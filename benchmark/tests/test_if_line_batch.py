@@ -56,6 +56,9 @@ class BatchNativeTests(unittest.TestCase):
             'node_modules':os.environ['IFLINE_NODE_MODULES'],'rembg_model_dir':os.environ.get('IFLINE_REMBG_MODELS',str(root/'rembg-models')),
             'budget_mode':'unlimited','max_calls':None,'max_input_chars':None,'max_output_tokens':None,'timeout_seconds':None,
             'model':'fixture-text','image_model':'gpt-image-2','vision_model':'gpt-5.4-mini','poll_seconds':0.1}
+        config['source_patch']=str(package/'native-patches/if_line/manifest.json')
+        if os.environ.get('IFLINE_PG_BIN'):config['pg_bin']=os.environ['IFLINE_PG_BIN']
+        if os.environ.get('IFLINE_REDIS'):config['redis_executable']=os.environ['IFLINE_REDIS']
         policy={'window_chars':int(os.environ.get('IFLINE_FIXTURE_WINDOW','20')),'choice_indices':[0,1],
             'reading_delay_seconds':0,'evidence_kind':'fixture','render_mode':'offscreen_native'}
         bundle=package/'benchmark/examples/CAMPUS-01-V4'

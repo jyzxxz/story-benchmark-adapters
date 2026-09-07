@@ -1,0 +1,108 @@
+{
+  "schema_version": "deployment-smoke.1",
+  "started_at": "2026-09-07T12:50:16.559532+00:00",
+  "evidence_kind": "fixture",
+  "secrets_file_read": false,
+  "paid_model_calls": 0,
+  "systems": {
+    "if_line": {
+      "system": "if_line",
+      "evidence_kind": "fixture",
+      "model_api_endpoint_scope": "localhost_fixed_response",
+      "real_provider_credentials_inherited": false,
+      "secrets_file_read": false,
+      "paid_model_calls": 0,
+      "test": "benchmark/tests/test_if_line_batch.py::BatchNativeTests::test_native_media_path_and_frames",
+      "started_at": "2026-09-07T12:50:16.575141+00:00",
+      "source_before": {
+        "ok": true,
+        "checks": [
+          {
+            "source_lock": "/home/bench/story-benchmark-adapters/baseline-lock.json",
+            "base_commit": "572407fce9b648a4206ac37da6a9f6ed22631da8",
+            "adapted_commit": null,
+            "source_files_verified": 1202,
+            "source_lock_sha256": "b796e5c6c5b6e3867876b12872e718324edf94a9bdd7121044adc6d0e1db99e4",
+            "source_modified": true,
+            "native_variant": "if_line_html_script_conversion_fix_v1",
+            "source_patch_manifest": "/home/bench/story-benchmark-adapters/native-patches/if_line/manifest.json",
+            "source_patch_manifest_sha256": "c5461382a16c0e823f95c1c3c4f168744bc1a31fae2866626b708630a35b09f4",
+            "source_patch_file": "/home/bench/story-benchmark-adapters/native-patches/if_line/source.patch",
+            "source_patch_sha256": "76e44a1d6ee1044620fc65b2bfb6a7b93c4eed2b7ebc44d5305d4087ebc5c79d",
+            "source_patch_files_verified": 5,
+            "source_patch_reverse_verified": true,
+            "source_tree_sha256": "23e85df402f79a2b0eef3bd92e17e22d0889d0307e047d210e4eb29a86189a9d"
+          }
+        ],
+        "errors": [],
+        "source_modified": true,
+        "native_variant": "if_line_html_script_conversion_fix_v1",
+        "source_patch_manifest": "/home/bench/story-benchmark-adapters/native-patches/if_line/manifest.json",
+        "source_patch_manifest_sha256": "c5461382a16c0e823f95c1c3c4f168744bc1a31fae2866626b708630a35b09f4",
+        "source_patch_file": "/home/bench/story-benchmark-adapters/native-patches/if_line/source.patch",
+        "source_patch_sha256": "76e44a1d6ee1044620fc65b2bfb6a7b93c4eed2b7ebc44d5305d4087ebc5c79d",
+        "source_patch_files_verified": 5,
+        "source_patch_reverse_verified": true,
+        "source_tree_sha256": "23e85df402f79a2b0eef3bd92e17e22d0889d0307e047d210e4eb29a86189a9d"
+      },
+      "command": [
+        "/home/bench/story-benchmark-adapters/work/envs/common/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-rA",
+        "benchmark/tests/test_if_line_batch.py::BatchNativeTests::test_native_media_path_and_frames",
+        "--junitxml=/home/bench/story-benchmark-adapters/work/smoke-ifline/if_line/junit.xml"
+      ],
+      "test_process_pid": 602,
+      "returncode": 0,
+      "junit": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "ok": true,
+      "source_after": {
+        "ok": true,
+        "checks": [
+          {
+            "source_lock": "/home/bench/story-benchmark-adapters/baseline-lock.json",
+            "base_commit": "572407fce9b648a4206ac37da6a9f6ed22631da8",
+            "adapted_commit": null,
+            "source_files_verified": 1202,
+            "source_lock_sha256": "b796e5c6c5b6e3867876b12872e718324edf94a9bdd7121044adc6d0e1db99e4",
+            "source_modified": true,
+            "native_variant": "if_line_html_script_conversion_fix_v1",
+            "source_patch_manifest": "/home/bench/story-benchmark-adapters/native-patches/if_line/manifest.json",
+            "source_patch_manifest_sha256": "c5461382a16c0e823f95c1c3c4f168744bc1a31fae2866626b708630a35b09f4",
+            "source_patch_file": "/home/bench/story-benchmark-adapters/native-patches/if_line/source.patch",
+            "source_patch_sha256": "76e44a1d6ee1044620fc65b2bfb6a7b93c4eed2b7ebc44d5305d4087ebc5c79d",
+            "source_patch_files_verified": 5,
+            "source_patch_reverse_verified": true,
+            "source_tree_sha256": "23e85df402f79a2b0eef3bd92e17e22d0889d0307e047d210e4eb29a86189a9d"
+          }
+        ],
+        "errors": [],
+        "source_modified": true,
+        "native_variant": "if_line_html_script_conversion_fix_v1",
+        "source_patch_manifest": "/home/bench/story-benchmark-adapters/native-patches/if_line/manifest.json",
+        "source_patch_manifest_sha256": "c5461382a16c0e823f95c1c3c4f168744bc1a31fae2866626b708630a35b09f4",
+        "source_patch_file": "/home/bench/story-benchmark-adapters/native-patches/if_line/source.patch",
+        "source_patch_sha256": "76e44a1d6ee1044620fc65b2bfb6a7b93c4eed2b7ebc44d5305d4087ebc5c79d",
+        "source_patch_files_verified": 5,
+        "source_patch_reverse_verified": true,
+        "source_tree_sha256": "23e85df402f79a2b0eef3bd92e17e22d0889d0307e047d210e4eb29a86189a9d"
+      },
+      "source_valid_after": true,
+      "finished_at": "2026-09-07T12:51:28.041231+00:00"
+    }
+  },
+  "scope": "one original native multimodal success fixture per selected project, serial when all",
+  "limitations": [
+    "Does not score story quality or validate remote provider credentials.",
+    "Does not replace live generation or a separate multiworker load test."
+  ],
+  "ok": true,
+  "finished_at": "2026-09-07T12:51:28.041587+00:00"
+}

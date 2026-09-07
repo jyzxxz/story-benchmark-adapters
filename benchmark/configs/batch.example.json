@@ -2,8 +2,12 @@
   "schema_version": "batch.1",
   "evidence_kind": "live",
   "allow_pilot": true,
-  "bundles": ["../examples/CAMPUS-01-V4"],
-  "choice_indices": [0],
+  "bundles": [
+    "../examples/CAMPUS-01-V4"
+  ],
+  "choice_indices": [
+    0
+  ],
   "reading_delay_seconds": 0,
   "render_mode": "offscreen_native",
   "providers": {
@@ -11,7 +15,11 @@
       "model": "deepseek-v4-flash",
       "base_url": "https://api.deepseek.com/v1",
       "api_key_env": "BENCH_TEXT_API_KEY",
-      "parameters": {"thinking": {"type": "disabled"}}
+      "parameters": {
+        "thinking": {
+          "type": "disabled"
+        }
+      }
     },
     "vision": {
       "model": "gpt-5.4-mini",
@@ -39,13 +47,16 @@
       "isolated_deployment": true,
       "database_url_env": "IFLINE_BENCH_DATABASE_URL",
       "entry_mode": "shared_first_choice",
-      "chapter_count": 13
+      "chapter_count": 13,
+      "pg_bin": null,
+      "rembg_model_dir": null
     },
     "ai4visualnovel": {
       "repo_path": "../../systems/AI4VisualNovel",
       "source_lock": "../../baseline-lock.json",
       "python_executable": null,
-      "text_provider": "openai"
+      "text_provider": "openai",
+      "rembg_model_dir": null
     },
     "infiplot": {
       "repo_path": "../../systems/infiplot",
@@ -55,7 +66,9 @@
       "shared_opening": true,
       "native_request_body_limit_bytes": 67108864,
       "dependency_timeout_seconds": 180,
-      "keep_runtime": false
+      "keep_runtime": false,
+      "pnpm_executable": null,
+      "playwright_module": null
     }
   }
 }

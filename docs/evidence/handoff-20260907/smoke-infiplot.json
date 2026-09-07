@@ -1,0 +1,84 @@
+{
+  "schema_version": "deployment-smoke.1",
+  "started_at": "2026-09-07T12:53:50.916825+00:00",
+  "evidence_kind": "fixture",
+  "secrets_file_read": false,
+  "paid_model_calls": 0,
+  "systems": {
+    "infiplot": {
+      "system": "infiplot",
+      "evidence_kind": "fixture",
+      "model_api_endpoint_scope": "localhost_fixed_response",
+      "real_provider_credentials_inherited": false,
+      "secrets_file_read": false,
+      "paid_model_calls": 0,
+      "test": "benchmark/tests/test_infiplot_batch.py::NativeBrowserFixture::test_original_page_prefetch_choice_image_edit_and_source_attestation",
+      "started_at": "2026-09-07T12:53:50.931846+00:00",
+      "source_before": {
+        "ok": true,
+        "checks": [
+          {
+            "source_lock": "/home/bench/story-benchmark-adapters/baseline-lock.json",
+            "base_commit": "a60e18bc663caaa134d9323a2b89159b7cc9bd05",
+            "adapted_commit": "a60e18bc663caaa134d9323a2b89159b7cc9bd05",
+            "source_files_verified": 927,
+            "source_lock_sha256": "b796e5c6c5b6e3867876b12872e718324edf94a9bdd7121044adc6d0e1db99e4",
+            "source_modified": false,
+            "native_variant": "pristine",
+            "source_tree_sha256": "fe8a5d11e1ed188200f67d42f1a9b841c5718f79012a4af488f9943f3dec4fbc"
+          }
+        ],
+        "errors": [],
+        "source_modified": false,
+        "native_variant": "pristine",
+        "source_tree_sha256": "fe8a5d11e1ed188200f67d42f1a9b841c5718f79012a4af488f9943f3dec4fbc"
+      },
+      "command": [
+        "/home/bench/story-benchmark-adapters/work/envs/common/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-rA",
+        "benchmark/tests/test_infiplot_batch.py::NativeBrowserFixture::test_original_page_prefetch_choice_image_edit_and_source_attestation",
+        "--junitxml=/home/bench/story-benchmark-adapters/work/smoke-infiplot/infiplot/junit.xml"
+      ],
+      "test_process_pid": 1689,
+      "returncode": 0,
+      "junit": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "ok": true,
+      "source_after": {
+        "ok": true,
+        "checks": [
+          {
+            "source_lock": "/home/bench/story-benchmark-adapters/baseline-lock.json",
+            "base_commit": "a60e18bc663caaa134d9323a2b89159b7cc9bd05",
+            "adapted_commit": "a60e18bc663caaa134d9323a2b89159b7cc9bd05",
+            "source_files_verified": 927,
+            "source_lock_sha256": "b796e5c6c5b6e3867876b12872e718324edf94a9bdd7121044adc6d0e1db99e4",
+            "source_modified": false,
+            "native_variant": "pristine",
+            "source_tree_sha256": "fe8a5d11e1ed188200f67d42f1a9b841c5718f79012a4af488f9943f3dec4fbc"
+          }
+        ],
+        "errors": [],
+        "source_modified": false,
+        "native_variant": "pristine",
+        "source_tree_sha256": "fe8a5d11e1ed188200f67d42f1a9b841c5718f79012a4af488f9943f3dec4fbc"
+      },
+      "source_valid_after": true,
+      "finished_at": "2026-09-07T12:54:21.645087+00:00"
+    }
+  },
+  "scope": "one original native multimodal success fixture per selected project, serial when all",
+  "limitations": [
+    "Does not score story quality or validate remote provider credentials.",
+    "Does not replace live generation or a separate multiworker load test."
+  ],
+  "ok": true,
+  "finished_at": "2026-09-07T12:54:21.645577+00:00"
+}

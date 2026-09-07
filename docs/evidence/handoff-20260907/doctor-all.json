@@ -1,0 +1,308 @@
+{
+  "schema_version": "deployment-doctor.1",
+  "started_at": "2026-09-07T12:51:06.460820+00:00",
+  "platform": "Linux-7.0.12-linuxkit-x86_64-with-glibc2.39",
+  "report_directory": "/home/bench/story-benchmark-adapters/work/doctor-all",
+  "model_api_calls": 0,
+  "secrets_file_read": false,
+  "systems": {
+    "if_line": {
+      "ok": true,
+      "checks": [
+        {
+          "check": "source_provenance",
+          "ok": true,
+          "checks": [
+            {
+              "source_lock": "/home/bench/story-benchmark-adapters/baseline-lock.json",
+              "base_commit": "572407fce9b648a4206ac37da6a9f6ed22631da8",
+              "adapted_commit": null,
+              "source_files_verified": 1202,
+              "source_lock_sha256": "b796e5c6c5b6e3867876b12872e718324edf94a9bdd7121044adc6d0e1db99e4",
+              "source_modified": true,
+              "native_variant": "if_line_html_script_conversion_fix_v1",
+              "source_patch_manifest": "/home/bench/story-benchmark-adapters/native-patches/if_line/manifest.json",
+              "source_patch_manifest_sha256": "c5461382a16c0e823f95c1c3c4f168744bc1a31fae2866626b708630a35b09f4",
+              "source_patch_file": "/home/bench/story-benchmark-adapters/native-patches/if_line/source.patch",
+              "source_patch_sha256": "76e44a1d6ee1044620fc65b2bfb6a7b93c4eed2b7ebc44d5305d4087ebc5c79d",
+              "source_patch_files_verified": 5,
+              "source_patch_reverse_verified": true,
+              "source_tree_sha256": "23e85df402f79a2b0eef3bd92e17e22d0889d0307e047d210e4eb29a86189a9d"
+            }
+          ],
+          "errors": [],
+          "source_modified": true,
+          "native_variant": "if_line_html_script_conversion_fix_v1",
+          "source_patch_manifest": "/home/bench/story-benchmark-adapters/native-patches/if_line/manifest.json",
+          "source_patch_manifest_sha256": "c5461382a16c0e823f95c1c3c4f168744bc1a31fae2866626b708630a35b09f4",
+          "source_patch_file": "/home/bench/story-benchmark-adapters/native-patches/if_line/source.patch",
+          "source_patch_sha256": "76e44a1d6ee1044620fc65b2bfb6a7b93c4eed2b7ebc44d5305d4087ebc5c79d",
+          "source_patch_files_verified": 5,
+          "source_patch_reverse_verified": true,
+          "source_tree_sha256": "23e85df402f79a2b0eef3bd92e17e22d0889d0307e047d210e4eb29a86189a9d"
+        },
+        {
+          "check": "chinese_fonts",
+          "ok": true,
+          "returncode": 0,
+          "stdout": "Noto Serif CJK JP\nNoto Serif CJK KR\nNoto Serif CJK HK\nNoto Serif CJK SC\nNoto Serif CJK TC\nUnifont\\-JP\nNoto Sans Mono CJK SC\nNoto Sans Mono CJK TC\nNoto Sans Mono CJK JP\nNoto Sans Mono CJK HK\nNoto Sans Mono CJK KR\nUnifont Sample\nNoto Sans CJK HK\nNoto Sans CJK KR\nNoto Sans CJK JP\nNoto Sans CJK SC\nNoto Sans CJK TC\nSource Han Sans SC,思源黑体\nUnifont\n",
+          "stderr": ""
+        },
+        {
+          "check": "python_dependencies",
+          "ok": true,
+          "returncode": 0,
+          "stdout": "{\"python\": \"3.12.3\", \"executable\": \"/home/bench/story-benchmark-adapters/work/envs/if_line/bin/python\", \"modules\": [{\"module\": \"PIL\", \"ok\": true, \"version\": \"12.3.0\"}, {\"module\": \"fastapi\", \"ok\": true, \"version\": \"0.104.1\"}, {\"module\": \"uvicorn\", \"ok\": true, \"version\": \"0.24.0\"}, {\"module\": \"sqlalchemy\", \"ok\": true, \"version\": \"2.0.52\"}, {\"module\": \"alembic\", \"ok\": true, \"version\": \"1.19.2\"}, {\"module\": \"psycopg\", \"ok\": true, \"version\": \"3.3.5\"}, {\"module\": \"celery\", \"ok\": true, \"version\": \"5.6.3\"}, {\"module\": \"rembg\", \"ok\": true, \"version\": \"2.0.72\"}, {\"module\": \"onnxruntime\", \"ok\": true, \"version\": \"1.29.0\"}, {\"module\": \"aiohttp\", \"ok\": true, \"version\": \"3.9.1\"}]}\n",
+          "stderr": ""
+        },
+        {
+          "check": "python_dependency_consistency",
+          "ok": true,
+          "returncode": 0,
+          "stdout": "No broken requirements found.\n",
+          "stderr": ""
+        },
+        {
+          "check": "ordinary_user",
+          "ok": true,
+          "requirement": "initdb refuses root; batch process requires ordinary user"
+        },
+        {
+          "check": "initdb",
+          "ok": true,
+          "returncode": 0,
+          "stdout": "initdb (PostgreSQL) 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1)\n",
+          "stderr": ""
+        },
+        {
+          "check": "pg_ctl",
+          "ok": true,
+          "returncode": 0,
+          "stdout": "pg_ctl (PostgreSQL) 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1)\n",
+          "stderr": ""
+        },
+        {
+          "check": "createdb",
+          "ok": true,
+          "returncode": 0,
+          "stdout": "createdb (PostgreSQL) 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1)\n",
+          "stderr": ""
+        },
+        {
+          "check": "redis",
+          "ok": true,
+          "returncode": 0,
+          "stdout": "Redis server v=7.0.15 sha=00000000:0 malloc=jemalloc-5.3.0 bits=64 build=e53ff17674aa6190\n",
+          "stderr": ""
+        },
+        {
+          "check": "u2net_model",
+          "ok": true,
+          "returncode": 0,
+          "stdout": "{\"providers\": [\"CPUExecutionProvider\"], \"inputs\": [\"input.1\"]}\n",
+          "stderr": "",
+          "path": "/home/bench/story-benchmark-adapters/work/models/if_line/u2net.onnx",
+          "bytes": 175997641,
+          "sha256": "8d10d2f3bb75ae3b6d527c77944fc5e7dcd94b29809d47a739a7a728a912b491",
+          "scope": "local_ONNX_load_only_no_download_or_generation"
+        },
+        {
+          "check": "node",
+          "ok": true,
+          "returncode": 0,
+          "stdout": "v22.12.0\n",
+          "stderr": ""
+        },
+        {
+          "check": "vue_renderer_packages",
+          "ok": true,
+          "missing": [],
+          "node_modules": "/home/bench/story-benchmark-adapters/work/media-tools/node_modules"
+        },
+        {
+          "check": "chromium_actual_launch",
+          "ok": true,
+          "returncode": 0,
+          "stdout": "{\"version\":\"140.0.7339.186\",\"headless\":true,\"screenshot\":\"/home/bench/story-benchmark-adapters/work/doctor-all/if_line/chromium.png\"}\n",
+          "stderr": ""
+        },
+        {
+          "check": "native_batch_preflight_without_credentials",
+          "ok": true,
+          "returncode": 0,
+          "stdout": "[{\"ok\": true, \"errors\": [], \"checks\": [{\"source_lock\": \"/home/bench/story-benchmark-adapters/baseline-lock.json\", \"base_commit\": \"572407fce9b648a4206ac37da6a9f6ed22631da8\", \"adapted_commit\": null, \"source_files_verified\": 1202, \"source_lock_sha256\": \"b796e5c6c5b6e3867876b12872e718324edf94a9bdd7121044adc6d0e1db99e4\", \"source_modified\": true, \"native_variant\": \"if_line_html_script_conversion_fix_v1\", \"source_patch_manifest\": \"/home/bench/story-benchmark-adapters/native-patches/if_line/manifest.json\", \"source_patch_manifest_sha256\": \"c5461382a16c0e823f95c1c3c4f168744bc1a31fae2866626b708630a35b09f4\", \"source_patch_file\": \"/home/bench/story-benchmark-adapters/native-patches/if_line/source.patch\", \"source_patch_sha256\": \"76e44a1d6ee1044620fc65b2bfb6a7b93c4eed2b7ebc44d5305d4087ebc5c79d\", \"source_patch_files_verified\": 5, \"source_patch_reverse_verified\": true, \"source_tree_sha256\": \"23e85df402f79a2b0eef3bd92e17e22d0889d0307e047d210e4eb29a86189a9d\"}, {\"native_source\": \"declared_patch_frozen_during_run\", \"path_choice_execution\": \"native_authoring_path_promotion\", \"audio\": \"disabled_text_and_images_scope\", \"renderer\": \"original_VNGraphPlayer_headless_chromium\"}]}]\n",
+          "stderr": ""
+        }
+      ]
+    },
+    "ai4visualnovel": {
+      "ok": true,
+      "checks": [
+        {
+          "check": "source_provenance",
+          "ok": true,
+          "checks": [
+            {
+              "source_lock": "/home/bench/story-benchmark-adapters/baseline-lock.json",
+              "base_commit": "0faf120244d175866eea3813f053281f5689ab19",
+              "adapted_commit": "0faf120244d175866eea3813f053281f5689ab19",
+              "source_files_verified": 35,
+              "source_lock_sha256": "b796e5c6c5b6e3867876b12872e718324edf94a9bdd7121044adc6d0e1db99e4",
+              "source_modified": false,
+              "native_variant": "pristine",
+              "source_tree_sha256": "0886ca9babbcdc7cc398c9016ccbc992ed3cd2c0d4cc98175dc1d17b6dc61a95"
+            }
+          ],
+          "errors": [],
+          "source_modified": false,
+          "native_variant": "pristine",
+          "source_tree_sha256": "0886ca9babbcdc7cc398c9016ccbc992ed3cd2c0d4cc98175dc1d17b6dc61a95"
+        },
+        {
+          "check": "chinese_fonts",
+          "ok": true,
+          "returncode": 0,
+          "stdout": "Noto Serif CJK JP\nNoto Serif CJK KR\nNoto Serif CJK HK\nNoto Serif CJK SC\nNoto Serif CJK TC\nUnifont\\-JP\nNoto Sans Mono CJK SC\nNoto Sans Mono CJK TC\nNoto Sans Mono CJK JP\nNoto Sans Mono CJK HK\nNoto Sans Mono CJK KR\nUnifont Sample\nNoto Sans CJK HK\nNoto Sans CJK KR\nNoto Sans CJK JP\nNoto Sans CJK SC\nNoto Sans CJK TC\nSource Han Sans SC,思源黑体\nUnifont\n",
+          "stderr": ""
+        },
+        {
+          "check": "python_dependencies",
+          "ok": true,
+          "returncode": 0,
+          "stdout": "{\"python\": \"3.12.3\", \"executable\": \"/home/bench/story-benchmark-adapters/work/envs/ai4visualnovel/bin/python\", \"modules\": [{\"module\": \"pygame\", \"ok\": true, \"version\": \"2.6.1\"}, {\"module\": \"PIL\", \"ok\": true, \"version\": \"12.3.0\"}, {\"module\": \"openai\", \"ok\": true, \"version\": \"3.8.0\"}, {\"module\": \"dotenv\", \"ok\": true, \"version\": \"not_exposed\"}, {\"module\": \"jsonschema\", \"ok\": true, \"version\": \"4.26.0\"}, {\"module\": \"yaml\", \"ok\": true, \"version\": \"6.0.3\"}, {\"module\": \"rembg\", \"ok\": true, \"version\": \"2.0.69\"}, {\"module\": \"onnxruntime\", \"ok\": true, \"version\": \"1.29.0\"}]}\n",
+          "stderr": "<string>:15: DeprecationWarning: Accessing jsonschema.__version__ is deprecated and will be removed in a future release. Use importlib.metadata directly to query for jsonschema's version.\n"
+        },
+        {
+          "check": "python_dependency_consistency",
+          "ok": true,
+          "returncode": 0,
+          "stdout": "No broken requirements found.\n",
+          "stderr": ""
+        },
+        {
+          "check": "isnet_anime_model",
+          "ok": true,
+          "returncode": 0,
+          "stdout": "{\"providers\": [\"CPUExecutionProvider\"], \"inputs\": [\"img\"]}\n",
+          "stderr": "",
+          "path": "/home/bench/story-benchmark-adapters/work/models/ai4visualnovel/isnet-anime.onnx",
+          "bytes": 176069933,
+          "sha256": "f15622d853e8260172812b657053460e20806f04b9e05147d49af7bed31a6e99",
+          "scope": "local_ONNX_load_only_no_download_or_generation"
+        },
+        {
+          "check": "pygame_headless_display",
+          "ok": true,
+          "returncode": 0,
+          "stdout": "pygame dummy display ready\n",
+          "stderr": ""
+        },
+        {
+          "check": "native_pygame_chinese_font",
+          "ok": true,
+          "returncode": 0,
+          "stdout": "{\"native_function\": \"game_engine.ui.get_font\", \"local_candidates\": [\"/home/bench/story-benchmark-adapters/systems/AI4VisualNovel/SourceHanSansCN-Regular.otf\"], \"system_candidate_matches\": {\"sourcehansanscn\": null, \"notosanssc\": null, \"microsoftyaheiui\": null, \"microsoftyahei\": null, \"pingfangsc\": null, \"heiti\": null, \"simhei\": null, \"arialunicodems\": null}, \"glyph_metrics_available\": true, \"cwd_matches_native_runtime\": true, \"screenshot\": \"/home/bench/story-benchmark-adapters/work/doctor-all/ai4visualnovel/pygame-native-font.png\"}\n",
+          "stderr": ""
+        },
+        {
+          "check": "native_batch_preflight_without_credentials",
+          "ok": true,
+          "returncode": 0,
+          "stdout": "[{\"ok\": true, \"checks\": [\"shared_model_parameters_valid\", \"input_files_and_payload_equal\", {\"source_lock\": \"/home/bench/story-benchmark-adapters/baseline-lock.json\", \"base_commit\": \"0faf120244d175866eea3813f053281f5689ab19\", \"adapted_commit\": \"0faf120244d175866eea3813f053281f5689ab19\", \"source_files_verified\": 35, \"source_lock_sha256\": \"b796e5c6c5b6e3867876b12872e718324edf94a9bdd7121044adc6d0e1db99e4\", \"source_modified\": false, \"native_variant\": \"pristine\", \"source_tree_sha256\": \"0886ca9babbcdc7cc398c9016ccbc992ed3cd2c0d4cc98175dc1d17b6dc61a95\"}, \"native_python_dependencies_present\", \"unlimited_budget_policy_explicit_null_limits\", \"native_pygame_and_rembg_importable\"], \"errors\": [], \"native_integration\": \"not_run\"}]\n",
+          "stderr": ""
+        }
+      ]
+    },
+    "infiplot": {
+      "ok": true,
+      "checks": [
+        {
+          "check": "source_provenance",
+          "ok": true,
+          "checks": [
+            {
+              "source_lock": "/home/bench/story-benchmark-adapters/baseline-lock.json",
+              "base_commit": "a60e18bc663caaa134d9323a2b89159b7cc9bd05",
+              "adapted_commit": "a60e18bc663caaa134d9323a2b89159b7cc9bd05",
+              "source_files_verified": 927,
+              "source_lock_sha256": "b796e5c6c5b6e3867876b12872e718324edf94a9bdd7121044adc6d0e1db99e4",
+              "source_modified": false,
+              "native_variant": "pristine",
+              "source_tree_sha256": "fe8a5d11e1ed188200f67d42f1a9b841c5718f79012a4af488f9943f3dec4fbc"
+            }
+          ],
+          "errors": [],
+          "source_modified": false,
+          "native_variant": "pristine",
+          "source_tree_sha256": "fe8a5d11e1ed188200f67d42f1a9b841c5718f79012a4af488f9943f3dec4fbc"
+        },
+        {
+          "check": "chinese_fonts",
+          "ok": true,
+          "returncode": 0,
+          "stdout": "Noto Serif CJK JP\nNoto Serif CJK KR\nNoto Serif CJK HK\nNoto Serif CJK SC\nNoto Serif CJK TC\nUnifont\\-JP\nNoto Sans Mono CJK SC\nNoto Sans Mono CJK TC\nNoto Sans Mono CJK JP\nNoto Sans Mono CJK HK\nNoto Sans Mono CJK KR\nUnifont Sample\nNoto Sans CJK HK\nNoto Sans CJK KR\nNoto Sans CJK JP\nNoto Sans CJK SC\nNoto Sans CJK TC\nSource Han Sans SC,思源黑体\nUnifont\n",
+          "stderr": ""
+        },
+        {
+          "check": "pnpm",
+          "ok": true,
+          "returncode": 0,
+          "stdout": "9.12.0\n",
+          "stderr": ""
+        },
+        {
+          "check": "prepared_native_dependencies",
+          "ok": true,
+          "path": "/home/bench/story-benchmark-adapters/work/infiplot-deps",
+          "missing": [],
+          "limitation": "package presence does not prove offline pnpm store completeness; run smoke_test"
+        },
+        {
+          "check": "node",
+          "ok": true,
+          "returncode": 0,
+          "stdout": "v22.12.0\n",
+          "stderr": ""
+        },
+        {
+          "check": "chromium_actual_launch",
+          "ok": true,
+          "returncode": 0,
+          "stdout": "{\"version\":\"140.0.7339.186\",\"headless\":true,\"screenshot\":\"/home/bench/story-benchmark-adapters/work/doctor-all/infiplot/chromium.png\"}\n",
+          "stderr": ""
+        },
+        {
+          "check": "native_batch_preflight_without_credentials",
+          "ok": true,
+          "returncode": 0,
+          "stdout": "[{\"ok\": true, \"errors\": [], \"checks\": [\"payload_exact\", {\"source_lock\": \"/home/bench/story-benchmark-adapters/baseline-lock.json\", \"base_commit\": \"a60e18bc663caaa134d9323a2b89159b7cc9bd05\", \"adapted_commit\": \"a60e18bc663caaa134d9323a2b89159b7cc9bd05\", \"source_files_verified\": 927, \"source_lock_sha256\": \"b796e5c6c5b6e3867876b12872e718324edf94a9bdd7121044adc6d0e1db99e4\", \"source_modified\": false, \"native_variant\": \"pristine\", \"source_tree_sha256\": \"fe8a5d11e1ed188200f67d42f1a9b841c5718f79012a4af488f9943f3dec4fbc\"}, \"pristine_source_external_relay_only\", \"original_browser_prefetch_and_real_dom_actions\"], \"identity_mode\": \"local_fixture\", \"production_auth_verified\": false}]\n",
+          "stderr": ""
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "No provider authentication or generation test.",
+    "Chromium screenshot proves local rendering, not complete native story flow.",
+    "Inspect Chinese screenshot visually; font presence alone does not prove every glyph."
+  ],
+  "common_python": {
+    "ok": true,
+    "returncode": 0,
+    "stdout": "{\"python\": \"3.12.3\", \"executable\": \"/home/bench/story-benchmark-adapters/work/envs/common/bin/python\", \"modules\": [{\"module\": \"PIL\", \"ok\": true, \"version\": \"12.3.0\"}, {\"module\": \"pytest\", \"ok\": true, \"version\": \"8.4.2\"}, {\"module\": \"jsonschema\", \"ok\": true, \"version\": \"4.26.0\"}]}\n",
+    "stderr": "<string>:15: DeprecationWarning: Accessing jsonschema.__version__ is deprecated and will be removed in a future release. Use importlib.metadata directly to query for jsonschema's version.\n"
+  },
+  "bundles": [
+    {
+      "path": "/home/bench/story-benchmark-adapters/benchmark/examples/CAMPUS-01-V4",
+      "verification": {
+        "payload_check": "passed",
+        "native_integration": "not_run",
+        "shared_sha256": "d2fb88452de72a51743f18cae9b62ef1e21a70c4f28d74a8a7ba1a0f2f3e5ce5",
+        "shared_chars": 2421
+      }
+    }
+  ],
+  "ok": true,
+  "finished_at": "2026-09-07T12:51:25.793139+00:00"
+}
