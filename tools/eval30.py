@@ -94,22 +94,30 @@ def expand_legacy_suite(out: Path, catalog_path: Path = CATALOG, repo: Path = RO
 
 def expand_suite(out: Path, catalog_path: Path = CATALOG, repo: Path = ROOT) -> dict:
     """Default used by the existing experiment runner: no prescribed actions."""
-    from story_benchmark.open_actions import expand_suite as expand_open_suite
-    return expand_open_suite(out, catalog_path=catalog_path, repo=repo)
+    from open_eval30 import expand_suite as expand_open_suite, CATALOG as OPEN_CATALOG
+    if Path(catalog_path).resolve() != (Path(repo)/'benchmark/suites/eval30/catalog.json').resolve():
+        raise ValueError('Custom catalogs must use an explicitly exported --suite-root')
+    return expand_open_suite(out, catalog_path=Path(repo)/OPEN_CATALOG.relative_to(ROOT), repo=repo)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--out', type=Path, default=ROOT / 'work/eval30-preview')
     parser.add_argument('--list', action='store_true')
-    parser.add_argument('--legacy-actions', action='store_true', help='Export historical prescribed-action inputs; default is open actions')
+    versions = parser.add_mutually_exclusive_group()
+    versions.add_argument('--legacy-actions', action='store_true', help='Export historical prescribed-action inputs')
+    versions.add_argument('--open-actions-v1', action='store_true', help='Export the retained first open-actions revision')
     args = parser.parse_args()
     if args.list:
         data, _, _ = catalog_sources()
         for row in data['cases']:
             print(f'{row["source_prompt_id"]:14} {row["title"]}')
     else:
-        result = expand_legacy_suite(args.out) if args.legacy_actions else expand_suite(args.out)
+        if args.open_actions_v1:
+            from story_benchmark.open_actions import expand_suite as expand_first_open_suite
+            result = expand_first_open_suite(args.out)
+        else:
+            result = expand_legacy_suite(args.out) if args.legacy_actions else expand_suite(args.out)
         print(f'{result["case_count"]}/30 inputs compiled and verified; zero model calls. Output: {args.out.absolute()}')
         print('Inputs remain pilot. Native generation requires explicit --allow-pilot, or a human-approved copy.')
     return 0

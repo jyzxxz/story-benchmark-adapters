@@ -195,6 +195,8 @@ def compile_case(case_file, out, allow_pilot=False):
                 'profile': case['profile'], 'review_status': case['review_status'], 'source_sha256': hashes,
                 'shared_sha256': sha256(shared), 'shared_chars': len(shared), 'shared_bytes': len(shared.encode('utf-8')),
                 'files': files, 'payload_check': 'passed', 'native_integration': 'not_run'}
+    if 'decision_policy' in case:
+        manifest['decision_policy'] = case['decision_policy']
     if case.get('output_boundary'):
         manifest['output_boundary'] = case['output_boundary']
     if v3:
@@ -223,6 +225,8 @@ def verify_bundle(out):
     if any(value != shared for value in values):
         raise BenchmarkError('payload_mismatch')
     case = read_json(out / 'case.json')
+    if manifest.get('decision_policy', case.get('decision_policy')) != case.get('decision_policy'):
+        raise BenchmarkError('bundle_decision_policy_mismatch')
     if validate_contracts(case):
         if (manifest.get('input_contract') != case['input_contract']
                 or manifest.get('output_contract') != case['output_contract']

@@ -25,7 +25,7 @@ class OpenActionsTests(unittest.TestCase):
         cls.root = Path(cls.temp.name)
         cls.open_root = cls.root/'open'
         cls.legacy_root = cls.root/'legacy'
-        cls.manifest = eval30.expand_suite(cls.open_root)
+        cls.manifest = expand_suite(cls.open_root)  # Pin v1; current default is covered in test_eval30_open.
         cls.legacy = eval30.expand_legacy_suite(cls.legacy_root)
         cls.catalog, cls.briefs, _ = eval30.catalog_sources()
         cls.row = cls.manifest['cases'][0]
@@ -36,7 +36,7 @@ class OpenActionsTests(unittest.TestCase):
     def tearDownClass(cls):
         cls.temp.cleanup()
 
-    def test_default_exports_open_policy(self):
+    def test_v1_exports_open_policy(self):
         self.assertEqual(self.manifest['decision_policy'], 'native_generated')
         self.assertEqual(len(self.manifest['cases']), 30)
 

@@ -1,127 +1,91 @@
-# 三系统共同输入适配器
+# 三系统故事生成与实验
 
-同一份故事设定、固定开头和续写要求，交给 IF Line、AI4VisualNovel、InfiPlot 各自的原生流程，生成图文故事并保留八项评测证据。
+同一份题目、人物设定和固定开头交给 IF Line、AI4VisualNovel、InfiPlot。**不预设关键行动，不对齐跨系统行动语义；三个系统各自发展剧情，使用相同的评判标准。** 允许故事不同，也不强迫故事不同。
 
-## 当前默认：不预设关键行动
+默认题库现在是 **`v4-30-open-actions-pilot.2`**：原来的六类题材、30 道题，取消预先给出的两组行动和与它们绑定的剧情阶段。保留已发生事实、世界规则、人物名单、共同阅读窗口和八维证据。原始文件与旧的指定行动题库没有覆盖，新输入拥有独立版本和哈希。已发布的第一版开放题库也保留，第二版使用不同的 `OPEN02` case ID。
 
-**同题创作、统一评判，不是同一剧情的三次改写。** 默认题库为 `v4-30-open-actions-pilot.1`：保留原 30 题的题材、标题、角色名单和固定开头，不预先指定两组关键选择、选项语义、行动顺序或结局。各系统根据自身剧情生成原生选项。允许不同走向，也不要求故意写出不同走向。
+## 第一次使用
 
-世界规则、既成前文、实际执行的选择仍须遵守。当前角色总名单边界保持不变，本次不扩大原生角色设计能力，也没有把用于说明的升学例子加入题库。
-
-旧版 `v4-30-pilot.1` 源文件保留，旧公共输入哈希保持不变；新版本的 case ID、版本和哈希独立。原始 v1 brief 在 `benchmark/source/if_line_eval_prompts_30.v1.md`。新版使用明确记录差异的派生 brief，**不声称派生文本与原文逐字相同**。范围与变更详见 [不预设行动说明](docs/OPEN_ACTIONS.md)。
-
-## 一键开始生成与实验
-
-首次在普通 Ubuntu 24.04 用户或 WSL2 Ubuntu 24.04 中安装依赖并填写自己的供应商和密钥：
+在普通 Ubuntu 24.04 用户或 Windows WSL2 Ubuntu 24.04 的 Linux 文件系统中操作；不提供 macOS 或 Windows 原生适配。
 
 ```bash
+git clone https://github.com/jyzxxz/story-benchmark-adapters.git
+cd story-benchmark-adapters
 bash experiment.sh setup
 ```
 
-向导显示模型请求的目标地址，逐项输入 `USE` 确认；密钥输入不回显，仅保存在本机 `work/secrets.env`。安装与配置不调用付费模型。没有依赖、模型权限和密钥时不能真实生成。本项目不新增 macOS 原生适配。
+安装后按向导填写文字、图片、原生视觉审核的供应商、模型和密钥，逐项确认请求将发送的地址。密钥不回显，只保存到本机 `work/secrets.env`，不提交 Git。安装、配置和环境检查不调用付费生成模型，但会下载依赖、浏览器与原生模型。
 
-配置完成后，运行最小真实试验：
+已有可用环境不必重复安装。只改配置：`bash experiment.sh configure`。已有仓库先保存本地改动，再执行 `git pull --ff-only`。
+
+## 一条命令开始试跑
 
 ```bash
 bash experiment.sh quick --allow-pilot
 ```
 
-根目录 `experiment.sh` 仅转发到既有 `tools/experiment.sh`，两种入口都可用。此命令默认使用新版无预设行动题库。查看尝试数后输入 `RUN`，或显式添加 `--yes` 用于自动化。同一道题，三个系统各尝试一次，共 3 次尝试。失败不自动补跑。
+默认第一题、三个系统各尝试一次，共 3 次。终端展示规模后输入 `RUN` 才产生付费调用；自动化可显式加 `--yes`。全部所选系统先预检、建立不可变计划，再开始生成。
+
+**次数是尝试数，不保证同等数量的成功故事。没有适配器总 token、总时间或总费用上限。** 4000 新增可见 Unicode 字符只是阅读窗口，不限制原生规划、审核、预取或未选分支消耗。先检查快速试跑结果再扩大规模。
+
+## 自己决定题目、数量和并发
 
 ```bash
-# 每个系统总尝试 12 次，共 36 次；当前系统并发 2
+# 每个系统尝试 12 次，共 36 次；当前系统内部并发 2
 bash experiment.sh run --allow-pilot --count 12 --concurrency 2
 
-# 只运行 IF Line 的科幻题，总尝试 7 次
+# 只跑 IF Line 的科幻题，总共 7 次，并发 2
 bash experiment.sh run --allow-pilot --systems if_line --genres SCI-FI --count 7 --concurrency 2
 
-# 六类题材各一题，每个系统一次，共 18 次尝试
+# 两道题，每题每系统重复 2 次，共 12 次尝试
+bash experiment.sh run --allow-pilot --case-ids CAMPUS-01 MYSTERY-01 --repeat 2 --concurrency 2
+
+# 每类题材取第一题，共 18 次尝试
 bash experiment.sh genres --allow-pilot
-
-# 自选两题，每题每系统重复 2 次，当前系统并发 2，共 12 次尝试
-bash experiment.sh quick --allow-pilot \
-  --case-ids CAMPUS-01 MYSTERY-01 --repeat 2 --concurrency 2 \
-  --out work/experiments/open-round1
-
-# 也可以只运行一个系统
-bash experiment.sh quick --allow-pilot \
-  --systems infiplot --case-ids SCI-FI-01 --repeat 5 --concurrency 2
 ```
 
-**`--count` 是每系统总尝试数，`--repeat` 是每题每系统重复次数，二者互斥。** 支持任意正整数，不要求是题目数的整数倍；按所选题目顺序循环，逐题计划次数和未运行题目写入 `experiment.json`。详见 [数量、题材与并发说明](docs/EXPERIMENT_CONTROLS.md)。
+`--count` 是每系统总尝试数，`--repeat` 是每题每系统重复次数，二者互斥。题材还可选择 CAMPUS、MYSTERY、FANTASY、HISTORY、EMOTION。`--systems` 可选一个、两个或全部系统。
 
-不要求跑完整题库。题目、系统、总尝试数、每题重复次数和并发均由使用者选择。数量是尝试数，不保证成功故事数。默认三个系统依次执行，`--concurrency` 控制当前系统内部的根运行并发，原生内部并行仍保留。
+三个系统依次运行；`--concurrency` 限制当前活跃系统的根故事任务数，不是 HTTP 并发。数量不必是题目数的整数倍，逐题次数和未运行题目会写入计划。完整 270 次只是可选的 `full` 预设，不是必跑要求。
 
-**没有适配器总费用、token 或时长上限。** 4000 字符是阅读观察窗口，不是费用上限。开始付费前会对选中系统预检并建立不可变原生计划。先检查最小试验，再扩大规模。
+## 提示词和使用说明
 
-[完整实验指南](docs/EXPERIMENTS.md) 介绍安装、配置、规模、恢复和八维数据。该指南中的旧题库逐字一致说明仅适用于历史版本，当前任务语义以 [OPEN_ACTIONS](docs/OPEN_ACTIONS.md) 为准。已有原生环境与共同配置无需重装；旧单系统 `tools/run_batch.py` 入口继续可用。
-
-## 查看完整提示词，不调用模型
+[完整使用说明](docs/OPEN_ACTION_EXPERIMENTS.md) 覆盖安装、试跑、数量、原生选项、恢复、评审数据和正式审批。[30 道题的设定与开头](benchmark/suites/eval30_open/PROMPTS.md)、[统一前缀](benchmark/suites/eval30_open/prefix.txt)、[逐项变更说明](benchmark/suites/eval30_open/CHANGES.md) 已放入仓库。
 
 ```bash
-python3 tools/eval30.py --list
-python3 tools/eval30.py --out work/eval30-open-preview
+bash experiment.sh list
+bash experiment.sh preview --out work/open-eval30-preview
 ```
 
-导出 `PROMPTS_30_COMPILED.md`、逐题 case、brief、opening 和 `compiled/<case_id>/shared_task.txt`。`CHANGELOG.json` 保存每题删除/替换的原句及新旧 scope，`history/` 保存历史来源。这些历史材料不进入新版编译 bundle，也不作为新版评审要求。输出目录已存在时拒绝覆盖。
+预览无需密钥或原生依赖。生成 `PROMPTS_30_COMPILED.md` 和逐题 `compiled/<case_id>/shared_task.txt`，内容完整、没有占位符。**实际运行使用编译后的同一公共字符串，不需要分别粘贴到三个前端。** IF Line 接收 `extra_requirements`，AI4VisualNovel 接收需求文件，InfiPlot 接收 `worldSetting`。
 
-需要检查旧版指定行动题库时，必须显式导出：
+旧版仍可用 `bash experiment.sh preview-legacy --out work/legacy-eval30` 导出。`tools/eval30.py`、默认实验和 `preview` 统一导出第二版；原始指定行动版本用 `--legacy-actions`，已发布的第一版开放题库用 `--open-actions-v1`，两种历史输入均保留。旧题中的 C1/C2 只适用于旧版指定行动任务，不是新版评分标准。
+
+## 结果、恢复与校验
 
 ```bash
-python3 tools/eval30.py --legacy-actions --out work/eval30-legacy-preview
-```
-
-`--suite-root` 继续支持自备题库，忠实执行指定副本，不会自动把旧版或已批准的题库改成新版。正式模式仍只接受带人工确认和内容哈希审核记录的副本，不加 `--allow-pilot` 时内置候选题不能开始生成。`tools/approve_eval30.py` 只记录人工确认，不执行内容审阅或质量评分。
-
-## 输出和八项评测证据
-
-未指定 `--out` 时，输出位于 `work/experiments/<UTC时间>-<随机后缀>/`：
-
-```text
-experiment.json / config.json       冻结次数、模型、输入与来源条件
-inputs/                             当前题库、固定前文及编译产物
-if_line/                            IF Line 全部运行证据
-ai4visualnovel/                      AI4VisualNovel 全部运行证据
-infiplot/                           InfiPlot 全部运行证据
-comparison.json                     条件及证据比较，不是质量排名
-experiment_summary.json             范围、停止原因及覆盖情况
-EXPERIMENT_REPORT.md                 可读汇总
-```
-
-八项维度：M1 固定事实与要求，M2 连贯性，M3 人物视觉一致性，M4 等待时间，M5 阅读体验，M6 图文匹配，M7 token，M8 图片数量。新版 `decisions=[]` 表示没有标准行动答案，不等于禁止互动。只对各自实际路径进行事实、连贯性和图文核查，不因走了不同路线而扣分，不因缺少旧版指定选项而扣分。
-
-M1/M2/M3/M5/M6 只准备证据，仍待独立评审；M4/M7/M8 使用实际记录，缺失保持未知。不把 `sealed`、退出码或 `comparison_ready` 当作质量通过。字段见 [八维记录对照](docs/BATCH_RECORDING.md)。
-
-```bash
-bash experiment.sh resume --out work/experiments/open-round1 --yes
+bash experiment.sh run --allow-pilot --count 4 --out work/experiments/open-round1
+bash experiment.sh resume --out work/experiments/open-round1
 bash experiment.sh verify --out work/experiments/open-round1
 ```
 
-恢复只启动从未开始的排队项，不重发失败或送达未知的尝试。更新代码后不可用新代码恢复旧冻结批次，应在旧提交环境处理旧批次，新输入使用新目录。保留完整 `runs/`，不要只交付正文和图片。
+实验目录保存 `experiment.json`、共同 `config.json`、`inputs/`、三个系统的完整批次、`experiment_summary.json`、`EXPERIMENT_REPORT.md`；选中全部三个系统时还生成 `comparison.json`。恢复只派发从未开始的排队项，不重发失败、已启动或送达未知的尝试。新代码不能覆盖或继续旧的冻结批次，请使用新目录；历史批次应在原提交环境中恢复或复核。
 
-## 共同输入与原生方法
+八维为：固定事实与要求、连贯性、人物视觉一致性、等待时间、阅读体验、图文匹配、token、图片数量。M1/M2/M3/M5/M6 只保存证据，尚不自动评分；M4/M7/M8 使用实测与供应商用量，未知不填零。正文、画面、原生选项、已选行动、失败、重试和所有原生消耗均按现有记录器留档。[八维记录对照](docs/BATCH_RECORDING.md)
 
-共同阅读范围仍为固定开头之后 **4000 个新增可见 Unicode 字符**，按统一句界规则截取，不计公共前文、内部规划、菜单和未选预览，不要求全篇结局。公共字符串只编译一次：IF Line 接收 `extra_requirements`，AI4VisualNovel 接收需求文件，InfiPlot 接收 `worldSetting`。不要求原生 system/user/history 消息相同。
+`sealed`、退出码和 `comparison_ready` 不代表质量通过。各故事以自己的实际路径和画面受评，不把另一个系统的剧情当成答案。不仅保留故事或 PNG，必须保留完整批次及 `runs/`。
 
-`--choices 0 1` 只是原生下标序列，用完后重复最后一个下标，不是跨系统语义匹配，也不是两组必须出现的故事行动。没有加入 AI 选项匹配器、额外事实提醒、自动补图、外部评分回灌或失败补跑。
+## 版本与验证边界
 
-仓库采用**冻结基线 + 独立外置适配器**。本次只扩展 v4 公共输入的 `decision_policy=native_generated` 和派生题库工具；原生源码、来源锁、已披露补丁、原生生成/选择方法及八维记录器不变。输入合同仍为 3.0，阅读输出合同仍为 4.0；新 case 的显式策略字段与空指定行动列表由编译器联合校验并绑定哈希，旧 v3 两选择校验不放宽。
+内置题库仍为 `pilot`，上传、编译成功不代表人工批准。正式运行需人工审阅后使用 `tools/approve_eval30.py` 创建与内容哈希绑定的副本，命令见完整使用说明。`full` 仅表示规模，不表示正式审批。
 
-| 项目 | 原始冻结提交 |
-|---|---|
-| IF Line | `572407fce9b648a4206ac37da6a9f6ed22631da8`，另有已披露 HTML 修复 |
-| AI4VisualNovel | `0faf120244d175866eea3813f053281f5689ab19` |
-| InfiPlot | `a60e18bc663caaa134d9323a2b89159b7cc9bd05` |
+沿用已合入的外置合同扩展，v4 任务可显式使用 `decision_policy=native_generated` 和真正的空 `decisions=[]`。旧合同保持兼容，旧 30 题公共哈希不变。输入投递合同仍为 3.0，阅读输出合同仍为 4.0，具体开放案例版本为 4.1-open-actions-pilot.2；这些是不同层次的版本。
 
-详见 [公平性](docs/FAIRNESS.md)、[IF Line 修复](docs/IFLINE_HTML_PATCH.md)、[来源说明](docs/PROVENANCE.md)。
-
-## 文档与检查
-
-[新版语义与验证](docs/OPEN_ACTIONS.md) · [实验指南](docs/EXPERIMENTS.md) · [Linux 快速上手](docs/QUICKSTART.md) · [WSL2](docs/WINDOWS_WSL2.md) · [批量入口](docs/BATCH_RUNNING.md) · [旧题库](benchmark/suites/eval30/README.md) · [历史题库验证](docs/EVAL30_VALIDATION.md) · [既有原生验证](docs/HANDOFF_VALIDATION_20260907.md)
+**没有修改 `systems/`、`baseline-lock.json`、既有 IF Line 补丁或原生创作机制。** IF Line 继续使用已披露的 HTML 修复变体；AI4VisualNovel 和 InfiPlot 保持原冻结来源。详见 [来源](docs/PROVENANCE.md)、[公平性](docs/FAIRNESS.md)、[IF Line 修复](docs/IFLINE_HTML_PATCH.md)。
 
 ```bash
-python3 -m unittest discover -s tests -p 'test_*.py'
+bash experiment.sh test
 python3 tools/verify_sources.py
 ```
 
-编译和离线测试不等于新供应商可用、原生生成成功或故事质量通过。原生检查仍使用 `tools/smoke_test.py`，真实生成由使用者在配置好的环境中先进行 `quick` 验证。
+[本次验证范围](docs/OPEN_ACTION_VALIDATION.md) 将编译、离线测试与真实原生生成严格区分。依赖安装细节和原生已知问题仍见 [QUICKSTART](docs/QUICKSTART.md)、[WSL2](docs/WINDOWS_WSL2.md)、[IF Line](docs/projects/IF_LINE.md)、[AI4VisualNovel](docs/projects/AI4VISUALNOVEL.md)、[InfiPlot](docs/projects/INFIPLOT.md)。这些历史文档中的旧题示例不覆盖新版的开放行动合同。

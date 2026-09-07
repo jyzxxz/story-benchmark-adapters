@@ -1,91 +1,16 @@
-# 同题创作、统一评判：不预设关键行动
+# 不预设关键行动：版本导航
 
-## 修改范围
+当前默认版本是 `v4-30-open-actions-pilot.2`，完整用法见 [当前使用说明](OPEN_ACTION_EXPERIMENTS.md)，30题可直接阅读 [完整设定和开头](../benchmark/suites/eval30_open/PROMPTS.md)。
 
-本次要求是取消预设关键行动，而不是替换为升学故事，也不是撤掉所有故事约束。默认题库为 `v4-30-open-actions-pilot.1`，仍是原有六类题材的 30 题。标题、题材、角色名单、视觉设定和固定开头保留。原生角色总名单约束继续存在；这不是无限新增角色或完全无约束写作模式。
-
-新版不规定第一/第二次选择的行动内容，不要求保留旧选项或语义等价替身，不把剧情阶段绑定到两次指定决策，不预设路线及结局。各系统根据自己的剧情设计原生菜单，外部程序按已记录的下标策略执行。允许不同，也允许恰好相同，不需要人为分配不同路线。
-
-共同起点、世界规则和已经发生的事实仍有效。读到的实际选择一旦提交，后文应承接该选择，不能无解释改走未选路线。原生流程自有的结构、节点、角色数量或格式限制并未消除，本次不修改这些原生方法。
-
-## 来源、派生文本与版本
-
-旧题库在 `benchmark/suites/eval30/catalog.json`、六个题材 JSON 和 `prefix.txt` 中保持原样。原始 v1 文本仍在 `benchmark/source/if_line_eval_prompts_30.v1.md`。显式使用 `--legacy-actions` 可生成旧题库，并校验原公共输入哈希。
-
-新增 `prefix.open-actions.txt` 和 `open-actions.json`。后者列出逐字匹配的修改规则，程序拒绝缺失/重复匹配，不通过 AI 自动重写。每题做以下派生：
-
-1. 删除 brief 中两行“第一次选择/第二次选择”。
-2. 替换依赖旧选择阶段的章条款。例如“直到第三章才看到日志”改成开头尚未看到，后续获知取决于实际事件；不规定必须揭示日志。
-3. 对明确强制执行某计划的条款，将其改为人物计划、处境或期限，而不是保证玩家一定执行。例如保留报馆的截止时间，但不保证印刷一定成功。
-4. 不继承旧的行动顺序解释和章/选择映射，改用公开的初始知识、条件适用及实际路径规则。
-
-剩余世界规则、物品约束、场景知识边界不因取消指定行动而自动删除。带有“首次拍摄后”“交换发生时”等条件的规则，只在事件实际发生时适用，不要求制造该事件。
-
-派生 brief **不是原文逐字副本**。导出的 `CHANGELOG.json` 保留逐题原句/新句和新旧 scope，`history/original_v1.md` 保留原件。历史资料不复制进实际提交模型的 `compiled/<case_id>/`，也不作为新版评审的额外要求。每题以 `*-V4-OPEN01` 标识，当前版本 `4.0-open-actions-pilot.1`，源和公共任务哈希重新生成。所有题仍为 pilot，新增开头和这些解释仍需人工内容确认，不把上传授权视为内容批准。
-
-## 合同与代码
-
-case 新增显式字段：
-
-```json
-{
-  "decision_policy": "native_generated",
-  "decisions": []
-}
-```
-
-它只能与既有 `FULL_VN`、输入合同 3.0 和输出合同 4.0 阅读窗口组合，不能混用 v3 的首次指定选择停止合同，不能同时保留预设选项。未声明策略的历史题仍必须满足旧的两组选择校验。策略字段、源文本和编译结果通过 case 哈希及 bundle 完整性验证绑定，未知策略和篡改被拒绝。
-
-`tools/eval30.py` 的默认导出及原有 `tools/experiment.py` 的新实验准备均使用新版。旧导出函数改名为 `expand_legacy_suite`，默认 `expand_suite` 进入 `story_benchmark/open_actions.py`。该文件位于既有代码清单扫描范围内，因此实验冻结和恢复检查也覆盖它。原生 batch driver、选择策略、记录器及系统源码不变。
-
-`--suite-root` 仍忠实使用操作人明确指定的题库副本，不悄悄迁移已批准或旧版输入。旧实验继续与旧代码版本对应，不能用新代码覆盖其封存结果或恢复已变化的条件。
-
-## 使用
-
-已有环境与密钥，在仓库根目录更新代码后，使用新输出目录：
+第一版 `v4-30-open-actions-pilot.1` 的实现、规则与前缀仍保留；第二版进一步中和固定开头末段中的二选一提示，提供可读题库与固定公共哈希，不覆盖第一版。两版都不预设关键行动，不能混用各自的case ID、源哈希或冻结实验。
 
 ```bash
-# 免费查看新版完整输入和变更记录
-python3 tools/eval30.py --out work/eval30-open-preview
-
-# 三系统各一次真实尝试，需要确认付费
-bash tools/experiment.sh quick --allow-pilot --out work/experiments/open-check
-
-# 自选两题，每题每系统两次，当前系统最多两个根运行，共十二次尝试
-bash tools/experiment.sh quick --allow-pilot \
-  --case-ids CAMPUS-01 MYSTERY-01 --repeat 2 --concurrency 2 \
-  --out work/experiments/open-custom
-
-# 显式查看历史指定行动题库，不调用模型
-python3 tools/eval30.py --legacy-actions --out work/eval30-legacy-preview
+# 当前默认第二版，免费导出
+python3 tools/eval30.py --out work/open-v2
+# 显式导出第一版开放题库
+python3 tools/eval30.py --open-actions-v1 --out work/open-v1
+# 显式导出最初指定行动题库
+python3 tools/eval30.py --legacy-actions --out work/legacy
 ```
 
-首次安装仍用 `bash tools/experiment.sh setup`，详见 [实验指南](EXPERIMENTS.md)。不新增 macOS 支持。`quick/genres/pilot/full` 只是规模预设，题目、项目、重复次数和并发可调整，不要求跑完整题库。次数始终是独立尝试数，失败不自动补跑，没有适配器总费用上限。
-
-人工确认完成后，仍用 `tools/approve_eval30.py` 创建新的带哈希记录的 approved 副本，再通过 `--suite-root` 运行且不加 `--allow-pilot`。审核工具保留 open-actions 版本标识，不把它改回旧版名称。工具不是自动审阅者。
-
-## 八维评审边界
-
-M1 检查当前公共任务的事实、世界规则和适用条件，不检查历史指定选项是否出现。M2 检查各自故事内部连贯性，M3 检查各自角色跨画面的身份连续，M6 对照本系统实际正文和画面。不把另一系统的路线、结局、人物脸型或配图当成答案，不因不同走向扣分。M5 评价写作和阅读体验，不把人物成功/失败当成系统高分/低分。
-
-既有记录器从实际菜单保存选项和选择，`decisions=[]` 不会删除真实选择记录。约束采集对空列表不产生 `required_choice` 行；原生菜单的公共决策映射没有对应目标时不应被评为漏做指定行动。没有互动、可观察选择后果不足、正文不足、缺图等情况仍如实记录，不能自动视为质量通过。
-
-M4/M7/M8 的事件计时、供应商 usage、图片请求/候选/资产/画面证据保留。M1/M2/M3/M5/M6 仍待独立评分，本次没有新增自动裁判。没有用户实测桌面时间和账单时不得伪造。详细记录仍见 [BATCH_RECORDING](BATCH_RECORDING.md)。
-
-## 本次实际验证
-
-2026-09-07，以 `15fa304159f6f83f4320273cde4caff4aa670a74` 为基线。修改前用于离线测试的编译器、合同、IO、eval30、experiment、setup、approve 及原回归测试文件，以及旧题库目录、六类来源、前缀和 v1 原文，均通过其远端 Git blob 哈希校对。
-
-新版 30/30 编译和 bundle 校验通过，三系统 payload 的公共字符串逐题相同，指定行动列表均为空。旧版 30/30 仍匹配原公共输入哈希。标题、角色、视觉设定及开头逐题保持一致。
-
-共 58 项离线测试通过：保留原 30 项回归（旧题原文/哈希用显式 legacy 导出），新增 28 项测试覆盖无预设行动、无旧阶段指令、三系统输入相同、当前选择须被尊重、历史/当前材料隔离、合同非法组合、pilot 拦截、审核副本版本、篡改拒绝与拒绝覆盖。执行命令：
-
-```bash
-python3 -m unittest discover -s tests -p 'test_*.py'
-```
-
-调度回归中的原生调用为明确 mock，不是新一次原生端到端生成。没有安装三套原生环境、没有调用付费模型、没有生成新的真实故事，也未执行整个 `benchmark/tests` 重型回归。审核测试仅在临时目录使用测试标识，不发布真实批准记录。不能把输入和单元测试通过说成三系统原生生成已经全部成功。
-
-## 与并发更新的兼容复验
-
-提交前检测到远端新增 `67a4b147376bd5e2b58519972d767b8cca7fe1ff`，其任意 `--count`、题材筛选、根目录 `experiment.sh` 和 12 项测试全部保留，没有用旧版本覆盖。该提交的 `tools/experiment.py`、两层 Shell 入口和新增测试均以 Git blob 校验后用于复验；合并本次输入变更后，共 **70 项离线测试通过，0 失败、0 跳过**，包括根目录离线 prepare 调用真实编译器。仍未调用付费模型或原生生成服务。
+第一版的原始说明与70项验证记录保留在 [提交787a879的文档](https://github.com/jyzxxz/story-benchmark-adapters/blob/787a8793b8dd360c003fbe2e71539132604eab3f/docs/OPEN_ACTIONS.md)。当前整合验证见 [OPEN_ACTION_VALIDATION](OPEN_ACTION_VALIDATION.md)。没有把历史测试当作本次付费或原生生成结果。

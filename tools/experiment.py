@@ -16,7 +16,7 @@ import subprocess
 import sys
 import uuid
 
-from eval30 import ROOT, CATALOG, catalog_sources, expand_suite, digest
+from open_eval30 import ROOT, CATALOG, catalog_sources, expand_suite, digest
 from story_benchmark.compiler import compile_case, verify_bundle
 from story_benchmark.io import atomic_json, atomic_write, read_json, redact, safe_child
 
@@ -67,7 +67,7 @@ def requested_genres(rows: list[dict], genres: list[str]) -> list[str]:
 
 
 def code_inventory() -> dict[str, str]:
-    paths = [ROOT/'tools'/name for name in ('experiment.py','eval30.py','run_batch.py','experiment.sh')]
+    paths = [ROOT/'tools'/name for name in ('experiment.py','eval30.py','open_eval30.py','run_batch.py','experiment.sh')]
     paths += [ROOT/'experiment.sh']
     paths += sorted((ROOT/'benchmark/story_benchmark').rglob('*.py'))
     return {str(p.relative_to(ROOT)): digest(p.read_bytes()) for p in paths if p.is_file()}
@@ -134,11 +134,15 @@ def prepare(args: argparse.Namespace) -> tuple[Path, dict]:
         raise ValueError('Only v4 image-readable-window bundles are supported')
     if len({m['output_contract']['window_chars'] for m in manifests}) != 1:
         raise ValueError('Use one common reading window per experiment')
+    decision_policies = [read_json(bundle/'case.json').get('decision_policy', 'specified') for bundle in bundles]
+    if len(set(decision_policies)) != 1:
+        raise ValueError('Do not mix prescribed-action and native-action tasks in one experiment')
     config.update(bundles=[str(p) for p in bundles], choice_indices=args.choices, allow_pilot=pilot)
     atomic_json(out/'config.json', config)
     plan = {'schema_version':'experiment.1', 'root':str(out), 'created_at':datetime.now(timezone.utc).isoformat(),
             'systems':list(args.systems), 'case_ids':ids, **allocation,
             'total_attempts':allocation['attempts_per_system']*len(args.systems),
+            'suite_version':catalog.get('suite_version'), 'decision_policy':decision_policies[0],
             'experimental_principle':'same_task_common_rubric_independent_narratives',
             'choice_indices':args.choices, 'choice_semantics':'zero-based native menu indices; repeat last index; not semantic C1/C2 routing',
             'review_status':'pilot' if pilot else 'approved', 'config_sha256':digest((out/'config.json').read_bytes()),
