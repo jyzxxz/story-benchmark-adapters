@@ -1,2 +1,5 @@
 # Preserve upstream and task bytes, including when core.autocrlf is enabled.
 * -text
+
+# Unified patches require a leading context space on otherwise empty lines.
+native-patches/**/*.patch -whitespace

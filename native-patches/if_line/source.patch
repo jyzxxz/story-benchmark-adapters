@@ -1,0 +1,530 @@
+diff --git a/backend/app/integrations/llm/chapter_script_adapter.py b/backend/app/integrations/llm/chapter_script_adapter.py
+index 4c0e6b9..7853e05 100644
+--- a/backend/app/integrations/llm/chapter_script_adapter.py
++++ b/backend/app/integrations/llm/chapter_script_adapter.py
+@@ -19,13 +19,17 @@ from app.services.llm_service import (
+     parse_llm_json,
+ )
+ from app.services.chapter_script_ir import SEGMENT_MAX_TEXT_CHARS
++from app.services.chapter_source_text import (
++    CHAPTER_TEXT_PROJECTION_VERSION,
++    chapter_display_text,
++)
+ from app.services.text_llm_config import (
+     resolve_request_model,
+     structured_json_request_options,
+ )
+ 
+ 
+-CHAPTER_SCRIPT_PROMPT_VERSION = "chapter-script-llm-segments-v2"
++CHAPTER_SCRIPT_PROMPT_VERSION = "chapter-script-llm-segments-visible-source-v3"
+ 
+ CHAPTER_SCRIPT_EMOTION_VOCABULARY = (
+     "neutral",
+@@ -111,13 +115,17 @@ class LegacyChapterScriptLLMAdapter:
+             "chapter_index": request.chapter_index,
+             "outline_chapter": request.outline_chapter,
+             "characters": request.characters,
+-            "chapter_content": request.chapter_content,
++            "chapter_content": chapter_display_text(request.chapter_content),
++            "chapter_content_projection": CHAPTER_TEXT_PROJECTION_VERSION,
+             "bible_context": request.bible,
+             "instructions": request.instructions,
+         }
+         prompt = (
+             "为视觉小说编译器切分并标注章节正文。segments 的 text 只能是"
+             " chapter_content 的原文逐字摘录，不得改写、增删。\n\n"
++            "chapter_content 已由编译器完成一次排版标签处理和实体解码。"
++            "其中剩余的 <、>、& 或类似标签/实体的文字都是正文，"
++            "必须原样保留，不得再做 HTML 解析或实体解码。\n\n"
+             + CHAPTER_SCRIPT_SEGMENTATION_RULES_PROMPT
+             + "\n\n"
+             + CHAPTER_SCRIPT_OUTPUT_SCHEMA_PROMPT
+diff --git a/backend/app/services/chapter_script_ir.py b/backend/app/services/chapter_script_ir.py
+index 64f780e..b50a331 100644
+--- a/backend/app/services/chapter_script_ir.py
++++ b/backend/app/services/chapter_script_ir.py
+@@ -5,12 +5,16 @@ import hashlib
+ from typing import Any, Mapping, Sequence
+ 
+ from app.application.hashing import content_hash
++from app.services.chapter_source_text import (
++    CHAPTER_TEXT_PROJECTION_VERSION,
++    chapter_text_units,
++)
+ from app.services.tts_service import TTS_MAX_TEXT_LENGTH as SEGMENT_MAX_TEXT_CHARS
+ 
+ 
+ SCRIPT_IR_SCHEMA_VERSION = "script-ir-v3"
+ SCRIPT_IR_SUPPORTED_SCHEMA_VERSIONS = ("script-ir-v1", "script-ir-v2", "script-ir-v3")
+-SCRIPT_GENERATOR_VERSION = "llm-segments-v1"
++SCRIPT_GENERATOR_VERSION = "llm-segments-visible-source-v2"
+ 
+ 
+ class ScriptIRValidationError(ValueError):
+@@ -106,19 +110,30 @@ def _segment_text(segment: Mapping[str, Any], index: int) -> str:
+     return text
+ 
+ 
+-def _split_overlong_segment(text: str) -> list[str]:
++def _split_overlong_segment(
++    text: str, source_units: Sequence[tuple[str, int, int]] = (),
++) -> list[str]:
+     """超长 segment 保险丝：优先句末标点切，找不到则硬切。仅兜底，正常不触发。"""
+     if len(text) <= SEGMENT_MAX_TEXT_CHARS:
+         return [text]
+     pieces: list[str] = []
+     remaining = text
++    offset = 0
+     while len(remaining) > SEGMENT_MAX_TEXT_CHARS:
+         window = remaining[:SEGMENT_MAX_TEXT_CHARS]
+         cut = max(window.rfind(ch) for ch in _SENTENCE_END_CHARS)
+         if cut < SEGMENT_MAX_TEXT_CHARS // 2:
+             cut = SEGMENT_MAX_TEXT_CHARS - 1
++        # An HTML entity may decode to two Unicode characters. Keep the raw
++        # source token atomic even when a length fuse falls between them.
++        if source_units:
++            while cut >= 0 and source_units[offset + cut][1:] == source_units[offset + cut + 1][1:]:
++                cut -= 1
++            if cut < 0:
++                raise ScriptIRValidationError("单个源实体超过 segment 长度上限")
+         pieces.append(remaining[: cut + 1])
+         remaining = remaining[cut + 1 :]
++        offset += cut + 1
+     if remaining:
+         pieces.append(remaining)
+     return pieces
+@@ -130,13 +145,13 @@ def _locate_segments(
+ ) -> list[dict[str, Any]]:
+     """把 LLM 片段顺序流匹配回原文坐标。
+ 
+-    匹配语义：忽略一切空白（空格/换行/全角空格）后逐字符顺序匹配。
++    匹配语义：按同一可见文本投影忽略空白后逐字符顺序匹配。
+     失败即抛 ScriptIRValidationError，携带 segment 序号与具体原因。
+     """
+-    stream = [(ch, idx) for idx, ch in enumerate(content) if not ch.isspace()]
++    stream = [unit for unit in chapter_text_units(content) if not unit[0].isspace()]
+     if not stream:
+         raise ScriptIRValidationError("ChapterRevision 没有可编译内容")
+-    stream_text = "".join(ch for ch, _ in stream)
++    stream_text = "".join(ch for ch, _, _ in stream)
+     cursor = 0
+     located: list[dict[str, Any]] = []
+     for index, segment in enumerate(segments):
+@@ -153,13 +168,16 @@ def _locate_segments(
+                 f"segment[{index}] 与原文不一致（疑似改写/增删字/顺序错乱），"
+                 f"片段开头「{text[:20]}」，原文此处「{expected[:20]}」"
+             )
+-        source_start = stream[cursor][1]
+-        source_end = stream[end_cursor - 1][1] + 1
+-        item = dict(segment)
+-        item["text"] = text
+-        item["source_start"] = source_start
+-        item["source_end"] = source_end
+-        located.append(item)
++        if end_cursor < len(stream) and stream[end_cursor - 1][1:] == stream[end_cursor][1:]:
++            raise ScriptIRValidationError(f"segment[{index}] 边界切开了同一 HTML 实体，请合并该实体")
++        piece_cursor = cursor
++        for piece in _split_overlong_segment(text, stream[cursor:end_cursor]):
++            item = dict(segment)
++            item["text"] = piece
++            item["source_start"] = stream[piece_cursor][1]
++            piece_cursor += len(piece)
++            item["source_end"] = stream[piece_cursor - 1][2]
++            located.append(item)
+         cursor = end_cursor
+     if cursor != len(stream_text):
+         gap = stream_text[cursor : cursor + 20]
+@@ -174,7 +192,7 @@ def _segment_source_spans(
+     content: str,
+     located: Sequence[Mapping[str, Any]],
+ ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+-    """由定位结果生成逐字符无缝 spans（segment span + 分隔空白 separator span）。"""
++    """生成逐字符无缝 raw spans；separator 仅包含空白和排版标记。"""
+     spans: list[dict[str, Any]] = []
+     paragraphs: list[dict[str, Any]] = []
+     span_index = 0
+@@ -331,19 +349,8 @@ def build_script_ir_from_segments(
+         if not isinstance(item, Mapping):
+             raise ScriptIRValidationError(f"segment[{index}] 必须是对象")
+ 
+-    # 超长保险丝：>SEGMENT_MAX_TEXT_CHARS 的片段按句末标点确定性再拆。
+-    expanded: list[dict[str, Any]] = []
+-    for item in raw_segments:
+-        text = _segment_text(item, len(expanded))
+-        for piece in _split_overlong_segment(text):
+-            if piece == text:
+-                expanded.append(dict(item))
+-            else:
+-                child = dict(item)
+-                child["text"] = piece
+-                expanded.append(child)
+-
+-    located = _locate_segments(chapter_content, expanded)
++    # Locate before the length fuse so raw entities cannot be split/overlapped.
++    located = _locate_segments(chapter_content, raw_segments)
+     spans, paragraphs = _segment_source_spans(chapter_content, located)
+ 
+     normalized_characters = normalize_characters(characters)
+@@ -379,6 +386,7 @@ def build_script_ir_from_segments(
+         "source": {
+             "content_hash": chapter_content_hash,
+             "character_count": len(chapter_content),
++            "text_projection": CHAPTER_TEXT_PROJECTION_VERSION,
+         },
+         "characters": normalized_characters,
+         "spans": spans,
+@@ -391,6 +399,64 @@ def build_script_ir_from_segments(
+     return script_ir
+ 
+ 
++def _validate_display_coverage(
++    script_ir: Mapping[str, Any], source_text: str,
++) -> None:
++    """Validate visible prose as strictly as the immutable raw source spans.
++
++Use a single projection of the full source, never reparse individual slices:
++an entity decoded to literal '<p>' must remain visible text.
++    """
++    source = script_ir.get("source") or {}
++    projection = source.get("text_projection")
++    if projection is None:
++        return  # Existing v1/v2/v3 snapshots predate this source projection.
++    if projection != CHAPTER_TEXT_PROJECTION_VERSION:
++        raise ScriptIRValidationError("不支持的正文 text_projection")
++    if source.get("character_count") != len(source_text):
++        raise ScriptIRValidationError("Script IR 原文 character_count 不匹配")
++    units = [unit for unit in chapter_text_units(source_text) if not unit[0].isspace()]
++    cursor = 0
++    paragraph_index = 0
++    all_span_ids: set[str] = set()
++    paragraphs = script_ir["paragraphs"]
++    for span in script_ir["spans"]:
++        span_id = _text(span.get("span_id"))
++        if not span_id or span_id in all_span_ids:
++            raise ScriptIRValidationError("Script IR source span_id 为空或重复")
++        all_span_ids.add(span_id)
++        selected: list[tuple[str, int, int]] = []
++        while cursor < len(units) and units[cursor][1] < span["end"]:
++            unit = units[cursor]
++            if unit[1] < span["start"] or unit[2] > span["end"]:
++                raise ScriptIRValidationError("Script IR source span 切开了可见源字符/实体")
++            selected.append(unit)
++            cursor += 1
++        if span.get("kind") == "separator":
++            if selected:
++                raise ScriptIRValidationError("Script IR separator 隐藏了正文字符")
++            continue
++        if span.get("kind") != "paragraph" or not selected:
++            raise ScriptIRValidationError("Script IR source span 类型无效或正文为空")
++        paragraph = paragraphs[paragraph_index]
++        expected_text = "".join(unit[0] for unit in selected)
++        if (
++            paragraph.get("text") != expected_text
++            or paragraph.get("source_span_id") != span_id
++            or paragraph.get("paragraph_id") != span.get("paragraph_id")
++            or paragraph.get("order_index") != paragraph_index
++            or paragraph.get("source_start") != span["start"]
++            or paragraph.get("source_end") != span["end"]
++            or paragraph.get("source_text") != span["text"]
++            or selected[0][1] != span["start"]
++            or selected[-1][2] != span["end"]
++        ):
++            raise ScriptIRValidationError("Script IR paragraph 可见正文、顺序或源坐标不匹配")
++        paragraph_index += 1
++    if cursor != len(units) or paragraph_index != len(paragraphs):
++        raise ScriptIRValidationError("Script IR 可见正文存在覆盖缺口")
++
++
+ def validate_script_ir(
+     script_ir: Mapping[str, Any],
+     *,
+@@ -451,6 +517,7 @@ def validate_script_ir(
+         seen_span_ids.add(span_id)
+     if seen_span_ids != paragraph_span_ids:
+         raise ScriptIRValidationError("Script IR paragraph 未覆盖全部正文 source span")
++    _validate_display_coverage(script_ir, source_text)
+ 
+     total = len(source_text)
+     return {
+@@ -633,4 +700,3 @@ def resource_slot_specs(script_ir: Mapping[str, Any]) -> list[dict[str, Any]]:
+ 
+ # selfimprove 克隆本地兼容:旧迁移 0020 仍按旧名 import(空库不会实际调用)
+ build_script_ir = build_script_ir_from_segments
+-
+diff --git a/backend/app/services/chapter_source_text.py b/backend/app/services/chapter_source_text.py
+new file mode 100644
+index 0000000..6aa2a3d
+--- /dev/null
++++ b/backend/app/services/chapter_source_text.py
+@@ -0,0 +1,70 @@
++"""One-pass display projection with offsets into the immutable chapter source.
++
++This is a prose-formatting projection, not an HTML renderer or sanitizer. Only
++known formatting tags are layout. Unknown tags, comments and script/style text
++stay literal; escaped markup is decoded once and never parsed again.
++"""
++from __future__ import annotations
++
++from html import unescape
++from html.entities import html5
++import re
++
++
++CHAPTER_TEXT_PROJECTION_VERSION = "html-formatting-entities-v1"
++_BLOCK_TAGS = {"p", "div", "br", "hr", "blockquote", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "pre"}
++_INLINE_TAGS = {"span", "strong", "em", "b", "i", "u", "s", "strike", "sub", "sup", "code", "a"}
++_TAG = re.compile(
++    r"</?(?P<name>[A-Za-z][A-Za-z0-9]*)(?=[\s/>])"
++    r"(?:[^<>\"']|\"[^\"]*\"|'[^']*')*>",
++)
++_ENTITY = re.compile(r"&(?:#[0-9]+|#[xX][0-9a-fA-F]+|[A-Za-z][A-Za-z0-9]+);")
++
++
++def chapter_text_units(source: str) -> list[tuple[str, int, int]]:
++    """Return (display character, raw start, raw end), including whitespace.
++
++Multiple characters decoded from one entity share its raw interval. A caller
++must not split that interval between source spans.
++    """
++    units: list[tuple[str, int, int]] = []
++    cursor = 0
++    while cursor < len(source):
++        if source[cursor] == "<":
++            if source.startswith("<!--", cursor):
++                end = source.find("-->", cursor + 4)
++                end = len(source) if end < 0 else end + 3
++                units.extend((source[idx], idx, idx + 1) for idx in range(cursor, end))
++                cursor = end
++                continue
++            match = _TAG.match(source, cursor)
++            if match and match["name"].lower() in {"script", "style"} and not source.startswith("</", cursor):
++                close = re.search(r"</" + match["name"] + r"\s*>", source[match.end():], re.IGNORECASE)
++                end = len(source) if close is None else match.end() + close.end()
++                units.extend((source[idx], idx, idx + 1) for idx in range(cursor, end))
++                cursor = end
++                continue
++            if match and match["name"].lower() in _BLOCK_TAGS | _INLINE_TAGS:
++                if match["name"].lower() in _BLOCK_TAGS:
++                    units.append(("\n", cursor, match.end()))
++                cursor = match.end()
++                continue
++        if source[cursor] == "&":
++            match = _ENTITY.match(source, cursor)
++            if match:
++                token = match.group()
++                if token[1] == "#" or token[1:] in html5:
++                    # html.unescape may discard invalid control references.
++                    # Preserve such tokens literally instead of losing source.
++                    decoded = unescape(token)
++                    if decoded:
++                        units.extend((ch, cursor, match.end()) for ch in decoded)
++                        cursor = match.end()
++                        continue
++        units.append((source[cursor], cursor, cursor + 1))
++        cursor += 1
++    return units
++
++
++def chapter_display_text(source: str) -> str:
++    return "".join(ch for ch, _, _ in chapter_text_units(source))
+diff --git a/backend/tests/test_chapter_script_ir_v2.py b/backend/tests/test_chapter_script_ir_v2.py
+index 55c1291..e81342d 100644
+--- a/backend/tests/test_chapter_script_ir_v2.py
++++ b/backend/tests/test_chapter_script_ir_v2.py
+@@ -294,7 +294,7 @@ def test_segmentation_prompt_enforces_dialogue_purity_and_merging():
+         CHAPTER_SCRIPT_SEGMENTATION_RULES_PROMPT,
+     )
+ 
+-    assert CHAPTER_SCRIPT_PROMPT_VERSION == "chapter-script-llm-segments-v2"
++    assert CHAPTER_SCRIPT_PROMPT_VERSION == "chapter-script-llm-segments-visible-source-v3"
+     # 对白纯净铁律：归属/动作禁止混入 dialogue segment
+     assert "【对白纯净——铁律】" in CHAPTER_SCRIPT_SEGMENTATION_RULES_PROMPT
+     assert "绝对禁止出现在 dialogue segment" in CHAPTER_SCRIPT_SEGMENTATION_RULES_PROMPT
+diff --git a/backend/tests/test_chapter_source_text.py b/backend/tests/test_chapter_source_text.py
+new file mode 100644
+index 0000000..c9a381c
+--- /dev/null
++++ b/backend/tests/test_chapter_source_text.py
+@@ -0,0 +1,181 @@
++from __future__ import annotations
++
++from copy import deepcopy
++import json
++from types import SimpleNamespace
++
++import pytest
++
++from app.application.hashing import content_hash
++from app.services.chapter_source_text import (
++    CHAPTER_TEXT_PROJECTION_VERSION,
++    chapter_display_text,
++    chapter_text_units,
++)
++from app.services.chapter_script_ir import (
++    SEGMENT_MAX_TEXT_CHARS,
++    ScriptIRValidationError,
++    build_script_ir_from_segments,
++    validate_script_ir,
++)
++
++
++def compact(text):
++    return "".join(ch for ch in text if not ch.isspace())
++
++
++def build(source, texts):
++    return build_script_ir_from_segments(
++        chapter_revision_id="raw-chapter", chapter_content=source,
++        chapter_content_hash=content_hash(source), bible_revision_id="b",
++        outline_revision_id="o", characters=[],
++        llm_output={"segments": [{"text": text} for text in texts]},
++    )
++
++
++@pytest.mark.parametrize("source,visible", [
++    ("  雨落在站台。\n阿宁说：", "  雨落在站台。\n阿宁说："),
++    ("气味。</p><p>“你闻到了吗？”", "气味。\n\n“你闻到了吗？”"),
++    ('<P class="story" title="1 > 0">夜<strong>雨<em>停</em></strong>了。<br/>走。</P>', '\n夜雨停了。\n走。\n'),
++    ("x < y，2 > 1；a <pencil> b", "x < y，2 > 1；a <pencil> b"),
++    ("<p>&lt;p&gt; &amp;lt;p&amp;gt; &#x3c;b&#62;</p>", "\n<p> &lt;p&gt; <b>\n"),
++    ("&quot;走吧。&quot;&nbsp;&amp; &#x1F319;", '"走吧。"\xa0& 🌙'),
++    ("<secret>不能吞</secret>", "<secret>不能吞</secret>"),
++    ("<!--<p>不能吞</p>-->", "<!--<p>不能吞</p>-->"),
++    ("<script><p>不能吞</p>&amp;</script>", "<script><p>不能吞</p>&amp;</script>"),
++    ("<img alt='实质文字' />", "<img alt='实质文字' />"),
++    ("<p title='broken>文字", "<p title='broken>文字"),
++    ("&unknown; &amp &#1;", "&unknown; &amp &#1;"),
++])
++def test_projection_and_exact_raw_reconstruction(source, visible):
++    assert chapter_display_text(source) == visible
++    ir = build(source, [compact(visible)])
++    assert "".join(span["text"] for span in ir["spans"]) == source
++    assert ir["source"] == {
++        "content_hash": content_hash(source), "character_count": len(source),
++        "text_projection": CHAPTER_TEXT_PROJECTION_VERSION,
++    }
++    assert "".join(p["text"] for p in ir["paragraphs"]) == compact(visible)
++    assert validate_script_ir(ir, expected_content=source)["coverage_ratio"] == 1
++
++
++def test_inline_tags_and_entities_keep_original_coordinates_across_segments():
++    source = '<p>开<strong>灯&amp;火</strong>关。</p>'
++    ir = build(source, ["开灯", "&火关。"])
++    for paragraph in ir["paragraphs"]:
++        assert source[paragraph["source_start"]:paragraph["source_end"]] == paragraph["source_text"]
++    assert ir["paragraphs"][0]["source_text"] == "开<strong>灯"
++    assert ir["paragraphs"][1]["source_text"] == "&amp;火</strong>关。"
++    entity = [unit for unit in chapter_text_units(source) if unit[0] == "&"]
++    assert entity == [("&", source.index("&amp;"), source.index("&amp;") + 5)]
++
++
++@pytest.mark.parametrize("texts", [
++    ["气味。", "你闻到了吗？"],  # altered punctuation
++    ["气味。"],  # omission
++    ["“你闻到了吗？”", "气味。"],  # reordered
++    ["气味。", "“你闻到了吗？”", "气味。"],  # duplicate
++    ["气味。</p><p>“你闻到了吗？”"],  # markup is not spoken prose
++])
++def test_rewrites_gaps_reorder_duplicates_and_markup_are_rejected(texts):
++    with pytest.raises(ScriptIRValidationError):
++        build("气味。</p><p>“你闻到了吗？”", texts)
++
++
++@pytest.mark.parametrize("text", ["", "文字", "<p>文字</p>", "&amp;lt;p&amp;gt;文字&amp;lt;/p&amp;gt;"])
++def test_escaped_markup_is_not_parsed_or_decoded_twice(text):
++    source = "&amp;lt;p&amp;gt;文字&amp;lt;/p&amp;gt;"
++    if text:
++        with pytest.raises(ScriptIRValidationError):
++            build(source, [text])
++    else:
++        ir = build(source, ["&lt;p&gt;文字&lt;/p&gt;"])
++        assert ir["paragraphs"][0]["source_text"] == source
++
++
++def test_multi_character_entity_stays_atomic_in_length_fuse():
++    source = "<p>" + "字" * (SEGMENT_MAX_TEXT_CHARS - 1) + "&fjlig;尾声。</p>"
++    visible = "字" * (SEGMENT_MAX_TEXT_CHARS - 1) + "fj尾声。"
++    ir = build(source, [visible])
++    assert [len(p["text"]) for p in ir["paragraphs"]] == [SEGMENT_MAX_TEXT_CHARS - 1, 5]
++    assert "".join(p["text"] for p in ir["paragraphs"]) == visible
++    assert "".join(s["text"] for s in ir["spans"]) == source
++    with pytest.raises(ScriptIRValidationError, match="实体"):
++        build("&fjlig;", ["f", "j"])
++
++
++@pytest.mark.parametrize("mutation", ["text", "order", "offset", "source_text", "separator", "count", "span_id"])
++def test_revalidation_cannot_hide_or_rewrite_visible_source(mutation):
++    source = "<p>不能吞。</p><p>后续。</p>"
++    ir = deepcopy(build(source, ["不能吞。", "后续。"]))
++    if mutation == "text":
++        ir["paragraphs"][0]["text"] = "改写。"
++    elif mutation == "order":
++        ir["paragraphs"].reverse()
++    elif mutation == "offset":
++        ir["paragraphs"][0]["source_start"] += 1
++    elif mutation == "source_text":
++        ir["paragraphs"][0]["source_text"] = "假来源"
++    elif mutation == "separator":
++        span = next(s for s in ir["spans"] if s["kind"] == "paragraph")
++        span["kind"] = "separator"
++        ir["paragraphs"].pop(0)
++        ir["paragraphs"][0]["order_index"] = 0
++    elif mutation == "count":
++        ir["source"]["character_count"] += 1
++    else:
++        ir["spans"][0]["span_id"] = ir["spans"][1]["span_id"]
++    with pytest.raises(ScriptIRValidationError):
++        validate_script_ir(ir, expected_content=source)
++
++
++@pytest.mark.asyncio
++async def test_real_llm_adapter_receives_same_projection_without_mutating_request(monkeypatch):
++    from app.integrations.llm import chapter_script_adapter as module
++    source = '<p>“走吧。”</p><p>&lt;p&gt; &amp;lt;b&amp;gt; x < y</p>'
++    captured = []
++    payload = {"segments": [{"text": compact(chapter_display_text(source))}]}
++
++    async def fake_create(**kwargs):
++        captured.append(kwargs)
++        return SimpleNamespace(
++            id="local-no-provider", usage=None,
++            choices=[SimpleNamespace(finish_reason="stop", message=SimpleNamespace(content=json.dumps(payload)))],
++        )
++
++    monkeypatch.setattr(module, "llm_service", SimpleNamespace(
++        model="fixture-model", client=SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=fake_create))),
++    ))
++    request = module.ChapterScriptAnnotationRequest(
++        project_id=1, chapter_index=1, bible={}, outline_chapter={},
++        chapter_content=source, characters=[],
++    )
++    result = await module.LegacyChapterScriptLLMAdapter().generate(request)
++    sent = json.loads(captured[0]["messages"][1]["content"].split("INPUT:\n", 1)[1])
++    assert sent["chapter_content"] == chapter_display_text(source)
++    assert sent["chapter_content_projection"] == CHAPTER_TEXT_PROJECTION_VERSION
++    assert request.chapter_content == source
++    assert result.raw_text == json.dumps(payload)
++    assert len(captured) == 1
++    ir = build(source, [s["text"] for s in result.data["segments"]])
++    assert ir["coverage"]["content_hash"] == content_hash(source)
++
++
++def test_vn_graph_uses_display_text_and_keeps_raw_source_anchors():
++    from app.services.vn_graph_compiler import VNGraphCompileInput, vn_graph_compiler
++    source = '<p>开<strong>灯&amp;火</strong>关。</p><p>&lt;p&gt;</p>'
++    ir = build(source, ["开灯&火关。", "<p>"])
++    result = vn_graph_compiler.compile(VNGraphCompileInput(
++        project_id=1, display_index=1, chapter_revision_id="raw-chapter",
++        chapter_content_hash=content_hash(source), chapter_content=source,
++        script_revision_id="script", script_hash=content_hash(ir), script_ir=ir,
++        asset_bindings=[],
++    ))
++    nodes = [node for node in result.graph["Nodes"] if node.get("paragraph_id")]
++    assert len(nodes) == len(ir["paragraphs"])
++    for node, paragraph in zip(nodes, ir["paragraphs"]):
++        line = node["Data"]["Lines"]["Items"][0]["ObjectValue"]
++        assert line["Text"]["StringValue"] == paragraph["text"]
++        assert line["SourceText"]["StringValue"] == paragraph["source_text"]
++        assert line["SourceStart"]["NumberValue"] == paragraph["source_start"]
++        assert line["SourceEnd"]["NumberValue"] == paragraph["source_end"]

@@ -18,6 +18,7 @@ from urllib import error, request
 from story_benchmark.adapters.infiplot import InfiPlotAdapter, InfiPlotError, _save
 from .runtime import copy_source, source_hashes, OBSERVATIONS
 from .relay import Relay
+from .request_body_settings import request_body_limit, verify_request_body_config
 
 
 def observe_batch_console(process, handle, environment):
@@ -105,6 +106,7 @@ class NativeBatchRuntime(InfiPlotAdapter):
 
     def _launch(self, handle):
         from urllib.parse import urlsplit
+        body_limit = request_body_limit(self.config)
         port = urlsplit(handle["base_url"]).port
         with socket.socket() as probe:
             if probe.connect_ex(("127.0.0.1", port)) == 0:
@@ -164,10 +166,10 @@ class NativeBatchRuntime(InfiPlotAdapter):
         else:
             _save(Path(handle["native_dir"]) / "native-image-settings.json", {"IMAGE_TIMEOUT_MS": int(env["IMAGE_TIMEOUT_MS"]),
                 "origin": "explicit_native_configuration", "generation_run_deadline": None})
-        command = [self.config.get("pnpm_executable") or "pnpm", "dev", "--hostname", "127.0.0.1", "--port", str(port)]
-        if (self.config.get("route_compatibility") or "native_render_entry") == "native_render_entry":
-            command = [self.config.get("node_executable") or "node", str(Path(__file__).with_name("compatibility_server.cjs")),
-                       str(runtime), str(port), str(Path(handle["native_dir"]) / "route-compatibility.json")]
+        body_evidence = Path(handle["native_dir"]) / "request-body-config.json"
+        command = [self.config.get("node_executable") or "node", str(Path(__file__).with_name("compatibility_server.cjs")),
+                   str(runtime), str(port), str(Path(handle["native_dir"]) / "route-compatibility.json"),
+                   self.config.get("route_compatibility") or "native_render_entry", json.dumps(body_limit), str(body_evidence)]
         self.process = subprocess.Popen(command,
                                         cwd=runtime, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, start_new_session=True)
         self.console_thread = observe_batch_console(self.process, handle, env)
@@ -181,6 +183,7 @@ class NativeBatchRuntime(InfiPlotAdapter):
                     data = json.load(res)
                 if data.get("provider") is not None:
                     raise InfiPlotError("tts_not_disabled", "Text/image profile unexpectedly enabled server TTS")
+                verify_request_body_config(body_evidence, body_limit)
                 return
             except error.HTTPError as exc:
                 raise InfiPlotError("auth_failed" if exc.code in (401, 403) else "server_config_error", f"Native readiness returned HTTP {exc.code}") from None

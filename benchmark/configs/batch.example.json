@@ -30,6 +30,7 @@
     "if_line": {
       "repo_path": "../../systems/if_line",
       "source_lock": "../../baseline-lock.json",
+      "source_patch": "../../native-patches/if_line/manifest.json",
       "python_executable": null,
       "redis_executable": null,
       "node_executable": null,
@@ -52,6 +53,7 @@
       "node_executable": null,
       "node_modules": null,
       "shared_opening": true,
+      "native_request_body_limit_bytes": 67108864,
       "dependency_timeout_seconds": 180,
       "keep_runtime": false
     }

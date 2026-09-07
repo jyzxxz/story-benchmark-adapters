@@ -1,0 +1,31 @@
+{
+  "schema_version": "source-patch.1",
+  "system": "if_line",
+  "base_commit": "572407fce9b648a4206ac37da6a9f6ed22631da8",
+  "baseline_lock_sha256": "b796e5c6c5b6e3867876b12872e718324edf94a9bdd7121044adc6d0e1db99e4",
+  "native_variant": "if_line_html_script_conversion_fix_v1",
+  "patch_file": "source.patch",
+  "patch_sha256": "76e44a1d6ee1044620fc65b2bfb6a7b93c4eed2b7ebc44d5305d4087ebc5c79d",
+  "files": {
+    "backend/app/integrations/llm/chapter_script_adapter.py": {
+      "before_sha256": "1ff438fd78f91aaf31cf69a2a36362a2b23f4fe69a04c97186a527af7dd6937d",
+      "after_sha256": "81407f6093da17c5a222e05ae4787d13eb80209d82b3210d3324e6b4e670fdc0"
+    },
+    "backend/app/services/chapter_script_ir.py": {
+      "before_sha256": "a299c9e117ac168a46fdae8412d0596bc98c4c55a07899311532a3d94280bcde",
+      "after_sha256": "79cf509d064f194bb15da41321041ea35d25983febc2b63b5be1d30875a950ca"
+    },
+    "backend/app/services/chapter_source_text.py": {
+      "before_sha256": null,
+      "after_sha256": "4bfd34a6420879d41a3ba16bedf43b1f42b7c3d0b7f6ca42ac338da5644c4c6f"
+    },
+    "backend/tests/test_chapter_script_ir_v2.py": {
+      "before_sha256": "edf8090c8645e03402fb89579f824504a4afd31041a1538312521a77d8977adc",
+      "after_sha256": "063a5fb6a39c63dee68036bebe200fd75fea01a1e56f62237ae695f8db4c3eb5"
+    },
+    "backend/tests/test_chapter_source_text.py": {
+      "before_sha256": null,
+      "after_sha256": "2c110cc4d61fc57c6eea43e27e6a7fa8a0b3054c3527cf2f1998b932d6b462fc"
+    }
+  }
+}

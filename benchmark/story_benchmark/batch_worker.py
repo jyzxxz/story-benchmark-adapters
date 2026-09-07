@@ -14,7 +14,7 @@ import uuid
 from .batch import check_bundle, driver_for, read_plan
 from .gateway import ModelGateway
 from .io import BenchmarkError, read_json, sha256
-from .provenance import verify_repository
+from .provenance import verify_repository, source_identity
 from .recording import Recorder, compute_metrics, jsonl, make_review_packages, seal, verify_recording, utc_now, audit_native_sources
 from .runner import adapter_source_inventory
 
@@ -32,6 +32,37 @@ def source_check(config):
         raise BenchmarkError('unknown_native_source_directory')
     item=lock['systems'][key]
     return verify_repository(repo,item['base_commit'],config)
+
+
+def preserve_source_patch(recorder, report):
+    """Keep the verified patch portable alongside the run's source provenance."""
+    if not report.get('ok') or not report.get('source_modified'):
+        return
+    source = report['checks'][0]
+    manifest_data = Path(source['source_patch_manifest']).read_bytes()
+    if sha256(manifest_data) != source['source_patch_manifest_sha256']:
+        raise BenchmarkError('source_patch_changed_before_run')
+    patch_relative = json.loads(manifest_data)['patch_file']
+    for path_key, hash_key, target in (
+        ('source_patch_manifest', 'source_patch_manifest_sha256', 'manifest.json'),
+        ('source_patch_file', 'source_patch_sha256', patch_relative),
+    ):
+        data = Path(source[path_key]).read_bytes()
+        if sha256(data) != source[hash_key]:
+            raise BenchmarkError('source_patch_changed_before_run')
+        recorder.save_bytes('native/source_patch/' + target, data)
+
+
+def verify_planned_source(plan, config, report):
+    """Refuse a different valid patch at the same path before opening a gateway."""
+    if not report.get('ok'):
+        raise BenchmarkError('native_source_verification_failed_before')
+    if plan.get('source_identity') is not None:
+        if source_identity(report) != plan['source_identity']:
+            raise BenchmarkError('native_source_changed_since_plan')
+    elif config.get('source_patch'):
+        raise BenchmarkError('source_patch_requires_new_frozen_plan')
+    return True
 
 
 def constraints_from_sources(bundle):
@@ -149,10 +180,11 @@ def run_job(plan,job,root,driver=None):
     state_path=root.parent.parent/'states'/(job['run_id']+'.json')
     scheduling=read_json(state_path).get('scheduling_context') if state_path.exists() else None
     recorder.save_json('scheduling_context.json',scheduling)
-    gateway=None;result={};before=after=None
+    gateway=None;result={};before=after=None;source_matched_plan=False
     try:
         before=source_check(specific)
-        if not before['ok']:raise BenchmarkError('native_source_verification_failed_before')
+        source_matched_plan = verify_planned_source(plan, specific, before)
+        preserve_source_patch(recorder, before)
         native=driver or driver_for(plan['system'])
         preflight=native.preflight(specific,bundle,policy)
         recorder.save_json('preflight.json',preflight)
@@ -179,6 +211,10 @@ def run_job(plan,job,root,driver=None):
     recorder.save_json('native/result.json',result)
     recorder.save_json('native/source_verification.json',{'before':before,'after':after})
     if not after['ok']:recorder.error('native_source_changed','Native source integrity check failed',check=after)
+    source_identity_unchanged = bool(source_matched_plan and before and before.get('ok') and after.get('ok')
+        and source_identity(before) == source_identity(after))
+    if not source_identity_unchanged:
+        recorder.error('native_source_identity_changed', 'Native source did not retain the frozen plan identity.')
     inventory_after=adapter_source_inventory()
     if inventory_before!=inventory_after:recorder.error('adapter_changed_during_run','Adapter source changed during generation; run is unsuitable for a formal batch.')
     source_audit=audit_native_sources(root)
@@ -194,12 +230,19 @@ def run_job(plan,job,root,driver=None):
     metrics=compute_metrics(root);recorder.save_json('metrics.json',metrics)
     make_review_packages(root,'sample-'+uuid.uuid4().hex[:16])
     errors=jsonl(root/'errors.jsonl')
+    verified_source = before if before and before.get('ok') else after
+    verified_identity = source_identity(verified_source) if verified_source and verified_source.get('ok') else {}
+    source_variant = {key: verified_identity.get(key) for key in (
+        'source_modified', 'native_variant', 'source_patch_manifest_sha256',
+        'source_patch_sha256', 'source_tree_sha256')}
     manifest={'schema_version':'recording.1','root_run_id':job['run_id'],'batch_id':plan['batch_id'],
         'system':plan['system'],'case_id':job['case_id'],'case_version':read_json(bundle/'case.json')['case_version'],
         'repeat':job['repeat'],'evidence_kind':policy['evidence_kind'],'started_at':started,'sealed_at':utc_now(),
         'shared_task_sha256':bundle_manifest['shared_sha256'],'opening_sha256':sha256((bundle/'opening.txt').read_bytes()),
         'base_commit':(after.get('checks') or [{}])[0].get('base_commit'),
-        'source_verification':{'before_ok':bool(before and before['ok']),'after_ok':after['ok']},
+        'source_verification':{'before_ok':bool(before and before['ok']),'after_ok':after['ok'],
+                               'frozen_identity_unchanged':source_identity_unchanged},
+        'native_source_variant': source_variant,
         'adapter_source_before':inventory_before,'adapter_source_after':inventory_after,
         'adapter_unchanged_during_run':inventory_before==inventory_after,
         'model_configuration':config['providers'],'budget_policy':'unlimited_adapter_native_limits_preserved',

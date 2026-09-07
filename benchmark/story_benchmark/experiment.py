@@ -6,7 +6,7 @@ from .io import BenchmarkError, read_json
 from .runner import ADAPTERS, preflight
 
 COMMON_FIELDS = {'live','model','model_base_url','timeout_seconds','max_calls','max_output_tokens','max_input_chars','allow_pilot','model_parameters','budget_mode'}
-PATH_FIELDS = {'repo_path','repo_dir','source_lock','python_executable','redis_executable','worker_receipt','run_dir','runtime_root'}
+PATH_FIELDS = {'repo_path','repo_dir','source_lock','source_patch','python_executable','redis_executable','worker_receipt','run_dir','runtime_root'}
 
 
 def load_experiment(path):

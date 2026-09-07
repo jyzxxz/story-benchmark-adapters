@@ -30,7 +30,11 @@ v4 采用连续阅读窗口。示例 `CAMPUS-01-V4` 为 **4000 个新增可见 U
 
 Playwright 的包版本与浏览器版本必须匹配。建议用独立的 `PLAYWRIGHT_BROWSERS_PATH`，不要让多个项目的安装器互相清理全局浏览器缓存。依赖安装/启动检查的等待上限属于环境准备；生成阶段没有适配器总时长或调用数量预算。
 
+InfiPlot 外置启动器默认配置 `systems.infiplot.native_request_body_limit_bytes=67108864`（64 MiB），防止原生内联图片历史触发默认 10 MiB 请求缓冲截断。它只调整框架运行容量，原文件、公共输入和图片字节不变；每次保存 `native/request-body-config.json` 并验证实际生效。设为 `null` 恢复原生默认。该配置需作为实验运行条件记录；它不是无限续写保证。实现边界和容量验证见 [InfiPlot 批量说明](../benchmark/native_shims/infiplot/BATCH.md)。
+
 复制 `benchmark/configs/batch.example.json` 为本地配置。保留三个系统条目，将本机 Python、Node、模块和模型缓存路径填入对应系统；相对路径均相对于配置文件所在目录解析。`pg_bin` 可指定 PostgreSQL 可执行文件目录。IF Line 自行创建独立数据库，不使用日常项目的数据。
+
+当前 IF Line 另有用户授权的 [HTML 正文转换源码补丁](IFLINE_HTML_PATCH.md)，模板通过 `systems.if_line.source_patch` 显式指定。`source_lock` 仍指向原始基线锁；不要用修复后的文件覆盖原始锁。移动本地配置时，也要更新 `source_patch` 的相对路径或使用绝对路径。运行记录会保存补丁与来源信息。AI4VisualNovel 和 InfiPlot 不允许设置源码补丁。历史没有此补丁的批次与当前变体应分别标注。
 
 模型只在 `providers` 配置一次：文字示例为 `deepseek-v4-flash`，图片为 `gpt-image-2`，原生视觉审核为 `gpt-5.4-mini`。供应商地址必须以 `/v1` 结束。三个程序读取同一份配置，禁止按系统覆盖共同模型、窗口或预算。密钥只通过 `BENCH_TEXT_API_KEY`、`BENCH_IMAGE_API_KEY`、`BENCH_VISION_API_KEY` 等命名环境变量传入，不写进 JSON、故事文件或 Git。
 

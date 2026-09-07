@@ -5,12 +5,16 @@ import hashlib
 from typing import Any, Mapping, Sequence
 
 from app.application.hashing import content_hash
+from app.services.chapter_source_text import (
+    CHAPTER_TEXT_PROJECTION_VERSION,
+    chapter_text_units,
+)
 from app.services.tts_service import TTS_MAX_TEXT_LENGTH as SEGMENT_MAX_TEXT_CHARS
 
 
 SCRIPT_IR_SCHEMA_VERSION = "script-ir-v3"
 SCRIPT_IR_SUPPORTED_SCHEMA_VERSIONS = ("script-ir-v1", "script-ir-v2", "script-ir-v3")
-SCRIPT_GENERATOR_VERSION = "llm-segments-v1"
+SCRIPT_GENERATOR_VERSION = "llm-segments-visible-source-v2"
 
 
 class ScriptIRValidationError(ValueError):
@@ -106,19 +110,30 @@ def _segment_text(segment: Mapping[str, Any], index: int) -> str:
     return text
 
 
-def _split_overlong_segment(text: str) -> list[str]:
+def _split_overlong_segment(
+    text: str, source_units: Sequence[tuple[str, int, int]] = (),
+) -> list[str]:
     """超长 segment 保险丝：优先句末标点切，找不到则硬切。仅兜底，正常不触发。"""
     if len(text) <= SEGMENT_MAX_TEXT_CHARS:
         return [text]
     pieces: list[str] = []
     remaining = text
+    offset = 0
     while len(remaining) > SEGMENT_MAX_TEXT_CHARS:
         window = remaining[:SEGMENT_MAX_TEXT_CHARS]
         cut = max(window.rfind(ch) for ch in _SENTENCE_END_CHARS)
         if cut < SEGMENT_MAX_TEXT_CHARS // 2:
             cut = SEGMENT_MAX_TEXT_CHARS - 1
+        # An HTML entity may decode to two Unicode characters. Keep the raw
+        # source token atomic even when a length fuse falls between them.
+        if source_units:
+            while cut >= 0 and source_units[offset + cut][1:] == source_units[offset + cut + 1][1:]:
+                cut -= 1
+            if cut < 0:
+                raise ScriptIRValidationError("单个源实体超过 segment 长度上限")
         pieces.append(remaining[: cut + 1])
         remaining = remaining[cut + 1 :]
+        offset += cut + 1
     if remaining:
         pieces.append(remaining)
     return pieces
@@ -130,13 +145,13 @@ def _locate_segments(
 ) -> list[dict[str, Any]]:
     """把 LLM 片段顺序流匹配回原文坐标。
 
-    匹配语义：忽略一切空白（空格/换行/全角空格）后逐字符顺序匹配。
+    匹配语义：按同一可见文本投影忽略空白后逐字符顺序匹配。
     失败即抛 ScriptIRValidationError，携带 segment 序号与具体原因。
     """
-    stream = [(ch, idx) for idx, ch in enumerate(content) if not ch.isspace()]
+    stream = [unit for unit in chapter_text_units(content) if not unit[0].isspace()]
     if not stream:
         raise ScriptIRValidationError("ChapterRevision 没有可编译内容")
-    stream_text = "".join(ch for ch, _ in stream)
+    stream_text = "".join(ch for ch, _, _ in stream)
     cursor = 0
     located: list[dict[str, Any]] = []
     for index, segment in enumerate(segments):
@@ -153,13 +168,16 @@ def _locate_segments(
                 f"segment[{index}] 与原文不一致（疑似改写/增删字/顺序错乱），"
                 f"片段开头「{text[:20]}」，原文此处「{expected[:20]}」"
             )
-        source_start = stream[cursor][1]
-        source_end = stream[end_cursor - 1][1] + 1
-        item = dict(segment)
-        item["text"] = text
-        item["source_start"] = source_start
-        item["source_end"] = source_end
-        located.append(item)
+        if end_cursor < len(stream) and stream[end_cursor - 1][1:] == stream[end_cursor][1:]:
+            raise ScriptIRValidationError(f"segment[{index}] 边界切开了同一 HTML 实体，请合并该实体")
+        piece_cursor = cursor
+        for piece in _split_overlong_segment(text, stream[cursor:end_cursor]):
+            item = dict(segment)
+            item["text"] = piece
+            item["source_start"] = stream[piece_cursor][1]
+            piece_cursor += len(piece)
+            item["source_end"] = stream[piece_cursor - 1][2]
+            located.append(item)
         cursor = end_cursor
     if cursor != len(stream_text):
         gap = stream_text[cursor : cursor + 20]
@@ -174,7 +192,7 @@ def _segment_source_spans(
     content: str,
     located: Sequence[Mapping[str, Any]],
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-    """由定位结果生成逐字符无缝 spans（segment span + 分隔空白 separator span）。"""
+    """生成逐字符无缝 raw spans；separator 仅包含空白和排版标记。"""
     spans: list[dict[str, Any]] = []
     paragraphs: list[dict[str, Any]] = []
     span_index = 0
@@ -331,19 +349,8 @@ def build_script_ir_from_segments(
         if not isinstance(item, Mapping):
             raise ScriptIRValidationError(f"segment[{index}] 必须是对象")
 
-    # 超长保险丝：>SEGMENT_MAX_TEXT_CHARS 的片段按句末标点确定性再拆。
-    expanded: list[dict[str, Any]] = []
-    for item in raw_segments:
-        text = _segment_text(item, len(expanded))
-        for piece in _split_overlong_segment(text):
-            if piece == text:
-                expanded.append(dict(item))
-            else:
-                child = dict(item)
-                child["text"] = piece
-                expanded.append(child)
-
-    located = _locate_segments(chapter_content, expanded)
+    # Locate before the length fuse so raw entities cannot be split/overlapped.
+    located = _locate_segments(chapter_content, raw_segments)
     spans, paragraphs = _segment_source_spans(chapter_content, located)
 
     normalized_characters = normalize_characters(characters)
@@ -379,6 +386,7 @@ def build_script_ir_from_segments(
         "source": {
             "content_hash": chapter_content_hash,
             "character_count": len(chapter_content),
+            "text_projection": CHAPTER_TEXT_PROJECTION_VERSION,
         },
         "characters": normalized_characters,
         "spans": spans,
@@ -389,6 +397,64 @@ def build_script_ir_from_segments(
     }
     script_ir["coverage"] = validate_script_ir(script_ir, expected_content=chapter_content)
     return script_ir
+
+
+def _validate_display_coverage(
+    script_ir: Mapping[str, Any], source_text: str,
+) -> None:
+    """Validate visible prose as strictly as the immutable raw source spans.
+
+Use a single projection of the full source, never reparse individual slices:
+an entity decoded to literal '<p>' must remain visible text.
+    """
+    source = script_ir.get("source") or {}
+    projection = source.get("text_projection")
+    if projection is None:
+        return  # Existing v1/v2/v3 snapshots predate this source projection.
+    if projection != CHAPTER_TEXT_PROJECTION_VERSION:
+        raise ScriptIRValidationError("不支持的正文 text_projection")
+    if source.get("character_count") != len(source_text):
+        raise ScriptIRValidationError("Script IR 原文 character_count 不匹配")
+    units = [unit for unit in chapter_text_units(source_text) if not unit[0].isspace()]
+    cursor = 0
+    paragraph_index = 0
+    all_span_ids: set[str] = set()
+    paragraphs = script_ir["paragraphs"]
+    for span in script_ir["spans"]:
+        span_id = _text(span.get("span_id"))
+        if not span_id or span_id in all_span_ids:
+            raise ScriptIRValidationError("Script IR source span_id 为空或重复")
+        all_span_ids.add(span_id)
+        selected: list[tuple[str, int, int]] = []
+        while cursor < len(units) and units[cursor][1] < span["end"]:
+            unit = units[cursor]
+            if unit[1] < span["start"] or unit[2] > span["end"]:
+                raise ScriptIRValidationError("Script IR source span 切开了可见源字符/实体")
+            selected.append(unit)
+            cursor += 1
+        if span.get("kind") == "separator":
+            if selected:
+                raise ScriptIRValidationError("Script IR separator 隐藏了正文字符")
+            continue
+        if span.get("kind") != "paragraph" or not selected:
+            raise ScriptIRValidationError("Script IR source span 类型无效或正文为空")
+        paragraph = paragraphs[paragraph_index]
+        expected_text = "".join(unit[0] for unit in selected)
+        if (
+            paragraph.get("text") != expected_text
+            or paragraph.get("source_span_id") != span_id
+            or paragraph.get("paragraph_id") != span.get("paragraph_id")
+            or paragraph.get("order_index") != paragraph_index
+            or paragraph.get("source_start") != span["start"]
+            or paragraph.get("source_end") != span["end"]
+            or paragraph.get("source_text") != span["text"]
+            or selected[0][1] != span["start"]
+            or selected[-1][2] != span["end"]
+        ):
+            raise ScriptIRValidationError("Script IR paragraph 可见正文、顺序或源坐标不匹配")
+        paragraph_index += 1
+    if cursor != len(units) or paragraph_index != len(paragraphs):
+        raise ScriptIRValidationError("Script IR 可见正文存在覆盖缺口")
 
 
 def validate_script_ir(
@@ -451,6 +517,7 @@ def validate_script_ir(
         seen_span_ids.add(span_id)
     if seen_span_ids != paragraph_span_ids:
         raise ScriptIRValidationError("Script IR paragraph 未覆盖全部正文 source span")
+    _validate_display_coverage(script_ir, source_text)
 
     total = len(source_text)
     return {
@@ -633,4 +700,3 @@ def resource_slot_specs(script_ir: Mapping[str, Any]) -> list[dict[str, Any]]:
 
 # selfimprove 克隆本地兼容:旧迁移 0020 仍按旧名 import(空库不会实际调用)
 build_script_ir = build_script_ir_from_segments
-

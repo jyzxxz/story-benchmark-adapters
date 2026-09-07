@@ -22,7 +22,7 @@ from .io import BenchmarkError, atomic_json, read_json, redact, sha256, safe_chi
 from .recording import verify_recording, utc_now
 
 SYSTEMS = {'if_line': 'if_line', 'ai4visualnovel': 'ai4vn', 'infiplot': 'infiplot'}
-PATH_FIELDS = {'repo_path','repo_dir','source_lock','python_executable','redis_executable',
+PATH_FIELDS = {'repo_path','repo_dir','source_lock','source_patch','python_executable','redis_executable',
                'node_executable','pnpm_executable','runtime_root','rembg_model_dir',
                'playwright_module','dependency_repo_path','node_modules','pg_bin','chromium_executable'}
 FORBIDDEN_OVERRIDE = {'model','model_base_url','model_parameters','image_model','vision_model',
@@ -134,8 +134,16 @@ def preflight_batch(system,config):
 
 def prepare_plan(system,config,out,count):
     from .runner import adapter_source_inventory
+    from .provenance import source_identity, verify_repository
     if type(count) is not int or count<=0:
         raise BenchmarkError('positive_story_count_required')
+    specific=config['systems'][system]
+    source_lock=read_json(specific['source_lock'])
+    source_key='AI4VisualNovel' if system=='ai4visualnovel' else system
+    source_report=verify_repository(specific['repo_path'],source_lock['systems'][source_key]['base_commit'],specific)
+    if not source_report['ok']:
+        raise BenchmarkError('native_source_verification_failed_during_prepare:'+';'.join(source_report['errors']))
+    frozen_source=source_identity(source_report)
     out=Path(out).resolve()
     out.mkdir(parents=True,exist_ok=False)
     frozen=[]
@@ -155,6 +163,7 @@ def prepare_plan(system,config,out,count):
             'repeat':repeat,'bundle':entry['path'],'shared_sha256':entry['manifest']['shared_sha256']})
     plan={'schema_version':'batch-plan.1','batch_id':batch_id,'system':system,'count':count,
           'configuration':config,'jobs':jobs,'adapter_source_inventory':adapter_source_inventory(),
+          'source_identity':frozen_source,
           'note':'One actual native path per independent root; no automatic failed-job retries.'}
     atomic_json(out/'plan.json',plan)
     atomic_json(out/'plan.sha256.json',{'sha256':sha256((out/'plan.json').read_bytes())})

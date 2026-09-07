@@ -51,6 +51,7 @@ def compare_batches(folders):
                        source_unchanged=all(manifest['source_verification'].values()),
                        adapter_unchanged=manifest['adapter_unchanged_during_run'],
                        native_text_source_audit=manifest['native_text_source_audit'],plan_binding_valid=not mismatches)
+            row['native_source_variant'] = manifest.get('native_source_variant')
             adapter_versions.append(manifest['adapter_source_before'])
             rows.append(row)
     if adapter_versions and any(v!=adapter_versions[0] for v in adapter_versions):errors.append('adapter_revisions_differ')

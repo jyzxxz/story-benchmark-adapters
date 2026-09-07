@@ -2,7 +2,7 @@
 
 同一份故事设定、固定开头和续写要求，原样交给 IF Line、AI4VisualNovel、InfiPlot，由三个项目各自的原生流程处理。
 
-本仓库采用**未修改的基线源码 + 独立外置适配器**。`systems/` 中发布的每个文件都与冻结提交逐字节相同；接入规则、记录器、预算与启动包装全部位于 `benchmark/`。文件不改不等于运行时完全不包装：必要的输入渲染与预算适配均公开记录。
+本仓库采用**冻结基线 + 独立外置适配器**。2026-09-07 起，按用户明确授权，IF Line 增加单独披露的 HTML 正文到脚本转换修复；AI4VisualNovel 和 InfiPlot 原生源码仍与冻结提交逐字节相同。原始 `baseline-lock.json` 保留，IF Line 的源码差异另以补丁和逐文件哈希锁定，详见 [IF Line 源码修复](docs/IFLINE_HTML_PATCH.md)。接入规则、记录器、预算与启动包装位于 `benchmark/`，运行期间禁止再改源文件。
 
 当前新增 **v4 图文批量程序**：同一份公共任务和开头，三个独立入口可调整生成数与并发数，沿原生实际选择路径读取至共同窗口，保留八项评审所需证据。示例窗口 4000 字符仍是开发候选；不要求全篇结局，因此 InfiPlot 可以按相同片段范围参与。使用方法见 [批量运行说明](docs/BATCH_RUNNING.md)，保存字段见 [八项指标对照](docs/BATCH_RECORDING.md)，验证范围见 [批量验收记录](docs/BATCH_VALIDATION.md)。
 
@@ -14,8 +14,9 @@ v3 接入边界见 [v3 合同](docs/V3_CONTRACT.md)，无预算模式重测见 [
 
 ```text
 benchmark/         编译器、接入器、外置启动器、审计、导出、测试
-systems/           三套冻结基线源码
+systems/           原生源码快照，IF Line 含已披露的 HTML 修复
 baseline-lock.json 发布文件哈希、原始提交及省略文件清单
+native-patches/    IF Line 授权源码补丁及独立校验清单
 docs/              公平性、运行说明、来源与验收证据
 tools/             仓库完整性与干净副本验证
 ```
@@ -56,8 +57,8 @@ python3 tools/verify_sources.py
 
 | 项目 | 冻结提交 |
 |---|---|
-| IF Line | `572407fce9b648a4206ac37da6a9f6ed22631da8` |
+| IF Line | `572407fce9b648a4206ac37da6a9f6ed22631da8` + 已披露 HTML 修复 |
 | AI4VisualNovel | `0faf120244d175866eea3813f053281f5689ab19` |
 | InfiPlot | `a60e18bc663caaa134d9323a2b89159b7cc9bd05` |
 
-这是源码快照仓库，不复制三个项目的 Git 历史。IF Line 既有大型生成素材、无关参考书和历史凭证材料未重新分发；每个省略项及原因列在 `baseline-lock.json`。保留的源码没有替换、修正或格式化。完整上游位置和许可证说明见 [来源说明](docs/PROVENANCE.md)。
+这是源码快照仓库，不复制三个项目的 Git 历史。IF Line 既有大型生成素材、无关参考书和历史凭证材料未重新分发；每个省略项及原因列在 `baseline-lock.json`。IF Line 新增源码修复独立记录，历史未修改基线的实测结果继续保留。完整上游位置和许可证说明见 [来源说明](docs/PROVENANCE.md)。

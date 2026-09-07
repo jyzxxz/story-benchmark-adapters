@@ -273,6 +273,7 @@ def main():
             else:
                 raise AssertionError('source write guard did not enforce isolation')
             print(json.dumps({'entry_import':'passed','path_count':len(schema['paths']),'source_modified':False,
+                'source_modified_scope':'during_runtime_only',
                 'default_prompt_unchanged':True,'shared_input_single_occurrence':True,'source_write_guard':'passed'}))
         elif args.mode=='api':
             from app.main import create_app

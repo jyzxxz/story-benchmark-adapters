@@ -15,6 +15,7 @@
     "if_line": {
       "repo_path": "../../systems/if_line",
       "source_lock": "../../baseline-lock.json",
+      "source_patch": "../../native-patches/if_line/manifest.json",
       "python_executable": null,
       "managed_runtime": "native_services",
       "isolated_deployment": true,

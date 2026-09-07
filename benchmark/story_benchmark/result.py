@@ -231,7 +231,9 @@ def finalize_result(run_dir, manifest):
             result['usage'][field]=sum(values) if all(type(v) is int for v in values) else None
     result['provenance'].update(evidence_kind=manifest['evidence_kind'],
         adapter_inventory_sha256=sha256(json.dumps(manifest['adapter_source_sha256'],sort_keys=True)),
-        native_source_unchanged=True if manifest.get('cleanup_status')=='completed' and manifest.get('evidence_kind')=='live' else None,
+        native_source_unchanged=(False if manifest.get('native_source_modified') is True else
+            True if manifest.get('native_source_modified') is False and manifest.get('cleanup_status')=='completed'
+            and manifest.get('evidence_kind')=='live' else None),
         request_model_verified=audit['configured_model_matches_requests'],request_parameters_verified=audit['configured_model_parameters_match_requests'])
     paths={'manifest':'manifest.json','audit':'audit.json','body':'export/generated.jsonl','choices':'export/choices.json',
            'previews':'export/unselected_previews.jsonl','metadata':'export/metadata.json','provided_prefix':'export/provided_prefix.txt'}

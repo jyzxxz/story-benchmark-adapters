@@ -3,8 +3,6 @@
 const readline = require('node:readline');
 const fs = require('node:fs');
 let browser, context, page;
-let requestNumber = 0;
-const requestIds = new WeakMap();
 const send = value => process.stdout.write(JSON.stringify(value) + '\n');
 
 // Read the *current* React tree, not a stale alternating host-fiber pointer.
@@ -69,34 +67,7 @@ async function command(msg) {
     }, msg.payload);
     page = await context.newPage();
     page.setDefaultTimeout(0); // generation has no adapter deadline
-    page.on('request', req => {
-      const route = new URL(req.url()).pathname;
-      if (!['/api/start', '/api/scene'].includes(route)) return;
-      const id = 'native-http-' + (++requestNumber);
-      requestIds.set(req, id);
-      let data;
-      try { data = JSON.parse(req.postData() || '{}'); } catch { data = null; }
-      send({kind: 'native_request', request_id: id, route, data});
-    });
-    page.on('response', async response => {
-      if (response.request().isNavigationRequest()) {
-        send({kind: 'native_navigation_response', path: new URL(response.url()).pathname, status: response.status(), location: response.headers()['location'] || null});
-      }
-      const id = requestIds.get(response.request());
-      if (!id) return;
-      try {
-        const raw = await response.body();
-        let data = null;
-        try { data = JSON.parse(raw.toString('utf8')); } catch {}
-        send({kind: 'native_response', request_id: id, native_operation_id: response.headers()['x-benchmark-native-operation-id'] || null,
-          status: response.status(), content_type: response.headers()['content-type'], data, raw_utf8: data === null ? raw.toString('utf8') : null});
-      } catch (error) { send({kind: 'native_response_error', request_id: id, message: String(error)}); }
-    });
-    page.on('requestfailed', req => {
-      const id = requestIds.get(req);
-      if (id) send({kind: 'native_request_failed', request_id: id, message: req.failure()?.errorText || 'unknown'});
-    });
-    page.on('pageerror', err => send({kind: 'page_error', message: String(err)}));
+    require('./browser_wire.cjs').installWireObserver(page, send);
     // zh-CN uses the bare URL in the native middleware; explicit /zh-CN is
     // redirected. Do not force a non-native locale or bypass auth middleware.
     await page.goto(msg.base_url + (msg.entry_path || '/play?custom=1'), {waitUntil: 'domcontentloaded', timeout: msg.startup_timeout_ms || 120000});

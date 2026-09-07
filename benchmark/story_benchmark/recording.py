@@ -403,6 +403,10 @@ def make_review_packages(root, blind_id):
 
 def seal(root, manifest):
     root=Path(root)
+    # The InfiPlot observer must redact/discard its private wire spool before
+    # publishing a root. A cleanup error must not route raw secrets into seal.
+    if any(p.is_file() for p in (root/'native/server-wire').glob('*.response.raw')):
+        raise BenchmarkError('unredacted_native_response_prevents_sealing')
     manifest={**manifest,'evidence_files':{str(p.relative_to(root)):sha256(p.read_bytes())
         for p in root.rglob('*') if p.is_file() and p!=root/'manifest.json'}}
     atomic_json(root/'manifest.json', manifest)

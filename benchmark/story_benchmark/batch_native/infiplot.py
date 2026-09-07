@@ -18,6 +18,8 @@ from urllib.parse import unquote_to_bytes
 from ..adapters.infiplot import InfiPlotAdapter, InfiPlotError
 from ..budget import validate_budget_policy
 from native_shims.infiplot.batch_runtime import LocalIdentity, NativeBatchRuntime
+from native_shims.infiplot.request_body_settings import request_body_limit
+from native_shims.infiplot.response_capture import ServerResponseReader
 
 DEFAULT_PLAYWRIGHT = str(Path.home() / ".cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright")
 
@@ -52,6 +54,10 @@ def preflight(config: dict, bundle: Path, policy: dict) -> dict:
         errors.append("shared_text_model_required")
     if config.get("route_compatibility") not in (None, "none", "native_render_entry"):
         errors.append("unknown_route_compatibility")
+    try:
+        request_body_limit(config)
+    except InfiPlotError as exc:
+        errors.append(exc.code)
     checks.append("original_browser_prefetch_and_real_dom_actions")
     return {"ok": not errors, "errors": errors, "checks": checks,
             "identity_mode": "local_fixture", "production_auth_verified": False}
@@ -97,6 +103,7 @@ class Browser:
                                         stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
                                         start_new_session=True)
         self.number, self.responses, self.requests, self.failures = 0, {}, {}, []
+        self.response_headers = {}
 
     def observe(self, item):
         kind, ident = item.get("kind"), item.get("request_id")
@@ -104,12 +111,17 @@ class Browser:
         if kind == "native_request":
             self.requests[ident] = item
             path = rec.save_json(f"native/browser-wire/{ident}.request.json", item["data"])
-            rec.append("native/browser-wire/index.jsonl", {"event": kind, "request_id": ident, "route": item["route"], "file": path})
+            rec.append("native/browser-wire/index.jsonl", {"event": kind, "request_id": ident, "route": item["route"], "file": path,
+                "observed_postdata_utf8_bytes": item.get("observed_postdata_utf8_bytes"),
+                "observed_postdata_sha256": item.get("observed_postdata_sha256")})
             rec.event("native_request_submitted", observer="offscreen_native_network", native_request_id=ident, route=item["route"],
                       selection_status="not_inferred_from_prefetch_request")
             if item["route"] == "/api/start":
                 rec.save_json("native/route-transmitted-task.json", {"boundary": "native_browser_fetch_request_body", "received_task": item["data"].get("worldSetting"),
                     "direct_native_route_receiver_observed": False, "request_file": path})
+        elif kind == "native_response_headers":
+            self.response_headers[ident] = item
+            rec.append("native/browser-wire/index.jsonl", item)
         elif kind == "native_response":
             self.responses[ident] = item
             path = rec.save_json(f"native/browser-wire/{ident}.response.json", item["data"] if item["data"] is not None else {"raw_utf8": item["raw_utf8"]})
@@ -205,15 +217,19 @@ def _native_asset(url, recorder, gateway, native_source, role, cache):
         return None
 
 
-def writer_lineage(scene_id, responses, calls):
+def writer_lineage(scene_id, responses, calls, server_responses=None):
     matches = [row for row in responses.values() if isinstance(row.get("data"), dict) and
                row["data"].get("scene", {}).get("id") == scene_id]
-    if len(matches) != 1 or not matches[0].get("native_operation_id"):
+    matches += [row for row in (server_responses or {}).values() if row.get("data", {}).get("scene", {}).get("id") == scene_id]
+    operations = {row.get("native_operation_id") for row in matches}
+    if len(operations) != 1 or None in operations:
         return {"source_call_ids": None, "status": "unavailable_without_unique_native_operation_header"}
-    operation = matches[0]["native_operation_id"]
+    operation = next(iter(operations))
+    matched = next((row for row in matches if row.get("server_observation")), matches[0])
     writers = [row["call_id"] for row in calls if row.get("native_operation_id") == operation and row.get("native_stage") == "writer"]
     return {"source_call_ids": writers or None, "native_operation_id": operation,
-        "native_request_id": matches[0]["request_id"], "native_scene_id": scene_id,
+        "native_request_id": next((row.get("request_id") for row in matches if row.get("request_id")), None), "native_scene_id": scene_id,
+        "server_observation": matched.get("server_observation"),
         "status": "exact_native_operation_writer_attempts" if writers else "unavailable_without_gateway_writer_operation",
         "accepted_response_among_attempts": "not_inferred", "text_similarity_matching": False}
 
@@ -222,6 +238,7 @@ def run(config: dict, bundle: Path, run_dir: Path, recorder, gateway, policy: di
     if not check["ok"]:
         raise InfiPlotError("preflight_failed", "; ".join(check["errors"]))
     run_dir, bundle = Path(run_dir).resolve(), Path(bundle).resolve()
+    server_responses = ServerResponseReader(run_dir, config.get("node_executable") or "node")
     with socket.socket() as sock:
         sock.bind(("127.0.0.1", 0))
         port = sock.getsockname()[1]
@@ -319,7 +336,7 @@ def run(config: dict, bundle: Path, run_dir: Path, recorder, gateway, policy: di
                                    reference_asset_ids=[portrait["asset_id"]] if portrait else [])
             segments = []
             from ..recording import jsonl
-            lineage = writer_lineage(scene["id"], browser.responses, jsonl(recorder.root / "telemetry/calls.jsonl"))
+            lineage = writer_lineage(scene["id"], browser.responses, jsonl(recorder.root / "telemetry/calls.jsonl"), server_responses.refresh())
             recorder.save_json(f"native/observations/visible-{len(seen):06d}.lineage.json", lineage)
             for field, text, speaker in visible_fields(beat):
                 segment = recorder.story(text, speaker=speaker, kind="dialogue" if field == "line" else "narration",
@@ -410,7 +427,58 @@ def run(config: dict, bundle: Path, run_dir: Path, recorder, gateway, policy: di
             "native_listener_closed": listener_closed,
             "browser_process_stopped": browser is None or browser.process.poll() is not None,
             "gateway_inflight_accounting": "root_gateway_drains_all_already_sent_provider_requests", "errors": errors})
+    transitions = server_responses.retain_safe_evidence()
+    recorder.save_json("native/response-retention.json", {"original_http_responses_changed": False,
+        "raw_sensitive_bytes_in_sealed_bundle": False, "transitions": transitions})
+    capture_audit = server_responses.audit(browser.response_headers if browser else {})
+    recorder.save_json("native/server-response-capture-audit.json", capture_audit)
+    if capture_audit["status"] != "complete":
+        recorder.error("native_response_capture_incomplete", "Original response observation is incomplete; inspect capture audit", audit_file="native/server-response-capture-audit.json")
+    lineage_audit = finalize_lineage(recorder, browser.responses if browser else {}, server_responses.responses)
     return {"stop_reason": stop_reason, "native_ended": None, "errors": errors,
+            "text_call_lineage": lineage_audit["status"], "server_response_capture": capture_audit["status"],
             "choices_executed": choices_taken, "prefetch_policy": "native_browser_unchanged",
             "render_mode": "offscreen_native", "production_auth_verified": False,
             "native_fallback_status": "inspect_native_text_relay_observations_absence_is_unknown"}
+
+
+def finalize_lineage(recorder, responses, server_responses):
+    """Resolve asynchronously flushed observations before sealing, never change prose."""
+    from ..recording import jsonl
+    if (recorder.root / "manifest.json").exists():
+        raise ValueError("sealed_recording_must_not_be_modified")
+    story = jsonl(recorder.root / "trajectories/main/story.jsonl")
+    calls = jsonl(recorder.root / "telemetry/calls.jsonl")
+    before = hashlib.sha256(json.dumps(story, ensure_ascii=False).encode()).hexdigest()
+    rows, resolved, conflicts, changed = [], 0, [], False
+    for segment in story:
+        state = json.loads((recorder.root / segment["native_source"]["file"]).read_text())
+        scene_id = state["session"]["history"][-1]["scene"]["id"]
+        lineage = writer_lineage(scene_id, responses, calls, server_responses)
+        prior = segment.get("source_call_ids")
+        if prior and (not lineage["source_call_ids"] or set(prior) != set(lineage["source_call_ids"])):
+            conflicts.append({"segment_id": segment["segment_id"], "initial_source_call_ids": prior,
+                              "final_source_call_ids": lineage["source_call_ids"], "final_status": lineage["status"]})
+            segment["source_call_ids"] = None
+            changed = True
+        elif prior is None and lineage["source_call_ids"]:
+            segment["source_call_ids"] = lineage["source_call_ids"]
+            resolved += 1
+            changed = True
+        lineage_path = str(Path(segment["native_source"]["file"]).with_suffix(".lineage.json"))
+        recorder.save_json(lineage_path, {**lineage, "recording_phase": "final_provenance_before_seal",
+            "prose_or_displayed_revision_changed": False})
+        rows.append({"segment_id": segment["segment_id"], "native_scene_id": scene_id,
+                     "source_call_ids": segment.get("source_call_ids"), "final_lineage": lineage})
+    if changed:
+        recorder.save_bytes("trajectories/main/story.jsonl", ("\n".join(json.dumps(s, ensure_ascii=False, separators=(",", ":")) for s in story) + "\n").encode())
+    missing = [r["segment_id"] for r in rows if not r["source_call_ids"]]
+    audit = {"status": "incomplete" if missing else "complete" if story else "not_applicable_no_body",
+        "phase": "after_native_clients_close_before_seal", "prose_or_displayed_revision_changed": False,
+        "late_resolved_segments": resolved, "missing_segment_ids": missing, "segments": rows,
+        "conflicting_lineages": conflicts,
+        "initial_story_records_sha256": before}
+    recorder.save_json("native/text-call-lineage-audit.json", audit)
+    if missing:
+        recorder.error("text_call_lineage_incomplete", "Visible segments lack an exact native operation to Writer mapping", segment_ids=missing)
+    return audit

@@ -1,4 +1,4 @@
-"""Source-preserving IF Line authoring-path and native-player batch driver.
+"""Frozen-source IF Line authoring-path and native-player batch driver.
 
 No story instructions are added after the first Bible input. A structural
 checkpoint selects an existing native revision and preserves native path state.
@@ -58,7 +58,8 @@ def preflight(config, bundle, policy):
         if not shutil.which(config.get('redis_executable','redis-server')): errors.append('missing_redis_server')
         report=verify_repository(Path(config['repo_path']),BASE_COMMIT,config)
         errors.extend(report['errors']);checks.extend(report['checks'])
-        checks.append({'native_source':'immutable','path_choice_execution':'native_authoring_path_promotion',
+        checks.append({'native_source': 'declared_patch_frozen_during_run' if config.get('source_patch') else 'immutable',
+            'path_choice_execution':'native_authoring_path_promotion',
             'audio':'disabled_text_and_images_scope','renderer':'original_VNGraphPlayer_headless_chromium'})
     except (OSError,ValueError,KeyError,TypeError,subprocess.SubprocessError) as exc:
         errors.append('invalid_batch_configuration:'+str(exc))

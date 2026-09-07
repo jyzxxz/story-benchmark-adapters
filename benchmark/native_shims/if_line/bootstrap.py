@@ -254,6 +254,7 @@ def install(repo, runtime, config=None):
     signals.worker_ready.connect(worker_ready,weak=False)
     _installed=(repo,runtime)
     receipt={'system':'if_line','runtime_adapter':'external_if_line_v1','source_modified':False,
+        'source_modified_scope':'runtime_adapter_only_not_upstream_provenance',
         'source_before_sha256':before['sha256'],'source_file_count':before['file_count'],
         'pid':os.getpid(),'repo_path':str(repo),'runtime_dir':str(runtime),
         'budget_mode':trace.budget_mode(),

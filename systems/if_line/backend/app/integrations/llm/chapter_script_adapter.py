@@ -19,13 +19,17 @@ from app.services.llm_service import (
     parse_llm_json,
 )
 from app.services.chapter_script_ir import SEGMENT_MAX_TEXT_CHARS
+from app.services.chapter_source_text import (
+    CHAPTER_TEXT_PROJECTION_VERSION,
+    chapter_display_text,
+)
 from app.services.text_llm_config import (
     resolve_request_model,
     structured_json_request_options,
 )
 
 
-CHAPTER_SCRIPT_PROMPT_VERSION = "chapter-script-llm-segments-v2"
+CHAPTER_SCRIPT_PROMPT_VERSION = "chapter-script-llm-segments-visible-source-v3"
 
 CHAPTER_SCRIPT_EMOTION_VOCABULARY = (
     "neutral",
@@ -111,13 +115,17 @@ class LegacyChapterScriptLLMAdapter:
             "chapter_index": request.chapter_index,
             "outline_chapter": request.outline_chapter,
             "characters": request.characters,
-            "chapter_content": request.chapter_content,
+            "chapter_content": chapter_display_text(request.chapter_content),
+            "chapter_content_projection": CHAPTER_TEXT_PROJECTION_VERSION,
             "bible_context": request.bible,
             "instructions": request.instructions,
         }
         prompt = (
             "为视觉小说编译器切分并标注章节正文。segments 的 text 只能是"
             " chapter_content 的原文逐字摘录，不得改写、增删。\n\n"
+            "chapter_content 已由编译器完成一次排版标签处理和实体解码。"
+            "其中剩余的 <、>、& 或类似标签/实体的文字都是正文，"
+            "必须原样保留，不得再做 HTML 解析或实体解码。\n\n"
             + CHAPTER_SCRIPT_SEGMENTATION_RULES_PROMPT
             + "\n\n"
             + CHAPTER_SCRIPT_OUTPUT_SCHEMA_PROMPT

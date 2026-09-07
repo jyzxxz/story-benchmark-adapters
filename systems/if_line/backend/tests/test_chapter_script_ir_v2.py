@@ -294,7 +294,7 @@ def test_segmentation_prompt_enforces_dialogue_purity_and_merging():
         CHAPTER_SCRIPT_SEGMENTATION_RULES_PROMPT,
     )
 
-    assert CHAPTER_SCRIPT_PROMPT_VERSION == "chapter-script-llm-segments-v2"
+    assert CHAPTER_SCRIPT_PROMPT_VERSION == "chapter-script-llm-segments-visible-source-v3"
     # 对白纯净铁律：归属/动作禁止混入 dialogue segment
     assert "【对白纯净——铁律】" in CHAPTER_SCRIPT_SEGMENTATION_RULES_PROMPT
     assert "绝对禁止出现在 dialogue segment" in CHAPTER_SCRIPT_SEGMENTATION_RULES_PROMPT

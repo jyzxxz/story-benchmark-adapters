@@ -213,6 +213,8 @@ def run_once(system, bundle_dir, config, run_dir, adapter=None, mock=False):
     atomic_json(run_dir / 'config.json', redact(config))
     atomic_json(run_dir / 'preflight.json', check)
     atomic_write(run_dir / 'errors.jsonl', '')
+    source_check = next((item for item in check.get('checks', [])
+                         if isinstance(item, dict) and 'source_files_verified' in item), {})
     manifest = {'schema_version': '2.1', 'system': system, 'root_run_id': run_dir.name,
                 'evidence_kind': 'mock' if mock else 'live', 'adapter_status': 'running',
                 'generation_status': 'not_run', 'audit_status': 'not_run', 'native_integration': 'not_run',
@@ -221,7 +223,10 @@ def run_once(system, bundle_dir, config, run_dir, adapter=None, mock=False):
                 'budget_mode':config.get('budget_mode','bounded'),
                 'budget_policy':describe_budget_policy(config),
                 'adapter_source_sha256':adapter_source_inventory(),
-                'native_source_modified':False}
+                'native_source_modified': source_check.get('source_modified'),
+                'native_source_variant': {key: source_check.get(key) for key in (
+                    'native_variant', 'source_patch_manifest_sha256',
+                    'source_patch_sha256', 'source_tree_sha256')}}
     _state(run_dir, manifest, 'VALIDATED')
     handle = None
     previous_alarm=None

@@ -322,8 +322,9 @@ class IFLineAdapter:
         launch_config.update(runtime_dir=str(runtime), port=port, chapter_count=int(self.config.get("chapter_count",13)))
         launch_config.update(bundle_dir=handle["bundle_dir"], shared_sha256=handle["shared_sha256"])
         launch_config["repo_path"] = str(Path(self.config.get("repo_path",self.config.get("repo_dir"))).resolve())
-        if self.config.get("source_lock"):
-            launch_config["source_lock"] = str(Path(self.config["source_lock"]).resolve())
+        for source_field in ("source_lock", "source_patch"):
+            if self.config.get(source_field):
+                launch_config[source_field] = str(Path(self.config[source_field]).resolve())
         cfg = runtime / "launcher-config.json"
         _write(cfg, launch_config)
         self._managed_log = (runtime / "launcher.log").open("a", encoding="utf-8")

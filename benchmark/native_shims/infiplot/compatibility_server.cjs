@@ -9,7 +9,12 @@ const operationContext = new AsyncLocalStorage();
 const root = path.resolve(process.argv[2]);
 const port = Number(process.argv[3]);
 const evidence = process.argv[4];
-const mode = 'native_render_entry';
+const mode = process.argv[5] || 'native_render_entry';
+const bodyLimit = process.argv[6] === undefined ? 64 * 1024 * 1024 : JSON.parse(process.argv[6]);
+const bodyEvidence = process.argv[7] || path.join(path.dirname(evidence), 'request-body-config.json');
+const {createResponseCapture} = require('./response_capture.cjs');
+const responseCapture = createResponseCapture(path.join(path.dirname(evidence), 'server-wire'));
+if (!['none', 'native_render_entry'].includes(mode)) throw new Error('Unknown route compatibility mode');
 const nativeRequire = require('node:module').createRequire(path.join(root, 'package.json'));
 const originalFetch = globalThis.fetch;
 const observedOrigins = new Set(['TEXT_BASE_URL', 'IMAGE_BASE_URL', 'VISION_BASE_URL'].map(name => new URL(process.env[name]).origin));
@@ -23,6 +28,8 @@ globalThis.fetch = function observedNativeFetch(input, init) {
 };
 
 (async () => {
+  const {installRequestBodyConfig} = require('./request_body_config.cjs');
+  installRequestBodyConfig(nativeRequire, root, bodyLimit, bodyEvidence);
   const loadConfig = nativeRequire('next/dist/server/config').default;
   const {PHASE_DEVELOPMENT_SERVER} = nativeRequire('next/constants');
   const original = await loadConfig(PHASE_DEVELOPMENT_SERVER, root);
@@ -30,15 +37,20 @@ globalThis.fetch = function observedNativeFetch(input, init) {
     mode, native_config_file: 'next.config.ts',
     native_config_file_sha256: crypto.createHash('sha256').update(fs.readFileSync(path.join(root, 'next.config.ts'))).digest('hex'),
     before: {entry: 'GET/HEAD /play', dispatch: 'original Next routing wrapper'},
-    after: {entry: 'GET/HEAD /play', dispatch: 'original initialized Next render server', page: '/zh-CN/play'},
-    native_config_overrides: [],
-    reason: 'Frozen default-locale middleware produced HTTP 307 redirect to the same /play URL in this Next environment.',
+    after: mode === 'native_render_entry'
+      ? {entry: 'GET/HEAD /play', dispatch: 'original initialized Next render server', page: '/zh-CN/play'}
+      : {entry: 'GET/HEAD /play', dispatch: 'original Next routing wrapper'},
+    native_config_overrides: bodyLimit === null ? [] : [{setting: 'experimental.proxyClientMaxBodySize',
+      effective_bytes: original.experimental.proxyClientMaxBodySize, evidence: path.basename(bodyEvidence)}],
+    reason: mode === 'native_render_entry'
+      ? 'Frozen default-locale middleware produced HTTP 307 redirect to the same /play URL in this Next environment.'
+      : 'Original routing retained; external request-body configuration and observation only.',
     native_source_changed: false, native_api_auth_changed: false, story_language_changed: false,
     native_react_page_and_prefetch_changed: false,
-    entry_mapping: {method: ['GET', 'HEAD'], path: '/play', native_render_path: '/zh-CN/play',
+    entry_mapping: {method: ['GET', 'HEAD'], path: '/play', native_render_path: mode === 'native_render_entry' ? '/zh-CN/play' : null,
       scope: 'HTML/RSC page entry only; all API requests use original getRequestHandler and requireUser',
-      default_locale_middleware_redirect_bypassed_for_page_entry: true,
-      page_middleware_cookie_refresh_bypassed: true, api_requireUser_preserved: true, production_identity_verified: false},
+      default_locale_middleware_redirect_bypassed_for_page_entry: mode === 'native_render_entry',
+      page_middleware_cookie_refresh_bypassed: mode === 'native_render_entry', api_requireUser_preserved: true, production_identity_verified: false},
     observation_headers: {scope: 'native API operation to local model transports only', payload_changed: false}
   }, null, 2));
   const app = nativeRequire('next')({dev: true, dir: root, hostname: '127.0.0.1', port});
@@ -55,10 +67,17 @@ globalThis.fetch = function observedNativeFetch(input, init) {
     if (req.method === 'POST' && ['/api/start', '/api/scene'].includes(url.pathname)) {
       const operation = crypto.randomUUID();
       res.setHeader('X-Benchmark-Native-Operation-Id', operation);
+      responseCapture.observe(req, res, operation);
       return operationContext.run(operation, () => handler(req, res));
     }
     return handler(req, res);
   });
   server.listen(port, '127.0.0.1');
-  for (const sig of ['SIGTERM', 'SIGINT']) process.on(sig, () => { server.close(); app.close().finally(() => process.exit(0)); });
+  let closing = false;
+  for (const sig of ['SIGTERM', 'SIGINT']) process.on(sig, () => {
+    if (closing) return;
+    closing = true;
+    const httpClosed = new Promise(resolve => server.close(resolve));
+    app.close().finally(async () => { await httpClosed; await responseCapture.drain(); process.exit(0); });
+  });
 })().catch(error => { process.stderr.write(String(error) + '\n'); process.exit(1); });
