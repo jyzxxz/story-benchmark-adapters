@@ -1,0 +1,221 @@
+{
+  "report_kind": "read_only_final_live_engineering_check",
+  "run_id": "if_line-v3-02",
+  "run_path": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-contract-v3-live/if_line-v3-02",
+  "adapter_commit": "b9d8468e655ed87068e5928c035116b6380ee928",
+  "native_base_commit": "572407fce9b648a4206ac37da6a9f6ed22631da8",
+  "checked_at": "2026-09-07T02:17:50.026626+00:00",
+  "passed": true,
+  "checks_passed": 34,
+  "checks_total": 34,
+  "checks": [
+    {
+      "check": "sealed_inventory_and_adapter_hashes",
+      "passed": true,
+      "evidence_files": 66,
+      "adapter_files": 28
+    },
+    {
+      "check": "canonical_result_and_json_schema",
+      "passed": true,
+      "outcome": "completed"
+    },
+    {
+      "check": "native_completion_and_cleanup",
+      "passed": true
+    },
+    {
+      "check": "shared_exact_compiled_input",
+      "passed": true,
+      "characters": 2565,
+      "sha256": "c8741573a37879a743113da4013765d432d0e3dc9cc22f60697d1883030b9335"
+    },
+    {
+      "check": "opening_exact_compiled_input",
+      "passed": true,
+      "sha256": "196d04a58ba5bce543e93788e496ae42fdd547d1583d185cda42c3b969159c65"
+    },
+    {
+      "check": "all_actual_receivers_equal",
+      "passed": true,
+      "receiver_observations": 1,
+      "receiver_boundaries": [
+        "native_task_snapshot"
+      ]
+    },
+    {
+      "check": "first_actual_request_shared_once",
+      "passed": true,
+      "actual_count": 1
+    },
+    {
+      "check": "configured_model_and_parameters",
+      "passed": true,
+      "requested_models": [
+        "deepseek-v4-flash"
+      ],
+      "actual_models": [
+        "deepseek-v4-flash"
+      ],
+      "model_parameters": {
+        "thinking": {
+          "type": "disabled"
+        }
+      }
+    },
+    {
+      "check": "complete_trace_no_unknown_delivery",
+      "passed": true,
+      "http_calls": 6
+    },
+    {
+      "check": "usage_records_complete",
+      "passed": true,
+      "usage": {
+        "actual_cost": null,
+        "complete": true,
+        "completion_tokens": 7674,
+        "http_calls": 6,
+        "prompt_tokens": 13216,
+        "total_tokens": 20890
+      }
+    },
+    {
+      "check": "one_actual_branch_generation",
+      "passed": true
+    },
+    {
+      "check": "actual_native_template_decoded_once",
+      "passed": true
+    },
+    {
+      "check": "opening_only_once_in_candidate_snapshot",
+      "passed": true,
+      "opening_occurrences": 1
+    },
+    {
+      "check": "candidate_instructions_empty",
+      "passed": true
+    },
+    {
+      "check": "candidate_empty_state_and_structural_checkpoint",
+      "passed": true
+    },
+    {
+      "check": "snapshot_matches_native_frozen_provider_input",
+      "passed": true
+    },
+    {
+      "check": "native_candidate_request_identity_empty_instructions",
+      "passed": true
+    },
+    {
+      "check": "adapter_count_only_mapping",
+      "passed": true
+    },
+    {
+      "check": "prefix_receipt_unchanged_after_candidates",
+      "passed": true
+    },
+    {
+      "check": "provided_prefix_is_manual_not_generated",
+      "passed": true
+    },
+    {
+      "check": "no_choice_execution_or_path_promotion",
+      "passed": true
+    },
+    {
+      "check": "first_choice_scope_empty_current_body",
+      "passed": true
+    },
+    {
+      "check": "two_native_candidates_choices_and_previews",
+      "passed": true
+    },
+    {
+      "check": "choice_label_exact_native_key:a50c35d2-96dc-4226-a5ae-09f96d258f5b",
+      "passed": true,
+      "native_key": "inspect_umbrella",
+      "source": {
+        "file": "native/candidate_previews.json",
+        "pointer": "/0/option_key"
+      }
+    },
+    {
+      "check": "preview_association:a50c35d2-96dc-4226-a5ae-09f96d258f5b",
+      "passed": true
+    },
+    {
+      "check": "preview_exact_native_text:a50c35d2-96dc-4226-a5ae-09f96d258f5b",
+      "passed": true,
+      "source": {
+        "file": "native/candidate_previews.json",
+        "pointer": "/0/preview_text"
+      },
+      "text_sha256": "3437a9bd0b2d66c57bb18721ecfc3d1f36f6e8aef1d67888ca9bce66f8a11c0f"
+    },
+    {
+      "check": "choice_label_exact_native_key:e3d0d42e-0acc-4f3d-b145-66122879adc8",
+      "passed": true,
+      "native_key": "enter_building",
+      "source": {
+        "file": "native/candidate_previews.json",
+        "pointer": "/1/option_key"
+      }
+    },
+    {
+      "check": "preview_association:e3d0d42e-0acc-4f3d-b145-66122879adc8",
+      "passed": true
+    },
+    {
+      "check": "preview_exact_native_text:e3d0d42e-0acc-4f3d-b145-66122879adc8",
+      "passed": true,
+      "source": {
+        "file": "native/candidate_previews.json",
+        "pointer": "/1/preview_text"
+      },
+      "text_sha256": "01d51f20859f2519b2b9c2f9e599e04ef45640cf7c064dc1a904e9ea3f13639e"
+    },
+    {
+      "check": "provider_output_matches_persisted_candidates",
+      "passed": true
+    },
+    {
+      "check": "native_context_sources_preserved_without_semantic_rewrite",
+      "passed": true,
+      "source_pointer_count": 7
+    },
+    {
+      "check": "source_runtime_before_after_1200_equal",
+      "passed": true,
+      "source_sha256": "3a3197fcb37218e06260756e43a1a3a33fadc16422e7dc8d545db99b9d0f7025"
+    },
+    {
+      "check": "all_1200_current_native_files_match_baseline_lock",
+      "passed": true,
+      "report": {
+        "ok": true,
+        "checks": [
+          {
+            "source_lock": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-contract-v3/baseline-lock.json",
+            "base_commit": "572407fce9b648a4206ac37da6a9f6ed22631da8",
+            "adapted_commit": "572407fce9b648a4206ac37da6a9f6ed22631da8",
+            "source_files_verified": 1200,
+            "source_lock_sha256": "b796e5c6c5b6e3867876b12872e718324edf94a9bdd7121044adc6d0e1db99e4"
+          }
+        ],
+        "errors": []
+      }
+    },
+    {
+      "check": "sealed_run_unchanged_by_review",
+      "passed": true,
+      "manifest_sha256": "4e009f72aa482c1313149ddc144e5b727a2a91001248d1b54f434f1252c4d021"
+    }
+  ],
+  "story_quality": "not_evaluated",
+  "new_model_calls": 0,
+  "review_changed_sealed_run": false,
+  "note": "This checks provenance, native source integrity and unselected output structure only. It does not rate or repair plot semantics."
+}

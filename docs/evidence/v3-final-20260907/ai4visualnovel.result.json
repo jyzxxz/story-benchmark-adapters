@@ -1,0 +1,90 @@
+{
+  "adapter_status": "unverified",
+  "artifacts": {
+    "audit": "audit.json",
+    "body": "export/generated.jsonl",
+    "choices": "export/choices.json",
+    "manifest": "manifest.json",
+    "metadata": "export/metadata.json",
+    "previews": "export/unselected_previews.jsonl",
+    "provided_prefix": "export/provided_prefix.txt"
+  },
+  "case_id": "CAMPUS-01-V3",
+  "content": {
+    "body": [],
+    "choices": [],
+    "previews": [],
+    "quality_status": "not_evaluated"
+  },
+  "errors": [
+    {
+      "category": "budget",
+      "code": "budget_exhausted",
+      "message": "Native trace or export reported budget exhaustion."
+    },
+    {
+      "category": "transport",
+      "code": "delivery_unknown",
+      "message": "['2a7e700f4f844a42ace3de44f78e0352', '12d33a757c0a4185851e56f5eda39ec3', '8bbcfe451c7b45e68499fde9f1ba757e']"
+    }
+  ],
+  "input": {
+    "contract": {
+      "adapter_story_reinjection": "none",
+      "character_policy": "exact_declared_cast",
+      "task_delivery": "verbatim_first_creative_request",
+      "version": "3.0"
+    },
+    "first_request_occurrences": 1,
+    "opening_sha256": "196d04a58ba5bce543e93788e496ae42fdd547d1583d185cda42c3b969159c65",
+    "provided_prefix": "2026 年 9 月 5 日，22:10。\n\n暴雨把临江大学的路灯拉成一片模糊的冷蓝色。你和周遥停在旧实验楼的台阶下面，雨水沿着封闭告示的边角往下流。告示上的年份仍能辨认：2016。远处几盏灯忽然暗了一下，又勉强亮起。\n\n门口靠着一把红色雨伞。伞柄朝向外侧，伞尖抵在门槛边，周围没有人。你没有碰它。周遥却盯着那把伞，手指越攥越紧。\n\n周遥：“我不记得昨晚来过这里。”\n\n你转头看他。他的目光从雨伞移到黑着的窗户，像是想确认什么，又迟迟没有说出口。\n\n楼里传来断续的电流声。紧接着，是三次短促、间隔清晰的信号。声音停下后，雨声重新填满了台阶与门厅之间的空隙。\n\n你是林澈，遇到不明情况时总想先确认依据。但周遥的脸色让你难以只盯着那扇门。此刻，你们都还在楼外，没有检查收音机，也没有联系沈教授。你看了看通向门厅的入口，又看向身旁的周遥，尚未决定下一步怎么做。",
+    "received_equal": true,
+    "shared_sha256": "c8741573a37879a743113da4013765d432d0e3dc9cc22f60697d1883030b9335",
+    "shared_text": "<<<SHARED_TASK_V2_BEGIN>>>\n\n根据下方故事设定和固定开头，继续创作原创中文互动故事，保留各项目的原生规划、记忆、审核和输出方式。\n\n固定开头是已经发生的前文。继续时保持它最后的时间、地点、人物、物品和知识状态，不重写开场。首次启动中的“暂无历史”“未设定”“第一章”仅表示原生记录尚未建立，不否定公共开头已经发生。\n\n本任务的故事角色总名单由公共参数明确列出，包含玩家角色；人物设计、对话和剧情只使用这份名单，不新增故事角色。可以描写无独立身份、台词或剧情作用的背景人群。新增地点或物品必须在正文中引入，固定事实不能无事件依据地改变。作者知道的背景事实不自动成为角色已知的信息。\n\n保留原题两组关键选择的原文或语义等价行动。第一次选择的两个选项都尚未执行；第二次选择用于后续流程，本轮不执行。玩家可见输出范围从公共开头之后到第一次未选择的分支。若公共开头已经停在选择处，允许直接展示原生选项，不强制额外写一段过渡正文。原生选项标题、选项标识和候选卡片均可，不要求另造一种标题字段。\n\n内部规划、审核、修订及后续脚本预生成均照原生流程进行。若原生候选卡片包含选择后的正文预览，该预览可以描述相应行动及后果，但它是尚未选择的未来内容，不能当作当前路径已经发生的正文。当前路径不执行任何选项，也不拼接互斥分支。\n\n内部评审可以正常生成；玩家正文不混入评审、自评或路线比较。使用原生输出格式，外部程序负责统一返回结构；不要求模型改用某种共同JSON模板。\n\n本轮只请求文字，保留原题视听氛围，不请求真实图片、配音或音乐。不强制全篇结局、六个场景或正文总字数，也不为了凑篇幅跨越选择。无法生成、原生校验失败或缺少产物时，保留真实失败，不补写成功结果。\n\n【公共参数】\n标题：雨夜信号\n语言：简体中文\n玩家角色：林澈。\n第二人称“你”或第一人称“我”均指林澈。允许沿用原生叙事视角，不另加一个新玩家角色。\n本任务故事角色总名单（含玩家，不另增故事角色）：林澈、周遥、沈教授，共3名。\n视听风格：暴雨、冷蓝校园灯光、红色雨伞作为唯一高饱和物件；收音机使用断续电流声，地下室使用低频嗡鸣。\n\n【开发任务范围】\n本次用于文本续写接入调试。保留原生文字规划、人物、记忆、审核和脚本步骤；保留原题视听氛围，不请求真实图片、配音或音乐。\n统一返回范围：从固定开头之后，到第一次选择 C1 的未选择状态。\n固定开头已经停在选择处时，可直接给出原生选项，不强制另写过渡正文。\n选项可以使用原生标题、标识或候选卡片；原生附带的选择后预览单列为未发生内容，不执行选择。\n内部规划、审核和后续分支预生成照原生流程进行；返回格式由外部程序统一，不要求模型改用公共JSON格式。\n\n<<<BRIEF_BEGIN>>>\n标题：雨夜信号\n类型：校园悬疑、现实主义、轻科幻。\n\n背景：2026 年 9 月 5 日 22:10，临江大学即将停电。旧实验楼已于 2016 年封闭，但楼内收音机每隔 11 分钟发出三次短促电报码。\n\n角色：林澈是谨慎理性的电子工程学生；周遥是冲动重感情的室友，曾在实验楼附近丢失一段记忆；沈教授是退休无线电专家，隐瞒十年前的一次实验事故。\n\n固定事实：红色雨伞第一次出现时在实验楼门口；电报码不是随机噪声；周遥第一场明确说“我不记得昨晚来过这里”；地下室有仍在运行的备用电源；沈教授在第二场之前不知道周遥失忆的细节。\n\n第一次选择：进入实验楼，或先保护周遥并检查收音机。\n第二次选择：相信沈教授的解释，或独立调查十年前的事故。\n\n视觉/音频：暴雨、冷蓝校园灯光、红色雨伞作为唯一高饱和物件；收音机使用断续电流声，地下室使用低频嗡鸣。\n<<<BRIEF_END>>>\n\n【共同语义解释】\n初始角色知识：\n角色保留其身份、关系和固定开头中亲历的事实。此刻两人只听到了开头展示的一组短促信号，没有通过本次观察测定11分钟周期，也没有检查收音机或地下室备用电源。brief中的周期、备用电源和事故真相是作者设定，不自动成为角色已经确认的知识；后续需要实际证据或有交代的既往经历才能获知。沈教授尚未收到关于周遥失忆细节的消息。\n\n第一场与第二场：\n第一场：\n固定开头所在的楼外相遇及紧随其后的同一连续事件。\n公共开头中的周遥台词已满足该事件要求。\n\n第二场之前：\n上述第一场尚未结束时。\n第二场以实质时空或事件目标转换为边界，\n不以换行、镜头变化或一次API请求结束为边界。\n\n沈教授在此边界之前不得知道失忆细节；\n边界之后也仍然需要通过实际事件获知，不能自动变成已知。\n\n第一次选择的行动顺序：\n两个选项区分行动优先级：A‘进入实验楼’是优先立即进楼调查；B‘先保护周遥并检查收音机’是先确认、照顾并安顿周遥，再以检查楼内收音机为目标行动。B并不要求在楼外完成设备检查，之后可以为检查而进入楼内；这不抹去先保护周遥的顺序差异。B不能改成仅联系沈教授、仅查看红伞或完全放弃检查收音机。\n\n<<<OPENING_BEGIN>>>\n2026 年 9 月 5 日，22:10。\n\n暴雨把临江大学的路灯拉成一片模糊的冷蓝色。你和周遥停在旧实验楼的台阶下面，雨水沿着封闭告示的边角往下流。告示上的年份仍能辨认：2016。远处几盏灯忽然暗了一下，又勉强亮起。\n\n门口靠着一把红色雨伞。伞柄朝向外侧，伞尖抵在门槛边，周围没有人。你没有碰它。周遥却盯着那把伞，手指越攥越紧。\n\n周遥：“我不记得昨晚来过这里。”\n\n你转头看他。他的目光从雨伞移到黑着的窗户，像是想确认什么，又迟迟没有说出口。\n\n楼里传来断续的电流声。紧接着，是三次短促、间隔清晰的信号。声音停下后，雨声重新填满了台阶与门厅之间的空隙。\n\n你是林澈，遇到不明情况时总想先确认依据。但周遥的脸色让你难以只盯着那扇门。此刻，你们都还在楼外，没有检查收音机，也没有联系沈教授。你看了看通向门厅的入口，又看向身旁的周遥，尚未决定下一步怎么做。\n<<<OPENING_END>>>\n\n【续写说明】\n固定开头中的事件已经发生。正文从最后的情境继续，保持人物知识与物品状态；不要重新开局，不要替玩家提前执行尚未选择的关键行动。使用原生输出格式。\n\n<<<SHARED_TASK_V2_END>>>"
+  },
+  "native_status": "unknown",
+  "outcome": "delivery_unknown",
+  "provenance": {
+    "adapter_inventory_sha256": "108d9062dd774dca5ff5719a4d5bbbfca0883374dbbb8ccc03ad21eb3a1487f2",
+    "context_semantics": "not_evaluated",
+    "evidence_kind": "live",
+    "native_issue_codes": [
+      "budget_exhausted",
+      "empty_prose",
+      "native_choice_boundary_missing"
+    ],
+    "native_source_unchanged": true,
+    "request_model_verified": true,
+    "request_parameters_verified": true
+  },
+  "run_id": "ai4visualnovel-v3-02",
+  "schema_version": "3.0",
+  "scope": {
+    "body_optional": true,
+    "choice_count": 0,
+    "contract": {
+      "allow_empty_body": true,
+      "choice_count": 2,
+      "decision_id": "C1",
+      "native_choice_previews": "separate",
+      "scope": "first_unselected_choice",
+      "selection_executed": false,
+      "version": "3.0"
+    },
+    "issues": [
+      "native_choice_count_mismatch",
+      "native_first_choice_not_reached"
+    ],
+    "selection_executed": false,
+    "status": "not_reached"
+  },
+  "system": "ai4visualnovel",
+  "usage": {
+    "actual_cost": null,
+    "complete": false,
+    "completion_tokens": null,
+    "http_calls": 160,
+    "prompt_tokens": null,
+    "total_tokens": null
+  }
+}

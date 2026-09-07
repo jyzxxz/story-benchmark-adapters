@@ -1,0 +1,66 @@
+{
+  "actual_cost": null,
+  "actual_models": [
+    "deepseek-v4-flash"
+  ],
+  "call_context_valid": true,
+  "configured_model_matches_requests": true,
+  "configured_model_parameters": {
+    "thinking": {
+      "type": "disabled"
+    }
+  },
+  "configured_model_parameters_match_requests": true,
+  "cost_status": "unavailable",
+  "delivery_unknown_calls": [
+    "2a7e700f4f844a42ace3de44f78e0352",
+    "12d33a757c0a4185851e56f5eda39ec3",
+    "8bbcfe451c7b45e68499fde9f1ba757e"
+  ],
+  "direct_native_route_receiver_observed": false,
+  "external_input_equal": true,
+  "first_prose_request_observed": true,
+  "missing_response_files": [
+    "2a7e700f4f844a42ace3de44f78e0352",
+    "12d33a757c0a4185851e56f5eda39ec3",
+    "8bbcfe451c7b45e68499fde9f1ba757e"
+  ],
+  "native_input_propagation": "cannot_confirm",
+  "native_issue_codes": [
+    "budget_exhausted"
+  ],
+  "observed_http_calls": 160,
+  "receiver_boundaries": [
+    "native_requirements_reader"
+  ],
+  "receiver_observations": 1,
+  "reported_model_matches_requested": null,
+  "requested_models": [
+    "deepseek-v4-flash"
+  ],
+  "source_mapping_valid": true,
+  "structured_opening_observations": [],
+  "task_entry_request_contains_shared": true,
+  "task_entry_shared_occurrences": 1,
+  "trace_parse_errors": [],
+  "usage_coverage_complete": false,
+  "v3_output_scope": {
+    "body_optional": true,
+    "choice_count": 0,
+    "contract": {
+      "allow_empty_body": true,
+      "choice_count": 2,
+      "decision_id": "C1",
+      "native_choice_previews": "separate",
+      "scope": "first_unselected_choice",
+      "selection_executed": false,
+      "version": "3.0"
+    },
+    "issues": [
+      "native_choice_count_mismatch",
+      "native_first_choice_not_reached"
+    ],
+    "selection_executed": false,
+    "status": "not_reached"
+  }
+}

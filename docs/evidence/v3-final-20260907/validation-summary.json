@@ -1,0 +1,311 @@
+{
+  "schema_version": "3.0",
+  "generation_executable_commit": "b9d8468e655ed87068e5928c035116b6380ee928",
+  "audit_executable_commit": "87a74e955be170c405754685c8627c0dfb25ed12",
+  "common_input_sha256": "c8741573a37879a743113da4013765d432d0e3dc9cc22f60697d1883030b9335",
+  "opening_sha256": "196d04a58ba5bce543e93788e496ae42fdd547d1583d185cda42c3b969159c65",
+  "common_input_chars": 2565,
+  "input_contract": {
+    "adapter_story_reinjection": "none",
+    "character_policy": "exact_declared_cast",
+    "task_delivery": "verbatim_first_creative_request",
+    "version": "3.0"
+  },
+  "output_contract": {
+    "allow_empty_body": true,
+    "choice_count": 2,
+    "decision_id": "C1",
+    "native_choice_previews": "separate",
+    "scope": "first_unselected_choice",
+    "selection_executed": false,
+    "version": "3.0"
+  },
+  "common_conditions": {
+    "live": true,
+    "model": "deepseek-v4-flash",
+    "model_base_url": "https://api.deepseek.com",
+    "timeout_seconds": 1800,
+    "max_calls": 160,
+    "max_output_tokens": 16384,
+    "max_input_chars": 200000,
+    "allow_pilot": true,
+    "model_parameters": {
+      "thinking": {
+        "type": "disabled"
+      }
+    }
+  },
+  "actual_received_inputs_equal": true,
+  "actual_receivers": {
+    "if_line": {
+      "observations": 1,
+      "actual_text_equal": true,
+      "sha256": "c8741573a37879a743113da4013765d432d0e3dc9cc22f60697d1883030b9335",
+      "chars": 2565,
+      "boundaries": [
+        "native_task_snapshot"
+      ]
+    },
+    "ai4visualnovel": {
+      "observations": 1,
+      "actual_text_equal": true,
+      "sha256": "c8741573a37879a743113da4013765d432d0e3dc9cc22f60697d1883030b9335",
+      "chars": 2565,
+      "boundaries": [
+        "native_requirements_reader"
+      ]
+    },
+    "infiplot": {
+      "observations": 1,
+      "actual_text_equal": true,
+      "sha256": "c8741573a37879a743113da4013765d432d0e3dc9cc22f60697d1883030b9335",
+      "chars": 2565,
+      "boundaries": [
+        "native_sdk_task_block"
+      ]
+    }
+  },
+  "all_adapter_checks_passed": false,
+  "offline_reaudit_only": true,
+  "new_provider_calls_in_reaudit": 0,
+  "all_result_schemas_valid": true,
+  "all_seals_valid": true,
+  "resume_resends": 0,
+  "source_lock_results": {
+    "if_line": {
+      "ok": true,
+      "checks": [
+        {
+          "source_lock": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-contract-v3/baseline-lock.json",
+          "base_commit": "572407fce9b648a4206ac37da6a9f6ed22631da8",
+          "adapted_commit": "572407fce9b648a4206ac37da6a9f6ed22631da8",
+          "source_files_verified": 1200,
+          "source_lock_sha256": "b796e5c6c5b6e3867876b12872e718324edf94a9bdd7121044adc6d0e1db99e4"
+        }
+      ],
+      "errors": []
+    },
+    "AI4VisualNovel": {
+      "ok": true,
+      "checks": [
+        {
+          "source_lock": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-contract-v3/baseline-lock.json",
+          "base_commit": "0faf120244d175866eea3813f053281f5689ab19",
+          "adapted_commit": "0faf120244d175866eea3813f053281f5689ab19",
+          "source_files_verified": 35,
+          "source_lock_sha256": "b796e5c6c5b6e3867876b12872e718324edf94a9bdd7121044adc6d0e1db99e4"
+        }
+      ],
+      "errors": []
+    },
+    "infiplot": {
+      "ok": true,
+      "checks": [
+        {
+          "source_lock": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-contract-v3/baseline-lock.json",
+          "base_commit": "a60e18bc663caaa134d9323a2b89159b7cc9bd05",
+          "adapted_commit": "a60e18bc663caaa134d9323a2b89159b7cc9bd05",
+          "source_files_verified": 927,
+          "source_lock_sha256": "b796e5c6c5b6e3867876b12872e718324edf94a9bdd7121044adc6d0e1db99e4"
+        }
+      ],
+      "errors": []
+    }
+  },
+  "semantic_quality": "not_evaluated",
+  "systems": [
+    {
+      "system": "if_line",
+      "run_id": "if_line-v3-02",
+      "outcome": "completed",
+      "adapter_status": "passed",
+      "native_status": "completed",
+      "errors": [],
+      "body_segments": 0,
+      "body_chars": 0,
+      "choice_count": 2,
+      "preview_count": 2,
+      "preview_chars": 315,
+      "usage": {
+        "actual_cost": null,
+        "complete": true,
+        "completion_tokens": 7674,
+        "http_calls": 6,
+        "prompt_tokens": 13216,
+        "total_tokens": 20890
+      },
+      "evidence_files": 67,
+      "manifest_sha256": "27022ff642fc29098822020dbbc817b3795d809c9b7c19c3731854b992a43b2b",
+      "structured_opening_observations": [
+        {
+          "call_id": "9b612649-c167-4b44-886c-b7d4e2476c7f",
+          "field": "chapter_tail",
+          "instructions_empty": true,
+          "opening_equal": true
+        }
+      ]
+    },
+    {
+      "system": "ai4visualnovel",
+      "run_id": "ai4visualnovel-v3-02",
+      "outcome": "delivery_unknown",
+      "adapter_status": "unverified",
+      "native_status": "unknown",
+      "errors": [
+        {
+          "category": "budget",
+          "code": "budget_exhausted",
+          "message": "Native trace or export reported budget exhaustion."
+        },
+        {
+          "category": "transport",
+          "code": "delivery_unknown",
+          "message": "['2a7e700f4f844a42ace3de44f78e0352', '12d33a757c0a4185851e56f5eda39ec3', '8bbcfe451c7b45e68499fde9f1ba757e']"
+        }
+      ],
+      "body_segments": 0,
+      "body_chars": 0,
+      "choice_count": 0,
+      "preview_count": 0,
+      "preview_chars": 0,
+      "usage": {
+        "actual_cost": null,
+        "complete": false,
+        "completion_tokens": null,
+        "http_calls": 160,
+        "prompt_tokens": null,
+        "total_tokens": null
+      },
+      "evidence_files": 700,
+      "manifest_sha256": "d68c3da21ab8787c8cd0d4e95eb2563c4f5cad320d3319eb36af61b2027f62e8",
+      "structured_opening_observations": []
+    },
+    {
+      "system": "infiplot",
+      "run_id": "infiplot-v3-02",
+      "outcome": "completed",
+      "adapter_status": "passed",
+      "native_status": "completed",
+      "errors": [],
+      "body_segments": 20,
+      "body_chars": 1009,
+      "choice_count": 2,
+      "preview_count": 0,
+      "preview_chars": 0,
+      "usage": {
+        "actual_cost": null,
+        "complete": true,
+        "completion_tokens": 1784,
+        "http_calls": 3,
+        "prompt_tokens": 11429,
+        "total_tokens": 13213
+      },
+      "evidence_files": 44,
+      "manifest_sha256": "fb44d8d2ef909533b0b460a4e70651cdea98791f96e45bb4b3368e9c44a36820",
+      "structured_opening_observations": []
+    }
+  ],
+  "initial_round": [
+    {
+      "system": "if_line",
+      "state": "EXPORTED",
+      "outcome": "completed",
+      "adapter_status": "passed",
+      "errors": [],
+      "shared_sha256": "c8741573a37879a743113da4013765d432d0e3dc9cc22f60697d1883030b9335",
+      "received_equal": true,
+      "first_request_occurrences": 1,
+      "body_chars": 0,
+      "choices": 2,
+      "previews": 2,
+      "usage": {
+        "actual_cost": null,
+        "complete": true,
+        "completion_tokens": 7256,
+        "http_calls": 6,
+        "prompt_tokens": 12680,
+        "total_tokens": 19936
+      },
+      "sealed_files": 66
+    },
+    {
+      "system": "ai4visualnovel",
+      "state": "FAILED",
+      "outcome": "native_error",
+      "adapter_status": "passed",
+      "errors": [
+        {
+          "category": "native",
+          "code": "native_graph_node_count_mismatch",
+          "message": "native_graph_node_count_mismatch:expected=12:actual=13:native_exit=1"
+        }
+      ],
+      "shared_sha256": "c8741573a37879a743113da4013765d432d0e3dc9cc22f60697d1883030b9335",
+      "received_equal": true,
+      "first_request_occurrences": 1,
+      "body_chars": 0,
+      "choices": 0,
+      "previews": 0,
+      "usage": {
+        "actual_cost": null,
+        "complete": true,
+        "completion_tokens": 4611,
+        "http_calls": 5,
+        "prompt_tokens": 16682,
+        "total_tokens": 21293
+      },
+      "sealed_files": 76
+    },
+    {
+      "system": "infiplot",
+      "state": "EXPORTED",
+      "outcome": "completed",
+      "adapter_status": "passed",
+      "errors": [],
+      "shared_sha256": "c8741573a37879a743113da4013765d432d0e3dc9cc22f60697d1883030b9335",
+      "received_equal": true,
+      "first_request_occurrences": 1,
+      "body_chars": 1064,
+      "choices": 2,
+      "previews": 0,
+      "usage": {
+        "actual_cost": null,
+        "complete": true,
+        "completion_tokens": 1745,
+        "http_calls": 3,
+        "prompt_tokens": 11361,
+        "total_tokens": 13106
+      },
+      "sealed_files": 43
+    }
+  ],
+  "tests": {
+    "full_unittest": {
+      "run": 182,
+      "passed": 172,
+      "skipped": 10
+    },
+    "v3_including_schema": {
+      "run": 38,
+      "passed": 38
+    },
+    "sdk_budget_regression": {
+      "run": 2,
+      "passed": 2
+    },
+    "if_trace_pytest": {
+      "passed": 15
+    },
+    "ai4_native_cli_fixture": {
+      "suite_passed": 33
+    },
+    "if_native_services_fixture_modes": 3,
+    "infiplot_native_authenticated_route_fixture": true
+  },
+  "evidence_notes": [
+    "Only adapter, input and output contract acceptance; no semantic scoring.",
+    "IF source plan retained; native_context semantics not_evaluated.",
+    "Infi native auth path exercised with isolated local identity fixture, not production account.",
+    "Initial 9ad8eba round retained; final b9d8468 round uses unchanged public input and model policy."
+  ]
+}

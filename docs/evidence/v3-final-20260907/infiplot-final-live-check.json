@@ -1,0 +1,140 @@
+{
+  "checked_at": "2026-09-07T02:24:07.839690+00:00",
+  "scope": "Read-only mechanical final-live check; no story evaluation or correction",
+  "adapter_commit": "b9d8468e655ed87068e5928c035116b6380ee928",
+  "run_dir": "/Users/jyzxxz/Documents/Codex/2026-09-06/chatgpt-conversation-6a9ce129-78f4-83ea-964f/work/adapter-contract-v3-live/infiplot-v3-02",
+  "run_manifest_sha256": "1e233237bd4e1e791f1758f08a8ebbfc9cbc4d4c59760a2e729d887f1d9e7112",
+  "sealed_evidence": {
+    "files": 43,
+    "file_set_exact": true,
+    "hash_mismatches": [],
+    "verify_saved_run": "passed",
+    "unchanged_during_check": true
+  },
+  "outcome": "completed",
+  "adapter_status": "passed",
+  "cleanup_status": "completed",
+  "shared_sha256_actual_sdk": "c8741573a37879a743113da4013765d432d0e3dc9cc22f60697d1883030b9335",
+  "request_checks": [
+    {
+      "call_id": "06f4c71a-0529-4ba9-b17b-e878a9a16977",
+      "stage": "writer",
+      "exact_request_allowlist": true,
+      "cold_start_replacements": 1,
+      "common_parameters_verified": true,
+      "requested_model": "deepseek-v4-flash",
+      "actual_model": "deepseek-v4-flash",
+      "finish_reason": "stop",
+      "before_canonical_sha256": "1367bc50199b3a3fd0549f1452c4c77a319b786f869776cf1eea23727942dc48",
+      "after_canonical_sha256": "cae9335f0cbbf6b20bb5f29390defb9a94d9e5a20e4b7f2b94c92ee4bb7270c9",
+      "trace_before_hash_matches": true,
+      "trace_after_hash_matches": true,
+      "full_payload_budget_metric_matches": true,
+      "output_cap_within_budget": true,
+      "public_task_before_occurrences": 1,
+      "public_task_after_occurrences": 1,
+      "actual_receipt_equal": true,
+      "receipt_offsets_extract_exactly": true,
+      "receipt_boundary": "native_sdk_task_block"
+    },
+    {
+      "call_id": "9123772b-5b59-4403-a3fd-dc9f0ca7353d",
+      "stage": "auxiliary_text",
+      "exact_request_allowlist": true,
+      "cold_start_replacements": 0,
+      "common_parameters_verified": true,
+      "requested_model": "deepseek-v4-flash",
+      "actual_model": "deepseek-v4-flash",
+      "finish_reason": "stop",
+      "before_canonical_sha256": "7cab13fa5bfc34f721661ec91518f1daec46e571ee6fa0d1e63cf4262d6abb91",
+      "after_canonical_sha256": "61b734069f71420ed3e4144b5128e62a1f357ab25bab5c55ad317f05c75f6a14",
+      "trace_before_hash_matches": true,
+      "trace_after_hash_matches": true,
+      "full_payload_budget_metric_matches": true,
+      "output_cap_within_budget": true
+    },
+    {
+      "call_id": "d5b47456-ab3c-4c76-952d-00c17f3b8d91",
+      "stage": "auxiliary_text",
+      "exact_request_allowlist": true,
+      "cold_start_replacements": 0,
+      "common_parameters_verified": true,
+      "requested_model": "deepseek-v4-flash",
+      "actual_model": "deepseek-v4-flash",
+      "finish_reason": "stop",
+      "before_canonical_sha256": "1c5d4a5648a80f45d9447b3c604bb11c4bd285cdbfc1c1b7f11149f364f8713c",
+      "after_canonical_sha256": "8279f8f2c2c99233071293827d540de85cb23b674fe3bef8858d1f12667b08f5",
+      "trace_before_hash_matches": true,
+      "trace_after_hash_matches": true,
+      "full_payload_budget_metric_matches": true,
+      "output_cap_within_budget": true
+    }
+  ],
+  "source_and_export": {
+    "native_segments_equal_export": true,
+    "native_choices_equal_export": true,
+    "canonical_body_exactly_mapped_from_native": true,
+    "canonical_choices_exactly_mapped_from_native": true,
+    "first_unselected_boundary": true,
+    "body_segment_count": 20,
+    "choice_count": 2,
+    "canonical_previews_empty": true,
+    "native_metadata_previews_empty": true,
+    "preview_file_empty": true,
+    "whole_internal_seeds_absent_from_visible_body": true,
+    "choice_observation_status": "matches_frozen_native_normalization",
+    "writer_choices_equal_native_choices": true,
+    "no_native_choices_dropped": true
+  },
+  "source_lock": {
+    "verified": true,
+    "source_files": 927,
+    "source_before_after_current_equal": true,
+    "runtime_source_equal": true,
+    "temporary_runtime_removed": true
+  },
+  "cleanup": {
+    "listeners": {
+      "next_server": {
+        "host": "127.0.0.1",
+        "port": 3237,
+        "closed": true
+      },
+      "local_auth_fixture": {
+        "host": "127.0.0.1",
+        "port": 61974,
+        "closed": true
+      }
+    },
+    "relay_owner_processes": [
+      {
+        "pid": 64509,
+        "process_alive": false,
+        "evidence": "calls-64509.jsonl"
+      }
+    ],
+    "matching_runtime_or_wrapper_processes": []
+  },
+  "auth": {
+    "evidence_kind": "local_supabase_user_endpoint_fixture",
+    "production_account_authentication_verified": false,
+    "local_fixture_accepted": 4,
+    "native_auth_source_unchanged": true,
+    "sidecar_sealed_manifest_hash_matches": true
+  },
+  "usage_reported": {
+    "actual_cost": null,
+    "complete": true,
+    "completion_tokens": 1784,
+    "http_calls": 3,
+    "prompt_tokens": 11429,
+    "total_tokens": 13213
+  },
+  "limits": [
+    "Story/choice semantics not evaluated or altered.",
+    "Native fallback absence remains unknown without exhaustive hooks.",
+    "This used a local identity fixture through original auth code; production account auth was not verified.",
+    "Relay listener port was not persisted; its owner process is confirmed terminated."
+  ],
+  "passed": true
+}

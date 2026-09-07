@@ -4,7 +4,9 @@
 
 本仓库采用**未修改的基线源码 + 独立外置适配器**。`systems/` 中发布的每个文件都与冻结提交逐字节相同；接入规则、记录器、预算与启动包装全部位于 `benchmark/`。文件不改不等于运行时完全不包装：必要的输入渲染与预算适配均公开记录。
 
-当前范围为公共输入、原生首次输出、选项与候选预览、请求和用量证据。没有实现完整分支播放器、AA/AB/BA/BB 探索、AI 评分或论文统计。[澄清提示词后的最新重测](docs/CLARIFIED_RETEST.md) 中，IF Line 已从固定开头生成两个原生分支预览，但缺少独立选项标题；AI4VisualNovel 仍在原生设计阶段失败；InfiPlot 返回正文和两个选项，但 B 选项不符合澄清后的行动要求。**三者均未完整通过共同输出要求。** [上一轮结果](docs/LIVE_VALIDATION.md) 和 [初始工程验收](docs/ACCEPTANCE.md) 保留。
+当前版本采用 **v3 公共输入与统一返回合同**：同一份任务原文和固定开头，返回到第一次尚未选择的原生选项。允许开头后直接显示选项；正文、选项、选项自带的未来预览分栏保存，故事文字可以不同。三个系统的成功与失败都使用同一个 `result.json` 结构，原生错误如实保留。
+
+已修复的接入与验收边界见 [v3 合同](docs/V3_CONTRACT.md)，最新实测见 [v3 验证](docs/V3_VALIDATION.md)。本阶段不包含完整分支播放器、AA/AB/BA/BB 探索、AI 评分或论文统计。历史 [C1 重测](docs/CLARIFIED_RETEST.md)、[首轮实测](docs/LIVE_VALIDATION.md) 和 [初始工程验收](docs/ACCEPTANCE.md) 保留，其旧输出判断不适用于 v3。
 
 ## 目录
 
@@ -22,8 +24,8 @@ tools/             仓库完整性与干净副本验证
 
 ```bash
 cd benchmark
-python3 -m story_benchmark compile --case cases/CAMPUS-01.json --out ../work/CAMPUS-01 --allow-pilot
-python3 -m story_benchmark verify --bundle ../work/CAMPUS-01
+python3 -m story_benchmark compile --case cases/CAMPUS-01-V3.json --out ../work/CAMPUS-01-V3 --allow-pilot
+python3 -m story_benchmark verify --bundle ../work/CAMPUS-01-V3
 python3 -m unittest discover -s tests -p test_core.py
 python3 -m unittest discover -s tests -p test_provenance.py
 cd ..
@@ -34,7 +36,7 @@ python3 tools/verify_sources.py
 
 ## 公共输入
 
-最新开发案例为 `benchmark/cases/CAMPUS-01-C1.json`，澄清行动先后、角色知识、审核范围，并明确导出到第一次选择为止。原始 brief 和固定开头逐字保留；旧 `CAMPUS-01.json` 未覆盖。只在编译时统一一次 UTF-8、LF 与外围空白，生成唯一 `shared_task.txt`。IF Line 使用 `extra_requirements`，AI4VisualNovel 使用需求文件，InfiPlot 使用 `worldSetting`；里面的公共字符串完全相同。
+最新开发案例为 `benchmark/cases/CAMPUS-01-V3.json`，明确角色总名单含玩家、行动先后、角色知识，以及第一次未选择选项的返回范围。原始 brief 和固定开头逐字保留；旧 `CAMPUS-01.json` 未覆盖。只在编译时统一一次 UTF-8、LF 与外围空白，生成唯一 `shared_task.txt`。IF Line 使用 `extra_requirements`，AI4VisualNovel 使用需求文件，InfiPlot 使用 `worldSetting`；里面的公共字符串完全相同。
 
 开发任务保留人物、固定事实、两组关键选择和续写要求；不叠加六场景、两个结局或路径总字数的硬要求。原始 v1 题库与 v2 前缀保存在 `benchmark/source/`，没有覆盖。
 
@@ -42,9 +44,9 @@ python3 tools/verify_sources.py
 
 ## 运行与配置
 
-三个项目分别使用各自环境，具体安装和启动命令见 [运行说明](docs/RUNNING.md)。`benchmark/configs/experiment.example.json` 将模型、供应商地址和预算放在共同配置中，拒绝某个系统单独覆盖这些条件。模板默认不启用真实生成，未选择模型或未设置预算会在发送模型请求前拒绝。
+三个项目分别使用各自环境，具体安装和启动命令见 [运行说明](docs/RUNNING.md)。`benchmark/configs/experiment.v3.example.json` 将模型、供应商地址和预算放在共同配置中，拒绝某个系统单独覆盖这些条件。模板默认不启用真实生成，未选择模型或未设置预算会在发送模型请求前拒绝。
 
-真实生成只通过 `run-first` 执行，失败产物和投递不确定状态均保留；`resume-export` 只恢复已保存产物的导出，不自动重发生成。各接入器原生幂等与恢复边界见运行说明。
+真实生成可通过单系统 `run-first` 或三系统 `run-set` 执行。v3 的 `resume-export` 核验并返回已封存的统一结果，包括原生失败；不自动重发生成。各接入器原生幂等与恢复边界见运行说明。
 
 共享的是外部任务，不要求三个系统的全部 system/user/history 消息相同，也不要求生成同一篇故事。新 IF Line 模式通过原生人工修订接口一次性导入公共开头，补建空状态检查点后调用原生候选分支接口；只做公共字段映射，不提炼剧情记忆、不重写输出。其接入方式与原生默认首章生成不同，必须随版本披露。详见 [公平性边界](docs/FAIRNESS.md)。
 

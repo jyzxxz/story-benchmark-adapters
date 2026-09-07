@@ -37,7 +37,7 @@ v3 的 `output_contract` 明确约定：
 
 选项显示文本使用原生产物。IF Line 原生界面的候选卡片使用 `option_key` 作为标题，因此 v3 可以直接把该字段作为统一返回的 `label`。适配器不能从公共 C1 抄出标题来代替原生生成结果，也不把简短原生标题自动改写成一段行动说明。
 
-原生内部若预先生成不同选择的后续内容，这些内容独立进入 `content.previews`，通过 `choice_id` 关联选项。它们不进入当前路径的 `content.body`，也不表示玩家已经行动。执行状态必须有记录支持；缺少证据时保持未知或失败，不能默认填成“未选择”。
+只有原生界面附带在选项卡片上的未来预览进入 `content.previews`，通过 `choice_id` 关联选项。例如 IF Line 的 preview_text。AI4VisualNovel 内部未来节点脚本、InfiPlot 的 nextSceneSeed 留在原始产物中，不进入此栏。预览不进入当前路径的 `content.body`，也不表示玩家已经行动。执行状态必须有记录支持；缺少证据时保持未知或失败，不能默认填成“未选择”。
 
 ## 三个系统共用的 result.json
 
@@ -95,7 +95,7 @@ IF Line 的实际顺序是：
 
 ## 本地验证范围与证据
 
-截至本说明编写时，IF Line 的外置实现已通过以下检查；v3 尚未进行付费模型运行。根级统一 result 与封存回归在公共代码冻结后另行执行，这里不把它们记为已通过。
+以下是实现阶段完成的 IF Line 本地检查；统一 result、封存回归和后续真实模型重测单独记在 [v3 验证报告](V3_VALIDATION.md)，与固定响应证据分开。
 
 | 检查 | 实际结果 | 范围 |
 | --- | --- | --- |
@@ -117,4 +117,4 @@ v3 实际请求检查还确认：首次公共文本一次、候选上下文开�
 
 首次 `native-services-v3-v1` 现场保留：原生生成成功，新增测试误读了 Task API 未暴露的 `parameters` 字段。测试改为读取实际 `source_refs/candidate_set_source/request_identity` 后，以全新目录复测通过。证据目录从不合并或覆盖。
 
-具体启动和测试要求见 [IF Line 外置接入说明](../benchmark/native_shims/if_line/README.md)。后续真实模型运行仍需在统一模型、端点、参数和预算下冻结新证据，并单独评审故事内容。
+具体启动和测试要求见 [IF Line 外置接入说明](../benchmark/native_shims/if_line/README.md)。所有真实模型运行使用统一模型、端点、参数和预算，冻结新证据。结构验收不代替故事内容评审。
