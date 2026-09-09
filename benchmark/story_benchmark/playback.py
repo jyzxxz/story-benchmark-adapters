@@ -154,7 +154,7 @@ def _markdown_text(text):
     return re.sub(r'([\\`*_{}\[\]()#+.!>|~\-=])', r'\\\1', html.escape(text, quote=False))
 
 
-def _build(recording, destination, sample_id):
+def _build(recording, destination, sample_id, *, collection_href=None):
     destination.mkdir(parents=True)
     story = recording.rows('trajectories/main/story.jsonl')
     choices = recording.rows('trajectories/main/choices.jsonl')
@@ -295,6 +295,7 @@ def _build(recording, destination, sample_id):
               'segments_without_frame': sum(not mapped[s] for s in mapped),
               'packaged_unique_images': len(list((destination/'images').glob('*'))) if (destination/'images').exists() else 0}
     data = {'schema_version': VERSION, 'sample_id': sample_id, 'rule': RULE, 'status': status,
+            'collection_href': collection_href,
             'provided_prefix': opening, 'story': public_story, 'choices': public_choices,
             'frames': frames, 'pages': pages, 'counts': counts, 'mapping_notes': mapping_notes,
             'page_order_rule': 'story_sequence_then_explicit_frame_map_and_after_segment_choices',
@@ -352,31 +353,112 @@ def discover_runs(source):
     return [p.parent for p in candidates]
 
 
-def _catalog(review, records):
-    cards = []
-    for i, (sample_id, data) in enumerate(records):
-        cards.append('<a class="card" href="samples/' + sample_id + '/index.html"><b>样本 ' + str(i+1).zfill(2)
-                     + '</b><span>' + html.escape(sample_id) + '</span><p>' + str(data['counts']['story_segments'])
-                     + ' 段正文 · ' + str(data['counts']['frames']) + ' 幅记录画面 · '
-                     + str(data['counts']['executed_choices']) + ' 次已执行选择</p></a>')
-    atomic_write(review/'index.html', '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">'
-                 '<meta name="viewport" content="width=device-width,initial-scale=1">'
-                 '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; style-src \'unsafe-inline\'; base-uri \'none\'; form-action \'none\'">'
-                 '<title>图文故事评审</title><style>body{background:#111722;color:#edf1f7;font:16px system-ui;max-width:1080px;margin:auto;padding:50px 24px}'
-                 'h1{font-size:34px}p{line-height:1.8;color:#bfc9d7}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}'
-                 '.card{display:block;border:1px solid #344152;border-radius:16px;padding:24px;color:inherit;text-decoration:none;background:#1a2332}'
-                 '.card:hover,.card:focus{border-color:#9fbda5}.card b{font-size:23px;display:block}.card span{display:block;color:#96a7ba;margin-top:12px;font-size:13px}</style></head>'
-                 '<body><p>离线评审 · 实际路径</p><h1>图文故事评审</h1><p>选择一个样本开始逐页回放。所有图片与正文均来自保存的记录。'
-                 '选项展示当时的实际选择，未探索分支不会生成。</p><p>' + html.escape(RULE) + '</p><div class="grid">'
-                 + ''.join(cards) + '</div></body></html>')
-    atomic_json(review/'samples.json', [{'sample_id': sid, 'entry_file': 'samples/'+sid+'/index.html',
-                                        'counts': data['counts']} for sid, data in records])
+def collection_coverage(source, runs=None):
+    """Report missing planned attempts without exposing native identities publicly."""
+    source = Path(source).absolute()
+    if (source/'manifest.json').is_file():
+        return {'expected_runs': 1, 'sealed_runs': 1, 'unsealed_runs': 0, 'all_planned_sealed': True}
+    if runs is None:
+        try:
+            runs = discover_runs(source)
+        except BenchmarkError as exc:
+            if str(exc) != 'playback_no_sealed_runs_found':
+                raise
+            runs = []
+    sealed = {Path(r).resolve() for r in runs}
+
+    def plan_at(folder, name):
+        path = _child(folder, name)
+        if not path.is_file():
+            return None
+        digest_path = _child(folder, Path(name).stem+'.sha256')
+        if digest_path.is_file() and digest_path.read_text().strip() != _digest(path):
+            raise BenchmarkError('playback_plan_digest_changed')
+        json_digest = _child(folder, Path(name).stem+'.sha256.json')
+        if json_digest.is_file() and read_json(json_digest).get('sha256') != _digest(path):
+            raise BenchmarkError('playback_plan_digest_changed')
+        return read_json(path)
+
+    def planned_roots(folder):
+        plan = plan_at(folder, 'plan.json')
+        if plan is None:
+            return None
+        jobs = plan.get('jobs')
+        if not isinstance(jobs, list) or not jobs:
+            raise BenchmarkError('playback_invalid_batch_plan_jobs')
+        roots = set()
+        for job in jobs:
+            ident = job.get('run_id')
+            if not isinstance(ident, str) or not re.fullmatch(r'[A-Za-z0-9_-]+', ident):
+                raise BenchmarkError('playback_invalid_planned_run_id')
+            roots.add((folder/'runs'/ident).resolve())
+        if len(roots) != len(jobs):
+            raise BenchmarkError('playback_duplicate_planned_run')
+        return roots
+
+    planned = planned_roots(source)
+    expected = None
+    observed_unsealed = 0
+    if planned is not None:
+        if not sealed.issubset(planned):
+            raise BenchmarkError('playback_unplanned_sealed_run')
+        expected = len(planned)
+    else:
+        experiment = plan_at(source, 'experiment.json')
+        folders = [source] if (source/'runs').is_dir() else [source/s for s in ('if_line','ai4visualnovel','infiplot')]
+        if experiment is not None:
+            systems = experiment.get('systems')
+            attempts = experiment.get('attempts_per_system')
+            if (not isinstance(systems, list) or not systems or len(set(systems)) != len(systems)
+                    or not set(systems).issubset({'if_line','ai4visualnovel','infiplot'})
+                    or type(attempts) is not int or attempts < 1):
+                raise BenchmarkError('playback_invalid_experiment_plan')
+            folders = [source/s for s in systems]
+            expected = len(systems)*attempts
+            for root in sealed:
+                if not any(root.parent == (folder/'runs').resolve() for folder in folders):
+                    raise BenchmarkError('playback_unplanned_system_run')
+            for folder in folders:
+                children = {root for root in sealed if root.parent == (folder/'runs').resolve()}
+                jobs = planned_roots(folder)
+                if jobs is None and children:
+                    raise BenchmarkError('playback_missing_batch_plan_for_experiment_records')
+                if jobs is not None and (len(jobs) != attempts or not children.issubset(jobs)):
+                    raise BenchmarkError('playback_experiment_job_mismatch')
+        elif any((folder/'plan.json').is_file() for folder in folders):
+            known_plans = [planned_roots(folder) for folder in folders if (folder/'plan.json').is_file()]
+            union = set().union(*known_plans)
+            if not sealed.issubset(union):
+                raise BenchmarkError('playback_unplanned_sealed_run')
+            expected = len(union)
+        if expected is None:
+            for folder in folders:
+                observed_unsealed += sum(p.is_dir() and not (p/'manifest.json').is_file()
+                                         for p in (folder/'runs').glob('*'))
+    if expected is not None and len(sealed) > expected:
+        raise BenchmarkError('playback_sealed_count_exceeds_plan')
+    missing = expected-len(sealed) if expected is not None else (observed_unsealed or None)
+    return {'expected_runs': expected, 'sealed_runs': len(sealed), 'unsealed_runs': missing,
+            'all_planned_sealed': missing == 0 if expected is not None else None}
+
+
+def _catalog(review, records, coverage):
+    samples = [{'sample_id': sid, 'entry_file': 'samples/'+sid+'/index.html',
+                'counts': data['counts'], 'status': data['status']} for sid, data in records]
+    for name in ('catalog.html', 'catalog.js', 'catalog.css'):
+        shutil.copyfile(ASSETS/name, review/('index.html' if name == 'catalog.html' else name))
+    data = {'schema_version': 'catalog.1', 'rule': RULE, 'coverage': coverage, 'samples': samples}
+    script = json.dumps(data, ensure_ascii=True).replace('<','\\u003c').replace('>','\\u003e').replace('&','\\u0026')
+    atomic_write(review/'catalog-data.js', 'window.STORY_CATALOG = '+script+';\n')
+    atomic_json(review/'samples.json', samples)
 
 
 def export_collection(source, destination, *, make_zip=True):
     source = Path(source).absolute()
     destination = Path(destination).absolute()
     runs = discover_runs(source)
+    coverage = collection_coverage(source, runs)
+    as_collection = not (source/'manifest.json').is_file()
     resolved = destination.resolve()
     for run in runs:
         if resolved.is_relative_to(run.resolve()) or run.resolve().is_relative_to(resolved):
@@ -396,10 +478,10 @@ def export_collection(source, destination, *, make_zip=True):
             if sample_id in seen:
                 raise BenchmarkError('playback_duplicate_source_recording')
             seen.add(sample_id)
-            target = review if len(runs) == 1 else review/'samples'/sample_id
-            if len(runs) == 1:
+            target = review/'samples'/sample_id if as_collection else review
+            if not as_collection:
                 review.rmdir()
-            data = _build(recording, target, sample_id)
+            data = _build(recording, target, sample_id, collection_href='../../index.html' if as_collection else None)
             if (recording.root/'manifest.json').read_bytes() != recording.manifest_bytes:
                 raise BenchmarkError('playback_manifest_changed_during_export')
             records.append((sample_id, data))
@@ -410,15 +492,18 @@ def export_collection(source, destination, *, make_zip=True):
                                'case_id': recording.manifest.get('case_id'),
                                'metrics': recording.metrics, 'metrics_source_sha256': recording.files['metrics.json'],
                                'source_status': {k: recording.manifest.get(k) for k in ('stop_reason', 'scope_reached', 'native_ended', 'evidence_kind')},
-                               'entry_file': 'review/index.html' if len(runs) == 1 else 'review/samples/'+sample_id+'/index.html',
+                               'entry_file': 'review/samples/'+sample_id+'/index.html' if as_collection else 'review/index.html',
                                'recording_verification': 'all_sealed_files_sha256_verified_historical_metrics_not_recomputed',
                                'metric_rule': 'Original M1-M8 unchanged. Playback latency/pages/deduplication are not generation metrics.'})
         records.sort(key=lambda item: item[0])  # Do not group the catalog by system.
-        if len(runs) > 1:
-            _catalog(review, records)
+        if as_collection:
+            _catalog(review, records, coverage)
             atomic_write(review/'README.txt', '解压整个 ZIP 后双击 index.html。样本匿名排序。samples.json 是机器可读目录。\n'
                          '每个样本提供播放器、story.json、transcript.md、evaluation/ 和本地图片。\n'
                          '原始八项指标保存在 ZIP 外 organizer.json。不要把该组织者文件发给盲评人员。\n')
+        # A visible entry alias avoids asking recipients to navigate JSON/images.
+        shutil.copyfile(review/'index.html', review/'打开故事.html')
+        atomic_json(review/'coverage.json', coverage)
         inventory = {p.relative_to(review).as_posix(): _digest(p) for p in sorted(review.rglob('*')) if p.is_file()}
         atomic_json(review/'package_manifest.json', {'schema_version': VERSION, 'files': inventory,
                     'evidence_role': 'derived_playback_not_replacement_for_sealed_recording'})
@@ -432,7 +517,10 @@ def export_collection(source, destination, *, make_zip=True):
         report = {'schema_version': VERSION, 'status': 'exported', 'entry_file': str(destination/'review/index.html'),
                   'zip_file': str(destination/'review.zip') if make_zip else None,
                   'organizer_file': str(destination/'organizer.json'), 'runs': len(runs),
-                  'source_evidence_modified': False, 'paid_calls': 0}
+                  'source_evidence_modified': False, 'paid_calls': 0, 'coverage': coverage,
+                  'recipient_entry_file': str(destination/'review/打开故事.html'),
+                  'organizer_sha256': _digest(stage/'organizer.json'),
+                  'zip_sha256': _digest(stage/'review.zip') if make_zip else None}
         if len(runs) == 1:
             report.update(sample_id=records[0][0], counts=records[0][1]['counts'],
                           source_manifest_sha256=organizers[0]['source_manifest_sha256'])

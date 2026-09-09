@@ -26,12 +26,35 @@ function samples(directory) {
   try {
     for (const directory of args.map(value => path.resolve(value))) {
       if (!fs.existsSync(path.join(directory, 'story.json'))) {
-        const page = await browser.newPage();
-        await page.goto(pathToFileURL(path.join(directory, 'index.html')).href);
+        const page = await browser.newPage({viewport:{width:1365,height:1000}});
+        const catalogErrors = [], catalogRemote = [];
+        page.on('pageerror', error => catalogErrors.push(error.message));
+        page.on('console', msg => { if (msg.type()==='error') catalogErrors.push(msg.text()); });
+        page.on('request', req => { if (/^https?:/i.test(req.url())) catalogRemote.push(req.url()); });
+        await page.goto(pathToFileURL(path.join(directory, '打开故事.html')).href);
+        const entries = JSON.parse(fs.readFileSync(path.join(directory,'samples.json'),'utf8'));
         const links = page.locator('.card');
         assert.equal(await links.count(), samples(directory).length);
+        assert.equal(await page.locator('#sample-total').textContent(),String(entries.length));
+        await page.locator('#filter-body').click();
+        assert.equal(await page.locator('.card:visible').count(),entries.filter(s=>s.counts.story_segments>0).length);
+        await page.locator('#filter-empty').click();
+        assert.equal(await page.locator('.card:visible').count(),entries.filter(s=>s.counts.story_segments===0).length);
+        await page.locator('#filter-all').click();
+        await page.locator('#sample-search').fill(entries[0].sample_id);
+        assert.equal(await page.locator('.card:visible').count(),1);
+        await page.locator('#sample-search').fill('');
+        await page.screenshot({path:path.join(output,'catalog-desktop.png'),fullPage:true});
+        await page.setViewportSize({width:390,height:844});
+        assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth),false);
+        await page.screenshot({path:path.join(output,'catalog-mobile.png'),fullPage:true});
         await links.first().click();
         await page.waitForFunction(() => !!window.STORY_REVIEW && document.querySelector('#page-label').textContent.includes(' / '));
+        assert.equal(await page.locator('#collection-link').isVisible(),true);
+        await page.locator('#collection-link').click();
+        assert.equal(await page.locator('.card').count(),entries.length);
+        assert.deepEqual(catalogErrors,[]);
+        assert.deepEqual(catalogRemote,[]);
         await page.close();
       }
       for (const sample of samples(directory)) {
@@ -98,7 +121,8 @@ function samples(directory) {
       }
     }
   } finally { await browser.close(); }
-  const report={status:'passed',browser:'Chromium',transport:'file://',runs:results,paid_calls:0};
+  const report={status:'passed',browser:'Chromium',transport:'file://',
+    catalog_checks:'recipient_entry_alias_all_samples_filters_search_return_link_desktop_mobile',runs:results,paid_calls:0};
   fs.writeFileSync(path.join(output,'browser-report.json'),JSON.stringify(report,null,2)+'\n');
   process.stdout.write(JSON.stringify(report,null,2)+'\n');
 })().catch(error => { console.error(error); process.exitCode=1; });

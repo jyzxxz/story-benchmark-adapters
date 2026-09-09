@@ -38,6 +38,8 @@ a { color: inherit; }
 .brand strong { display: block; font-size: 17px; font-weight: 600; letter-spacing: .06em; }
 .brand small { display: block; margin-top: 4px; color: var(--muted); font-size: 9px; letter-spacing: .22em; }
 .top-actions { display: flex; align-items: center; gap: 20px; }
+.collection-link { color: var(--accent); text-decoration: none; font-size: 12px; white-space: nowrap; }
+.collection-link:hover { text-decoration: underline; }
 .offline-badge { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 12px; white-space: nowrap; }
 .offline-badge > span { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
 .intro { display: flex; align-items: center; justify-content: space-between; gap: 30px; padding: 33px 0 29px; }
@@ -140,6 +142,8 @@ h1 { margin: 0; font-size: clamp(21px, 2.5vw, 29px); font-weight: 550; line-heig
   .brand strong { font-size: 15px; }
   .brand small { font-size: 8px; }
   .top-actions { gap: 10px; }
+  .collection-link { font-size: 10px; }
+  .top-actions:has(.collection-link:not([hidden])) .offline-badge { display: none; }
   .offline-badge { font-size: 10px; }
   .intro { align-items: flex-start; flex-direction: column; gap: 23px; padding: 24px 0; }
   h1 { font-size: 22px; }
@@ -174,6 +178,8 @@ h1 { margin: 0; font-size: clamp(21px, 2.5vw, 29px); font-weight: 550; line-heig
   .outline-list { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 390px) {
+  .topbar { flex-wrap: wrap; }
+  .top-actions { margin-left: auto; }
   .offline-badge { display: none; }
   .stats { gap: 16px; }
   .transport .button { font-size: 11px; gap: 5px; }

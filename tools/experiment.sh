@@ -69,6 +69,8 @@ Same task and rubric, no prescribed key actions. All bundled tasks remain pilot.
 --concurrency controls root jobs within the currently active system, not HTTP requests.
 Use --yes only to explicitly authorize paid calls. No adapter total cost/token/time cap.
 Guide: docs/OPEN_ACTION_EXPERIMENTS.md. Offline playback: docs/PLAYBACK_REVIEW.md.
+After generation, REVIEW_DELIVERY.txt identifies the whole-batch ZIP to send.
+Recipients extract it and open 打开故事.html; no installation or API key needed.
 Human review: tools/approve_eval30.py.
 EOF
     ;;

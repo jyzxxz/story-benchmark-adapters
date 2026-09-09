@@ -75,7 +75,9 @@ bash experiment.sh verify --out work/experiments/open-round1
 
 `sealed`、退出码和 `comparison_ready` 不代表质量通过。各故事以自己的实际路径和画面受评，不把另一个系统的剧情当成答案。不仅保留故事或 PNG，必须保留完整批次及 `runs/`。
 
-新运行会在各系统批次的 `playback/<run_id>/` 自动生成离线图文回放。旧结果或整个实验也可整理成可分发的目录和 ZIP：
+新运行结束后会自动打包**所有已封存小说**：在实验/批次输出目录打开 `REVIEW_DELIVERY.txt`，把其中指定的 `review.zip` 发给评审者。接收者解压后双击 **`打开故事.html`**，即可浏览全部小说、逐页播放并返回总目录，无需安装项目、账号或 API 密钥。目录保留失败样本并显示尚未封存的数量，八项原始指标不变。
+
+每篇仍有独立的 `playback/<run_id>/` 回放；旧结果或整个实验也可手动整理成可分发的目录和 ZIP：
 
 ```bash
 bash experiment.sh playback --input work/experiments/open-round1 --out work/review/open-round1

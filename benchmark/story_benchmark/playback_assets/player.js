@@ -10,7 +10,7 @@
     "choice-list", "end-note", "end-detail", "timeline", "jump-form", "jump-page",
     "jump-button", "previous", "autoplay", "autoplay-label", "next", "delay",
     "playback-status", "outline-toggle", "outline", "outline-list", "outline-count",
-    "observation-rule", "evidence-banner", "evidence-title", "evidence-detail", "run-status",
+    "observation-rule", "evidence-banner", "evidence-title", "evidence-detail", "run-status", "collection-link",
   ].map((id) => [id, byId(id)]));
 
   const kindNames = {
@@ -267,6 +267,9 @@
       throw new Error("无法读取回放数据。请确认 index.html、data.js、player.js 与 player.css 位于同一目录，并完整解压回放包后再打开。");
     }
     pages = data.pages;
+    // Only the exporter-provided collection location is allowed. Standalone
+    // samples never advertise a parent catalog that does not exist.
+    ui["collection-link"].hidden = data.collection_href !== "../../index.html";
     setText(ui["sample-id"], asText(data.sample_id) || "匿名故事样本");
     const counts = data.counts || {};
     setText(ui["segment-count"], asCount(counts.story_segments));

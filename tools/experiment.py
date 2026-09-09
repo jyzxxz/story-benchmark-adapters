@@ -18,6 +18,7 @@ import uuid
 
 from open_eval30 import ROOT, CATALOG, catalog_sources, expand_suite, digest
 from story_benchmark.compiler import compile_case, verify_bundle
+from story_benchmark.batch import publish_review_delivery
 from story_benchmark.io import atomic_json, atomic_write, read_json, redact, safe_child
 
 SYSTEMS = ('if_line', 'ai4visualnovel', 'infiplot')
@@ -211,7 +212,7 @@ def batch_command(out: Path, system: str, mode: str, concurrency: int, secrets: 
     return command
 
 
-def summarize(out: Path, plan: dict, stages: list[dict]) -> dict:
+def summarize(out: Path, plan: dict, stages: list[dict], review_delivery: dict | None = None) -> dict:
     summaries = {}
     for system in plan['systems']:
         path = out/system/'results.json'
@@ -228,6 +229,8 @@ def summarize(out: Path, plan: dict, stages: list[dict]) -> dict:
               'updated_at':datetime.now(timezone.utc).isoformat()}
     result['all_scopes_reached'] = all(s['scope_reached']==s['expected_attempts'] for s in summaries.values())
     result['all_evidence_verified'] = all(s['evidence_verified']==s['expected_attempts'] for s in summaries.values())
+    if review_delivery is not None:
+        result['review_delivery'] = review_delivery
     atomic_json(out/'experiment_summary.json', result)
     lines = ['# Experiment summary', '', 'Five content quality metrics remain unevaluated. No missing value is replaced with zero.', '',
              '| System | Expected attempts | Rows | Scope reached | Evidence verified |', '|---|---:|---:|---:|---:|']
@@ -235,14 +238,28 @@ def summarize(out: Path, plan: dict, stages: list[dict]) -> dict:
     lines += ['', 'Retain whole system batch directories, including failures. Reading-window completion is not full-story completion.',
               'See experiment_summary.json, each results.json, metrics.json, errors.jsonl, and evaluation/ packages.',
               'Latency comparisons must disclose scheduling, host load and provider throttling.']
+    if review_delivery is not None:
+        lines += ['', '## Offline review delivery', '',
+                  'Status: ' + str(review_delivery.get('status', 'unknown'))]
+        if review_delivery.get('zip_file'):
+            lines += ['ZIP to send: ' + str(review_delivery['zip_file']),
+                      'Extract the whole ZIP, then open index.html. No model calls or native services are needed for reading.']
+        if review_delivery.get('entry_file'):
+            lines += ['Local reader: ' + str(review_delivery['entry_file'])]
+        lines += ['Delivery is derived from sealed evidence and does not change native stop reasons or the eight metrics.',
+                  'See review-delivery.json and REVIEW_DELIVERY.txt for availability and any missing/unsealed runs.']
     atomic_write(out/'EXPERIMENT_REPORT.md', '\n'.join(lines)+'\n')
     return result
 
 
 def execute(out: Path, plan: dict, args: argparse.Namespace) -> int:
     stages = []
+    generation_attempted = False
     session_file = out/'sessions'/(datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')+'-'+uuid.uuid4().hex[:8]+'.json')
     def stage(system: str, mode: str) -> int:
+        nonlocal generation_attempted
+        if mode == '--resume':
+            generation_attempted = True
         code = call(batch_command(out,system,mode,args.concurrency,args.secrets,plan['attempts_per_system']),out)
         stages.append({'system':system,'mode':mode,'returncode':code})
         atomic_json(session_file, {'stages':stages,'concurrency':args.concurrency})
@@ -287,6 +304,21 @@ def execute(out: Path, plan: dict, args: argparse.Namespace) -> int:
             stages.append({'mode':'interrupted','returncode':130})
             summarize(out,plan,stages)
             return 130
+        finally:
+            # Keep verification/preflight read-only with respect to delivery.
+            # On an interrupted/partly failed run, package any sealed samples
+            # after the native subprocess has completed its own cleanup.
+            has_sealed = False
+            if not args.verify and not args.preflight:
+                has_sealed = any(next((out/system/'runs').glob('*/manifest.json'), None) is not None
+                                 for system in plan['systems'])
+            if not args.verify and not args.preflight and (generation_attempted or has_sealed):
+                delivery = publish_review_delivery(out)
+                try:
+                    summarize(out,plan,stages,review_delivery=delivery)
+                except (OSError, ValueError, KeyError, TypeError) as exc:
+                    print(json.dumps({'review_delivery_summary_write_failed': redact(str(exc))},
+                                     ensure_ascii=False), file=sys.stderr, flush=True)
 
 
 def main(argv: list[str] | None = None) -> int:

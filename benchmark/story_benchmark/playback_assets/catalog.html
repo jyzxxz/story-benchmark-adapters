@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>全部故事 · 离线阅览室</title>
+  <link rel="stylesheet" href="catalog.css">
+  <script src="catalog-data.js" defer></script>
+  <script src="catalog.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="#catalog" aria-label="跳到全部故事">
+        <span class="brand-mark" aria-hidden="true">S</span>
+        <span><strong>故事阅览室</strong><small>STORY COLLECTION</small></span>
+      </a>
+      <span class="offline-badge"><span aria-hidden="true"></span>本地打开 · 无需安装</span>
+    </header>
+
+    <section class="hero" aria-labelledby="catalog-title">
+      <div class="hero-text">
+        <p class="eyebrow">把所有故事，放在同一个入口。</p>
+        <h1 id="catalog-title">选择一份记录，<br>开始阅读。</h1>
+        <p class="hero-detail">正文、画面与当次选择，按原有顺序回放。<br>未生成正文的记录也在这里保留。</p>
+      </div>
+      <div class="open-guide">
+        <span class="guide-label">打开方式</span>
+        <p><b>01</b><span>完整解压收到的 ZIP 文件</span></p>
+        <p><b>02</b><span>双击最外层的 <code>index.html</code></span></p>
+        <p><b>03</b><span>点击下方任意故事卡片</span></p>
+        <small>保留整个文件夹。无需安装程序、登录或填写 API 密钥。</small>
+      </div>
+    </section>
+
+    <section class="coverage" aria-labelledby="coverage-title">
+      <div class="coverage-heading"><h2 id="coverage-title">本包收录范围</h2><span id="coverage-summary">正在核对记录范围…</span></div>
+      <dl class="coverage-stats">
+        <div><dt>可打开记录</dt><dd id="sample-total">—</dd></div>
+        <div><dt>计划总数</dt><dd id="expected-total">—</dd></div>
+        <div><dt>已封存</dt><dd id="sealed-total">—</dd></div>
+        <div><dt>未封存</dt><dd id="unsealed-total">—</dd></div>
+      </dl>
+      <div id="coverage-banner" class="coverage-banner" data-state="unknown">
+        <div><strong id="coverage-state">覆盖范围尚未确认</strong><p id="coverage-detail">以实际保存的记录为准，封存不代表生成成功。</p></div>
+        <progress id="coverage-progress" value="0" max="1" aria-label="计划记录封存比例" hidden></progress>
+      </div>
+    </section>
+
+    <p id="load-error" class="load-error" role="alert" hidden></p>
+
+    <main id="catalog" tabindex="-1">
+      <div class="catalog-heading">
+        <div><h2>全部故事记录</h2><p id="visible-count" role="status" aria-live="polite">正在读取本地目录…</p></div>
+        <label class="search-box" for="sample-search"><span aria-hidden="true">⌕</span><input id="sample-search" type="search" placeholder="按样本编号搜索" aria-label="按样本编号搜索" autocomplete="off" spellcheck="false" disabled></label>
+      </div>
+      <div class="catalog-toolbar">
+        <div class="filters" role="group" aria-label="按正文情况筛选">
+          <button id="filter-all" type="button" data-filter="all" aria-pressed="true" disabled>全部</button>
+          <button id="filter-body" type="button" data-filter="hasbody" aria-pressed="false" disabled>有正文</button>
+          <button id="filter-empty" type="button" data-filter="empty" aria-pressed="false" disabled>零正文</button>
+        </div>
+        <p>筛选只改变显示，不排除失败记录。</p>
+      </div>
+      <div id="cards" class="cards"></div>
+      <div id="empty-state" class="empty-state" hidden><strong>没有匹配的记录</strong><p>试试清空搜索，或切换到“全部”。</p><button id="reset-filters" type="button">显示全部记录</button></div>
+    </main>
+
+    <footer class="page-footer"><p>本地回放不调用模型，不生成新内容。记录完整性、生成成功与内容质量分别判断。</p><p id="observation-rule"></p></footer>
+  </div>
+  <noscript><p class="noscript">请启用 JavaScript，并完整解压后打开 index.html；目录数据保存在同目录的 catalog-data.js 中。</p></noscript>
+</body>
+</html>

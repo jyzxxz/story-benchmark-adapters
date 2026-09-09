@@ -209,6 +209,25 @@ def summarize(out,plan):
     return summary
 
 
+def publish_review_delivery(out):
+    """Surface a derived review ZIP without changing or retrying generation."""
+    try:
+        from .review_delivery import publish_delivery
+        delivery = publish_delivery(Path(out))
+        if not isinstance(delivery, dict):
+            raise TypeError('review_delivery_result_must_be_object')
+    except Exception as exc:
+        delivery = {'status': 'failed', 'stage': 'review_delivery',
+                    'error_type': type(exc).__name__, 'message': redact(str(exc)),
+                    'generation_retry_requested': False}
+    print(json.dumps({'review_delivery': delivery}, ensure_ascii=False), flush=True)
+    if delivery.get('zip_file'):
+        print('Review ZIP to send:', delivery['zip_file'], flush=True)
+    elif delivery.get('status') in ('failed', 'no_sealed_runs'):
+        print('Review delivery:', delivery['status'], '- generation was not retried.', flush=True)
+    return delivery
+
+
 def execute_plan(out,concurrency):
     from .runner import adapter_source_inventory
     if type(concurrency) is not int or concurrency<=0:
@@ -266,7 +285,19 @@ def execute_plan(out,concurrency):
         with ThreadPoolExecutor(max_workers=min(concurrency,plan['count'])) as pool:
             futures=[pool.submit(one,job) for job in plan['jobs']]
             for future in as_completed(futures):future.result()
-        return summarize(out,plan)
+        result = summarize(out,plan)
+        delivery = publish_review_delivery(out)
+        # A resumed batch keeps the same result; transient reuse information
+        # belongs in review-delivery.json rather than the generation summary.
+        result['review_delivery'] = {key: value for key, value in delivery.items() if key != 'reused'}
+        # This is batch-level delivery metadata, outside every sealed root.
+        # Failure to persist it must not turn a generated story into a retry.
+        try:
+            atomic_json(out/'results.json', result)
+        except OSError as exc:
+            print(json.dumps({'review_delivery_summary_write_failed': redact(str(exc))},
+                             ensure_ascii=False), file=sys.stderr, flush=True)
+        return result
     finally:
         session_workers=[]
         for job in plan['jobs']:
@@ -312,8 +343,11 @@ def main(system=None):
                 result={'state':'planned','count':len(plan['jobs']),'out':str(args.out)} if args.plan_only else execute_plan(args.out,args.concurrency)
         # Full evidence remains on disk; compact terminal summary only.
         if 'runs' in result:
+            delivery = result.get('review_delivery')
             result={'batch_id':result['batch_id'],'system':system,'out':str(args.out),
                     'runs':[{k:r.get(k) for k in ('run_id','state','scope_reached','stop_reason','input_audit')} for r in result['runs']]}
+            if delivery is not None:
+                result['review_delivery'] = delivery
         print(json.dumps(result,ensure_ascii=False,indent=2))
         return 0 if result.get('ok',True) else 2
     except (BenchmarkError,OSError,KeyError,ValueError) as exc:
