@@ -22,6 +22,9 @@ case "$MODE" in
   preview)
     exec python3 tools/open_eval30.py "$@"
     ;;
+  playback)
+    exec python3 tools/export_playback.py "$@"
+    ;;
   preview-legacy)
     exec python3 tools/eval30.py --legacy-actions "$@"
     ;;
@@ -60,10 +63,13 @@ Same task and rubric, no prescribed key actions. All bundled tasks remain pilot.
   bash experiment.sh prepare --allow-pilot              # freeze inputs; no paid calls
   bash experiment.sh resume --out work/experiments/NAME # queued-only; asks RUN
   bash experiment.sh verify --out work/experiments/NAME # no credentials/models
+  bash experiment.sh playback --input work/experiments/NAME --out work/review/NAME
+                                                       # export offline folder/ZIP; no models
 --count is per-system TOTAL attempts; --repeat is repetitions PER CASE. Do not combine.
 --concurrency controls root jobs within the currently active system, not HTTP requests.
 Use --yes only to explicitly authorize paid calls. No adapter total cost/token/time cap.
-Guide: docs/OPEN_ACTION_EXPERIMENTS.md. Human review: tools/approve_eval30.py.
+Guide: docs/OPEN_ACTION_EXPERIMENTS.md. Offline playback: docs/PLAYBACK_REVIEW.md.
+Human review: tools/approve_eval30.py.
 EOF
     ;;
   *) echo "Unknown mode: $MODE. Use --help." >&2; exit 2 ;;

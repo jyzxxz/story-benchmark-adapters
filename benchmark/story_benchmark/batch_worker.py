@@ -13,9 +13,9 @@ import uuid
 
 from .batch import check_bundle, driver_for, read_plan
 from .gateway import ModelGateway
-from .io import BenchmarkError, read_json, sha256
+from .io import BenchmarkError, atomic_json, read_json, sha256
 from .provenance import verify_repository, source_identity
-from .recording import Recorder, compute_metrics, jsonl, make_review_packages, seal, verify_recording, utc_now, audit_native_sources
+from .recording import Recorder, compute_metrics, jsonl, make_review_packages, seal, verify_recording, utc_now, audit_native_sources, redact_evidence
 from .runner import adapter_source_inventory
 
 
@@ -153,6 +153,39 @@ def audit_inputs(root,expected):
             'scope':'external_task_equal_native_internal_prompts_preserved'}
 
 
+def export_playback_after_seal(root):
+    """Create a derived reader outside evidence; export failures never resend a run."""
+    root = Path(root).resolve()
+    destination = root.parent.parent / 'playback' / root.name
+    status_file = root.parent.parent / 'playback-status' / (root.name + '.json')
+    status = {'stage': 'playback_export', 'root_run_id': root.name,
+              'destination': str(destination), 'generation_retry_requested': False}
+    try:
+        if destination.exists():
+            entry = destination / 'review/index.html'
+            if not entry.is_file():
+                raise BenchmarkError('playback_destination_exists_without_reader_use_new_directory')
+            status.update(status='already_exists', existing_entry_file=str(entry),
+                          existing_export_reverified=False,
+                          message='Existing export was not overwritten. Inspect it or export into a new directory.')
+        else:
+            from .playback import export_run
+            status.update(status='ready', report=export_run(root, destination, make_zip=True))
+    except Exception as exc:
+        # Keep failure information out of the sealed manifest, metrics and errors.
+        status.update(status='failed', error_type=type(exc).__name__,
+                      message=redact_evidence(str(exc)))
+    try:
+        atomic_json(status_file, status)
+    except Exception as exc:
+        # A full/read-only output disk must not turn an already sealed story into
+        # a generation failure. The existing launch log remains a second channel.
+        status['status_write_error'] = {'error_type': type(exc).__name__,
+                                       'message': redact_evidence(str(exc))}
+    print(json.dumps(status, ensure_ascii=False), file=sys.stderr, flush=True)
+    return status
+
+
 def run_job(plan,job,root,driver=None):
     root=Path(root).resolve()
     if plan.get('adapter_source_inventory')!=adapter_source_inventory():
@@ -266,6 +299,7 @@ def run_job(plan,job,root,driver=None):
         'formal_eligibility':'requires_frozen_pilot_validation_and_content_review'}
     seal(root,manifest)
     verify_recording(root)
+    export_playback_after_seal(root)
     return manifest
 
 

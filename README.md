@@ -75,6 +75,14 @@ bash experiment.sh verify --out work/experiments/open-round1
 
 `sealed`、退出码和 `comparison_ready` 不代表质量通过。各故事以自己的实际路径和画面受评，不把另一个系统的剧情当成答案。不仅保留故事或 PNG，必须保留完整批次及 `runs/`。
 
+新运行会在各系统批次的 `playback/<run_id>/` 自动生成离线图文回放。旧结果或整个实验也可整理成可分发的目录和 ZIP：
+
+```bash
+bash experiment.sh playback --input work/experiments/open-round1 --out work/review/open-round1
+```
+
+解压完整 ZIP 后打开 `index.html`，无需 API、原生服务或额外安装。回放展示本次实际路径和选择，不继续生成未选分支；原始八维证据保持不变。详见 [故事查看与人工评审](docs/PLAYBACK_REVIEW.md)。
+
 ## 版本与验证边界
 
 内置题库仍为 `pilot`，上传、编译成功不代表人工批准。正式运行需人工审阅后使用 `tools/approve_eval30.py` 创建与内容哈希绑定的副本，命令见完整使用说明。`full` 仅表示规模，不表示正式审批。

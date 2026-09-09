@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>故事回放 · 离线阅读</title>
+  <link rel="stylesheet" href="player.css">
+  <script src="data.js" defer></script>
+  <script src="player.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="#main" aria-label="跳到故事">
+        <span class="brand-mark" aria-hidden="true">S</span>
+        <span><strong>故事回放</strong><small>STORY REVIEW</small></span>
+      </a>
+      <div class="top-actions">
+        <span class="offline-badge"><span aria-hidden="true"></span>离线 · 实际路径</span>
+        <button id="outline-toggle" class="button subtle" type="button" aria-expanded="false" aria-controls="outline" disabled>页目录</button>
+      </div>
+    </header>
+
+    <section class="intro" aria-labelledby="sample-title">
+      <div>
+        <p class="eyebrow">一份已经发生的故事记录</p>
+        <h1 id="sample-title">按本次实际路径，逐页阅读。</h1>
+        <p id="sample-id" class="sample-id">正在读取本地文件…</p>
+      </div>
+      <dl class="stats" aria-label="记录范围">
+        <div><dt>正文段</dt><dd id="segment-count">—</dd></div>
+        <div><dt>已记录画面</dt><dd id="frame-count">—</dd></div>
+        <div><dt>缺失画面</dt><dd id="missing-count">—</dd></div>
+      </dl>
+    </section>
+
+    <section id="evidence-banner" class="evidence-banner" data-evidence="unknown" aria-labelledby="evidence-title">
+      <div><strong id="evidence-title">证据类型尚未确认</strong><p id="evidence-detail">正在核对这份记录属于真实生成还是固定响应测试。</p></div>
+      <p id="run-status" class="run-status">等待读取运行状态</p>
+    </section>
+
+    <p id="load-error" class="load-error" role="alert" hidden></p>
+
+    <div id="workspace" class="workspace">
+      <main id="main" class="player" tabindex="-1">
+        <div class="scene-topline">
+          <span id="kind-label" class="kind-label">等待载入</span>
+          <span id="scope-label" class="scope-label">仅回放已保存的内容</span>
+        </div>
+
+        <div id="visual-stage" class="visual-stage" aria-label="本页画面">
+          <img id="scene-image" alt="" hidden>
+          <div id="visual-empty" class="visual-empty">
+            <span class="empty-mark" aria-hidden="true">◈</span>
+            <strong id="image-state-title">载入故事记录</strong>
+            <p id="image-state-detail">正文与画面保留当次记录的对应关系。</p>
+          </div>
+          <span id="image-warning" class="image-warning" hidden></span>
+        </div>
+
+        <section class="reading-panel" aria-labelledby="speaker-label">
+          <div class="reading-heading">
+            <h2 id="speaker-label">故事记录</h2>
+            <span id="page-label" class="page-label">— / —</span>
+          </div>
+          <p id="page-context" class="page-context" hidden></p>
+          <div id="story-text" class="story-text"></div>
+          <section id="choice-panel" class="choice-panel" aria-label="当次选择记录" hidden>
+            <p id="choice-context" class="choice-context"></p>
+            <ol id="choice-list" class="choice-list"></ol>
+            <p class="choice-note">选项为当次记录，不能在此改选。未记录的分支不会补写或生成。</p>
+          </section>
+          <div id="end-note" class="end-note" hidden>
+            <strong>已到本次记录终点</strong>
+            <p id="end-detail"></p>
+          </div>
+        </section>
+
+        <footer class="controls">
+          <div class="progress-row">
+            <label for="timeline" class="visually-hidden">跳转到第几页</label>
+            <input id="timeline" class="timeline" type="range" min="1" max="1" value="1" step="1" disabled>
+            <form id="jump-form" class="jump-form">
+              <label for="jump-page">第</label>
+              <input id="jump-page" type="number" min="1" max="1" value="1" inputmode="numeric" aria-label="跳转页码" disabled>
+              <span>页</span>
+              <button id="jump-button" class="jump-button" type="submit" disabled>跳转</button>
+            </form>
+          </div>
+          <div class="transport-row">
+            <div class="transport">
+              <button id="previous" class="button" type="button" disabled><span aria-hidden="true">←</span> 上一页</button>
+              <button id="autoplay" class="button primary" type="button" aria-pressed="false" disabled><span id="autoplay-label">自动播放</span></button>
+              <button id="next" class="button" type="button" disabled>下一页 <span aria-hidden="true">→</span></button>
+            </div>
+            <label class="speed-label" for="delay">每页
+              <select id="delay" disabled>
+                <option value="5000">5 秒</option>
+                <option value="8000" selected>8 秒</option>
+                <option value="12000">12 秒</option>
+                <option value="20000">20 秒</option>
+              </select>
+            </label>
+          </div>
+          <p id="playback-status" class="playback-status" role="status" aria-live="polite">方向键或空格翻页 · 遇到选择页，自动播放会暂停</p>
+        </footer>
+      </main>
+
+      <aside id="outline" class="outline" aria-label="页目录" hidden>
+        <div class="outline-heading"><h2>页目录</h2><span id="outline-count"></span></div>
+        <p class="outline-intro">按记录顺序查看，点击可跳转。</p>
+        <ol id="outline-list" class="outline-list"></ol>
+      </aside>
+    </div>
+
+    <footer class="page-footer">
+      <span>本地回放不调用模型，也不产生新的故事。</span>
+      <p id="observation-rule"></p>
+    </footer>
+  </div>
+  <noscript><p class="noscript">此离线播放器需要启用 JavaScript。故事数据保存在同目录的 data.js 中。</p></noscript>
+</body>
+</html>
