@@ -77,13 +77,15 @@ bash experiment.sh verify --out work/experiments/open-round1
 
 新运行结束后会自动打包**所有已封存小说**：在实验/批次输出目录打开 `REVIEW_DELIVERY.txt`，把其中指定的 `review.zip` 发给评审者。接收者解压后双击 **`打开故事.html`**，即可浏览全部小说、逐页播放并返回总目录，无需安装项目、账号或 API 密钥。目录保留失败样本并显示尚未封存的数量，八项原始指标不变。
 
+**本地也能直接看，不用先解压 ZIP。** 在实验输出的 `review-delivery.json` 中找到顶层 `entry_file`，用浏览器打开该 `打开故事.html`；也可以进入上述 ZIP 同级的 `review/` 文件夹双击打开。三个项目使用同一套目录和播放器。Linux 无桌面服务器上的结果可下载到自己的电脑阅读。
+
 每篇仍有独立的 `playback/<run_id>/` 回放；旧结果或整个实验也可手动整理成可分发的目录和 ZIP：
 
 ```bash
 bash experiment.sh playback --input work/experiments/open-round1 --out work/review/open-round1
 ```
 
-解压完整 ZIP 后打开 `index.html`，无需 API、原生服务或额外安装。回放展示本次实际路径和选择，不继续生成未选分支；原始八维证据保持不变。详见 [故事查看与人工评审](docs/PLAYBACK_REVIEW.md)。
+手动导出后，本地直接打开 `work/review/open-round1/review/打开故事.html`；接收者解压完整 ZIP 后打开同名文件。回放展示本次实际路径和选择，不继续生成未选分支；原始八维证据保持不变。详见 [本地查看、打包与问题处理](docs/PLAYBACK_REVIEW.md)；可发给阅读者的短版见 [评审者使用说明](docs/REVIEWER_QUICKSTART.md)。
 
 ## 版本与验证边界
 

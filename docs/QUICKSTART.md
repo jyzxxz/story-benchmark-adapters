@@ -146,6 +146,12 @@ python3 tools/run_batch.py --system infiplot --out work/results/round1-infi --ve
 
 正文、选择、人物、原始模型调用、候选图片、实际显示画面及五份内容评审包的字段对应见 [八项记录规范](BATCH_RECORDING.md)。不要只交付最终正文或图片文件夹；保留整个根运行目录，才能复核一段文字对应哪张画面、来源调用和使用量。
 
+### 本地查看和发给评审者
+
+实际生成结束后，实验/批次输出目录会写入 `review-delivery.json` 和 `REVIEW_DELIVERY.txt`。本地查看时，按 JSON 顶层的 `entry_file` 路径，用浏览器打开 `打开故事.html`，无需启动原生服务或先解压 ZIP。要交给别人，则发送 TXT 指定的 `review.zip`；接收者完整解压后双击 `打开故事.html`。
+
+总目录包含所有已封存样本，失败和零正文记录也保留。`ready` 表示评阅包已就绪，不代表故事质量通过；`partial` 表示仍有未封存记录。八项原始证据继续保留在原批次中。旧结果补导出、Windows/WSL 和 Linux 服务器查看步骤见 [本地回放与人工评审](PLAYBACK_REVIEW.md)。给接收者阅读的短版见 [评审者使用说明](REVIEWER_QUICKSTART.md)。
+
 ## 7. 先区分环境、适配与原生故障
 
 | 项目或层次 | 当前需要保留的边界 |

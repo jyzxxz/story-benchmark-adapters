@@ -2,6 +2,31 @@
 
 当前验证范围、结果与可复现检查见 [回放验证记录](PLAYBACK_VALIDATION.md)。
 
+## 本地直接查看：打开生成目录中的 HTML
+
+IF Line、AI4VisualNovel、InfiPlot 使用同一个离线回放格式。**生成者在本地直接打开文件夹里的播放器；发给别人时才需要发送 ZIP。** 查看已保存的故事不需要运行三个原生项目、配置 API 或重新生成。
+
+以实验输出目录 `work/experiments/open-round1` 为例：
+
+1. 生成结束后，在文件管理器中进入这个实验目录。
+2. 打开 `review-delivery.json`，找到顶层 `entry_file`，它是本次总目录 `review/打开故事.html` 的完整路径。也可以打开 `REVIEW_DELIVERY.txt` 找到 ZIP 路径，再进入该 ZIP 同级的 `review/` 文件夹。当前 TXT 只列出 ZIP 路径。
+3. 在文件管理器中双击 **`打开故事.html`**；也可以右键选择用浏览器打开。`index.html` 是相同的总目录入口。本地已有这个文件夹时，无需压缩或解压。
+4. 在总目录选择一个样本，使用“下一页”“上一页”查看文字、图片和实际选择；使用“返回全部故事”切换样本。
+
+路径中的 `<snapshot>` 由程序产生，无需手工填写或猜测。请按当前 `review-delivery.json` 定位，避免打开旧快照。
+
+| 使用环境 | 本地查看方式 |
+|---|---|
+| 有桌面的电脑 | 用文件管理器进入 `review/`，双击 `打开故事.html`，用浏览器阅读 |
+| Windows 上用 WSL2 生成 | 在 WSL 的实验目录执行 `explorer.exe .` 打开 Windows 文件管理器，再按上述步骤打开；也可以把完整 `review/` 文件夹复制到 Windows 目录后打开 |
+| 没有桌面的 Linux 服务器 | 将 `review.zip` 下载到自己的电脑，完整解压后打开 `打开故事.html`；服务器终端本身不显示图文播放器 |
+
+Windows 原生浏览器可以阅读；WSL2/Linux 的安装要求用于生成程序。不要把 GitHub 的 HTML 源码预览、编辑器里的 HTML 源文件或压缩包预览当作播放器页面。
+
+播放器支持翻页、自动播放、页码跳转和页面目录。自动播放在选择页暂停，阅读已执行选择后点“下一页”继续。公共开头、选择或记录说明页可能没有图片；正文页缺图时会明确显示状态，不会借用其他页的图片。
+
+可直接发给阅读者的简明说明见 [评审者打开与阅读说明](REVIEWER_QUICKSTART.md)。
+
 ## 整批小说发给评审者：只发一个 ZIP
 
 更新后，通过 `bash experiment.sh quick/run/resume ...` 完成实际生成时，会自动把本次实验三个项目**所有已封存的小说**整理成一个评审包。单独运行某个项目的批量程序，也会自动整理该项目的全部已封存结果。
@@ -70,7 +95,7 @@ bash experiment.sh playback \
   --out work/review/open-round1
 ```
 
-这条命令为已经封存的故事生成统一目录和 ZIP。打开 `work/review/open-round1/review/index.html`，或将 `work/review/open-round1/review.zip` 发给阅读者。命令返回的报告也给出 `entry_file` 和 `zip_file`。原始运行目录不被修改；输出目录必须是新目录，不覆盖历史回放包。
+这条命令为已经封存的故事生成统一目录和 ZIP。本地直接打开 `work/review/open-round1/review/打开故事.html`（或同目录 `index.html`）；发送给别人则使用 `work/review/open-round1/review.zip`。命令返回的报告也给出入口和 ZIP 路径。原始运行目录不被修改；输出目录必须是新目录，不覆盖历史回放包。
 
 也可以只导出一个系统批次：
 
@@ -147,6 +172,16 @@ python3 tools/export_playback.py --input /path/to/sealed-run --out /path/to/new-
 八项评测字段和适用范围见 [BATCH_RECORDING.md](BATCH_RECORDING.md)。回放本身不自动产生内容评分，也不代表质量验收通过。
 
 ## 导出失败时怎么处理
+
+先区分“生成没有正文”“派生导出失败”和“打开方式不对”：
+
+| 现象 | 检查和处理 |
+|---|---|
+| 只看到 HTML 代码 | 在文件管理器中右键 HTML，选择用浏览器打开，不在代码编辑器或 GitHub 文件预览中阅读 |
+| 页面缺图或提示数据无法加载 | 确认已完整解压，且 `data.js`、`player.js`、`images/` 等随包文件仍在原位置；总目录还依赖 `catalog-data.js` 和 `samples/`。原记录标记的缺图仍会如实显示 |
+| 只有公共开头或失败说明 | 查看该样本的停止状态；播放器能打开不等于原生生成成功，不需要为“打开故事”再次付费生成 |
+| 总目录数量少于计划数 | 查看 `review-delivery.json` 的状态和目录的未封存数；`partial` 只表示当前已封存部分可交付，未封存项不会有完整播放器 |
+| 找不到本地入口或 ZIP | 查看 `review-delivery.json`；`failed` / `no_sealed_runs` 没有新的可交付包。旧结果可按上面的 `playback` 命令导出到新目录 |
 
 自动导出的结果写在 `<批次>/playback-status/<run_id>.json`，同时记录到已有 `launch_logs/<run_id>.log`。`status=ready` 表示回放导出完成；`status=failed` 表示派生导出失败。文件里会记录导出阶段、异常类型和原因。若目标已存在且有阅读入口，记录 `status=already_exists` 并保留现有目录；这不表示重新验证过旧回放，需要时应手动导出到新目录。
 
