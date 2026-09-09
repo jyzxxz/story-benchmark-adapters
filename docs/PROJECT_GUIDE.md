@@ -1,72 +1,58 @@
-# 项目使用与维护说明
+# 项目组成与维护边界
 
-本项目把一份共同故事任务和固定开头送入三个冻结版本的原生创作流程，并将实际路径、图文、调用和错误保存成同一套证据结构。它是生成与采集工具，不负责替项目修改剧情、补画或执行质量评分。
+**接手生成故事和跑实验，先读 [操作者交接手册](OPERATOR_HANDOFF.md)。** 本页解释代码、输入、证据与维护边界；安装及日常操作统一使用仓库根目录的 `bash experiment.sh`。
 
-## 版本与组成
+本项目把同一份故事任务和固定开头送入 IF Line、AI4VisualNovel、InfiPlot 的原生创作流程，保存实际路径、图文、调用与错误，并生成可直接打开的离线评审包。当前内置输入为 `v4-30-open-actions-pilot.2`：30 题均有设定和固定开头，尚待真实操作者审核。它不预设后续关键行动，不要求三者产生相同剧情。
 
-`baseline-lock.json` 保存三个上游提交、逐文件哈希和省略项。IF Line 仅应用 `native-patches/if_line/manifest.json` 声明的 HTML 转换修复；另外两个项目保持冻结源码。运行前后均检查源码身份。不要在 `systems/` 中安装依赖、保存密钥或生成结果，也不要直接 `git pull` 更新某个上游快照。
+## 仓库组成
 
 ```text
 systems/                  冻结原生源码及原许可证
-native-patches/            获准的 IF Line 源码差异
+native-patches/            获准的 IF Line HTML 转换修复
 benchmark/source/          原始题库与 recording_spec.v0.1.md
-benchmark/cases/           案例源文件
-benchmark/examples/        已编译的共同输入示例
-benchmark/profiles/        共同要求
-benchmark/story_benchmark/ 编译、原生驱动、调度、采集、校验
+benchmark/suites/eval30_open/ 当前 30 题、前缀、开头、版本及哈希
+benchmark/cases/           单题开发案例与历史协议材料
+benchmark/examples/        已编译示例；不是统一入口默认 30 题
+benchmark/story_benchmark/ 编译、驱动、调度、采集、校验与离线回放
 benchmark/native_shims/    外置启动、观察与环境适配
-tools/                    安装、配置、检查、启动包装器
-docs/                     交接、运行、数据与历史验证
-work/                     本机环境、缓存、配置、密钥和结果；Git 忽略
+tools/                   安装、配置、检查、实验入口与导出工具
+docs/                    现行说明、技术参考及有日期的历史验证
+work/                    本机环境、缓存、配置、密钥和结果；Git 忽略
 ```
 
-完整上游出处及文件范围见 [来源说明](PROVENANCE.md)。本仓库不是三个上游 Git 历史的镜像。省略的历史凭证、无关书籍和大型旧产物不需要接收者恢复。
+`baseline-lock.json` 保存三个上游提交、逐文件哈希和省略项。IF Line 应用 `native-patches/if_line/manifest.json` 声明的补丁；另外两个项目保持冻结源码。运行前后检查源码身份，不在 `systems/` 中安装依赖、保存密钥或生成结果，也不对上游快照单独 `git pull`。出处见 [来源说明](PROVENANCE.md)。本仓库包含所需快照，不镜像三个上游的全部 Git 历史。
 
-## 一次批次的生命周期
+## 实验与评审边界
 
-1. 准备并复核公共案例，编译一次，共用同一个 bundle；不对三个项目分别改写提示词。
-2. 在公共配置中冻结文字、图片、视觉审核模型与供应商，图片模型固定 `gpt-image-2`。模型采样参数与原生格式规则的差异会记录，完整内部消息不要求相同。
-3. 预检通过后，按 `count` 和 `concurrency` 建立不可变计划，每个根运行有独立服务、目录和状态。
-4. 原生流程生成并沿固定选项序号访问实际路径，达到共同窗口或出现原生结束/失败时停止；内部规划、审核、预取仍计入运行消耗。
-5. 导出八项指标证据、检查关联、封存文件哈希；批次汇总成功和失败。
-6. 比较输入与条件，再从评审包进行内容评价。评审结果另存，不能回传生成流程。
+1. 统一入口编译、复制并冻结共同输入；首个真实创作请求另有接收审计，不只比较文件哈希。
+2. 文字、图片、原生视觉审核的供应商和模型在公共配置中统一，图片模型使用 `gpt-image-2`。系统提示词、规划、审核、记忆与原生格式规则保留；完整内部消息不要求相同。
+3. 按相同题目顺序和次数执行。`--count` 是每系统总尝试数，`--repeat` 是每题每系统次数；三个系统按所选顺序执行，`--concurrency` 控制当前系统的根任务数。
+4. 每次保留一条实际访问路径。当前题库观察约 4000 个新增可见字符，按句界结束；公共开头不计入。没有全篇结局本身不扣分，原生提前结束、失败、正文不足和缺图都保留。
+5. 保存八项评测证据、关联与文件哈希。M1/M2/M3/M5/M6 待外部内容评审；M4/M7/M8 从实测时间、真实 usage 与图片记录汇总，未知值不填零。
+6. 生成后导出离线图文回放及总目录。它只展示已记录路径，不生成未选择路线，不改变原始指标。组织者保存整个实验目录，评审者接收 `REVIEW_DELIVERY.txt` 指定的 ZIP。
 
-当前 v4 案例是 4000 个新增可见字符的开发观察窗口，实际句界可能略长。它不是全篇多结局交付，InfiPlot 不因没有全篇结局受罚。窗口不足和原生失败必须保留。其他 29 道原 brief 已保存，但未自动编造并批准固定开头；正式实验应先完成题目复核。
+无适配器总 token、调用数、时间或费用上限；4000 字符不是费用上限。供应商额度、速率、上下文和原生内部循环仍可能限制运行。等待时间受调度、主机负载、冷启动与供应商影响，应随结果披露。
 
-## 使用者要配置的内容
+## 配置、冻结与迁移
 
-- 安装环境：按 [快速上手](QUICKSTART.md) 执行，三个原生运行环境分开。
-- `work/config/batch.local.json`：公共供应商地址、模型、共同 bundle、选项序号和三个原生环境路径。
-- `work/secrets.env`：仅保存 `BENCH_TEXT_API_KEY`、`BENCH_IMAGE_API_KEY`、`BENCH_VISION_API_KEY` 的本地值。终端已导出的同名变量优先，换 key 时注意清除旧变量。
-- 每次命令：项目名、尝试数、并发数、全新的输出目录。生成预算不设上限；服务商及原生代码限制仍存在。
+`work/config/batch.local.json` 保存本机路径和公共供应商配置；`work/secrets.env` 只在本地保存三个 `BENCH_*_API_KEY` 值。`experiment.sh` 经安全读取器加载密钥，不把该文件作为 shell 脚本执行。终端已导出的同名变量优先，换 key 时须检查旧变量。
 
-更换主机或移动仓库后重新执行 `configure_batch.py`，不要沿用另一台机器的绝对路径。脚本拒绝静默覆盖现有配置；确需重建可用 `--force`，旧供应商修改会被默认值替换，密钥文件不会覆盖。要保留自定义配置，请自行备份并迁移共同字段。
+新主机按交接手册重新安装并生成本机配置，不复制虚拟环境或旧绝对路径。`configure_batch.py` 默认拒绝覆盖；`--force` 会重建配置并恢复模板供应商字段，因此先备份需保留的设置。日常更换供应商/密钥使用 `bash experiment.sh configure`。
 
-## 生产运行与数据交接
+`prepare` 只冻结输入和实验计划；`preflight` 在新目录创建计划并检查所选环境；`resume` 从已有计划启动并再次预检，只派发从未开始的队列项。两者不能互相覆盖同一输出目录。输入、公共配置、代码和原目录位置在计划中冻结；升级或改变条件后创建新实验。文档更新是否影响旧计划，以实际代码清单校验为准。完整语义见 [实验协议与命令参考](OPEN_ACTION_EXPERIMENTS.md)。
 
-运行示例和退出码见 [批量运行](BATCH_RUNNING.md)。先用每项目 `count=1/concurrency=1` 确认接收者的供应商支持，再根据服务器资源与供应商速率调整。三个项目同时各并发 2，合计最多 6 个独立根运行；每个还可能有原生内部并行。没有大规模服务器负载测试数据，不给出未经测量的吞吐保证。
-
-`--resume` 只启动从未开始的队列项，不为凑数重跑失败。升级代码或修改输入后创建新批次，不继续旧版本冻结计划。进程被强杀后应先检查现场与原生服务状态，按运行文档处理遗留锁。
-
-给数据管理员保存整个批次目录，包括 `plan.json`、`scheduling/`、`runs/` 与汇总。给盲审者只提供相应 `evaluation/` 包及其引用的图片，不提供项目名、成本或私有诊断日志。八项所需字段及缺失语义见 [记录对照](BATCH_RECORDING.md)，原始需求在 [保存规范](../benchmark/source/recording_spec.v0.1.md)。M1/M2/M3/M5/M6 未自动评分，未知 token 与费用不当作零。
-
-## 开发检查与更新
+## 维护检查
 
 ```bash
 source work/activate.sh
 python3 tools/verify_sources.py
 python3 tools/doctor.py --system all
 python3 tools/smoke_test.py --system all --out work/smoke-release
-AI4VN_TEST_PYTHON="$PWD/work/envs/ai4visualnovel/bin/python" \
-  PYTHONPATH="$PWD/benchmark" work/envs/if_line/bin/python -m unittest discover -s benchmark/tests
+bash experiment.sh test
 ```
 
-`smoke_test.py` 使用本地固定响应验证真实原生链路，未证明供应商模型可用或故事质量。全套测试中依赖 opt-in 的项目会跳过，必须区分跳过与通过；各系统真实 smoke 独立执行。新增代码需要确认原生文件校验仍通过、相同任务没有多次注入、八项证据未失联。不要修改封存历史运行来迁就新 schema。
+`doctor` 和 `smoke` 不调用付费生成模型；后者使用本地固定响应检验原生链路，不证明真实模型可用或故事质量。已有验证报告分别注明提交、平台、夹具和跳过项，不能当作此后每个版本、每台机器都已验收。维护生成代码时应另跑对应记录/原生回归，确认输入、来源与八项证据未失联；不要修改封存历史运行迁就新 schema。
 
-发布时提交代码、文档、来源锁、示例与外置测试；排除 `work/`、密钥、数据库、依赖缓存和私人真实调用档案。交接安装器使用 `tools/linux/*py312.constraints.txt` 固定此次 Ubuntu 24.04 / Python 3.12 的 Python 解析版本，并用 `renderer-package-lock.json` 安装播放器依赖；InfiPlot 使用原生 pnpm 锁。实际版本另保存在 `work/installation/*freeze.txt`，随实验条件存档。系统包的安全更新仍由 Ubuntu 软件源提供；不能因此假定不同主机的硬件、内核和所有系统库完全相同。
+安装器用 `tools/linux/*py312.constraints.txt`、`renderer-package-lock.json` 与原生 pnpm 锁固定各环境依赖。实际版本保存在 `work/installation/`，随实验归档；硬件、内核和系统包更新仍需记录。发布提交代码、文档、来源锁、示例与测试，排除密钥、数据库、依赖缓存和私人调用档案。
 
-## GitHub 交给其他人
-
-仓库地址是 [jyzxxz/story-benchmark-adapters](https://github.com/jyzxxz/story-benchmark-adapters)。本次保持原有私有可见性；接收者需要先取得仓库读取权限，再通过自己的 GitHub 身份 clone。项目所有者可以在 GitHub Settings → Collaborators 中授予访问权限。不要通过共享生成 API key 来替代 GitHub 访问授权。
-
-建议把仓库链接、使用的提交号、[快速上手](QUICKSTART.md) 和 [交接验证](HANDOFF_VALIDATION_20260907.md) 一起给接收者。接收者的 API 供应商、额度和机器性能由其实际环境决定；历史本机结果只证明当时记录的条件。
+仓库 [jyzxxz/story-benchmark-adapters](https://github.com/jyzxxz/story-benchmark-adapters) 为公开仓库，接收者可直接克隆。交接时提供仓库链接、选定提交号和 [操作者交接手册](OPERATOR_HANDOFF.md)，让对方配置自己的供应商与密钥。历史验证和废弃协议由 [仓库导航](../README.md) 区分，不作为当前默认输入。

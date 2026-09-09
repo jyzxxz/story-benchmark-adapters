@@ -1,12 +1,14 @@
-# v3 运行说明
+# 历史兼容入口：v3 首选择文本运行
 
-三个系统使用同一份任务和共同配置，成功和原生失败均返回同一 `result.json` 结构。合同见 [V3_CONTRACT.md](V3_CONTRACT.md)。
+> **适用范围：`result-v3` / `first_unselected_choice`。**本页仅供复现旧文本接入或维护其兼容接口；它不执行现在的图文阅读窗口、完整八项证据采集和整批播放器导出。接手生产故事请使用[操作者交接说明](OPERATOR_HANDOFF.md)及[批量运行](BATCH_RUNNING.md)，不要从本页 `run-first` / `run-set` 开始新图文实验。
+
+v3 三个系统使用同一份任务和共同配置，成功和原生失败均返回同一 `result.json` 结构。历史合同见 [V3_CONTRACT.md](V3_CONTRACT.md)。下面的首选择停止规则属于 v3，不替代 v4 的实际路径与图文窗口。
 
 ## 环境
 
 所有环境、凭证、数据库和产物放在 `systems/` 外。公共 runner 使用 Python 3.10+ 标准库；Schema 测试另需 `jsonschema`。各原生环境分别准备：IF Line 使用 Python 3.12、外置 requirements-text.txt、PostgreSQL 16 与 Redis；AI4VisualNovel 使用 Python 3.10 与其原始 requirements；InfiPlot 使用 Node.js 22、pnpm 9.12.0 及原始 lockfile 的离线缓存。
 
-具体环境、缓存、数据库准备命令保存在 [环境安装说明](RUNNING_V2_HISTORY.md)。该文件中的旧 C1 入口与验收标准已被 v3 取代。IF Line 需独立空数据库，名称以 `if_line_bench_` 开头；管理器自行启动 API、worker、beat 与独立 Redis。InfiPlot 需要有效 Supabase 配置和登录 Cookie，适配器自行启动隔离 Next 副本。此次验收的本地身份 fixture 不代表生产账号验收。
+新机器的安装方法请以[快速上手](QUICKSTART.md)和[操作者交接说明](OPERATOR_HANDOFF.md)为准。[v2 历史安装记录](RUNNING_V2_HISTORY.md)仅用于查阅当时依赖与操作，不再作为安装入口。复现 v3 时，IF Line 需独立空数据库，名称以 `if_line_bench_` 开头；管理器自行启动 API、worker、beat 与独立 Redis。v3 InfiPlot 需要有效 Supabase 配置和登录 Cookie，适配器自行启动隔离 Next 副本；当时验收的本地身份 fixture 不代表生产账号验收。现行 v4 启动方式以交接说明为准。
 
 ## 编译与共同配置
 

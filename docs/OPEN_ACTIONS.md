@@ -1,6 +1,6 @@
 # 不预设关键行动：版本导航
 
-当前默认版本是 `v4-30-open-actions-pilot.2`，完整用法见 [当前使用说明](OPEN_ACTION_EXPERIMENTS.md)，30题可直接阅读 [完整设定和开头](../benchmark/suites/eval30_open/PROMPTS.md)。
+当前默认版本是 `v4-30-open-actions-pilot.2`，接手运行见 [操作者交接手册](OPERATOR_HANDOFF.md)，协议参考见 [当前使用说明](OPEN_ACTION_EXPERIMENTS.md)，30题可直接阅读 [完整设定和开头](../benchmark/suites/eval30_open/PROMPTS.md)。
 
 第一版 `v4-30-open-actions-pilot.1` 的实现、规则与前缀仍保留；第二版进一步中和固定开头末段中的二选一提示，提供可读题库与固定公共哈希，不覆盖第一版。两版都不预设关键行动，不能混用各自的case ID、源哈希或冻结实验。
 

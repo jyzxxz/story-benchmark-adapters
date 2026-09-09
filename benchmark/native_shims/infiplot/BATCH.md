@@ -1,5 +1,7 @@
 # InfiPlot 图文批量驱动（v4）
 
+> **现行 v4 驱动的开发补充参考。**接收者请按[操作者交接说明](../../../docs/OPERATOR_HANDOFF.md)完成统一安装、配置和运行；本页手工缓存/浏览器安装示例用于解释依赖与开发接口，不替代当前安装器及其锁定版本。批次的八项记录见[采集说明](../../../docs/BATCH_RECORDING.md)，本地打开故事与整批评阅交付见[回放说明](../../../docs/PLAYBACK_REVIEW.md)。
+
 大响应旁录、浏览器缓存驱逐、封存前脱敏与来源完整性检查见 [响应记录说明](../../../docs/INFIPLOT_RESPONSE_RECORDING.md)。
 
 本模块供公共 `batch` 入口调用，使用冻结 InfiPlot `a60e18bc663caaa134d9323a2b89159b7cc9bd05` 的原生中文 React 页面、`/api/start`、`/api/scene`、Session、Writer、角色生成、Painter 和预取。927 个原始源码文件逐字复制到每次运行的临时目录；源码锁在前后验证。它与 [只导出首个未选择菜单的 v3 适配器](README.md) 是两个运行入口。

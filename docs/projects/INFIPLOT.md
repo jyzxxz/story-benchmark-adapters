@@ -1,5 +1,7 @@
 # InfiPlot：Ubuntu 与 Windows WSL2 图文批量生成
 
+**本页是项目依赖、原生行为和排错参考。首次接手及日常实验请使用 [操作者交接手册](../OPERATOR_HANDOFF.md) 的 `bash experiment.sh`，三个项目使用同一套选题、记录和离线回放流程。**
+
 本指南面向 **Ubuntu 24.04 LTS**，以及 Windows 上的 **WSL2 + Ubuntu 24.04 LTS**。Windows 用户进入 WSL 的 Ubuntu 终端后，使用同一套 Linux 命令。此批量驱动使用 POSIX 进程组清理；不要直接用 Windows Python、PowerShell、Git Bash 或 `node.exe` 启动它。
 
 **验证范围：** 仓库已有原生 Next/React、本地双进程并行、恢复零重发、64 MiB/null 请求容量及真实图文故事的记录；这些既有证据来自原开发环境。本文按冻结源码及官方安装说明核对 Linux 部署步骤，不能把它当作“新 Ubuntu/WSL2 机器已完成真实生成”的证明。新机器需要先执行下面的本地验收，再运行自己的真实样本。
@@ -143,34 +145,32 @@ python3 tools/run_batch.py --system infiplot --preflight
 
 统一包装入口安全读取 `work/secrets.env`，不把它作为 shell 脚本执行。终端已显式导出的同名密钥优先；改变供应商时同时检查旧环境变量。
 
-先完成第 6 节的本地 smoke test，再用一个全新输出目录跑一个真实样本。统一包装入口会使用默认本地配置和 `work/secrets.env`；数量与并发可自行调整。下列命令会使用配置中的真实供应商：
+先完成第 6 节的本地 smoke test，再用全新实验目录跑一个真实样本。下列日常命令使用统一入口当前的 30 题开放行动候选集，读取本机供应商配置与密钥，展示规模并要求 `RUN` 确认；`quick` 只选第一题：
 
 ```bash
-python3 tools/run_batch.py --system infiplot --count 1 --concurrency 1 \
-  --out work/results/infiplot-live-check-01
+bash experiment.sh quick --allow-pilot --systems infiplot \
+  --out work/experiments/infiplot-live-check-01
 
-python3 tools/run_batch.py --system infiplot --count 6 --concurrency 2 \
-  --out work/results/infiplot-batch-01
+bash experiment.sh run --allow-pilot --systems infiplot --count 6 --concurrency 2 \
+  --out work/experiments/infiplot-batch-01
 ```
 
-`--count` 是整个批次的独立故事运行数；多个题目按公共 `bundles` 顺序循环取题。`--concurrency` 是同时运行的独立进程数。每个进程拥有自己的 Next 编译目录、浏览器、身份服务、原生端口与模型 relay；增加并发也会增加内存、磁盘、字体下载和模型调用压力，不能把单进程成功当作该服务器任意并发均可用。
+`--count` 是所选系统总尝试数，按选中题目顺序循环取题；默认 30 题时 `count=6` 只覆盖前 6 题。`--concurrency` 是同时运行的独立进程数。每个进程拥有自己的 Next 编译目录、浏览器、身份服务、原生端口与模型 relay；增加并发也会增加内存、磁盘、字体下载和模型调用压力，不能把单进程成功当作该服务器任意并发均可用。
 
 ```bash
-python3 tools/run_batch.py --system infiplot \
-  --out work/results/infiplot-batch-01 --resume --concurrency 2
-python3 tools/run_batch.py --system infiplot \
-  --out work/results/infiplot-batch-01 --verify
+bash experiment.sh resume --out work/experiments/infiplot-batch-01 --concurrency 2
+bash experiment.sh verify --out work/experiments/infiplot-batch-01
 ```
 
-恢复只派发从未开始的排队任务，不重发成功、失败或送达未知的故事。退出码 0 与 `state=sealed` 表示程序完成调度/封存，不等于每个故事成功。更新适配器、原生来源或共同条件后，新建批次；不编辑旧 plan，也不覆盖失败证据。完整共同命令见 [批量运行说明](../BATCH_RUNNING.md)。
+恢复只派发从未开始的排队任务，不重发成功、失败或送达未知的故事。`state=sealed` 只表示证据封存。统一入口与底层批量程序的退出码不同，见 [实验参考](../OPEN_ACTION_EXPERIMENTS.md)；均不代表内容质量通过。更新适配器、原生来源或共同条件后，新建批次；不编辑旧 plan，也不覆盖失败证据。完整共同命令见 [批量运行说明](../BATCH_RUNNING.md)。
 
 ## 5. 连续故事的公平范围与记录
 
-InfiPlot 原生持续续写，因此共同任务按连续阅读窗口结束；默认开发案例是 **4000 个新增可见 Unicode 字符**。到达阈值后按公共句界规则保存，实际字数可能略多；公共开头、菜单标题、内部规划和未选预取不计新增正文。窗口从共同 bundle 读取，不在单个系统配置里另设。`scope_reached=true` 与 `stop_reason=reading_window` 表示完成本次观察，`native_ended=null` 不表示适配器没工作，也不能改写成全篇已结束。
+InfiPlot 原生持续续写，因此共同任务按连续阅读窗口结束；当前默认 30 题使用 **4000 个新增可见 Unicode 字符** 的候选观察范围。到达阈值后按公共句界规则保存，实际字数可能略多；公共开头、菜单标题、内部规划和未选预取不计新增正文。窗口从共同 bundle 读取，不在单个系统配置里另设。`scope_reached=true` 与 `stop_reason=reading_window` 表示完成本次观察，`native_ended=null` 不表示适配器没工作，也不能改写成全篇已结束。
 
 `choice_indices` 是从 0 开始的菜单下标序列，用完重复最后一个。只记录原生 Session 确实提交的选择及其后续正文，不把点击意图或预取内容当成已走路径。评审只评价共同观察范围，不因某系统有结局额外加分，也不因 InfiPlot 没有全篇结局扣分；事实冲突、重复和没有推进仍可评价。
 
-每根运行位于 `work/results/<批次>/runs/<run_id>/`，至少核对：
+统一入口每根运行位于 `work/experiments/<实验>/infiplot/runs/<run_id>/`，单系统底层入口则是其批次目录中的 `runs/<run_id>/`。至少核对：
 
 | 内容 | 证据位置 |
 |---|---|
@@ -189,6 +189,8 @@ InfiPlot 原生持续续写，因此共同任务按连续阅读窗口结束；�
 M1/M2/M3/M5/M6 保存 AI 评审证据，分数在本阶段留空；M4 记录后端和无界面 DOM 时间，真实桌面呈现时间未测；M7 保存真实 usage 与缺失覆盖率；M8 分开统计图像请求、返回候选、落盘资产和实际画面。完整对应关系见 [八项评测记录说明](../BATCH_RECORDING.md)。
 
 原生预取保持启用。停止时关闭浏览器与原生消费者，网关继续收集已经发送的模型请求、图片和用量，因此退出可能需要等待。未读预取被关闭可能令**全局响应捕获 incomplete**，应与**已显示正文的调用关联是否完整**分开核查，不能删除这类记录以宣称全通过。具体来源边界见 [大响应记录说明](../INFIPLOT_RESPONSE_RECORDING.md)。
+
+生成/恢复后，本项目与其他两个项目一样自动整理离线图文目录和评审 ZIP。实验目录中的 `review-delivery.json.entry_file` 是本地浏览器入口，`REVIEW_DELIVERY.txt` 标出发送的 ZIP。接收者完整解压后双击 `打开故事.html`，无需运行原生服务。回放只展示实际路径；完整八项证据仍在原始目录，`organizer.json` 保留原始指标且不在盲审 ZIP 内。操作和故障定位统一见 [离线回放说明](../PLAYBACK_REVIEW.md)。
 
 ## 6. Linux 本地验收与故障定位
 

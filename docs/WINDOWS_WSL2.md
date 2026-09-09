@@ -2,7 +2,7 @@
 
 当前三个批量程序按 Linux/POSIX 进程、信号、服务和路径组织。Windows 用户使用 **WSL2 + Ubuntu 24.04 LTS**；不直接使用 Windows Python、Node、PostgreSQL 或 PowerShell 执行生成程序。Windows 安装 WSL 后，故事生成、模型缓存、图片与记录全部在 Linux 环境中运行。
 
-本页描述安装步骤，不表示当前 Windows 机器已经通过验收。安装后仍需按 [快速上手](QUICKSTART.md) 完成本地检查，再保存自己的真实生成记录。
+本页只补充 Windows 的环境准备；完整安装、配置、试跑、批量实验和交付按 [生成者交接手册](OPERATOR_HANDOFF.md) 操作。本页不表示当前 Windows 机器已经通过验收，需保存新机器自己的检查和真实生成记录。
 
 ## 1. 安装并确认 WSL2
 
@@ -48,7 +48,7 @@ git clone https://github.com/jyzxxz/story-benchmark-adapters.git
 cd story-benchmark-adapters
 ```
 
-`pwd` 应类似 `/home/你的Linux用户名`；`id -u` 不应为 `0`。私有仓库须先取得 GitHub 访问权限并完成自己的 Git 认证。不要把 GitHub token 拼进仓库 URL，也不要使用别人的 API 密钥代替 GitHub 授权。
+`pwd` 应类似 `/home/你的Linux用户名`；`id -u` 不应为 `0`。本仓库当前公开，无需申请仓库读取权限。API 密钥用于生成服务，不用于克隆仓库；不要把 GitHub token 拼进 URL。
 
 不要从 `/mnt/c/Users/...` 中直接运行全部数据库和依赖，也不要复制 Windows 的虚拟环境或 `node_modules`。Microsoft 建议 Linux 工具处理的项目放在 WSL 文件系统中，以避免跨系统文件访问的性能损失；Linux 的大小写与权限行为也不同。[WSL 文件系统说明](https://learn.microsoft.com/en-us/windows/wsl/filesystems)
 
@@ -57,15 +57,14 @@ cd story-benchmark-adapters
 在仓库根目录中运行：
 
 ```bash
-bash tools/bootstrap_linux.sh --system all
+bash experiment.sh setup
 source work/activate.sh
-python3 tools/configure_batch.py
 python3 tools/doctor.py --system all
 ```
 
-只运行一个项目时，把 `all` 改为对应的 `if_line`、`ai4visualnovel` 或 `infiplot`。系统包安装可请求 sudo；不要 `sudo bash` 运行整个安装器，也不要用 root 运行生成任务。`--skip-system-deps` 仅适用于管理员已安装好所有所需系统软件包的情况。
+推荐先为三系统准备统一环境，再通过实验命令的 `--systems` 选择要运行的项目。系统包安装可请求 sudo；不要 `sudo bash` 运行整个安装器，也不要用 root 运行生成任务。选择性低层安装见各项目说明；`--skip-system-deps` 仅适用于管理员已安装好所需系统软件包的情况。
 
-配置文件已存在时生成器拒绝覆盖；修改现有配置，或确认需要重建时显式使用 `--force`。已有密钥文件不会被覆盖。编辑 `work/config/batch.local.json`，只在共同 `providers` 内配置文字、图片和视觉模型；共同图片模型为 `gpt-image-2`。密钥只放在 `work/secrets.env`，`tools/run_batch.py` 默认安全读取它，无需也不应把密钥文件作为 shell 脚本执行。完整配置、成本、试跑与恢复规则见 [快速上手](QUICKSTART.md)，不要在三个项目里分别填写三套提示词和模型条件。
+`setup` 自动进入配置向导，为共同文字、图片、视觉审核服务填写自己的端点与密钥；图片模型为 `gpt-image-2`。后续更改用 `bash experiment.sh configure`。配置在 `work/config/batch.local.json`，密钥在 `work/secrets.env`，由运行器安全读取，不要 `source` 密钥文件。完整成本、试跑与恢复规则见 [交接手册](OPERATOR_HANDOFF.md)，不要分别给三个项目填写三套题目或模型条件。
 
 安装器使用 [Linux 交接环境锁](../tools/linux/README.md)：三个 Python 环境各自使用 Ubuntu 24.04 / Python 3.12 constraints，公共外置浏览器工具使用 npm 锁和 `npm ci`，InfiPlot 原生继续使用冻结 pnpm 锁。锁来自本次 Linux x86_64 实际安装，不表示在实体 Windows/WSL2 或 ARM64 上已完成验收。WSL 应在自己的 Linux 环境中安装这些版本，不能复制其他平台的二进制依赖。当前结果与待验收项见 [交接验证记录](HANDOFF_VALIDATION_20260907.md)。
 
@@ -95,10 +94,11 @@ python3 tools/smoke_test.py --system infiplot --out work/smoke-infi
 确认配置与本地检查后，下面的例子使用真实模型：
 
 ```bash
-python3 tools/run_batch.py --system infiplot --count 1 --concurrency 1 --out work/results/wsl-infi-check
+bash experiment.sh quick --allow-pilot --out work/experiments/wsl-check-01
+bash experiment.sh verify --out work/experiments/wsl-check-01
 ```
 
-另外两个项目只需换 `--system` 和独立输出目录。批量数量是尝试数；三个项目在三个终端运行时，并发数会相加。4000 字符是默认共同观察范围，适配器未设费用或总调用预算；原生规划、审核、失败重试与未选预取消耗均保存。
+这会安排默认开放题库第一题、三个项目各 1 次真实尝试，输入 `RUN` 后开始；统一入口按系统顺序运行，`--concurrency` 只控制活跃系统的根进程数。4000 字符是共同观察范围，适配器没有费用或总调用预算；原生规划、审核、失败重试与未选预取消耗均保存。只运行某一项目时给新实验命令加 `--systems infiplot` 等参数。
 
 IF Line / InfiPlot 使用无界面 Chromium；AI4 使用原生 Pygame 的 dummy 驱动。当前批量采集不要求 WSLg、桌面或 Xvfb，但仍需要浏览器/SDL 系统共享库及字体。不能把无界面截图时间称为真人桌面显示时间。
 
@@ -107,11 +107,13 @@ IF Line / InfiPlot 使用无界面 Chromium；AI4 使用原生 Pygame 的 dummy 
 生成完成后，在 Ubuntu 中进入结果目录并用 Windows 资源管理器查看：
 
 ```bash
-cd ~/story-benchmark-adapters/work/results
+cd ~/story-benchmark-adapters/work/experiments/wsl-check-01
 explorer.exe .
 ```
 
 这只是打开结果文件，不是用 Windows 程序启动运行管线。也可从资源管理器访问 `\\wsl$` 下的对应 Ubuntu 文件系统。[Microsoft 文件访问说明](https://learn.microsoft.com/en-us/windows/wsl/filesystems)
+
+按 `review-delivery.json` 顶层 `entry_file` 打开本地 `打开故事.html`；若希望复制到 Windows 本地目录阅读，复制完整 `review/` 文件夹，或下载 TXT 指定的 ZIP 后完整解压。发送给评审者用 ZIP，完整实验证据另交实验组织者。详见 [本地回放与人工评审](PLAYBACK_REVIEW.md)。
 
 保留每根完整证据目录，包含公共输入、正文、选择、图像、画面映射、usage、停止原因和 manifest；不要只复制最终图片。`work/secrets.env` 不属于可分享结果。不要编辑运行中的文件，也不要在任务未完成时执行 `wsl --shutdown`、强制结束虚拟机或移除锁文件；Ctrl+C 会先停止派发并收集已发送请求的终态。恢复不会补跑已失败的故事，具体命令见快速上手。
 
@@ -120,7 +122,7 @@ explorer.exe .
 | 现象 | 处理方向 |
 |---|---|
 | 安装 WSL 卡住 / 虚拟化不可用 | 按 Microsoft 安装与故障说明检查 Windows 功能、重启及虚拟化条件；先让 Ubuntu 正常启动。 |
-| `Repository not found` / GitHub 403 | 核对私有仓库授权与 Git 认证，不要改下载地址或把 token 写进 URL。 |
+| `Repository not found` / GitHub 403 | 仓库当前公开，核对仓库 URL、网络及本机 Git 凭据；不要把 token 写进 URL。 |
 | `initdb cannot be run as root` | 退出 root 会话，使用创建的普通 Linux 用户和其可写工作目录。 |
 | Node/Python 指向 `.exe` 或 `/mnt/c` | 进入 Ubuntu 并重新 `source work/activate.sh`，不要调用 Windows 工具链。 |
 | 数据库/依赖安装很慢、权限异常 | 确认仓库与 work 均在 `/home/...` 下，未混用 Windows 环境或文件权限。 |

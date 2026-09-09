@@ -1,6 +1,8 @@
-# 图文故事批量生成使用说明
+# 单系统批量入口：进阶参考
 
-首次接收程序，请先按 [Ubuntu / Windows WSL2 快速上手](QUICKSTART.md) 安装和生成本地配置。本文保留下层三个原始入口，便于理解协议；日常使用推荐 `tools/run_batch.py`，它会选对 Python 环境并安全加载 `work/secrets.env`。直接调用下层入口时需要自行设置环境变量，不会自动读取该密钥文件。
+**首次交接和日常生成使用 [操作者交接手册](OPERATOR_HANDOFF.md) 中的 `bash experiment.sh`。** 统一入口负责当前 30 题选择、规模确认、冻结计划、顺序运行所选系统和整理整批离线评审包。
+
+本文供已经准备自定义共同 bundle 或需要单系统诊断的维护者使用。`tools/run_batch.py` 是单系统包装器，会选对 Python 环境并安全读取 `work/secrets.env`，但使用配置中已有的 `bundles`，不选择默认 30 题，也没有 `RUN` 确认。更下层的三个入口还要求自行提供正确解释器和环境变量，不自动读取密钥文件。不要把这里的底层命令与统一入口的实验目录混用。
 
 三个入口共用编译器、模型配置、阅读窗口和证据格式，各自运行对应项目的原生方法：
 
@@ -14,13 +16,13 @@
 
 ## 共同范围
 
-v4 采用连续阅读窗口。示例 `CAMPUS-01-V4` 为 **4000 个新增可见 Unicode 字符的开发候选**，从共同开头之后开始累计；不计公共开头、内部规划、标签、菜单标题或未选候选预览。到达阈值后保留到该原生文本单元中第一个句界；若该单元没有后续句界，保留整个单元。该规则可能使样本略长于目标值，实际长度同时记录。
+v4 采用连续阅读窗口。日常统一入口使用 `v4-30-open-actions-pilot.2` 的 30 题；本页编译演示使用较早的指定行动单题 `CAMPUS-01-V4`，用于接入诊断，不与开放行动题库混跑。该示例为 **4000 个新增可见 Unicode 字符的开发候选**，从共同开头之后开始累计；不计公共开头、内部规划、标签、菜单标题或未选候选预览。到达阈值后保留到该原生文本单元中第一个句界；若该单元没有后续句界，保留整个单元。该规则可能使样本略长于目标值，实际长度同时记录。
 
 共同任务在编译时写入同一个窗口数值。程序从已验证的 bundle 读取窗口，不能单独给某个项目传另一个长度。试验前可复制 `cases/CAMPUS-01-V4.json`，修改 `case_id`、`case_version` 和 `output_contract.window_chars` 后重新编译，再让三个程序共用新 bundle。案例源文件放在 `benchmark/cases/`；不要修改已冻结批次中的文件。
 
 到达窗口记 `scope_reached=true`。原生自行结束另记 `native_ended`；错误和中断另记 `stop_reason`。InfiPlot 没有全篇结束状态，达到窗口即可完成本次观察。五份评审包均声明：只评当前连续片段，全篇结局不加分、不扣分，事实冲突、重复或没有推进仍可评价。未生成足够正文、缺图和失败样本保留，不将未知写成通过。
 
-题目中的 C1/C2 及后果仍需内容核查。两个任意原生菜单不自动视为完成 C1/C2。程序按固定选项序号执行并保存原生 ID、文本、原始 effect 和状态；不会把不同项目的选项强行改写为同一种行动。
+仅旧指定行动题目中的 C1/C2 及后果需要对应内容核查，两个任意原生菜单不自动视为完成 C1/C2。当前开放行动题库没有此要求。程序按固定选项序号执行并保存原生 ID、文本、原始 effect 和状态；不会把不同项目的选项强行改写为同一种行动。
 
 ## 环境准备
 
@@ -34,7 +36,7 @@ Playwright 的包版本与浏览器版本必须匹配。建议用独立的 `PLAY
 
 InfiPlot 外置启动器默认配置 `systems.infiplot.native_request_body_limit_bytes=67108864`（64 MiB），防止原生内联图片历史触发默认 10 MiB 请求缓冲截断。它只调整框架运行容量，原文件、公共输入和图片字节不变；每次保存 `native/request-body-config.json` 并验证实际生效。设为 `null` 恢复原生默认。该配置需作为实验运行条件记录；它不是无限续写保证。实现边界和容量验证见 [InfiPlot 批量说明](../benchmark/native_shims/infiplot/BATCH.md)。
 
-复制 `benchmark/configs/batch.example.json` 为本地配置。保留三个系统条目，将本机 Python、Node、模块和模型缓存路径填入对应系统；相对路径均相对于配置文件所在目录解析。`pg_bin` 可指定 PostgreSQL 可执行文件目录。IF Line 自行创建独立数据库，不使用日常项目的数据。
+优先由安装流程中的 `tools/configure_batch.py` 生成本机配置。只有手动集成时才复制 `benchmark/configs/batch.example.json` 为本地配置；模板不含全部接收机器路径。保留三个系统条目，将本机 Python、Node、模块和模型缓存路径填入对应系统；相对路径均相对于配置文件所在目录解析。`pg_bin` 可指定 PostgreSQL 可执行文件目录。IF Line 自行创建独立数据库，不使用日常项目的数据。
 
 当前 IF Line 另有用户授权的 [HTML 正文转换源码补丁](IFLINE_HTML_PATCH.md)，模板通过 `systems.if_line.source_patch` 显式指定。`source_lock` 仍指向原始基线锁；不要用修复后的文件覆盖原始锁。移动本地配置时，也要更新 `source_patch` 的相对路径或使用绝对路径。运行记录会保存补丁与来源信息。AI4VisualNovel 和 InfiPlot 不允许设置源码补丁。历史没有此补丁的批次与当前变体应分别标注。
 
@@ -54,9 +56,9 @@ python3 -m story_benchmark verify --bundle ../work/shared-v4
 在共同配置的 `bundles` 中填入编译目录。列表中可以有多道已经各自编译并验证的题目；各项目严格按相同顺序循环取题。`--count` 是根运行总数，不是“每题次数”。例如两题、`--count 6`，顺序为题一/题二各重复三次。
 
 ```bash
-python3 run_if_line_batch.py --config configs/batch.local.json --preflight
-python3 run_ai4visualnovel_batch.py --config configs/batch.local.json --preflight
-python3 run_infiplot_batch.py --config configs/batch.local.json --preflight
+python3 run_if_line_batch.py --config ../work/config/batch.local.json --preflight
+python3 run_ai4visualnovel_batch.py --config ../work/config/batch.local.json --preflight
+python3 run_infiplot_batch.py --config ../work/config/batch.local.json --preflight
 ```
 
 预检不调用付费模型。它检查输入、源码、环境与密钥变量是否存在；不能证明供应商余额、模型可用性或原生生成一定成功。模板 `allow_pilot=true` 明确允许开发案例；它不是正式题目批准记录。
@@ -64,12 +66,12 @@ python3 run_infiplot_batch.py --config configs/batch.local.json --preflight
 ## 批量执行
 
 ```bash
-python3 run_if_line_batch.py --config configs/batch.local.json --count 6 --concurrency 2 --out ../results/round-01-ifline
-python3 run_ai4visualnovel_batch.py --config configs/batch.local.json --count 6 --concurrency 2 --out ../results/round-01-ai4vn
-python3 run_infiplot_batch.py --config configs/batch.local.json --count 6 --concurrency 2 --out ../results/round-01-infiplot
+python3 run_if_line_batch.py --config ../work/config/batch.local.json --count 6 --concurrency 2 --out ../results/round-01-ifline
+python3 run_ai4visualnovel_batch.py --config ../work/config/batch.local.json --count 6 --concurrency 2 --out ../results/round-01-ai4vn
+python3 run_infiplot_batch.py --config ../work/config/batch.local.json --count 6 --concurrency 2 --out ../results/round-01-infiplot
 ```
 
-三个命令可在三个终端同时启动。每个程序内部最多同时运行 `--concurrency` 个独立进程；上例三个程序同时运行时最多有六个根运行活跃。模型供应商的速率限制仍可能触发原生重试，全部真实尝试照实记录。适配器不设置总调用量、总 token、总时长或费用上限，也不为获得好结果自动重跑失败样本。
+这些底层命令可由维护者在三个终端同时启动；这是另外一种调度条件。日常 `experiment.sh` 按所选系统顺序运行，不采用这种三系统同时调度。不要将两种方式混为同一计时实验。每个程序内部最多同时运行 `--concurrency` 个独立进程；上例三个程序同时运行时最多有六个根运行活跃。模型供应商的速率限制仍可能触发原生重试，全部真实尝试照实记录。适配器不设置总调用量、总 token、总时长或费用上限，也不为获得好结果自动重跑失败样本。
 
 `choice_indices` 是从 0 开始的序号列表，如 `[0, 1]` 表示第一次选第一项、以后选第二项；用完列表后重复最后一个序号。某个菜单没有对应序号时明确失败，不悄悄换选项。`reading_delay_seconds` 是统一的模拟阅读延迟，发生在选择之前，不计入选择后的系统响应时间。
 
@@ -106,6 +108,8 @@ python3 -m story_benchmark.batch_compare ../results/round-01-ifline ../results/r
 
 `metrics.json` 中 M1/M2/M3/M5/M6 分数为 `null`，附带证据可用性。M4 为事件实测时间，M7 为真实用量及覆盖，M8 区分请求、候选、资产和画面。原始内部规划不能代替玩家正文，图片 prompt 不能代替图文匹配标准。
 
-`evaluation/reading_blind.json` 用于匿名文字阅读评价；其余包分别用于事实、连贯、人物视觉和图文匹配。视觉包提供相对根运行目录的稳定图片路径。交给裁判时只提供对应包及它引用的素材，不提供整个私有运行目录。后续裁判结果需另存模型版本、提示词哈希、输入包哈希、抽样/展示顺序、证据 ID、简短理由及外部评测用量。
+每根封存后自动导出 `playback/<run_id>/review/index.html`；批次生成/恢复后自动整理总目录和 ZIP，路径见 `review-delivery.json` 与 `REVIEW_DELIVERY.txt`。本地直接用浏览器打开总目录，评审者接收完整 ZIP 后解压阅读。旧记录补导出和具体目录见 [离线回放说明](PLAYBACK_REVIEW.md)。播放器仅展示已记录路径，不改写封存指标。
+
+`evaluation/reading_blind.json` 用于匿名文字阅读评价；其余包分别用于事实、连贯、人物视觉和图文匹配。视觉包提供相对根运行目录的稳定图片路径。交给裁判优先使用自动导出的评审 ZIP；按维度自行分发时只提供对应包及它引用的素材，不提供整个私有运行目录。组织者保留 ZIP 外的 `organizer.json`（含原始八项指标）与完整原始证据。后续裁判结果需另存模型版本、提示词哈希、输入包哈希、抽样/展示顺序、证据 ID、简短理由及外部评测用量。
 
 当前截图是原生离屏播放器或明确标记的等价确定性合成。真实桌面用户显示时间未测时始终留空。原生资产缺失、重生后仍不合格、预取后未访问及原生异常都会保留；不使用额外 AI 补图或改故事。

@@ -1,5 +1,7 @@
 # Batch implementation contract (implementation coordination, v1)
 
+> **Historical development coordination draft.** This document records the initial v4 implementation plan; its assignments and imperative wording are archived design notes, not current operator instructions or a fresh authorization to modify code. For installation, generation, and experiments use [OPERATOR_HANDOFF.md](../docs/OPERATOR_HANDOFF.md); current recording behavior is documented in [BATCH_RECORDING.md](../docs/BATCH_RECORDING.md). The original blanket statement about unchanged native files predates the explicitly authorized [IF Line HTML patch](../docs/IFLINE_HTML_PATCH.md). AI4VisualNovel and InfiPlot retain their frozen native sources. Keep this draft for provenance; do not use its initial defaults as a substitute for the frozen configuration of a new experiment.
+
 Native source files remain unchanged. All work in benchmark/; v3 behavior and historical runs remain reproducible. User authorized implementation, final adapter recheck, instructions and repository publication. Shared image model gpt-image-2; preserve original native retries/review/fallback and record failures. Default real text DeepSeek flash, vision gpt-5.4-mini from existing config; model/API keys configurable common fields, never inline secrets.
 
 ## Native driver boundary

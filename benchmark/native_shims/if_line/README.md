@@ -1,5 +1,7 @@
 # IF Line external adapter
 
+> **开发接口参考，包含两个版本。**第一节说明现行 v4 图文驱动；从 “Historical v3 text adapter” 起保留旧文本接入及共享运行基础，不应直接当作当前生产步骤。新操作者从[交接说明](../../../docs/OPERATOR_HANDOFF.md)安装、配置和启动；图文批量命令见[批量运行](../../../docs/BATCH_RUNNING.md)，离线查看见[回放说明](../../../docs/PLAYBACK_REVIEW.md)。当前 IF Line 源码身份包含已披露的 [HTML 修复变体](../../../docs/IFLINE_HTML_PATCH.md)，历史段落的“原始源码未改”仅描述对应旧版本。
+
 ## Image-enabled batch driver (v4)
 
 `story_benchmark.batch_native.if_line` implements the common batch driver contract.
@@ -138,6 +140,8 @@ files contained neither fixture URL signing value. Those numbers
 describe engineering fixture evidence only, not a paid 4000-character result.
 
 ## Historical v3 text adapter and shared runtime foundation
+
+> The remainder documents the legacy v3 first-unselected-choice entry and shared implementation details. Its standalone setup, disabled-media settings, and bounded defaults are not the current v4 production recipe. Use the operator guide linked above for the supported installation and frozen batch configuration.
 
 The following text-only entry points and bounded-mode examples describe v3.
 The v4 batch entry above always uses the common unlimited policy and images.

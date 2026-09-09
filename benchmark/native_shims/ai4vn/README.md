@@ -1,5 +1,7 @@
 # External AI4VisualNovel adapter
 
+> **旧 v3 首选择文本接口的开发参考。**下面的预算缺省、纯文本导出和原生 CLI 接入说明用于旧接口维护，不是当前故事生产步骤。接收者请先看[操作者交接说明](../../../docs/OPERATOR_HANDOFF.md)；当前 v4 图文、实际选择、八项证据及自动回放由[批量入口](BATCH.md)使用公共调度器完成。不要用此页旧首选择入口替代图文实验。
+
 For the separate v4 full native image/text batch driver and actual selected
 trajectory recording, see [BATCH.md](BATCH.md). The first-choice v3 interface
 documented below remains available and unchanged.

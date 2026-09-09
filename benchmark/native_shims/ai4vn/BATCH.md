@@ -1,5 +1,7 @@
 # AI4VisualNovel v4 图文批量接入
 
+> **现行 v4 驱动的开发补充参考。**安装、配置、试跑、规模调整和实验交付以[操作者交接说明](../../../docs/OPERATOR_HANDOFF.md)为统一入口；下面手工安装依赖和直接调用单项目脚本的示例供维护驱动使用，不替代带依赖锁的安装器。八项记录见[采集说明](../../../docs/BATCH_RECORDING.md)，生成后的本地播放器和评阅包见[回放说明](../../../docs/PLAYBACK_REVIEW.md)。
+
 入口是 `benchmark/run_ai4visualnovel_batch.py`。每个独立 OS worker 将冻结的
 35 个原生文件复制到本次 `native/ai4vn/source/`，再由外置
 `batch_launcher.py` 执行原生 `main()` 的 `design → script → render`，最后

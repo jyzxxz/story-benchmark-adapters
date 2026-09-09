@@ -1,4 +1,6 @@
-# Frozen IF Line continuation and first-choice entrypoints
+# Historical findings: frozen IF Line continuation and first-choice entrypoints
+
+> **Archived source inspection and design proposals, 2026-09-07.** This note applies to baseline `572407f` and the early first-unselected-choice work beginning at `545e29d`; its proposed checks and “next” steps are historical, not instructions for a new production run. Current v4 records actual choices and a common image/text reading window. Start with [OPERATOR_HANDOFF.md](../../docs/OPERATOR_HANDOFF.md) and use the [IF Line v4 driver reference](../native_shims/if_line/README.md) for implemented details. Later source identity includes the disclosed [HTML patch](../../docs/IFLINE_HTML_PATCH.md); the unmodified-source statement below describes this inspection only.
 
 Read-only source inspection, 2026-09-07. Native baseline: `572407fce9b648a4206ac37da6a9f6ed22631da8`; adapter worktree starts at `545e29db55ff9af4d5d2b52a6ec97809b3402845`. This document describes inspected interfaces and proposed external input initialization, not an executed model run. Native files remain unchanged.
 

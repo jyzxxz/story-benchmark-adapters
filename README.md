@@ -1,5 +1,7 @@
 # 三系统故事生成与实验
 
+**接手本项目、自己生成故事并跑实验：先读 [生成者交接手册](docs/OPERATOR_HANDOFF.md)。** 它覆盖 Windows/WSL2 与 Linux 安装、供应商和密钥配置、批量数量、结果检查、恢复与交付。只阅读故事的接收者看 [评审者说明](docs/REVIEWER_QUICKSTART.md)；当前教程和历史验证记录已在 [文档索引](docs/README.md) 分开。
+
 同一份题目、人物设定和固定开头交给 IF Line、AI4VisualNovel、InfiPlot。**不预设关键行动，不对齐跨系统行动语义；三个系统各自发展剧情，使用相同的评判标准。** 允许故事不同，也不强迫故事不同。
 
 默认题库现在是 **`v4-30-open-actions-pilot.2`**：原来的六类题材、30 道题，取消预先给出的两组行动和与它们绑定的剧情阶段。保留已发生事实、世界规则、人物名单、共同阅读窗口和八维证据。原始文件与旧的指定行动题库没有覆盖，新输入拥有独立版本和哈希。已发布的第一版开放题库也保留，第二版使用不同的 `OPEN02` case ID。
@@ -50,7 +52,7 @@ bash experiment.sh genres --allow-pilot
 
 ## 提示词和使用说明
 
-[完整使用说明](docs/OPEN_ACTION_EXPERIMENTS.md) 覆盖安装、试跑、数量、原生选项、恢复、评审数据和正式审批。[30 道题的设定与开头](benchmark/suites/eval30_open/PROMPTS.md)、[统一前缀](benchmark/suites/eval30_open/prefix.txt)、[逐项变更说明](benchmark/suites/eval30_open/CHANGES.md) 已放入仓库。
+[生成者交接手册](docs/OPERATOR_HANDOFF.md) 是接收者主流程；[开放题库与实验参数](docs/OPEN_ACTION_EXPERIMENTS.md) 解释任务和高级控制。[30 道题的设定与开头](benchmark/suites/eval30_open/PROMPTS.md)、[统一前缀](benchmark/suites/eval30_open/prefix.txt)、[逐项变更说明](benchmark/suites/eval30_open/CHANGES.md) 已放入仓库。
 
 ```bash
 bash experiment.sh list
@@ -100,4 +102,4 @@ bash experiment.sh test
 python3 tools/verify_sources.py
 ```
 
-[本次验证范围](docs/OPEN_ACTION_VALIDATION.md) 将编译、离线测试与真实原生生成严格区分。依赖安装细节和原生已知问题仍见 [QUICKSTART](docs/QUICKSTART.md)、[WSL2](docs/WINDOWS_WSL2.md)、[IF Line](docs/projects/IF_LINE.md)、[AI4VisualNovel](docs/projects/AI4VISUALNOVEL.md)、[InfiPlot](docs/projects/INFIPLOT.md)。这些历史文档中的旧题示例不覆盖新版的开放行动合同。
+[开放题库验证记录](docs/OPEN_ACTION_VALIDATION.md) 将编译、离线测试与真实原生生成严格区分。依赖安装细节和原生已知问题见 [QUICKSTART](docs/QUICKSTART.md)、[WSL2](docs/WINDOWS_WSL2.md)、[IF Line](docs/projects/IF_LINE.md)、[AI4VisualNovel](docs/projects/AI4VISUALNOVEL.md)、[InfiPlot](docs/projects/INFIPLOT.md)。旧版本的测试数字和输入条件只适用于其报告中的范围；历史资料通过 [文档索引](docs/README.md) 查询。

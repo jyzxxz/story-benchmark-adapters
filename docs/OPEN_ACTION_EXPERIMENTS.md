@@ -1,30 +1,12 @@
-# 不预设关键行动：从安装到批量实验
+# 开放行动实验：协议与命令参考
 
 默认题库 `v4-30-open-actions-pilot.2`，六类题材、30题。共同的是外部题目、初始事实、人物名单、阅读范围及评判标准，不是未来行动。系统自创原生选项，适配器只选择、记录和继续。没有跨系统语义匹配，没有外部 AI 自动评分，没有为凑成功数而自动重生成。
 
-## 1. 安装并配置一次
+## 1. 安装与配置的现行入口
 
-在 Ubuntu 24.04 或 Windows WSL2 Ubuntu 24.04 的普通用户终端中执行；不要使用 root 生成故事，IF Line 的临时 PostgreSQL 不接受这种方式。不提供 macOS 适配。WSL2 请将仓库放在 Linux 文件系统，而不是 Windows 挂载目录。
+初次接手、Windows/服务器安装、供应商和密钥配置、第一轮验收请按 [操作者交接手册](OPERATOR_HANDOFF.md) 执行。本页保留实验参数与协议参考，避免维护另一份重复安装教程。命令均在仓库根目录的 Linux/WSL2 终端执行。
 
-```bash
-git clone https://github.com/jyzxxz/story-benchmark-adapters.git
-cd story-benchmark-adapters
-bash experiment.sh setup
-```
-
-该命令沿用原安装器，准备独立 Python 环境、Node、浏览器、模型缓存和公共配置，再运行供应商配置向导及 doctor。安装需要网络和适当的系统权限，但不发起付费故事生成。具体依赖、已知平台限制见 QUICKSTART.md 和各项目文档；安装通过不代表原生故事生成必定成功。
-
-向导显示文字、图片和原生视觉审核的供应商 URL、模型名，分别输入 `USE` 确认地址。密钥输入不回显，以权限600保存在 `work/secrets.env`。换地址需要输入对该地址授权的密钥，不沿用旧密钥。不要上传、打印或作为 shell 脚本 source 这个文件。
-
-公共配置：`work/config/batch.local.json`。文字、图像、视觉三种角色各自共用一份供应商配置，不能对某个系统偷偷换模型。当前图像协议限定 `gpt-image-2`；文字/视觉模型名称、文字调用及图像生成/参考图编辑能力必须由使用者与自己的供应商核对。模板模型名不保证权限和余额。这里的视觉模型用于原生审核，不是八维外部裁判。
-
-已有环境仅需修改供应商或密钥：
-
-```bash
-bash experiment.sh configure
-```
-
-显式 export 的同名环境变量优先于本地密钥文件；换密钥时检查旧变量，防止覆盖。保留原生并行、审核和重试策略，不用统一任务去替换原生全部 messages。
+三个项目对每种模型角色共用一份 `providers` 配置；图片模型为 `gpt-image-2`。原生视觉审核模型不是八项指标的外部裁判。原生并行、审核、重试和内部消息保留，不由共同任务替换。配置和密钥的具体字段见 [交接手册](OPERATOR_HANDOFF.md) 与 [配置说明](PROJECT_GUIDE.md)。
 
 ## 2. 免费查看完整输入
 
@@ -102,16 +84,18 @@ bash experiment.sh genres --allow-pilot
 # 只编译和冻结计划，不调用模型
 bash experiment.sh prepare --allow-pilot --count 4 --out work/experiments/open-round1
 
-# 准备好的计划开始运行；以后中断也用该命令恢复未开始项
+# 已有计划开始运行；先预检全部所选系统，再运行；中断后同样恢复未开始项
 bash experiment.sh resume --out work/experiments/open-round1
 
 # 只校验，不读取密钥、不发出模型请求
 bash experiment.sh verify --out work/experiments/open-round1
 ```
 
-注意prepare默认quick的题目集合；需全部题目时加`--preset pilot`，或用case-ids/genres选择集合。run默认全部题目，quick默认第一题。这些模式沿用既有规模定义，终端会显示实际选择。
+`prepare` 默认第一题（quick 预设），只编译并冻结实验配置和输入，不检查原生环境，也不创建每系统的队列。要全部题目可加 `--preset pilot`，或显式使用 `--case-ids` / `--genres`。`run` 默认全部题目，`quick` 默认第一题。
 
-Ctrl+C停止继续派发并清理原生进程，已经发出的请求仍需收集终态。resume只运行从未开始的排队项，失败、已启动、送达未知和封存样本不重发。需要新尝试使用新目录，并保留旧失败。不能修改冻结题目、模型、代码后继续旧批次；本次更新后要新建实验，旧批次在原提交环境中恢复。
+需要在付费启动前检查所选环境，可用 `bash experiment.sh preflight --allow-pilot --count 4 --out work/experiments/open-preflight1`。它也会先创建实验，因此 `--out` 必须是新目录；不能在刚 `prepare` 的同一目录上再执行 `preflight`。通过后用 `resume --out work/experiments/open-preflight1` 启动该计划。已有计划的 `resume` 本身会在任何付费调用前预检全部所选系统。预检只检查本地条件和密钥变量存在性，不请求供应商。
+
+Ctrl+C停止继续派发并清理原生进程，已经发出的请求仍需收集终态。resume只运行从未开始的排队项，失败、已启动、送达未知和封存样本不重发。需要新尝试使用新目录，并保留旧失败。不能修改冻结题目、模型、代码后继续旧批次；变更被校验的运行代码后要新建实验，旧批次在原提交环境中恢复。
 
 输入目录被复制并绑定哈希，行动政策与套件版本写入experiment.json。不允许一个实验混用specified和native_generated任务。旧版仍可导出并通过suite-root显式运行，但报告必须标明是指定行动任务，不能与开放版当成同一个实验。
 
@@ -132,7 +116,9 @@ Ctrl+C停止继续派发并清理原生进程，已经发出的请求仍需收�
 
 M1/M2/M3/M5/M6尚未自动评分，生成内部审核不是外部裁判。M4/M7/M8是实测汇总而非质量分。完整字段与脱敏规则见BATCH_RECORDING.md。审阅旧文档涉及的C1/C2时，只能适用于指定行动旧题；新版没有此标准。
 
-三系统全部选中时生成comparison.json，核对输入、条件与证据，不比较正文相似性。sealed、退出码0或comparison_ready不意味着故事成功或质量通过。逐份查看scope_reached、stop_reason、错误、正文与画面覆盖、usage覆盖。没有结局本身不扣分；故事缺少推进、自相矛盾仍可评价。
+正常执行到三系统校验后生成 `comparison.json`，核对输入、条件与证据，不比较正文相似性；早期环境错误或中断可能尚无比较报告。统一 `experiment.sh` 的生成/恢复退出码：`0` 表示各阶段正常、计划中所有尝试达到观察范围且证据校验通过；`1` 表示汇总检查未全部通过（如观察范围未达到、证据未全部通过或比较器返回非零）；`2` 表示配置、预检或阶段执行错误；`130` 表示中断。底层单系统批量程序的 `0` 只表示批次操作完成，可能含失败样本。`sealed`、退出码 `0` 或 `comparison_ready` 均不代表五项内容质量已通过。逐份查看scope_reached、stop_reason、错误、正文与画面覆盖、usage覆盖。没有结局本身不扣分；故事缺少推进、自相矛盾仍可评价。
+
+生成或恢复后自动创建整批离线评审包，`REVIEW_DELIVERY.txt` 标出 ZIP，`review-delivery.json.entry_file` 指向本地总目录。组织者保留整个实验、ZIP 外的 `organizer.json` 和八项指标；评审者只需完整解压 ZIP，双击 `打开故事.html`。播放已记录路径不调用模型，不替代原始证据。失败与零正文样本仍保留，未封存项通过数量及 `partial` 状态披露。详细操作见 [本地查看与评审交付](PLAYBACK_REVIEW.md)。
 
 ## 8. 正式题目审批
 

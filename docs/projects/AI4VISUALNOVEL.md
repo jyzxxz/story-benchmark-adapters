@@ -1,8 +1,10 @@
 # AI4VisualNovel：Ubuntu / Windows WSL2 批量生成
 
+**本页是项目依赖、原生行为和排错参考。首次接手及日常实验请使用 [操作者交接手册](../OPERATOR_HANDOFF.md) 的 `bash experiment.sh`，三个项目使用同一套选题、记录和离线回放流程。**
+
 本页面向 **Ubuntu 24.04 LTS 服务器**，以及 **Windows 上的 WSL2 Ubuntu 24.04**。以下 Bash 命令均在 Linux 终端、仓库根目录执行。不要在 Windows 原生 Python、PowerShell 或 CMD 中直接运行批量程序：当前启动与清理使用 POSIX 进程组和信号。
 
-**本页是按代码与依赖要求整理的安装路径，尚未完成 Ubuntu/WSL2 从零安装及真实模型验收。** 已有开发机的原生夹具验证不能替代 Linux 验收；历史 AI4 环境使用 Python 3.10.20，本次交付环境统一为 Python 3.12。
+已有干净 Ubuntu 24.04 / x86_64 / Python 3.12 容器安装和原生 fixture 验证，详见 [交接验证记录](../HANDOFF_VALIDATION_20260907.md)。该记录不是实体 WSL2、接收者服务器或其真实模型供应商验收；历史 AI4 开发环境为 Python 3.10.20，交付安装器使用 Python 3.12。
 
 AI4 原生源码保持冻结版本 `0faf120244d175866eea3813f053281f5689ab19`，35 个文件逐字节校验。IF Line 的 HTML 源码补丁不适用于 AI4；不要给 `systems.ai4visualnovel` 添加 `source_patch`。
 
@@ -19,16 +21,17 @@ wsl --list --verbose
 
 按安装提示重启并创建 Linux 用户；确认 Ubuntu-24.04 的 VERSION 为 `2`。若已有该发行版但仍为 WSL1，执行 `wsl --set-version Ubuntu-24.04 2`，然后用 `wsl -d Ubuntu-24.04` 进入 Linux。[Microsoft WSL 安装说明](https://learn.microsoft.com/en-us/windows/wsl/install)
 
-在 Linux 用户目录中克隆仓库并安装依赖，例如 `~/story-benchmark-adapters`；使用 WSL 内的 Linux Python 和文件权限。后续生成在 Linux 文件系统内进行，结果可在生成结束后复制到 Windows。仓库若为私有，接收者需先取得 GitHub 访问权限。
+在 Linux 用户目录中克隆仓库并安装依赖，例如 `~/story-benchmark-adapters`；使用 WSL 内的 Linux Python 和文件权限。后续生成在 Linux 文件系统内进行，结果可在生成结束后复制到 Windows。本仓库公开，可直接克隆；生成供应商凭证由操作者自行配置。
 
 ## 2. 使用统一安装入口
 
-先克隆仓库并进入其根目录。仅准备 AI4 时执行：
+日常三系统交接执行 `bash experiment.sh setup`。以下只适用于管理员仅准备 AI4 环境的进阶方式，配置后须通过供应商向导填写自己的服务：
 
 ```bash
 bash tools/bootstrap_linux.sh --system ai4visualnovel
 source work/activate.sh
 python3 tools/configure_batch.py
+bash experiment.sh configure
 ```
 
 若要在同一服务器准备全部三个项目，将安装命令的系统改为 `--system all`。安装器需要获取系统软件包、Python 依赖与模型缓存；`--skip-system-deps` 只适用于管理员已经准备好系统依赖的机器。不要用 `sudo` 运行后续批次，也不要从旧开发机复制虚拟环境或绝对路径。
@@ -43,7 +46,7 @@ python3 tools/configure_batch.py
 | `work/envs/ai4visualnovel/bin/python` | Python 3.12 原生 AI4 独立环境 |
 | `work/models/ai4visualnovel/isnet-anime.onnx` | 原生动漫人物抠图模型 |
 | `work/config/batch.local.json` | 三项目共同配置，保留全部三个系统条目 |
-| `work/secrets.env` | 本机密钥；统一 `tools/run_batch.py` 默认读取此文件 |
+| `work/secrets.env` | 本机密钥；`experiment.sh` 经单系统包装器安全读取 |
 | `work/results/` | 每次批次的新输出目录 |
 
 AI4 原生运行不需要 PostgreSQL、Redis、Node、Playwright 或可见桌面。统一安装器也准备了其他项目使用的公共工具和系统包，但它们不参与 AI4 原生生成。AI4 实际使用 Python、Pygame/SDL、Pillow、rembg 和 ONNX Runtime；文字、图像及原生视觉审核通过配置中的供应商 API 生成，抠图使用本机 CPU。
@@ -174,20 +177,13 @@ sha256sum "$AI4VN_FONT_DIR/NotoSansSC.ttf"
 
 文字、图片及原生视觉审核都在共同 `providers` 配置；供应商地址以 `/v1` 结束。共同图片模型固定为 `gpt-image-2`。三种角色可以使用各自的密钥，但三个项目对同一角色使用同一模型和条件。`providers.vision` 用于原生图片审核，不是八项评测的外部裁判。
 
-在本机编辑 `work/secrets.env`，设置 `BENCH_TEXT_API_KEY`、`BENCH_IMAGE_API_KEY`、`BENCH_VISION_API_KEY`。统一入口 `tools/run_batch.py` 默认读取这个文件；原生项目只收到本地网关的临时凭证，不读取原生目录旧 `.env`。若使用底层 `benchmark/run_ai4visualnovel_batch.py` 而非统一入口，则需要自行导出环境变量：
+通过 `bash experiment.sh configure` 或本机编辑器保存 `work/secrets.env` 中的 `BENCH_TEXT_API_KEY`、`BENCH_IMAGE_API_KEY`、`BENCH_VISION_API_KEY`。统一入口使用 dotenv 读取，显式导出的同名环境变量优先；不把密钥文件作为 shell 脚本 `source`。原生项目只收到本地网关临时凭证，不读取原生目录旧 `.env`。
 
-```bash
-chmod 600 work/secrets.env
-set -a
-source work/secrets.env
-set +a
-```
-
-文件只包含你确认过的环境变量赋值。不要把密钥写进 JSON、公共故事文件、命令参数或 Git。预检会检查命名变量是否存在，但不会试余额或向供应商发请求。
+不要把密钥写进 JSON、公共故事文件、命令参数或 Git。预检检查命名变量是否存在，但不会试余额或向供应商发请求。底层入口的密钥与自定义 bundle 适用范围见 [单系统进阶参考](../BATCH_RUNNING.md)。
 
 ## 5. 预检、批量运行与恢复
 
-先确认输入 bundle 和源码，再预检 AI4。示例配置采用已有的 `CAMPUS-01-V4` 开发材料；自定义案例的编译与共同字数窗口见 [批量运行说明](../BATCH_RUNNING.md)。
+先确认源码与本机环境。下面的生成命令使用统一入口当前的 30 题开放行动候选集；`quick` 选第一题。配置模板原有的 `CAMPUS-01-V4` bundle 是较早的指定行动单题，只供底层接入检查，不是当前题库。
 
 ```bash
 source work/activate.sh
@@ -208,33 +204,31 @@ python3 tools/smoke_test.py --system ai4visualnovel --out work/smoke-ai4vn
 首次验证使用一个全新输出目录：
 
 ```bash
-python3 tools/run_batch.py --system ai4visualnovel \
-  --count 1 --concurrency 1 --out work/results/ai4vn-check-01
+bash experiment.sh quick --allow-pilot --systems ai4visualnovel \
+  --out work/experiments/ai4vn-check-01
 ```
 
 准备好后自行调整数量和并行数，例如：
 
 ```bash
-python3 tools/run_batch.py --system ai4visualnovel \
-  --count 10 --concurrency 2 --out work/results/ai4vn-batch-01
+bash experiment.sh run --allow-pilot --systems ai4visualnovel \
+  --count 10 --concurrency 2 --out work/experiments/ai4vn-batch-01
 ```
 
-**`count=10` 表示 10 次独立尝试，不保证 10 个成功故事。** 若 `bundles` 有多题，按相同题目顺序循环；不是每题各生成 10 次。`concurrency=2` 表示本程序最多两个根 worker 同时运行，每个根都有独立源码副本、输出目录、时钟和调用编号。原生每个根内部还有自己的调用和图片流程；高并发会增加 CPU、内存与供应商并发需求。先用 `concurrency=1` 确認环境，再增加并发。
+**`count=10` 表示 10 次独立尝试，不保证 10 个成功故事。** 按选中题目顺序循环；默认 30 题时 `count=10` 只覆盖前 10 题，不是每题各生成 10 次。命令展示规模并要求输入 `RUN` 后才调用真实模型。`concurrency=2` 表示本程序最多两个根 worker 同时运行，每个根都有独立源码副本、输出目录、时钟和调用编号。原生每个根内部还有自己的调用和图片流程；高并发会增加 CPU、内存与供应商并发需求。先用 `concurrency=1` 确認环境，再增加并发。
 
 一个根运行执行原生 `design → script → render`，随后离屏读取一条实际选择路径。原生可能先为未访问节点生成脚本和图片，这些消耗照实记录。共同窗口从固定开头之后累计；到达窗口停止观察，不强行补结局。原生先结束则记为 `native_end`，不足的字数也保留。
 
 ```bash
-python3 tools/run_batch.py --system ai4visualnovel \
-  --out work/results/ai4vn-batch-01 --resume --concurrency 2
-python3 tools/run_batch.py --system ai4visualnovel \
-  --out work/results/ai4vn-batch-01 --verify
+bash experiment.sh resume --out work/experiments/ai4vn-batch-01 --concurrency 2
+bash experiment.sh verify --out work/experiments/ai4vn-batch-01
 ```
 
 `--resume` 只启动完全没开始的排队任务。已运行、失败、已封存或可能送达的根任务都不会再次发送；失败后若决定再试，要用新的输出目录，并保留旧尝试。不要删除 `states/`、根目录或锁文件来强制重跑。
 
 ## 6. 查看产物与八项数据
 
-先读批次 `results.json` 或 `results.csv`，再看对应 `runs/<run_id>/`。程序退出码 0 表示批次操作完成，`state=sealed` 表示证据封存；二者都不保证故事成功。逐根检查 `stop_reason`、`scope_reached`、`native_ended`、`visible_chars` 和 `errors.jsonl`。
+统一入口的实验汇总在 `experiment_summary.json`；AI4 批次的 `results.json`、`results.csv` 和 `runs/<run_id>/` 位于实验的 `ai4visualnovel/` 子目录。`state=sealed` 只表示证据封存。统一入口与底层程序退出码不同，见 [实验命令参考](../OPEN_ACTION_EXPERIMENTS.md)；均不代表内容质量通过。逐根检查 `stop_reason`、`scope_reached`、`native_ended`、`visible_chars` 和 `errors.jsonl`。
 
 | 内容 | 根运行内的文件 |
 | --- | --- |
@@ -249,6 +243,8 @@ python3 tools/run_batch.py --system ai4visualnovel \
 | 原生全过程与失败位置 | `native/ai4vn/source/data/`、`native/ai4vn/observations.jsonl`、`native/ai4vn/full.stdout.log`、`errors.jsonl` |
 
 文件名位于同一列所写目录内，例如上表 `choices.jsonl` 的完整相对路径为 `trajectories/main/choices.jsonl`。正文和原生产物均保留；未选择分支不能当作已阅读的故事。缺失的 usage、实际账单、真人桌面显示时间为未知；五项内容质量分数为 `null`，不会把“资料存在”当成“评测通过”。完整字段见 [八项记录说明](../BATCH_RECORDING.md)。
+
+生成/恢复后，本项目与其他两个项目一样自动整理离线图文目录和评审 ZIP。实验目录中的 `review-delivery.json.entry_file` 是本地浏览器入口，`REVIEW_DELIVERY.txt` 标出发送的 ZIP。接收者完整解压后双击 `打开故事.html`，无需运行原生服务。回放只展示实际路径；完整八项证据仍在原始目录，`organizer.json` 保留原始指标且不在盲审 ZIP 内。操作和故障定位统一见 [离线回放说明](../PLAYBACK_REVIEW.md)。
 
 ## 7. 常见失败如何判断
 

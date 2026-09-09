@@ -1,10 +1,12 @@
 # IF Line：Linux / Windows WSL2 交接说明
 
+**本页是项目依赖、原生行为和排错参考。首次接手及日常实验请使用 [操作者交接手册](../OPERATOR_HANDOFF.md) 的 `bash experiment.sh`，三个项目使用同一套选题、记录和离线回放流程。**
+
 本页面向 **Ubuntu 24.04 服务器，以及 Windows 上的 WSL2 Ubuntu 24.04**。Windows 接收者应在 WSL 的 Linux 终端内安装并执行；不承诺原生 PowerShell、Windows Python 或 Windows PostgreSQL 能运行这一批量驱动。
 
-项目入口为 `benchmark/run_if_line_batch.py`。它调用原生后端、原生图像生成及原生 Vue 播放器，交付一条实际选择路径的图文证据包。它不会部署完整的公共网站，也不提供玩家账号或在线分享服务。
+日常入口为 `bash experiment.sh ... --systems if_line`；底层驱动为 `benchmark/run_if_line_batch.py`。它调用原生后端、原生图像生成及原生 Vue 播放器，交付一条实际选择路径的图文证据包。它不会部署完整的公共网站，也不提供玩家账号或在线分享服务。
 
-已有原生图文生成和双工作进程固定响应测试记录，见 [批量复查](../ADAPTER_AUDIT_20260907.md) 与 [真实并行复查](../PARALLEL_RECHECK_20260907.md)。这些记录的原始平台信息保留在报告中，不能据此宣称 Linux / WSL 全流程已通过。接收机器须完成下面的环境检查；本页的 Linux 命令属于部署步骤，实际执行范围以本次发布的部署验证报告为准。
+已有干净 Ubuntu 24.04 容器安装及原生图文 fixture 验证，见 [交接检查](../HANDOFF_VALIDATION_20260907.md)。更早的生成及双任务证据见 [批量复查](../ADAPTER_AUDIT_20260907.md) 与 [并行复查](../PARALLEL_RECHECK_20260907.md)，平台条件分别保留。它们不代替接收者服务器、实体 WSL2、供应商与新代码版本的实际验收。
 
 交接安装器使用 `tools/linux/` 中的 Ubuntu 24.04 / Python 3.12 constraints 固定本次依赖版本；外置播放器采用 npm 锁，原生源码依赖清单不改。实际安装记录和新 Linux 验证范围见 [交接检查](../HANDOFF_VALIDATION_20260907.md)。下文手动补装命令用于排错，正式复现优先使用统一安装器及同一套锁。
 
@@ -21,12 +23,13 @@ wsl --list --verbose
 
 以下操作从克隆仓库根目录开始。安装系统包可以使用 sudo；**生成程序必须由普通用户运行**。PostgreSQL 的 `initdb` 和数据库服务器会拒绝 root，容器也应给普通用户可写的工作目录。[PostgreSQL 16 说明](https://www.postgresql.org/docs/16/app-initdb.html)
 
-首选仓库统一安装和配置入口。只准备 IF Line 用 `--system if_line`；同时交付三个项目用 `--system all`：
+三系统首次交接按手册执行 `bash experiment.sh setup`。以下为管理员只准备 IF Line 环境的进阶方式：
 
 ```bash
 bash tools/bootstrap_linux.sh --system if_line
-python3 tools/configure_batch.py
 source work/activate.sh
+python3 tools/configure_batch.py
+bash experiment.sh configure
 python3 tools/doctor.py --system if_line
 python3 tools/smoke_test.py --system if_line --out work/smoke-ifline
 ```
@@ -77,12 +80,14 @@ sudo apt-get install -y python3.12 python3.12-venv postgresql-16 \
 
 python3.12 -m venv "$BENCH_REPO/work/envs/if_line"
 "$IF_PY" -m pip install --upgrade pip
-"$IF_PY" -m pip install -r "$BENCH_REPO/benchmark/native_shims/if_line/requirements-media.txt"
+"$IF_PY" -m pip install -r "$BENCH_REPO/benchmark/native_shims/if_line/requirements-media.txt" \
+  -c "$BENCH_REPO/tools/linux/if_line-py312.constraints.txt"
 "$IF_PY" -m pip check
 
 mkdir -p "$IF_MEDIA"
 cp "$BENCH_REPO/benchmark/native_shims/if_line/renderer-package.json" "$IF_MEDIA/package.json"
-npm install --prefix "$IF_MEDIA"
+cp "$BENCH_REPO/tools/linux/renderer-package-lock.json" "$IF_MEDIA/package-lock.json"
+npm ci --prefix "$IF_MEDIA"
 "$IF_NODE" "$IF_MEDIA/node_modules/playwright/cli.js" install-deps chromium
 "$IF_NODE" "$IF_MEDIA/node_modules/playwright/cli.js" install chromium
 fc-match ':lang=zh-cn'
@@ -106,7 +111,7 @@ sha256sum "$U2NET_HOME/u2net.onnx"
 
 冻结的 rembg 2.0.72 从 [rembg 官方模型发行文件](https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2net.onnx) 下载；其下载器校验 MD5 `60024c5c889badc19c04ad937298a77b`。不要禁用模型校验。无法访问 GitHub 时，在能联网的**同架构目标环境**准备依赖，在可信机器下载同一文件并保留 SHA-256 后传入上述目录。只有 ONNX 模型文件本身可独立跨平台搬运，Python 环境、Node 模块及 Chromium 不能直接从另一操作系统复制。
 
-`requirements-media.txt` 固定了 rembg 版本，但部分依赖是版本范围，不是完整的 Linux 锁文件。首次安装成功后保留本机 `pip freeze`、`pip check`、`npm ls`、生成的 `package-lock.json`、Node/PG/Redis/Chromium 版本和模型 SHA-256；后续同一轮使用这套依赖，不要中途重新解析安装。
+`requirements-media.txt` 自身不是完整依赖锁；统一安装器及上述手动示例配合 `tools/linux/if_line-py312.constraints.txt` 与外置 npm 锁安装。首次安装成功后保留本机 `pip freeze`、`pip check`、`npm ls`、生成的 `package-lock.json`、Node/PG/Redis/Chromium 版本和模型 SHA-256；后续同一轮使用这套依赖，不要中途重新解析安装。
 
 离线服务器需提前备齐：目标 Linux/Python/架构的 wheel 集合、同版本 Node Linux 包、npm 包或在同平台构建的 media-tools、对应 Playwright 浏览器目录、ONNX 文件、系统 `.deb` 及依赖、中文字体。可在目标兼容机器用 `pip wheel -r requirements-media.txt --wheel-dir ...` 制作 wheel 集，再用 `pip install --no-index --find-links ... -r requirements-media.txt` 安装。只下载故事仓库不包含这些大文件，也不代表已经具备离线运行环境。
 
@@ -170,14 +175,14 @@ python3 tools/run_batch.py --system if_line --preflight
 
 ## 5. 启动、窗口与选择
 
-先确认公共配置的 `bundles` 指向同一份验证过的 v4 图文 bundle。仓库 `CAMPUS-01-V4` 是允许试跑的开发案例，4000 个新增可见字符；不是已经批准的正式题库。公共开头不计入新增字数，内部规划和候选预览也不计。
+下列统一入口从当前 `v4-30-open-actions-pilot.2` 选择题目，并将共同输入冻结到新实验目录；4000 个新增可见字符为观察范围。公共开头、内部规划和候选预览不计新增字数。旧模板 `CAMPUS-01-V4` 是底层诊断的指定行动单题，不是统一入口的默认 30 题。
 
 ```bash
-python3 tools/run_batch.py --system if_line --count 2 --concurrency 1 \
-  --out work/results/round-01-ifline
+bash experiment.sh run --allow-pilot --systems if_line --count 2 --concurrency 1 \
+  --out work/experiments/round-01-ifline
 ```
 
-统一包装器读取默认配置及 `work/secrets.env`，再执行原有批量程序；底层入口仍为 `benchmark/run_if_line_batch.py`。这条命令会调用真实模型并产生费用。`--count` 是本程序根运行总数，多个 bundle 按共同列表顺序循环使用；`--concurrency` 是同时活跃的根运行数，每根都有独立服务。验证接收机器资源后可把并发改为 2。三个项目要公平比较时，使用同一配置的题目顺序、数量、模型、选择政策和阅读延迟，并记录调度及机器负载。
+统一入口读取默认配置及 `work/secrets.env`，展示规模并要求 `RUN` 确认后调用真实模型。`--count` 是所选系统的总尝试数，按选中题目顺序循环使用；`--concurrency` 是同时活跃的根运行数，每根都有独立服务。验证接收机器资源后可把并发改为 2。三个项目要公平比较时，使用同一配置的题目顺序、数量、模型、选择政策和阅读延迟，并记录调度及机器负载。
 
 IF Line 保留原生 Bible → 13 章总大纲 → 固定开头导入 → 原生候选 → 选择后路线提升 → 章节生成 → Script IR → 素材生成/审核 → 图编译 → 原生播放器。开头后的首次选择可能尚无新增正文，这是原生结构。`chapter_count=13` 是规划长度，不是承诺会生成 13 章，也不是共同窗口的替代品。
 
@@ -188,17 +193,15 @@ IF Line 保留原生 Bible → 13 章总大纲 → 固定开头导入 → 原生
 恢复和校验均使用原批次目录：
 
 ```bash
-python3 tools/run_batch.py --system if_line \
-  --out work/results/round-01-ifline --resume --concurrency 1
-python3 tools/run_batch.py --system if_line \
-  --out work/results/round-01-ifline --verify
+bash experiment.sh resume --out work/experiments/round-01-ifline --concurrency 1
+bash experiment.sh verify --out work/experiments/round-01-ifline
 ```
 
-`--resume` 只派发从未开始的排队根；已经启动、失败、封存或送达未知的根不会自动再收费重跑。新尝试用新的输出目录并保留旧失败。程序退出码 0 也可能包含原生失败样本，不能代替检查各根的停止原因。改动执行代码后不能恢复旧计划。
+`--resume` 只派发从未开始的排队根；已经启动、失败、封存或送达未知的根不会自动再收费重跑。新尝试用新的输出目录并保留旧失败。统一入口与底层批量程序的退出码不同，见 [实验参考](../OPEN_ACTION_EXPERIMENTS.md)。退出码均不代替内容评审和逐根停止原因检查。改动执行代码后不能恢复旧计划。
 
 ## 6. 把哪些产物交给评审
 
-批次汇总在 `results.json` / `results.csv`，每根完整产物在 `runs/<run_id>/`。保留整个根目录才能离线核验引用和哈希；不要只复制故事文字或单张图片。
+统一入口实验汇总在 `experiment_summary.json`；实验的 `if_line/` 子目录包含批次 `results.json` / `results.csv` 和每根 `runs/<run_id>/`。保留整个根目录才能离线核验引用和哈希；不要只复制故事文字或单张图片。
 
 | 路径 | 内容 |
 |---|---|
@@ -212,6 +215,8 @@ python3 tools/run_batch.py --system if_line \
 | `evaluation/` | 事实、连贯性、人物视觉、阅读体验、图文匹配的五份评审包。 |
 
 八项字段逐条说明见 [BATCH_RECORDING.md](../BATCH_RECORDING.md) 和 [原始记录规范](../../benchmark/source/recording_spec.v0.1.md)。token 拿不到真实 usage 时保留 null 和已知小计，不能当作零；人物出场不足时标记证据不足；等待时间记录后台观察而非未测的真人界面显示时间。M1/M2/M3/M5/M6 的分数留空，由后续独立裁判评价。
+
+生成/恢复后，本项目与其他两个项目一样自动整理离线图文目录和评审 ZIP。实验目录中的 `review-delivery.json.entry_file` 是本地浏览器入口，`REVIEW_DELIVERY.txt` 标出发送的 ZIP。接收者完整解压后双击 `打开故事.html`，无需运行原生服务。回放只展示实际路径；完整八项证据仍在原始目录，`organizer.json` 保留原始指标且不在盲审 ZIP 内。操作和故障定位统一见 [离线回放说明](../PLAYBACK_REVIEW.md)。
 
 ## 7. 常见失败怎么定位
 

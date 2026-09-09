@@ -1,5 +1,7 @@
 # InfiPlot external input adapter
 
+> **旧 v3 首选择/纯文本接口的开发参考。**本页关闭图片、使用会话 Cookie 和旧预算缺省的配置仅属于下述 v3 入口，不是当前图文批量默认行为。新操作者请从[交接说明](../../../docs/OPERATOR_HANDOFF.md)开始；现行 v4 的真实图文、实际选择、64 MiB 请求容量和隔离身份接入详见 [BATCH.md](BATCH.md)，不要混用两种运行入口。
+
 This page documents the v3 first-choice/text-only entry. The full-image readable-window batch driver, original browser scheduling and its disclosed entry/auth compatibility rules are documented in [BATCH.md](BATCH.md).
 
 Upstream: `https://github.com/zonghaoyuan/infiplot`, frozen at `a60e18bc663caaa134d9323a2b89159b7cc9bd05`.
